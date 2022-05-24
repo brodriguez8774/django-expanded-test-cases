@@ -4,7 +4,7 @@ Core testing logic, universal to all test cases.
 
 # System Imports.
 from django.contrib.auth import get_user_model
-
+from django.contrib.auth.models import Group, Permission
 
 
 class CoreTestCaseMixin:
@@ -17,7 +17,6 @@ class CoreTestCaseMixin:
     Inheriting from either (seems to) make it incompatible with the other.
     Therefore we treat this as a separate mixin that inherits from nothing, and is included in all.
     """
-
     def set_up(self):
         """
         Acts as the equivalent of the UnitTesting "setUp()" function.
@@ -44,8 +43,8 @@ class CoreTestCaseMixin:
 
         :param user: User model, or corresponding username, to use.
         :param password: Password str to assign to user.
+        :return: User object
         """
-
         # Check if instance is User model.
         if isinstance(user, get_user_model()):
             # Already User model. This is fine.
@@ -76,3 +75,53 @@ class CoreTestCaseMixin:
         user.save()
 
         return user
+
+    def add_user_permission(self, user_permission, user='test_user'):
+        """Adds Permission to given user.
+
+        :param user_permission: Permission to add.
+        :param user: User to add Permission to. If not provided, defaults to test_user model.
+        :return: None
+        """
+        # Check if instance is a Permission model.
+        if isinstance(user_permission, Permission):
+            # Already Permission model. This is fine.
+            permission = user_permission
+
+        else:
+            # Is not Permission model. Attempt to get.
+            user_permission = str(user_permission)
+            try:
+                permission = Permission.objects.get(codename=user_permission)
+            except Permission.DoesNotExist:
+                # Failed to get by codename. Attempt again with name.
+                try:
+                    permission = Permission.objects.get(name=user_permission)
+                except Permission.DoesNotExist:
+                    raise ValueError('Failed to find permission of "{0}".'.format(user_permission))
+
+        # If we made it this far, then valid Permission was found. Apply to user.
+        self.get_user(user).user_permissions.add(permission)
+
+    def add_user_group(self, user_group, user='test_user'):
+        """Adds Group to given user.
+
+        :param user_group: Group to add.
+        :param user: User to add Group to. If not provided, defaults to test_user model.
+        :return: None
+        """
+        # Check if instance is a Group model.
+        if isinstance(user_group, Group):
+            # Already Group model. This is fine.
+            group = user_group
+
+        else:
+            # Is not Group model. Attempt to get.
+            user_group = str(user_group)
+            try:
+                group = Group.objects.get(name=user_group)
+            except Group.DoesNotExist:
+                raise ValueError('Failed to find Group of "{0}".'.format(user_group))
+
+        # If we made it this far, then valid Group was found. Apply to user.
+        self.get_user(user).groups.add(group)
