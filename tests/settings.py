@@ -7,6 +7,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
     'django.contrib.auth',
+    'tests.apps.DjangoExpandedTestCasesConfig',
 )
 
 
@@ -16,3 +17,7 @@ DATABASES = {
         'NAME': ':memory:',
     },
 }
+
+
+ROOT_URLCONF = 'tests.urls_root'
+LOGIN_URL = 'expanded_test_cases:login'
