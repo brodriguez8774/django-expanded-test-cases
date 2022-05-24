@@ -1,41 +1,97 @@
 ###
  # GitIgnore file for Django Framework projects.
  # See https://git-scm.com/docs/gitignore for documentation.
+ # See also https://www.gitignore.io for useful ignore values.
  #
  # https://git.brandon-rodriguez.com/other/gitignore
- # Version 1.0.3
+ # Version 1.1.0
  ##
 
 
-# Ignore system files.
+# Ignore OSX system files.
+._*
+.AppleDB
+.AppleDouble
 .DS_Store
+.fseventsd
+.LSOverride
+.Spotlight-V100
+.Trashes
+.VolumeIcon.icns
+Icon
 Thumbs.db
 
 
+# Ignore Linux system files.
+.~*
+.directory
+.fuse_hidden*
+.nfs*
+.Trash-*
+
+
 # Ignore environment settings.
+.cache/
 .env/
 .idea/
 .venv/
 .vs/
 .vscode/
+cache/
 env/
 idea/
 venv/
 vs/
 vscode/
+.cache
+.env
+.env.*
+.local_settings.py
+local_settings.py
 
 
-# Ignore python cache files.
-*.pyc
+# Ignore Python cache files.
+__pycache__/
+*.py[cod]
+
+
+# Ignore Python setup, packaging, & distribution files.
+*.egg-info/
+.eggs/
+__pypackages__/
+__target__/
+build/
+develop-eggs/
+dist/
+docs/build/
+docs/_build/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+target/
+var/
+wheels/
+*.egg
+*.manifest
+*.so
+*.spec
+.installed.cfg
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
 
 
 # Ignore temporary files.
 [Tt]mp/
 [Tt]emp/
-[Tt]empfiles/
 [Tt]emp_files/
-*.tmp
-*.temp
+[Tt]empfiles/
+[Tt]emporary/
+*.[Tt]mp
+*.[Tt]emp
+*.[Tt]emporary
 
 
 # Ignore logfiles.
@@ -43,21 +99,44 @@ vscode/
 [Ll]ogs/
 *.log
 *.log.*
+*debug.log*
+*err.log*
+*error.log*
+*info.log*
+*warn.log*
+*warning.log*
 
 
-# Ignore development-related Django files.
-DEBUG
+# Ignore UnitTesting and test coverage files.
+.pytest_cache/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+
+# Ignore Django development files.
 *.sqlite3
+*.sqlite3-journal
+DEBUG
+SECRET_KEY
 
 
 # Ignore compiled CSS/JS files.
 # (Assumes use of SASS. Remove *.css line if using standard CSS.)
+*.sass-cache/
+.webpack/
 node_modules/
 *.css
 *.css.map
-*.sass-cache/
+*.sass.map
+*.scss.map
+
 
 
 ###
  # Project-specific ignores go below here.
  ##
+
+# Do not track migrations. Uncomment out to explicitly add them.
+*/migrations/0*.py
