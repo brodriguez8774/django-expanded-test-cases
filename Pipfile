@@ -1,0 +1,44 @@
+###
+ # Pipenv Package Declarations.
+ # This file is what Pipenv commands build off of.
+ ##
+[[source]]
+name = "pypi"
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+
+
+###
+ # Python version declaration.
+ ##
+[requires]
+python_version = "3.9"
+
+
+###
+ # General packages, installed via `pipenv sync`.
+ ##
+[packages]
+# General Django dependencies.
+django = "*"                    # Core Django package.
+channels = "*"                  # Django websocket/background-task dependencies.
+
+
+###
+ # Development and testing packages, installed via `pipenv sync --dev`.
+ ##
+[dev-packages]
+# Syntax-checking dependencies.
+autopep8 = "*"                  # Auto-formats files for pep8 recommendations. See `setup.cfg` for our exceptions.
+flake8 = "*"                    # Wrapper for autopep8 that allows extra configuration, etc.
+pylint = "*"                    # Linter for Python syntax. Must be run in console via "pylint" command.
+pylint-django = "*"             # Improves code analysis for Django projects.
+pylint-plugin-utils = "*"       # Additional pylint functionality for things like Django and Celery.
+
+# Testing/Pytest dependencies.
+coverage = "*"                  # Outputs testing coverage data.
+pytest = "*"                    # Base Pytest package. Current preferred testing method.
+pytest-asyncio = "*"            # Additional Pytest logic for asyncio support.
+pytest-django = "*"             # Additional Pytest logic for Django support.
+pytest-xdist = "*"              # Additional Pytest features, such as multithreading and looping.
+selenium = "*"                  # Support for running UnitTests that directly simulate browser usage.
