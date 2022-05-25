@@ -27,11 +27,49 @@ class IntegrationTestCase(BaseTestCase):
         # Run parent setup logic.
         super().setUp()
 
+    # region Custom Assertions
+
     def assertResponse(self, url, *args, expected_status=200, **kwargs):
-        """Asserts that view response object at given URL matches various parameters.
+        """Verifies the view response object at given URL matches provided parameters.
 
         :param url: Url to get response object from.
         :param expected_status: Expected status code, after any redirections. Default code of 200.
+        """
+        # Run logic to get corresponding response object.
+        response = self._get_page_response(url, *args, **kwargs)
+
+        # Verify page status code.
+        self.assertStatusCode(response, expected_status)
+
+        # All assertions passed so far. Return response in case user wants to do further checks.
+        return response
+
+    def assertStatusCode(self, response, expected_status):
+        """Verifies the page status_code value.
+
+        :param response: Response object to check against.
+        :param expected_status: Expected status code, after any redirections.
+        """
+        self.assertEqual(
+            response.status_code,
+            expected_status,
+            'Expected status code (after potential redirects) of "{0}". Actual code was "{1}"'.format(
+                expected_status,
+                response.status_code,
+            ),
+        )
+
+    # endregion Custom Assertions
+
+    # region Helper Functions
+
+    def _get_page_response(self, url, *args, **kwargs):
+        """Helper function for assertResponse().
+
+        Fully parses provided user url, and returns corresponding response object.
+
+        :param url: Url to get response object from.
+        :return: Django response object for provided url.
         """
         # Preprocess all potential url values.
         url = str(url).strip()
@@ -78,16 +116,6 @@ class IntegrationTestCase(BaseTestCase):
         # Get response object.
         response = self.client.get(url, follow=True)
         response.url = current_site
-
-        # Verify page status code.
-        self.assertEqual(
-            response.status_code,
-            expected_status,
-            'Expected status code (after potential redirects) of "{0}". Actual code was "{1}"'.format(
-                expected_status,
-                response.status_code,
-            ),
-        )
-
-        # All assertions passed so far. Return response in case user wants to do further checks.
         return response
+
+    # endregion Helper Functions
