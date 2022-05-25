@@ -19,6 +19,8 @@ class BaseClassTest(BaseTestCase):
         # Also call CoreMixin setup logic.
         self.set_up()
 
+    # region User Management Function Tests
+
     def test__get_user(self):
         """
         Tests get_user() function.
@@ -140,3 +142,81 @@ class BaseClassTest(BaseTestCase):
         # Verify other users are unaffected.
         self.assertFalse(self.test_superuser.groups.all().exists())
 
+    # endregion User Management Function Tests
+
+    def test__generate_get_url(self):
+        """
+        Tests generate_get_url() function.
+        """
+        with self.subTest('Generate from passed "url" param'):
+            # Test no params.
+            url = self.generate_get_url('http://127.0.0.1/')
+            self.assertEqual(url, 'http://127.0.0.1/')
+
+            # Test one str param.
+            url = self.generate_get_url('http://127.0.0.1/', test_1='one')
+            self.assertEqual(url, 'http://127.0.0.1/?test_1=one')
+
+            # Test two str params.
+            url = self.generate_get_url('http://127.0.0.1/', test_1='one', test_2='two')
+            self.assertEqual(url, 'http://127.0.0.1/?test_1=one&test_2=two')
+
+            # Test one non-str simple param.
+            url = self.generate_get_url('http://127.0.0.1/', test_1=1)
+            self.assertEqual(url, 'http://127.0.0.1/?test_1=1')
+
+            # Test two non-str simple params.
+            url = self.generate_get_url('http://127.0.0.1/', test_1=1, test_2=True)
+            self.assertEqual(url, 'http://127.0.0.1/?test_1=1&test_2=True')
+
+            # Test one non-str complex param.
+            url = self.generate_get_url('http://127.0.0.1/', test_1=['a', 'b', 'c'])
+            self.assertEqual(url, 'http://127.0.0.1/?test_1=%5B%27a%27%2C+%27b%27%2C+%27c%27%5D')
+
+            # Test two non-str complex params.
+            url = self.generate_get_url('http://127.0.0.1/', test_1=['foo', 'bar'], test_2={'cat': 'Tabby', 'dog': 'Spot'})
+            self.assertEqual(
+                url,
+                (
+                    'http://127.0.0.1/?test_1=%5B%27foo%27%2C+%27bar%27%5D&test_2=%7B%27cat%27%3A+'
+                    '%27Tabby%27%2C+%27dog%27%3A+%27Spot%27%7D'
+                ),
+            )
+
+        with self.subTest('Generate from class "self.url" variable'):
+            # Set class variable.
+            self.url = 'http://127.0.0.1/'
+
+            # Test no params.
+            url = self.generate_get_url()
+            self.assertEqual(url, 'http://127.0.0.1/')
+
+            # Test one str param.
+            url = self.generate_get_url(test_1='one')
+            self.assertEqual(url, 'http://127.0.0.1/?test_1=one')
+
+            # Test two str params.
+            url = self.generate_get_url(test_1='one', test_2='two')
+            self.assertEqual(url, 'http://127.0.0.1/?test_1=one&test_2=two')
+
+            # Test one non-str simple param.
+            url = self.generate_get_url(test_1=1)
+            self.assertEqual(url, 'http://127.0.0.1/?test_1=1')
+
+            # Test two non-str simple params.
+            url = self.generate_get_url(test_1=1, test_2=True)
+            self.assertEqual(url, 'http://127.0.0.1/?test_1=1&test_2=True')
+
+            # Test one non-str complex param.
+            url = self.generate_get_url(test_1=['a', 'b', 'c'])
+            self.assertEqual(url, 'http://127.0.0.1/?test_1=%5B%27a%27%2C+%27b%27%2C+%27c%27%5D')
+
+            # Test two non-str complex params.
+            url = self.generate_get_url(test_1=['foo', 'bar'], test_2={'cat': 'Tabby', 'dog': 'Spot'})
+            self.assertEqual(
+                url,
+                (
+                    'http://127.0.0.1/?test_1=%5B%27foo%27%2C+%27bar%27%5D&test_2=%7B%27cat%27%3A+'
+                    '%27Tabby%27%2C+%27dog%27%3A+%27Spot%27%7D'
+                ),
+            )

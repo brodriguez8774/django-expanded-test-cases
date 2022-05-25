@@ -5,6 +5,7 @@ Core testing logic, universal to all test cases.
 # System Imports.
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
+from django.utils.http import urlencode
 
 
 class CoreTestCaseMixin:
@@ -37,6 +38,8 @@ class CoreTestCaseMixin:
             is_staff=True,
         )
         self.test_user = get_user_model().objects.create_user(username='test_user', password='password')
+
+    # region User Management Functions
 
     def get_user(self, user, password='password'):
         """Returns user matching provided value.
@@ -125,3 +128,32 @@ class CoreTestCaseMixin:
 
         # If we made it this far, then valid Group was found. Apply to user.
         self.get_user(user).groups.add(group)
+
+    # endregion User Management Functions
+
+    def generate_get_url(self, url=None, **kwargs):
+        """Generates a full GET request url, passing in the provided args.
+
+        Note: Only kwargs are accepted, as this needs <key: value> pairs.
+        Pairs are then written out to url, as query string values.
+        :param url: Optional url value to use. If not provided, defaults to "self.url", if set.
+        :param kwargs: The set of <key: value> pairs to append to end of GET url string.
+        :return: Full GET request url string.
+        """
+        # Validate url to generate from.
+        if url is None:
+            # No arg provided. Default to class "self.url" value.
+            url = self.url
+        # Validate that we have an actual value.
+        value_error = 'No url provided. Please provide the "url" param or set the "self.url" class value.'
+        if url is None:
+            raise ValueError(value_error)
+        url = str(url).strip()
+        if len(url) == 0:
+            raise ValueError(value_error)
+
+        # Finally, generate actual url and return.
+        get_params = urlencode(kwargs)
+        get_url = url + ('' if get_params == '' else '?' + get_params)
+        print('URL: {0}'.format(get_url))
+        return get_url
