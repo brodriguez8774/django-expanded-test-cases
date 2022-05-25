@@ -21,3 +21,7 @@ DATABASES = {
 
 ROOT_URLCONF = 'tests.urls_root'
 LOGIN_URL = 'expanded_test_cases:login'
+
+
+# Suppress or show testcase debug printout.
+DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT = False

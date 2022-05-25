@@ -13,11 +13,11 @@ from django_expanded_test_cases.test_cases import BaseTestCase
 class BaseClassTest(BaseTestCase):
     """Tests for BaseTestCase class."""
 
-    def setUp(self):
+    def setUp(self, debug_print=None):
         # Run parent setup logic.
         super().setUp()
         # Also call CoreMixin setup logic.
-        self.set_up()
+        self.set_up(debug_print=debug_print)
 
     # region User Management Function Tests
 

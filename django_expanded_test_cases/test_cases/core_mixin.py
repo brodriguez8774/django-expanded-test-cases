@@ -3,6 +3,7 @@ Core testing logic, universal to all test cases.
 """
 
 # System Imports.
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.utils.http import urlencode
@@ -18,12 +19,14 @@ class CoreTestCaseMixin:
     Inheriting from either (seems to) make it incompatible with the other.
     Therefore we treat this as a separate mixin that inherits from nothing, and is included in all.
     """
-    def set_up(self):
+    def set_up(self, debug_print=None):
         """
         Acts as the equivalent of the UnitTesting "setUp()" function.
 
         However, since this is not inheriting from a given TestCase, calling the literal function
         here would override instead.
+        :param debug_print: Optional bool that indicates if debug output should print to console.
+            Overrides setting value if both are present.
         """
         # Generate "special case" test user instances.
         # Guarantees that there will always be at least some default User models when tests are run.
@@ -38,6 +41,21 @@ class CoreTestCaseMixin:
             is_staff=True,
         )
         self.test_user = get_user_model().objects.create_user(username='test_user', password='password')
+
+        # Check user debug_print option.
+        if debug_print is not None:
+            self._debug_print_bool = bool(debug_print)
+        else:
+            self._debug_print_bool = getattr(settings, 'DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT', True)
+
+    def _debug_print(self, *args, **kwargs):
+        """Prints or suppresses output, based on DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT settings variable.
+
+        Variable defaults to display output, if not provided.
+        Mostly used for internal testcase logic.
+        """
+        if self._debug_print_bool:
+            print(*args, **kwargs)
 
     # region User Management Functions
 
@@ -155,5 +173,5 @@ class CoreTestCaseMixin:
         # Finally, generate actual url and return.
         get_params = urlencode(kwargs)
         get_url = url + ('' if get_params == '' else '?' + get_params)
-        print('URL: {0}'.format(get_url))
+        self._debug_print('URL: {0}'.format(get_url))
         return get_url
