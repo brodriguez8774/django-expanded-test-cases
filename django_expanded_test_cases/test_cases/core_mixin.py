@@ -19,6 +19,9 @@ class CoreTestCaseMixin:
     Inheriting from either (seems to) make it incompatible with the other.
     Therefore we treat this as a separate mixin that inherits from nothing, and is included in all.
     """
+
+    # region Class Functions
+
     def set_up(self, debug_print=None):
         """
         Acts as the equivalent of the UnitTesting "setUp()" function.
@@ -175,3 +178,25 @@ class CoreTestCaseMixin:
         get_url = url + ('' if get_params == '' else '?' + get_params)
         self._debug_print('URL: {0}'.format(get_url))
         return get_url
+
+    # endregion Class Functions
+
+    # region Properties
+
+    @property
+    def site_root_url(self):
+        """"""
+        return self._site_root_url
+
+    @site_root_url.setter
+    def site_root_url(self, value):
+        """"""
+        # Validate.
+        value = str(value).strip()
+        while len(value) > 0 and value[-1] == '/':
+            value = value[:-1]
+
+        # Save.
+        self._site_root_url = value
+
+    # endregion Properties

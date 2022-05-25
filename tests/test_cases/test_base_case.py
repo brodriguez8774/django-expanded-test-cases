@@ -15,9 +15,7 @@ class BaseClassTest(BaseTestCase):
 
     def setUp(self, debug_print=None):
         # Run parent setup logic.
-        super().setUp()
-        # Also call CoreMixin setup logic.
-        self.set_up(debug_print=debug_print)
+        super().setUp(debug_print=debug_print)
 
     # region User Management Function Tests
 
