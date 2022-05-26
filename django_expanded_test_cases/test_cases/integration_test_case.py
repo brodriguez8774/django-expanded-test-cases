@@ -133,9 +133,23 @@ class IntegrationTestCase(BaseTestCase):
 
         # Check element.
         if exact_match:
-            self.assertEqual(expected_title, actual_title)
+            self.assertEqual(
+                expected_title,
+                actual_title,
+                'Expected title HTML contents of "{0}" (using exact matching). Actual value was "{1}"'.format(
+                    expected_title,
+                    actual_title,
+                )
+            )
         else:
-            self.assertIn(expected_title, actual_title)
+            self.assertIn(
+                expected_title,
+                actual_title,
+                'Expected title HTML contents of "{0}" (using partial matching). Actual value was "{1}"'.format(
+                    expected_title,
+                    actual_title,
+                )
+            )
 
         # Return title in case user wants to run additional logic on it.
         return actual_title
@@ -159,7 +173,14 @@ class IntegrationTestCase(BaseTestCase):
         expected_header = expected_header.strip()
 
         # Check element.
-        self.assertEqual(expected_header, actual_header)
+        self.assertEqual(
+            expected_header,
+            actual_header,
+            'Expected H1 header HTML contents of "{0}". Actual value was "{1}"'.format(
+                expected_header,
+                actual_header,
+            )
+        )
 
         # Return header in case user wants to run additional logic on it.
         return actual_header
