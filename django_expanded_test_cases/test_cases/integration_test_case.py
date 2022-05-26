@@ -115,6 +115,30 @@ class IntegrationTestCase(BaseTestCase):
         # Return title in case user wants to run additional logic on it.
         return actual_title
 
+    def assertPageHeader(self, response, expected_header):
+        """Verifies the page H1 header HTML element.
+
+        :param response: Response object to check against.
+        :param expected_header: Expected full string in H1 header HTML element.
+        :return: Parsed out header string.
+        """
+        # Parse out H1 header element from response.
+        actual_header = self.get_page_header(response)
+
+        # Remove H1 tag from expected value, if present.
+        expected_header = str(expected_header).strip()
+        if expected_header.startswith('<h1>'):
+            expected_header = expected_header[4:]
+        if expected_header.endswith('</h1>'):
+            expected_header = expected_header[:-5]
+        expected_header = expected_header.strip()
+
+        # Check element.
+        self.assertEqual(expected_header, actual_header)
+
+        # Return header in case user wants to run additional logic on it.
+        return actual_header
+
     def assertStatusCode(self, response, expected_status):
         """Verifies the page status_code value.
 
@@ -228,5 +252,40 @@ class IntegrationTestCase(BaseTestCase):
 
         # Return formatted title value.
         return response_title
+
+    def get_page_header(self, response):
+        """Parses out H1 header HTML element from provided response.
+
+        :param response: Response object or response content to get H1 header from.
+        :return: Parsed out response header, formatted to have extra whitespace removed.
+        """
+        # Handle for provided response types.
+        if isinstance(response, HttpResponseBase):
+            response = response.content.decode('utf-8')
+        elif isinstance(response, bytes):
+            response = response.decode('utf-8')
+
+        # Find header element.
+        response_header = re.search(r'<h1>([\S\s]+)</h1>', response)
+
+        # Check that some value was found.
+        # Handles if response did not have the H1 header element defined for some reason.
+        # For example, likely to occur in responses that provide file downloads.
+        if response_header is None:
+            # No value found. Convert to empty string.
+            response_header = ''
+
+        elif response_header is not None:
+            # Value was found. Pull from capture group.
+            response_header = response_header.group(1)
+
+            # Strip any newlines, if present.
+            response_header = re.sub(r'(\n|\r)+', '', response_header)
+
+            # Remove any repeating whitespace, plus any outer whitespace.
+            response_header = re.sub(r'(\s)+', ' ', response_header).strip()
+
+        # Return formatted header value.
+        return response_header
 
     # endregion Helper Functions

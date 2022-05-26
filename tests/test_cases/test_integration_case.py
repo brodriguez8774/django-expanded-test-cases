@@ -194,6 +194,8 @@ class IntegrationClassTest(IntegrationTestCase):
 
     # endregion Response Assertion Tests
 
+    # region Element Assertion Tests
+
     def test__assertPageTitle__success(self):
         """
         Tests assertPageTitle() function, in cases when it should succeed.
@@ -291,6 +293,62 @@ class IntegrationClassTest(IntegrationTestCase):
                 response = HttpResponse('Test Title')
                 self.assertPageTitle(response, 'Test Title and More')
 
+    def test__assertPageHeader__success(self):
+        """
+        Tests assertPageHeader() function, in cases when it should succeed.
+        """
+        with self.subTest('Including header tag in expected'):
+            response = HttpResponse('<h1>Test Header</h1>')
+            self.assertPageHeader(response, '<h1>Test Header</h1>')
+
+        with self.subTest('Including header tag in expected, with extra whitespace around tag'):
+            response = HttpResponse('<h1>Test Header</h1>')
+            self.assertPageHeader(response, '   <h1>    Test Header    </h1>   ')
+
+        with self.subTest('No header element in response (simulates things like file downloads)'):
+            response = HttpResponse('')
+            self.assertPageHeader(response, '')
+
+        with self.subTest('Header exists, but is empty'):
+            response = HttpResponse('<h1></h1>')
+            self.assertPageHeader(response, '')
+
+        with self.subTest('Header exists, but is whitespace'):
+            response = HttpResponse('<h1>   </h1>')
+            self.assertPageHeader(response, '')
+
+        with self.subTest('Basic header'):
+            response = HttpResponse('<h1>Test Header</h1>')
+            self.assertPageHeader(response, 'Test Header')
+
+        with self.subTest('Basic header, with extra whitespace (to simulate Django templating)'):
+            response = HttpResponse('<h1>   Test    Header   </h1>')
+            self.assertPageHeader(response, 'Test Header')
+
+    def test__assertPageHeader__failure(self):
+        """
+        Tests assertPageHeader() function, in cases when it should fail.
+        """
+        with self.subTest('Checking for header when none exists'):
+            with self.assertRaises(AssertionError):
+                response = HttpResponse('')
+                self.assertPageHeader(response, 'Test Header')
+
+        with self.subTest('Expected value is on page, but not in header tag'):
+            with self.assertRaises(AssertionError):
+                response = HttpResponse('Test Header')
+                self.assertPageHeader(response, 'Test Header')
+            with self.assertRaises(AssertionError):
+                response = HttpResponse('<h2>Test Header</h2><p>Test Header</p>')
+                self.assertPageHeader(response, 'Test Header')
+
+        with self.subTest('Assuming extra whitespace is still present'):
+            with self.assertRaises(AssertionError):
+                response = HttpResponse('<h1>   Test    Header   </h1>')
+                self.assertPageHeader(response, '   Test    Header   ')
+
+    # endregion Element Assertion Tests
+
     # endregion Assertion Tests
 
     # region Helper Function Tests
@@ -352,5 +410,43 @@ class IntegrationClassTest(IntegrationTestCase):
                 self.get_page_title(response.content.decode('utf-8')),
                 'Test Title | My Custom App | My Really Cool Site',
             )
+
+    def test__get_page_header__empty_header(self):
+        """
+        Tests get_page_header() function, when page H1 header is empty.
+        """
+        with self.subTest('No header element in response (simulates things like file downloads)'):
+            response = HttpResponse('')
+            self.assertEqual(self.get_page_header(response), '')
+            self.assertEqual(self.get_page_header(response.content), '')
+            self.assertEqual(self.get_page_header(response.content.decode('utf-8')), '')
+
+        with self.subTest('Header exists, but is empty'):
+            response = HttpResponse('<h1></h1>')
+            self.assertEqual(self.get_page_header(response), '')
+            self.assertEqual(self.get_page_header(response.content), '')
+            self.assertEqual(self.get_page_header(response.content.decode('utf-8')), '')
+
+        with self.subTest('Header exists, but is whitespace'):
+            response = HttpResponse('<h1>   </h1>')
+            self.assertEqual(self.get_page_header(response), '')
+            self.assertEqual(self.get_page_header(response.content), '')
+            self.assertEqual(self.get_page_header(response.content.decode('utf-8')), '')
+
+    def test__get_page_header__populated_header(self):
+        """
+        Tests get_page_header() function, when page H1 header is populated.
+        """
+        with self.subTest('Basic header'):
+            response = HttpResponse('<h1>Test Header</h1>')
+            self.assertEqual(self.get_page_header(response), 'Test Header')
+            self.assertEqual(self.get_page_header(response.content), 'Test Header')
+            self.assertEqual(self.get_page_header(response.content.decode('utf-8')), 'Test Header')
+
+        with self.subTest('Basic header, with extra whitespace (to simulate Django templating)'):
+            response = HttpResponse('<h1>   Test    Header   </h1>')
+            self.assertEqual(self.get_page_header(response), 'Test Header')
+            self.assertEqual(self.get_page_header(response.content), 'Test Header')
+            self.assertEqual(self.get_page_header(response.content.decode('utf-8')), 'Test Header')
 
     # endregion Helper Function Tests
