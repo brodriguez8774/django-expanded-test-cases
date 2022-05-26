@@ -2,6 +2,8 @@
 Settings for django-expanded-test-cases UnitTesting.
 """
 
+import sys
+
 
 SECRET_KEY = 'test-secret-key'
 
@@ -35,6 +37,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'tests.urls_root'
 LOGIN_URL = 'expanded_test_cases:login'
+USE_TZ = True
 
 
 TEMPLATES = [{
@@ -43,5 +46,13 @@ TEMPLATES = [{
 }]
 
 
-# Suppress or show testcase debug printout.
-DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT = False
+# Suppress or show testcase debug printout, based on UnitTest execution method.
+if 'pytest' in sys.modules:
+    # Running Pytest env.
+    # Pytest only shows console output on test failure, so we want it on.
+    DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT = True
+else:
+    # Running other testing env (mostly likely "django manage.py test").
+    # manage.py shows all console output always, even on success.
+    # So we want it off to avoid information overload and spam.
+    DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT = False
