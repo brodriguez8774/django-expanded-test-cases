@@ -81,6 +81,31 @@ class IntegrationTestCase(BaseTestCase):
             **kwargs,
         )
 
+    def assertStatusCode(self, response, expected_status):
+        """Verifies the page status code value.
+
+        :param response: Response object to check against.
+        :param expected_status: Expected status code, after any redirections.
+        """
+        # Handle for provided response types.
+        if isinstance(response, HttpResponseBase):
+            actual_status = response.status_code
+        else:
+            actual_status = int(response)
+
+        # Check status.
+        self.assertEqual(
+            actual_status,
+            expected_status,
+            'Expected status code (after potential redirects) of "{0}". Actual code was "{1}"'.format(
+                expected_status,
+                actual_status,
+            ),
+        )
+
+        # Return status in case user wants to run additional logic on it.
+        return actual_status
+
     def assertPageTitle(self, response, expected_title, exact_match=True):
         """Verifies the page title HTML element.
 
@@ -138,21 +163,6 @@ class IntegrationTestCase(BaseTestCase):
 
         # Return header in case user wants to run additional logic on it.
         return actual_header
-
-    def assertStatusCode(self, response, expected_status):
-        """Verifies the page status_code value.
-
-        :param response: Response object to check against.
-        :param expected_status: Expected status code, after any redirections.
-        """
-        self.assertEqual(
-            response.status_code,
-            expected_status,
-            'Expected status code (after potential redirects) of "{0}". Actual code was "{1}"'.format(
-                expected_status,
-                response.status_code,
-            ),
-        )
 
     # endregion Custom Assertions
 

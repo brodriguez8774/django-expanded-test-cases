@@ -196,6 +196,67 @@ class IntegrationClassTest(IntegrationTestCase):
 
     # region Element Assertion Tests
 
+    def test__assertStatusCode__success(self):
+        """
+        Tests assertStatusCode() function, in cases when it should succeed.
+        """
+        with self.subTest('Status 200'):
+            response = HttpResponse(status=200)
+            self.assertStatusCode(response, 200)
+            self.assertStatusCode(response.status_code, 200)
+
+        with self.subTest('Status 400'):
+            response = HttpResponse(status=400)
+            self.assertStatusCode(response, 400)
+            self.assertStatusCode(response.status_code, 400)
+
+        with self.subTest('Status 403'):
+            response = HttpResponse(status=403)
+            self.assertStatusCode(response, 403)
+            self.assertStatusCode(response.status_code, 403)
+
+        with self.subTest('Status 404'):
+            response = HttpResponse(status=404)
+            self.assertStatusCode(response, 404)
+            self.assertStatusCode(response.status_code, 404)
+
+        with self.subTest('Status 500'):
+            response = HttpResponse(status=500)
+            self.assertStatusCode(response, 500)
+            self.assertStatusCode(response.status_code, 500)
+
+    def test__assertStatusCode__fail(self):
+        """
+        Tests assertStatusCode() function, in cases when it should fail.
+        """
+        with self.subTest('Expected 200, got 404'):
+            response = HttpResponse(status=404)
+            with self.assertRaises(AssertionError):
+                self.assertStatusCode(response, 200)
+            with self.assertRaises(AssertionError):
+                self.assertStatusCode(response.status_code, 200)
+
+        with self.subTest('Expected 404, got 200'):
+            response = HttpResponse(status=200)
+            with self.assertRaises(AssertionError):
+                self.assertStatusCode(response, 404)
+            with self.assertRaises(AssertionError):
+                self.assertStatusCode(response.status_code, 404)
+
+        with self.subTest('Expected 200, got 500'):
+            response = HttpResponse(status=500)
+            with self.assertRaises(AssertionError):
+                self.assertStatusCode(response, 200)
+            with self.assertRaises(AssertionError):
+                self.assertStatusCode(response.status_code, 200)
+
+        with self.subTest('Expected 500, got 200'):
+            response = HttpResponse(status=200)
+            with self.assertRaises(AssertionError):
+                self.assertStatusCode(response, 500)
+            with self.assertRaises(AssertionError):
+                self.assertStatusCode(response.status_code, 500)
+
     def test__assertPageTitle__success(self):
         """
         Tests assertPageTitle() function, in cases when it should succeed.
