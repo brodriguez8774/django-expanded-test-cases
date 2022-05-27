@@ -510,4 +510,42 @@ class IntegrationClassTest(IntegrationTestCase):
             self.assertEqual(self.get_page_header(response.content), 'Test Header')
             self.assertEqual(self.get_page_header(response.content.decode('utf-8')), 'Test Header')
 
+    def test__get_context_messages(self):
+        """
+        Tests get_context_messages() function.
+        """
+        with self.subTest('No messages'):
+            response = self._get_page_response('expanded_test_cases:index')
+            messages = self.get_context_messages(response)
+            self.assertEqual(len(messages), 0)
+
+        with self.subTest('Single message'):
+            response = self._get_page_response('expanded_test_cases:one-message')
+            messages = self.get_context_messages(response)
+            self.assertEqual(len(messages), 1)
+            self.assertIn('This is a test message.', messages)
+
+        with self.subTest('Two messages'):
+            response = self._get_page_response('expanded_test_cases:two-messages')
+            messages = self.get_context_messages(response)
+            self.assertEqual(len(messages), 2)
+            self.assertIn('Test message #1.', messages)
+            self.assertIn('Test message #2.', messages)
+
+        with self.subTest('Three messages'):
+            response = self._get_page_response('expanded_test_cases:three-messages')
+            messages = self.get_context_messages(response)
+            self.assertEqual(len(messages), 3)
+            self.assertIn('Test info message.', messages)
+            self.assertIn('Test warning message.', messages)
+            self.assertIn('Test error message.', messages)
+
+        with self.subTest('TemplateResponse check'):
+            response = self._get_page_response('expanded_test_cases:template-response-messages')
+            messages = self.get_context_messages(response)
+            self.assertEqual(len(messages), 3)
+            self.assertIn('Test info message.', messages)
+            self.assertIn('Test warning message.', messages)
+            self.assertIn('Test error message.', messages)
+
     # endregion Helper Function Tests
