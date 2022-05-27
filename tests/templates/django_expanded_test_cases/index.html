@@ -1,4 +1,12 @@
 
+{% if messages %}
+  <ul>
+    {% for message in messages %}
+      {{ message }}
+    {% endfor %}
+  </ul>
+{% endif %}
+
 {% if header %}
   <h1>{{ header }}</h1>
 {% endif %}
