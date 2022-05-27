@@ -3,6 +3,7 @@ Core testing logic, universal to all test cases.
 """
 
 # System Imports.
+import re
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
@@ -181,6 +182,64 @@ class CoreTestCaseMixin:
         get_url = url + ('' if get_params == '' else '?' + get_params)
         self._debug_print('URL: {0}'.format(get_url))
         return get_url
+
+    def standardize_characters(self, value):
+        """Standardizes various characters in provided variable.
+
+        Helps make testing easier. Generally tests only care that the character exists, not so much how it's written.
+
+        Ex: Brackets have multiple ways to be written, and this will "standardize" them to a literal bracket.
+        Ex: Django form errors seem to auto-escape apostrophe (') characters to the html code. Which isn't intuitive.
+        Ex: Django seems to like converting values the hex version, so we convert them back during testing.
+
+        Note: If passing the return into regex, further sanitation is required. $ and ^ will break regex.
+
+        :param value: Str value to standardize.
+        :return: Sanitized str.
+        """
+
+        # Regex Format: ( decimal_equivalent | hex_equivalent | english_equivalent )
+        value = re.sub(r'(&#33;|&#x21;|&excl;)', '!', value)  # Exclamation mark character.
+        value = re.sub(r'(&#34;|&#x22;|&quot;)', '"', value)  # Quotation character.
+        value = re.sub(r'(&#35;|&#x23;|&num;)', '#', value)  # Number sign character.
+        value = re.sub(r'(&#36;|&#x24;|&dollar;)', '$', value)  # Dollar sign character.
+        value = re.sub(r'(&#37;|&#x25;|&percnt;)', '%', value)  # Percent sign character.
+        value = re.sub(r'(&#38;|&#x26;|&amp;)', '&', value)  # Ampersand character.
+        value = re.sub(r'(&#39;|&#x27;|&apos;)', "'", value)  # Apostrophe character.
+        value = re.sub(r'(&#40;|&#x28;|&lpar;)', '(', value)  # Opening parenthesis character.
+        value = re.sub(r'(&#41;|&#x29;|&rpar;)', ')', value)  # Closing parenthesis character.
+        value = re.sub(r'(&#42;|&#x2[Aa];|&ast;)', '*', value)  # Asterisk character.
+        value = re.sub(r'(&#43;|&#x2[Bb];|&plus;)', '+', value)  # Plus character.
+        value = re.sub(r'(&#44;|&#x2[Cc];|&comma;)', ',', value)  # Comma character.
+        value = re.sub(r'(&#45;|&#8722;|&#x2[Dd];|&minus;)', '-', value)  # Minus character.
+        value = re.sub(r'(&#46;|&#x2[Ee];|&period;)', '.', value)  # Period character.
+        value = re.sub(r'(&#47;|&#x2[Ff];|&sol;)', '/', value)  # Slash character.
+
+        value = re.sub(r'(&#58;|&#x3[Aa];|&colon;)', ':', value)  # Colon character.
+        value = re.sub(r'(&#59;|&#x3[Bb];|&semi;)', ';', value)  # Semicolon character.
+        value = re.sub(r'(&#60;|&#x3[Cc];|&lt;)', '<', value)  # Less than character.
+        value = re.sub(r'(&#61;|&#x3[Dd];|&equals;)', '=', value)  # Equals character.
+        value = re.sub(r'(&#62;|&#x3[Ee];|&gt;)', '>', value)  # Greater than character.
+        value = re.sub(r'(&#63;|&#x3[Ff];|&quest;)', '?', value)  # Question mark character.
+        value = re.sub(r'(&#64;|&#x40;|&commat;)', '@', value)  # At sign character.
+
+        value = re.sub(r'(&#91;|&#x5[Bb];|&lbrack;)', '[', value)  # Opening square bracket character.
+        value = re.sub(r'(&#92;|&#x5[Cc];|&bsol;)', '\\\\', value)  # Backslash character.
+        value = re.sub(r'(&#93;|&#x5[Dd];|&rbrack;)', ']', value)  # Closing square bracket character.
+        value = re.sub(r'(&#94;|&#x5[Ee];|&Hat;)', '^', value)  # UpArrow/Hat character.
+        value = re.sub(r'(&#95;|&#x5[Ff];|&lowbar;)', '_', value)  # Underscore character.
+        value = re.sub(r'(&#96;|&#x60;|&grave;)', '`', value)  # Grave accent character.
+
+        value = re.sub(r'(&#123;|&#x7[Bb];|&lbrace;)', '{', value)  # Opening dict bracket character.
+        value = re.sub(r'(&#124;|&#x7[Cc];|&vert;)', '|', value)  # Pipe character.
+        value = re.sub(r'(&#125;|&#x7[Dd];|&rbrace;)', '}', value)  # Closing dict bracket character.
+        value = re.sub(r'(&#126;|&#x7[Ee];|&tilde;)', '~', value)  # Tilde character.
+
+
+
+        # value = re.sub(r'(&#;|&#x;|&;)', '', value)  # character.
+
+        return value
 
     # endregion Helper Functions
 

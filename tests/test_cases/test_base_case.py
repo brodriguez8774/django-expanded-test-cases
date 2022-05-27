@@ -142,6 +142,8 @@ class BaseClassTest(BaseTestCase):
 
     # endregion User Management Function Tests
 
+    # region Helper Function Tests
+
     def test__generate_get_url(self):
         """
         Tests generate_get_url() function.
@@ -218,3 +220,137 @@ class BaseClassTest(BaseTestCase):
                     '%27Tabby%27%2C+%27dog%27%3A+%27Spot%27%7D'
                 ),
             )
+
+    def test__standardize_characters__symbols(self):
+        """
+        Tests symbols in standardize_characters() function.
+        """
+        with self.subTest('Test exclamation mark'):
+            return_val = self.standardize_characters('&#33; &#x21; &excl; !')
+            self.assertEqual(return_val, '! ! ! !')
+
+        with self.subTest('Test quotation'):
+            return_val = self.standardize_characters('&#34; &#x22; &quot; "')
+            self.assertEqual(return_val, '" " " "')
+
+        with self.subTest('Test number sign'):
+            return_val = self.standardize_characters('&#35; &#x23; &num; #')
+            self.assertEqual(return_val, '# # # #')
+
+        with self.subTest('Test dollar sign'):
+            return_val = self.standardize_characters('&#36; &#x24; &dollar; $')
+            self.assertEqual(return_val, '$ $ $ $')
+
+        with self.subTest('Test percent sign'):
+            return_val = self.standardize_characters('&#37; &#x25; &percnt; %')
+            self.assertEqual(return_val, '% % % %')
+
+        with self.subTest('Test ampersand'):
+            return_val = self.standardize_characters('&#38; &#x26; &amp; &')
+            self.assertEqual(return_val, '& & & &')
+
+        with self.subTest('Test apostrophe'):
+            return_val = self.standardize_characters('&#39; &#x27; &apos; \'')
+            self.assertEqual(return_val, "' ' ' '")
+
+        with self.subTest('Test opening parenthesis'):
+            return_val = self.standardize_characters('&#40; &#x28; &lpar; (')
+            self.assertEqual(return_val, '( ( ( (')
+
+        with self.subTest('Test closing parenthesis'):
+            return_val = self.standardize_characters('&#41; &#x29; &rpar; )')
+            self.assertEqual(return_val, ') ) ) )')
+
+        with self.subTest('Test asterisk'):
+            return_val = self.standardize_characters('&#42; &#x2A; &#x2a; &ast; *')
+            self.assertEqual(return_val, '* * * * *')
+
+        with self.subTest('Test plus'):
+            return_val = self.standardize_characters('&#43; &#x2B; &#x2b; &plus; +')
+            self.assertEqual(return_val, '+ + + + +')
+
+        with self.subTest('Test comma'):
+            return_val = self.standardize_characters('&#44; &#x2C; &#x2c; &comma; ,')
+            self.assertEqual(return_val, ', , , , ,')
+
+        with self.subTest('Test minus'):
+            return_val = self.standardize_characters('&#45; &#8722; &#x2D; &#x2d; &minus; -')
+            self.assertEqual(return_val, '- - - - - -')
+
+        with self.subTest('Test period'):
+            return_val = self.standardize_characters('&#46; &#x2E; &#x2e; &period; .')
+            self.assertEqual(return_val, '. . . . .')
+
+        with self.subTest('Test slash'):
+            return_val = self.standardize_characters('&#47; &#x2F; &#x2f; &sol; /')
+            self.assertEqual(return_val, '/ / / / /')
+
+        with self.subTest('Test colon'):
+            return_val = self.standardize_characters('&#58; &#x3A; &#x3a; &colon; :')
+            self.assertEqual(return_val, ': : : : :')
+
+        with self.subTest('Test semicolon'):
+            return_val = self.standardize_characters('&#59; &#x3B; &#x3b; &semi; ;')
+            self.assertEqual(return_val, '; ; ; ; ;')
+
+        with self.subTest('Test less than'):
+            return_val = self.standardize_characters('&#60; &#x3C; &#x3c; &lt; <')
+            self.assertEqual(return_val, '< < < < <')
+
+        with self.subTest('Test equals'):
+            return_val = self.standardize_characters('&#61; &#x3D; &#x3d; &equals; =')
+            self.assertEqual(return_val, '= = = = =')
+
+        with self.subTest('Test greater than'):
+            return_val = self.standardize_characters('&#62; &#x3E; &#x3e; &gt; >')
+            self.assertEqual(return_val, '> > > > >')
+
+        with self.subTest('Test question mark'):
+            return_val = self.standardize_characters('&#63; &#x3F; &#x3f; &quest; ?')
+            self.assertEqual(return_val, '? ? ? ? ?')
+
+        with self.subTest('Test at sign'):
+            return_val = self.standardize_characters('&#64; &#x40; &commat; @')
+            self.assertEqual(return_val, '@ @ @ @')
+
+        with self.subTest('Test opening square bracket'):
+            return_val = self.standardize_characters('&#91; &#x5B; &#x5b; &lbrack; [')
+            self.assertEqual(return_val, '[ [ [ [ [')
+
+        with self.subTest('Test backslash'):
+            return_val = self.standardize_characters('&#92; &#x5C; &#x5c; &bsol; \\')
+            self.assertEqual(return_val, '\\ \\ \\ \\ \\')
+
+        with self.subTest('Test closing square bracket'):
+            return_val = self.standardize_characters('&#93; &#x5D; &#x5d; &rbrack; ]')
+            self.assertEqual(return_val, '] ] ] ] ]')
+
+        with self.subTest('Test up arrow'):
+            return_val = self.standardize_characters('&#94; &#x5E; &#x5e; &Hat; ^')
+            self.assertEqual(return_val, '^ ^ ^ ^ ^')
+
+        with self.subTest('Test underscore'):
+            return_val = self.standardize_characters('&#95; &#x5F; &#x5f; &lowbar; _')
+            self.assertEqual(return_val, '_ _ _ _ _')
+
+        with self.subTest('Test grave accent'):
+            return_val = self.standardize_characters('&#96; &#x60; &grave; `')
+            self.assertEqual(return_val, '` ` ` `')
+
+        with self.subTest('Test opening dict bracket'):
+            return_val = self.standardize_characters('&#123; &#x7B; &#x7b; &lbrace; {')
+            self.assertEqual(return_val, '{ { { { {')
+
+        with self.subTest('Test pipe'):
+            return_val = self.standardize_characters('&#124; &#x7C; &#x7c; &vert; |')
+            self.assertEqual(return_val, '| | | | |')
+
+        with self.subTest('Test closing dict bracket'):
+            return_val = self.standardize_characters('&#125; &#x7D; &#x7d; &rbrace; }')
+            self.assertEqual(return_val, '} } } } }')
+
+        with self.subTest('Test tilde'):
+            return_val = self.standardize_characters('&#126; &#x7E; &#x7e; &tilde; ~')
+            self.assertEqual(return_val, '~ ~ ~ ~ ~')
+
+    # endregion Helper Function Tests
