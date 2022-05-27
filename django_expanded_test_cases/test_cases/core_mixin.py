@@ -230,7 +230,7 @@ class CoreTestCaseMixin:
 
     def print_debug_context(self, response_context):
         """Prints debug response context data."""
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def print_debug_session_data(self, client):
         """Prints debug response session data."""
@@ -251,7 +251,7 @@ class CoreTestCaseMixin:
 
     def print_debug_form_data(self, response_context):
         """Prints debug response form data."""
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def print_debug_messages(self, response_context):
         """Prints debug response message data."""
