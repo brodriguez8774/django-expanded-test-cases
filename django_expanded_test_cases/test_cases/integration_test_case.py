@@ -185,6 +185,53 @@ class IntegrationTestCase(BaseTestCase):
         # Return header in case user wants to run additional logic on it.
         return actual_header
 
+    def assertContextMessages(self, response, expected_messages):
+        """Verifies the context messages.
+
+        :param response: Response object to check against.
+        :param expected_messages: Expected string for message data.
+        :return: Parsed out header string.
+        """
+        # Parse out message data from response.
+        actual_messages = self.get_context_messages(response)
+
+        # Check format of expected value.
+        if isinstance(expected_messages, list) or isinstance(expected_messages, tuple):
+            # Array of messages passed. Verify each inner value is a str.
+            temp_messages = []
+            for message in expected_messages:
+                message = str(message).strip()
+                if len(message) > 0:
+                    temp_messages.append(message)
+            expected_messages = temp_messages
+
+        elif expected_messages is None:
+            # Handle for none type. Not sure why anyone would pass this into the test though.
+            expected_messages = []
+
+        elif isinstance(expected_messages, str):
+            # For everything else, assume is intended to be a single message.
+            message = str(expected_messages).strip()
+            expected_messages = []
+            if len(message) > 0:
+                expected_messages.append(message)
+
+        if len(expected_messages) > 0:
+            # For now, we only care about values passed for expected_messages.
+            # We ignore any cases where a message exists in the context, but is not explicitly
+            # checked by the user in the expected_messages param.
+
+            # One or more messages are expected. Verify they are found.
+            for expected_message in expected_messages:
+                message_found = False
+
+                # Loop through all context messages until found, or all are checked.
+                if expected_message in actual_messages:
+                    message_found = True
+
+                # Raise assertion error if not found.
+                self.assertTrue(message_found, 'Failed to find message "{0}" in context.'.format(expected_message))
+
     # endregion Custom Assertions
 
     # region Helper Functions

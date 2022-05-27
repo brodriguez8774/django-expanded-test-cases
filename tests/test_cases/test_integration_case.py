@@ -408,6 +408,80 @@ class IntegrationClassTest(IntegrationTestCase):
                 response = HttpResponse('<h1>   Test    Header   </h1>')
                 self.assertPageHeader(response, '   Test    Header   ')
 
+    def test__assertContextMessages__success(self):
+        """
+        Tests assertContextMessages() function, in cases when it should succeed.
+        """
+        with self.subTest('Check for single message, single message exists'):
+            response = self._get_page_response('expanded_test_cases:one-message')
+            self.assertContextMessages(response, 'This is a test message.')
+
+        with self.subTest('Check for single message, two messages exists'):
+            response = self._get_page_response('expanded_test_cases:two-messages')
+            self.assertContextMessages(response, 'Test message #1.')
+            self.assertContextMessages(response, 'Test message #2.')
+
+        with self.subTest('Check for single message, three messages exists'):
+            response = self._get_page_response('expanded_test_cases:three-messages')
+            self.assertContextMessages(response, 'Test info message.')
+            self.assertContextMessages(response, 'Test warning message.')
+            self.assertContextMessages(response, 'Test error message.')
+
+        with self.subTest('Check for two messages, two messages exists'):
+            response = self._get_page_response('expanded_test_cases:two-messages')
+            self.assertContextMessages(response, ['Test message #1.', 'Test message #2.'])
+
+        with self.subTest('Check for two messages, three messages exists'):
+            response = self._get_page_response('expanded_test_cases:three-messages')
+            self.assertContextMessages(response, ['Test info message.', 'Test warning message.'])
+            self.assertContextMessages(response, ['Test info message.', 'Test error message.'])
+            self.assertContextMessages(response, ['Test warning message.', 'Test error message.'])
+
+        with self.subTest('Check for three messages, three messages exists'):
+            response = self._get_page_response('expanded_test_cases:three-messages')
+            self.assertContextMessages(response, ['Test info message.', 'Test warning message.', 'Test error message.'])
+
+    def test__assertContextMessages__failure(self):
+        """
+        Tests assertContextMessages() function, in cases when it should fail.
+        """
+        with self.subTest('Checking for single message, none exist'):
+            with self.assertRaises(AssertionError):
+                response = self._get_page_response('expanded_test_cases:index')
+                self.assertContextMessages(response, 'This is a test message.')
+
+        with self.subTest('Checking for single message, one exists but doesn\'t match'):
+            with self.assertRaises(AssertionError):
+                response = self._get_page_response('expanded_test_cases:one-message')
+                self.assertContextMessages(response, 'Testing!')
+
+        with self.subTest('Checking for single message, multiple exist but don\'t match'):
+            with self.assertRaises(AssertionError):
+                response = self._get_page_response('expanded_test_cases:three-messages')
+                self.assertContextMessages(response, 'Testing!')
+
+        with self.subTest('Checking for two messages, none exist'):
+            with self.assertRaises(AssertionError):
+                response = self._get_page_response('expanded_test_cases:index')
+                self.assertContextMessages(response, ['This is a test message.', 'Another message.'])
+
+        with self.subTest('Checking for two messages, but only one exists'):
+            with self.assertRaises(AssertionError):
+                response = self._get_page_response('expanded_test_cases:one-message')
+                self.assertContextMessages(response, ['This is a test message.', 'Another message.'])
+
+        with self.subTest('Checking for two messages, multiple exist but one doesn\'t match'):
+            with self.assertRaises(AssertionError):
+                response = self._get_page_response('expanded_test_cases:three-messages')
+                self.assertContextMessages(response, ['Test info message.', 'Another message.'])
+            with self.assertRaises(AssertionError):
+                self.assertContextMessages(response, ['Bad message', 'Test info message.'])
+
+        with self.subTest('Checking for two messages, multiple exist but none match'):
+            with self.assertRaises(AssertionError):
+                response = self._get_page_response('expanded_test_cases:three-messages')
+                self.assertContextMessages(response, ['Testing!', 'Testing again!'])
+
     # endregion Element Assertion Tests
 
     # endregion Assertion Tests
