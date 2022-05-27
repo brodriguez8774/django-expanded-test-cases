@@ -319,4 +319,28 @@ class IntegrationTestCase(BaseTestCase):
         # Return formatted header value.
         return response_header
 
+    def get_context_messages(self, response):
+        """Parses out context messages from provided response.
+
+        :param response: Response object or response context to get messages from.
+        :return: Parsed out response messages.
+        """
+        # Handle for provided response types.
+        if isinstance(response, HttpResponseBase):
+            context = response.context
+        else:
+            context = response
+
+        # Attempt to parse messages from context.
+        found_messages = []
+        if (context is not None) and ('messages' in context) and (len(context['messages']) > 0):
+            # Messages found in response context.
+            messages = context['messages']
+
+            for message in messages:
+                found_messages.append(str(message.message).strip())
+
+        # Return found messages.
+        return found_messages
+
     # endregion Helper Functions
