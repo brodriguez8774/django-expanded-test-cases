@@ -186,7 +186,7 @@ class CoreTestCaseMixin:
 
     # region Debug Output Functions
 
-    def print_debug_content(self, response_content):
+    def show_debug_content(self, response_content):
         """Prints debug response page output."""
 
         # Handle for potential param types.
@@ -202,7 +202,7 @@ class CoreTestCaseMixin:
             self._debug_print(response_content)
             self._debug_print()
 
-    def print_debug_headers(self, response_headers):
+    def show_debug_headers(self, response_headers):
         """Prints debug response header data."""
 
         # Handle for potential param types.
@@ -228,11 +228,11 @@ class CoreTestCaseMixin:
             self._debug_print('    No response headers found.')
         self._debug_print()
 
-    def print_debug_context(self, response_context):
+    def show_debug_context(self, response_context):
         """Prints debug response context data."""
         raise NotImplementedError()
 
-    def print_debug_session_data(self, client):
+    def show_debug_session_data(self, client):
         """Prints debug response session data."""
 
         # Handle for potential param types.
@@ -249,11 +249,11 @@ class CoreTestCaseMixin:
             self._debug_print('    No session data found.')
         self._debug_print('')
 
-    def print_debug_form_data(self, response_context):
+    def show_debug_form_data(self, response_context):
         """Prints debug response form data."""
         raise NotImplementedError()
 
-    def print_debug_messages(self, response_context):
+    def show_debug_messages(self, response_context):
         """Prints debug response message data."""
 
         # Handle for potential param types.
@@ -273,7 +273,7 @@ class CoreTestCaseMixin:
                 self._debug_print('    No context messages found.')
         self._debug_print()
 
-    def print_debug_user_info(self, user):
+    def show_debug_user_info(self, user):
         """Prints debug user data."""
 
         self._debug_print()
