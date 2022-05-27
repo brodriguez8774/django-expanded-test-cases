@@ -9,10 +9,14 @@ SECRET_KEY = 'test-secret-key'
 
 
 INSTALLED_APPS = (
-    'django.contrib.contenttypes',
-    'django.contrib.staticfiles',
-    'django.contrib.auth',
     'tests.apps.DjangoExpandedTestCasesConfig',
+
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
 )
 
 
@@ -40,10 +44,21 @@ LOGIN_URL = 'expanded_test_cases:login'
 USE_TZ = True
 
 
-TEMPLATES = [{
-    'BACKEND': 'django.template.backends.django.DjangoTemplates',
-    'APP_DIRS': True,
-}]
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 
 
 # Suppress or show testcase debug printout, based on UnitTest execution method.
