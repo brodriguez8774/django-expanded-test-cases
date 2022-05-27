@@ -71,3 +71,9 @@ else:
     # manage.py shows all console output always, even on success.
     # So we want it off to avoid information overload and spam.
     DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT = False
+
+
+# Extra definable package settings.
+# Here for personal reference at later point, for documentation and such.
+# DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS = True
+# DJANGO_EXPANDED_TESTCASES_MATCH_ALL_CONTEXT_MESSAGES = False

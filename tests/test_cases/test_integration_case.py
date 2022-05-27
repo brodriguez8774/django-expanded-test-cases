@@ -4,6 +4,7 @@ Tests for test_cases/integration_test_case.py.
 
 # System Imports.
 from django.http import HttpResponse
+from django.test import override_settings
 
 # User Imports.
 from django_expanded_test_cases.test_cases import IntegrationTestCase
@@ -408,9 +409,30 @@ class IntegrationClassTest(IntegrationTestCase):
                 response = HttpResponse('<h1>   Test    Header   </h1>')
                 self.assertPageHeader(response, '   Test    Header   ')
 
-    def test__assertContextMessages__success(self):
+    @override_settings(DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS=True)
+    def test__assertContextMessages__success__allow_partials(self):
         """
         Tests assertContextMessages() function, in cases when it should succeed.
+
+        We only do a minimal amount of testing for this function here.
+        We assume a majority of testing will occur in the "disallow_partials" set.
+        """
+        with self.subTest('Check for single message partial, single message exists'):
+            response = self._get_page_response('expanded_test_cases:one-message')
+            self.assertContextMessages(response, 'This is a test message.')
+            self.assertContextMessages(response, 'is a test message')
+            self.assertContextMessages(response, 'test')
+
+        with self.subTest('Check for three message partials, three messages exists'):
+            response = self._get_page_response('expanded_test_cases:three-messages')
+            self.assertContextMessages(response, ['info', 'warning message', 'Test error'])
+
+    @override_settings(DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS=False)
+    def test__assertContextMessages__success__disallow_partials(self):
+        """
+        Tests assertContextMessages() function, in cases when it should succeed.
+
+        The majority of tests for this function exist here.
         """
         with self.subTest('Check for single message, single message exists'):
             response = self._get_page_response('expanded_test_cases:one-message')
@@ -441,6 +463,7 @@ class IntegrationClassTest(IntegrationTestCase):
             response = self._get_page_response('expanded_test_cases:three-messages')
             self.assertContextMessages(response, ['Test info message.', 'Test warning message.', 'Test error message.'])
 
+    @override_settings(DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS=False)
     def test__assertContextMessages__failure(self):
         """
         Tests assertContextMessages() function, in cases when it should fail.
@@ -454,6 +477,15 @@ class IntegrationClassTest(IntegrationTestCase):
             with self.assertRaises(AssertionError):
                 response = self._get_page_response('expanded_test_cases:one-message')
                 self.assertContextMessages(response, 'Testing!')
+
+        with self.subTest('Checking for single message, but it\'s only a partial match'):
+            response = self._get_page_response('expanded_test_cases:one-message')
+            # with self.assertRaises(AssertionError):
+            #     self.assertContextMessages(response, 'This is a test message')
+            with self.assertRaises(AssertionError):
+                self.assertContextMessages(response, 'test message.')
+            with self.assertRaises(AssertionError):
+                self.assertContextMessages(response, 'test')
 
         with self.subTest('Checking for single message, multiple exist but don\'t match'):
             with self.assertRaises(AssertionError):
@@ -471,8 +503,8 @@ class IntegrationClassTest(IntegrationTestCase):
                 self.assertContextMessages(response, ['This is a test message.', 'Another message.'])
 
         with self.subTest('Checking for two messages, multiple exist but one doesn\'t match'):
+            response = self._get_page_response('expanded_test_cases:three-messages')
             with self.assertRaises(AssertionError):
-                response = self._get_page_response('expanded_test_cases:three-messages')
                 self.assertContextMessages(response, ['Test info message.', 'Another message.'])
             with self.assertRaises(AssertionError):
                 self.assertContextMessages(response, ['Bad message', 'Test info message.'])

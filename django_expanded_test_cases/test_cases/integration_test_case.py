@@ -185,13 +185,20 @@ class IntegrationTestCase(BaseTestCase):
         # Return header in case user wants to run additional logic on it.
         return actual_header
 
-    def assertContextMessages(self, response, expected_messages):
+    def assertContextMessages(self, response, expected_messages, allow_partials=None):
         """Verifies the context messages.
 
         :param response: Response object to check against.
         :param expected_messages: Expected string for message data.
+        :param allow_partials: Bool indicating if messages should fully match or allow partial matches.
         :return: Parsed out header string.
         """
+        # Parse out settings values.
+        if allow_partials is None:
+            allow_partials = getattr(settings, 'DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS', True)
+        else:
+            allow_partials = bool(allow_partials)
+
         # Parse out message data from response.
         actual_messages = self.get_context_messages(response)
 
@@ -225,12 +232,32 @@ class IntegrationTestCase(BaseTestCase):
             for expected_message in expected_messages:
                 message_found = False
 
-                # Loop through all context messages until found, or all are checked.
-                if expected_message in actual_messages:
-                    message_found = True
+                # Handle based on partials allowed or not.
+                if allow_partials:
+                    # Partial message matching is allowed.
+                    # Expected value must match or be a substring of a message in context.
+                    index = 0
+                    while message_found is False and index < len(actual_messages):
+                        if expected_message in actual_messages[index]:
+                            message_found = True
+                        index += 1
+
+                else:
+                    # Partial message matching is NOT allowed.
+                    # Expected value must exactly match message in context.
+
+                    # Loop through all context messages until found, or all are checked.
+                    if expected_message in actual_messages:
+                        message_found = True
 
                 # Raise assertion error if not found.
-                self.assertTrue(message_found, 'Failed to find message "{0}" in context.'.format(expected_message))
+                self.assertTrue(
+                    message_found,
+                    'Failed to find message "{0}" in context (Partial matching {1} allowed).'.format(
+                        expected_message,
+                        'is' if allow_partials else 'is NOT'
+                    ),
+                )
 
     # endregion Custom Assertions
 
