@@ -6,7 +6,7 @@ Testing class for generalized logic.
 from django.test import TestCase
 
 # User Imports.
-from .core_mixin import CoreTestCaseMixin
+from django_expanded_test_cases.mixins.core_mixin import CoreTestCaseMixin
 
 
 class BaseTestCase(TestCase, CoreTestCaseMixin):
