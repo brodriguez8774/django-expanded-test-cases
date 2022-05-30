@@ -184,20 +184,34 @@ class CoreTestCaseMixin:
         return get_url
 
     def standardize_characters(self, value):
-        """Standardizes various characters in provided variable.
+        """Standardizes various characters in provided str.
 
-        Helps make testing easier. Generally tests only care that the character exists, not so much how it's written.
+        Helps make testing easier.
+        As generally tests only care that the character exists, not so much how it's written.
 
         Ex: Brackets have multiple ways to be written, and this will "standardize" them to a literal bracket.
         Ex: Django form errors seem to auto-escape apostrophe (') characters to the html code. Which isn't intuitive.
         Ex: Django seems to like converting values the hex version, so we convert them back during testing.
 
-        Note: If passing the return into regex, further sanitation is required. $ and ^ will break regex.
+        Note: If passing the return into regex, further sanitation is required. $ and ^ characters will break regex.
 
         :param value: Str value to standardize.
         :return: Sanitized str.
         """
+        value = self.standardize_symbols(value)
+        value = self.standardize_numbers(value)
+        value = self.standardize_letters(value)
 
+        return value
+
+    def standardize_symbols(self, value):
+        """Standardizes various symbol-based characters in provided str.
+
+        Helps make testing easier.
+        As generally tests only care that the character exists, not so much how it's written.
+        :param value: Str value to standardize.
+        :return: Sanitized str.
+        """
         # Regex Format: ( decimal_equivalent | hex_equivalent | english_equivalent )
         value = re.sub(r'(&#33;|&#x21;|&excl;)', '!', value)  # Exclamation mark character.
         value = re.sub(r'(&#34;|&#x22;|&quot;)', '"', value)  # Quotation character.
@@ -235,9 +249,92 @@ class CoreTestCaseMixin:
         value = re.sub(r'(&#125;|&#x7[Dd];|&rbrace;)', '}', value)  # Closing dict bracket character.
         value = re.sub(r'(&#126;|&#x7[Ee];|&tilde;)', '~', value)  # Tilde character.
 
+        return value
 
+    def standardize_numbers(self, value):
+        """Standardizes various number-based characters in provided str.
 
-        # value = re.sub(r'(&#;|&#x;|&;)', '', value)  # character.
+        Helps make testing easier.
+        As generally tests only care that the character exists, not so much how it's written.
+        :param value: Str value to standardize.
+        :return: Sanitized str.
+        """
+        # Regex Format: ( decimal_equivalent | hex_equivalent | english_equivalent )
+        value = re.sub(r'(&#48;|&#x30;)', '0', value)  # Number 0 character.
+        value = re.sub(r'(&#49;|&#x31;)', '1', value)  # Number 1 character.
+        value = re.sub(r'(&#50;|&#x32;)', '2', value)  # Number 2 character.
+        value = re.sub(r'(&#51;|&#x33;)', '3', value)  # Number 3 character.
+        value = re.sub(r'(&#52;|&#x34;)', '4', value)  # Number 4 character.
+        value = re.sub(r'(&#53;|&#x35;)', '5', value)  # Number 5 character.
+        value = re.sub(r'(&#54;|&#x36;)', '6', value)  # Number 6 character.
+        value = re.sub(r'(&#55;|&#x37;)', '7', value)  # Number 7 character.
+        value = re.sub(r'(&#56;|&#x38;)', '8', value)  # Number 8 character.
+        value = re.sub(r'(&#57;|&#x39;)', '9', value)  # Number 9 character.
+
+        return value
+
+    def standardize_letters(self, value):
+        """Standardizes various letter-based characters in provided str.
+
+        Helps make testing easier.
+        As generally tests only care that the character exists, not so much how it's written.
+        :param value: Str value to standardize.
+        :return: Sanitized str.
+        """
+        # Regex Format: ( decimal_equivalent | hex_equivalent)
+        value = re.sub(r'(&#65;|&#x41;)', 'A', value)  # Upper a character.
+        value = re.sub(r'(&#66;|&#x42;)', 'B', value)  # Upper b character.
+        value = re.sub(r'(&#67;|&#x43;)', 'C', value)  # Upper c character.
+        value = re.sub(r'(&#68;|&#x44;)', 'D', value)  # Upper d character.
+        value = re.sub(r'(&#69;|&#x45;)', 'E', value)  # Upper e character.
+        value = re.sub(r'(&#70;|&#x46;)', 'F', value)  # Upper f character.
+        value = re.sub(r'(&#71;|&#x47;)', 'G', value)  # Upper g character.
+        value = re.sub(r'(&#72;|&#x48;)', 'H', value)  # Upper h character.
+        value = re.sub(r'(&#73;|&#x49;)', 'I', value)  # Upper i character.
+        value = re.sub(r'(&#74;|&#x4[Aa];)', 'J', value)  # Upper j character.
+        value = re.sub(r'(&#75;|&#x4[Bb];)', 'K', value)  # Upper k character.
+        value = re.sub(r'(&#76;|&#x4[Cc];)', 'L', value)  # Upper l character.
+        value = re.sub(r'(&#77;|&#x4[Dd];)', 'M', value)  # Upper m character.
+        value = re.sub(r'(&#78;|&#x4[Ee];)', 'N', value)  # Upper n character.
+        value = re.sub(r'(&#79;|&#x4[Ff];)', 'O', value)  # Upper o character.
+        value = re.sub(r'(&#80;|&#x50;)', 'P', value)  # Upper p character.
+        value = re.sub(r'(&#81;|&#x51;)', 'Q', value)  # Upper q character.
+        value = re.sub(r'(&#82;|&#x52;)', 'R', value)  # Upper r character.
+        value = re.sub(r'(&#83;|&#x53;)', 'S', value)  # Upper s character.
+        value = re.sub(r'(&#84;|&#x54;)', 'T', value)  # Upper t character.
+        value = re.sub(r'(&#85;|&#x55;)', 'U', value)  # Upper u character.
+        value = re.sub(r'(&#86;|&#x56;)', 'V', value)  # Upper v character.
+        value = re.sub(r'(&#87;|&#x57;)', 'W', value)  # Upper w character.
+        value = re.sub(r'(&#88;|&#x58;)', 'X', value)  # Upper x character.
+        value = re.sub(r'(&#89;|&#x59;)', 'Y', value)  # Upper y character.
+        value = re.sub(r'(&#90;|&#x5[Aa];)', 'Z', value)  # Upper z character.
+
+        value = re.sub(r'(&#97;|&#x61;)', 'a', value)  # Lower a character.
+        value = re.sub(r'(&#98;|&#x62;)', 'b', value)  # Lower b character.
+        value = re.sub(r'(&#99;|&#x63;)', 'c', value)  # Lower c character.
+        value = re.sub(r'(&#100;|&#x64;)', 'd', value)  # Lower d character.
+        value = re.sub(r'(&#101;|&#x65;)', 'e', value)  # Lower e character.
+        value = re.sub(r'(&#102;|&#x66;)', 'f', value)  # Lower f character.
+        value = re.sub(r'(&#103;|&#x67;)', 'g', value)  # Lower g character.
+        value = re.sub(r'(&#104;|&#x68;)', 'h', value)  # Lower h character.
+        value = re.sub(r'(&#105;|&#x69;)', 'i', value)  # Lower i character.
+        value = re.sub(r'(&#106;|&#x6[Aa];)', 'j', value)  # Lower j character.
+        value = re.sub(r'(&#107;|&#x6[Bb];)', 'k', value)  # Lower k character.
+        value = re.sub(r'(&#108;|&#x6[Cc];)', 'l', value)  # Lower l character.
+        value = re.sub(r'(&#109;|&#x6[Dd];)', 'm', value)  # Lower m character.
+        value = re.sub(r'(&#110;|&#x6[Ee];)', 'n', value)  # Lower n character.
+        value = re.sub(r'(&#111;|&#x6[Ff];)', 'o', value)  # Lower o character.
+        value = re.sub(r'(&#112;|&#x70;)', 'p', value)  # Lower p character.
+        value = re.sub(r'(&#113;|&#x71;)', 'q', value)  # Lower q character.
+        value = re.sub(r'(&#114;|&#x72;)', 'r', value)  # Lower r character.
+        value = re.sub(r'(&#115;|&#x73;)', 's', value)  # Lower s character.
+        value = re.sub(r'(&#116;|&#x74;)', 't', value)  # Lower t character.
+        value = re.sub(r'(&#117;|&#x75;)', 'u', value)  # Lower u character.
+        value = re.sub(r'(&#118;|&#x76;)', 'v', value)  # Lower v character.
+        value = re.sub(r'(&#119;|&#x77;)', 'w', value)  # Lower w character.
+        value = re.sub(r'(&#120;|&#x78;)', 'x', value)  # Lower x character.
+        value = re.sub(r'(&#121;|&#x79;)', 'y', value)  # Lower y character.
+        value = re.sub(r'(&#122;|&#x7[Aa];)', 'z', value)  # Lower z character.
 
         return value
 

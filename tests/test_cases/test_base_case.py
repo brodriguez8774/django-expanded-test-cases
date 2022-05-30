@@ -221,136 +221,615 @@ class BaseClassTest(BaseTestCase):
                 ),
             )
 
+    def assert_symbol_standardization(self, symbol_str, expected_return):
+        """
+        Helper sub-function for testing the standardization methods.
+        """
+        # Test in smaller child function.
+        return_val = self.standardize_symbols(symbol_str)
+        self.assertEqual(return_val, expected_return)
+
+        # Test in full parent function.
+        return_val = self.standardize_characters(symbol_str)
+        self.assertEqual(return_val, expected_return)
+
+    def assert_number_standardization(self, number_str, expected_return):
+        """
+        Helper sub-function for testing the standardization methods.
+        """
+        # Test in smaller child function.
+        return_val = self.standardize_numbers(number_str)
+        self.assertEqual(return_val, expected_return)
+
+        # Test in full parent function.
+        return_val = self.standardize_characters(number_str)
+        self.assertEqual(return_val, expected_return)
+
+    def assert_letter_standardization(self, letter_str, expected_return):
+        """
+        Helper sub-function for testing the standardization methods.
+        """
+        # Test in smaller child function.
+        return_val = self.standardize_letters(letter_str)
+        self.assertEqual(return_val, expected_return)
+
+        # Test in full parent function.
+        return_val = self.standardize_characters(letter_str)
+        self.assertEqual(return_val, expected_return)
+
     def test__standardize_characters__symbols(self):
         """
-        Tests symbols in standardize_characters() function.
+        Tests symbols in standardize_characters() functions.
         """
         with self.subTest('Test exclamation mark'):
-            return_val = self.standardize_characters('&#33; &#x21; &excl; !')
-            self.assertEqual(return_val, '! ! ! !')
+            self.assert_symbol_standardization(
+                '&#33; &#x21; &excl; !',
+                '! ! ! !',
+            )
 
         with self.subTest('Test quotation'):
-            return_val = self.standardize_characters('&#34; &#x22; &quot; "')
-            self.assertEqual(return_val, '" " " "')
+            self.assert_symbol_standardization(
+                '&#34; &#x22; &quot; "',
+                '" " " "',
+            )
 
         with self.subTest('Test number sign'):
-            return_val = self.standardize_characters('&#35; &#x23; &num; #')
-            self.assertEqual(return_val, '# # # #')
+            self.assert_symbol_standardization(
+                '&#35; &#x23; &num; #',
+                '# # # #',
+            )
 
         with self.subTest('Test dollar sign'):
-            return_val = self.standardize_characters('&#36; &#x24; &dollar; $')
-            self.assertEqual(return_val, '$ $ $ $')
+            self.assert_symbol_standardization(
+                '&#36; &#x24; &dollar; $',
+                '$ $ $ $',
+            )
 
         with self.subTest('Test percent sign'):
-            return_val = self.standardize_characters('&#37; &#x25; &percnt; %')
-            self.assertEqual(return_val, '% % % %')
+            self.assert_symbol_standardization(
+                '&#37; &#x25; &percnt; %',
+                '% % % %',
+            )
 
         with self.subTest('Test ampersand'):
-            return_val = self.standardize_characters('&#38; &#x26; &amp; &')
-            self.assertEqual(return_val, '& & & &')
+            self.assert_symbol_standardization(
+                '&#38; &#x26; &amp; &',
+                '& & & &',
+            )
 
         with self.subTest('Test apostrophe'):
-            return_val = self.standardize_characters('&#39; &#x27; &apos; \'')
-            self.assertEqual(return_val, "' ' ' '")
+            self.assert_symbol_standardization(
+                '&#39; &#x27; &apos; \'',
+                "' ' ' '",
+            )
 
         with self.subTest('Test opening parenthesis'):
-            return_val = self.standardize_characters('&#40; &#x28; &lpar; (')
-            self.assertEqual(return_val, '( ( ( (')
+            self.assert_symbol_standardization(
+                '&#40; &#x28; &lpar; (',
+                '( ( ( (',
+            )
 
         with self.subTest('Test closing parenthesis'):
-            return_val = self.standardize_characters('&#41; &#x29; &rpar; )')
-            self.assertEqual(return_val, ') ) ) )')
+            self.assert_symbol_standardization(
+                '&#41; &#x29; &rpar; )',
+                ') ) ) )',
+            )
 
         with self.subTest('Test asterisk'):
-            return_val = self.standardize_characters('&#42; &#x2A; &#x2a; &ast; *')
-            self.assertEqual(return_val, '* * * * *')
+            self.assert_symbol_standardization(
+                '&#42; &#x2A; &#x2a; &ast; *',
+                '* * * * *',
+            )
 
         with self.subTest('Test plus'):
-            return_val = self.standardize_characters('&#43; &#x2B; &#x2b; &plus; +')
-            self.assertEqual(return_val, '+ + + + +')
+            self.assert_symbol_standardization(
+                '&#43; &#x2B; &#x2b; &plus; +',
+                '+ + + + +',
+            )
 
         with self.subTest('Test comma'):
-            return_val = self.standardize_characters('&#44; &#x2C; &#x2c; &comma; ,')
-            self.assertEqual(return_val, ', , , , ,')
+            self.assert_symbol_standardization(
+                '&#44; &#x2C; &#x2c; &comma; ,',
+                ', , , , ,',
+            )
 
         with self.subTest('Test minus'):
-            return_val = self.standardize_characters('&#45; &#8722; &#x2D; &#x2d; &minus; -')
-            self.assertEqual(return_val, '- - - - - -')
+            self.assert_symbol_standardization(
+                '&#45; &#8722; &#x2D; &#x2d; &minus; -',
+                '- - - - - -',
+            )
 
         with self.subTest('Test period'):
-            return_val = self.standardize_characters('&#46; &#x2E; &#x2e; &period; .')
-            self.assertEqual(return_val, '. . . . .')
+            self.assert_symbol_standardization(
+                '&#46; &#x2E; &#x2e; &period; .',
+                '. . . . .',
+            )
 
         with self.subTest('Test slash'):
-            return_val = self.standardize_characters('&#47; &#x2F; &#x2f; &sol; /')
-            self.assertEqual(return_val, '/ / / / /')
+            self.assert_symbol_standardization(
+                '&#47; &#x2F; &#x2f; &sol; /',
+                '/ / / / /',
+            )
 
         with self.subTest('Test colon'):
-            return_val = self.standardize_characters('&#58; &#x3A; &#x3a; &colon; :')
-            self.assertEqual(return_val, ': : : : :')
+            self.assert_symbol_standardization(
+                '&#58; &#x3A; &#x3a; &colon; :',
+                ': : : : :',
+            )
 
         with self.subTest('Test semicolon'):
-            return_val = self.standardize_characters('&#59; &#x3B; &#x3b; &semi; ;')
-            self.assertEqual(return_val, '; ; ; ; ;')
+            self.assert_symbol_standardization(
+                '&#59; &#x3B; &#x3b; &semi; ;',
+                '; ; ; ; ;',
+            )
 
         with self.subTest('Test less than'):
-            return_val = self.standardize_characters('&#60; &#x3C; &#x3c; &lt; <')
-            self.assertEqual(return_val, '< < < < <')
+            self.assert_symbol_standardization(
+                '&#60; &#x3C; &#x3c; &lt; <',
+                '< < < < <',
+            )
 
         with self.subTest('Test equals'):
-            return_val = self.standardize_characters('&#61; &#x3D; &#x3d; &equals; =')
-            self.assertEqual(return_val, '= = = = =')
+            self.assert_symbol_standardization(
+                '&#61; &#x3D; &#x3d; &equals; =',
+                '= = = = =',
+            )
 
         with self.subTest('Test greater than'):
-            return_val = self.standardize_characters('&#62; &#x3E; &#x3e; &gt; >')
-            self.assertEqual(return_val, '> > > > >')
+            self.assert_symbol_standardization(
+                '&#62; &#x3E; &#x3e; &gt; >',
+                '> > > > >',
+            )
 
         with self.subTest('Test question mark'):
-            return_val = self.standardize_characters('&#63; &#x3F; &#x3f; &quest; ?')
-            self.assertEqual(return_val, '? ? ? ? ?')
+            self.assert_symbol_standardization(
+                '&#63; &#x3F; &#x3f; &quest; ?',
+                '? ? ? ? ?',
+            )
 
         with self.subTest('Test at sign'):
-            return_val = self.standardize_characters('&#64; &#x40; &commat; @')
-            self.assertEqual(return_val, '@ @ @ @')
+            self.assert_symbol_standardization(
+                '&#64; &#x40; &commat; @',
+                '@ @ @ @',
+            )
 
         with self.subTest('Test opening square bracket'):
-            return_val = self.standardize_characters('&#91; &#x5B; &#x5b; &lbrack; [')
-            self.assertEqual(return_val, '[ [ [ [ [')
+            self.assert_symbol_standardization(
+                '&#91; &#x5B; &#x5b; &lbrack; [',
+                '[ [ [ [ [',
+            )
 
         with self.subTest('Test backslash'):
-            return_val = self.standardize_characters('&#92; &#x5C; &#x5c; &bsol; \\')
-            self.assertEqual(return_val, '\\ \\ \\ \\ \\')
+            self.assert_symbol_standardization(
+                '&#92; &#x5C; &#x5c; &bsol; \\',
+                '\\ \\ \\ \\ \\',
+            )
 
         with self.subTest('Test closing square bracket'):
-            return_val = self.standardize_characters('&#93; &#x5D; &#x5d; &rbrack; ]')
-            self.assertEqual(return_val, '] ] ] ] ]')
+            self.assert_symbol_standardization(
+                '&#93; &#x5D; &#x5d; &rbrack; ]',
+                '] ] ] ] ]',)
 
         with self.subTest('Test up arrow'):
-            return_val = self.standardize_characters('&#94; &#x5E; &#x5e; &Hat; ^')
-            self.assertEqual(return_val, '^ ^ ^ ^ ^')
+            self.assert_symbol_standardization(
+                '&#94; &#x5E; &#x5e; &Hat; ^',
+                '^ ^ ^ ^ ^',
+            )
 
         with self.subTest('Test underscore'):
-            return_val = self.standardize_characters('&#95; &#x5F; &#x5f; &lowbar; _')
-            self.assertEqual(return_val, '_ _ _ _ _')
+            self.assert_symbol_standardization(
+                '&#95; &#x5F; &#x5f; &lowbar; _',
+                '_ _ _ _ _',
+            )
 
         with self.subTest('Test grave accent'):
-            return_val = self.standardize_characters('&#96; &#x60; &grave; `')
-            self.assertEqual(return_val, '` ` ` `')
+            self.assert_symbol_standardization(
+                '&#96; &#x60; &grave; `',
+                '` ` ` `',
+            )
 
         with self.subTest('Test opening dict bracket'):
-            return_val = self.standardize_characters('&#123; &#x7B; &#x7b; &lbrace; {')
-            self.assertEqual(return_val, '{ { { { {')
+            self.assert_symbol_standardization(
+                '&#123; &#x7B; &#x7b; &lbrace; {',
+                '{ { { { {',
+            )
 
         with self.subTest('Test pipe'):
-            return_val = self.standardize_characters('&#124; &#x7C; &#x7c; &vert; |')
-            self.assertEqual(return_val, '| | | | |')
+            self.assert_symbol_standardization(
+                '&#124; &#x7C; &#x7c; &vert; |',
+                '| | | | |',
+            )
 
         with self.subTest('Test closing dict bracket'):
-            return_val = self.standardize_characters('&#125; &#x7D; &#x7d; &rbrace; }')
-            self.assertEqual(return_val, '} } } } }')
+            self.assert_symbol_standardization(
+                '&#125; &#x7D; &#x7d; &rbrace; }',
+                '} } } } }',
+            )
 
         with self.subTest('Test tilde'):
-            return_val = self.standardize_characters('&#126; &#x7E; &#x7e; &tilde; ~')
-            self.assertEqual(return_val, '~ ~ ~ ~ ~')
+            self.assert_symbol_standardization(
+                '&#126; &#x7E; &#x7e; &tilde; ~',
+                '~ ~ ~ ~ ~',
+            )
+
+    def test__standardize_characters__numbers(self):
+        """
+        Tests numbers in standardize_characters() functions.
+        """
+        with self.subTest('Test 0'):
+            self.assert_number_standardization(
+                '&#48; &#x30; 0',
+                '0 0 0',
+            )
+
+        with self.subTest('Test 1'):
+            self.assert_number_standardization(
+                '&#49; &#x31; 1',
+                '1 1 1',
+            )
+
+        with self.subTest('Test 2'):
+            self.assert_number_standardization(
+                '&#50; &#x32; 2',
+                '2 2 2',
+            )
+
+        with self.subTest('Test 3'):
+            self.assert_number_standardization(
+                '&#51; &#x33; 3',
+                '3 3 3',
+            )
+
+        with self.subTest('Test 4'):
+            self.assert_number_standardization(
+                '&#52; &#x34; 4',
+                '4 4 4',
+            )
+
+        with self.subTest('Test 5'):
+            self.assert_number_standardization(
+                '&#53; &#x35; 5',
+                '5 5 5',
+            )
+
+        with self.subTest('Test 6'):
+            self.assert_number_standardization(
+                '&#54; &#x36; 6',
+                '6 6 6',
+            )
+
+        with self.subTest('Test 7'):
+            self.assert_number_standardization(
+                '&#55; &#x37; 7',
+                '7 7 7',
+            )
+
+        with self.subTest('Test 8'):
+            self.assert_number_standardization(
+                '&#56; &#x38; 8',
+                '8 8 8',
+            )
+
+        with self.subTest('Test 9'):
+            self.assert_number_standardization(
+                '&#57; &#x39; 9',
+                '9 9 9',
+            )
+
+    def test__standardize_characters__letters(self):
+        """
+        Tests letters in standardize_characters() functions.
+        """
+        with self.subTest('Test A'):
+            self.assert_letter_standardization(
+                '&#65; &#x41; A',
+                'A A A',
+            )
+
+        with self.subTest('Test B'):
+            self.assert_letter_standardization(
+                '&#66; &#x42; B',
+                'B B B',
+            )
+
+        with self.subTest('Test C'):
+            self.assert_letter_standardization(
+                '&#67; &#x43; C',
+                'C C C',
+            )
+
+        with self.subTest('Test D'):
+            self.assert_letter_standardization(
+                '&#68; &#x44; D',
+                'D D D',
+            )
+
+        with self.subTest('Test E'):
+            self.assert_letter_standardization(
+                '&#69; &#x45; E',
+                'E E E',
+            )
+
+        with self.subTest('Test F'):
+            self.assert_letter_standardization(
+                '&#70; &#x46; F',
+                'F F F',
+            )
+
+        with self.subTest('Test G'):
+            self.assert_letter_standardization(
+                '&#71; &#x47; G',
+                'G G G',
+            )
+
+        with self.subTest('Test H'):
+            self.assert_letter_standardization(
+                '&#72; &#x48; H',
+                'H H H',
+            )
+
+        with self.subTest('Test I'):
+            self.assert_letter_standardization(
+                '&#73; &#x49; I',
+                'I I I',
+            )
+
+        with self.subTest('Test J'):
+            self.assert_letter_standardization(
+                '&#74; &#x4A; &#x4a; J',
+                'J J J J',
+            )
+
+        with self.subTest('Test K'):
+            self.assert_letter_standardization(
+                '&#75; &#x4B; &#x4b; K',
+                'K K K K',
+            )
+
+        with self.subTest('Test L'):
+            self.assert_letter_standardization(
+                '&#76; &#x4C; &#x4c; L',
+                'L L L L',
+            )
+
+        with self.subTest('Test M'):
+            self.assert_letter_standardization(
+                '&#77; &#x4D; &#x4d; M',
+                'M M M M',
+            )
+
+        with self.subTest('Test N'):
+            self.assert_letter_standardization(
+                '&#78; &#x4E; &#x4e; N',
+                'N N N N',
+            )
+
+        with self.subTest('Test O'):
+            self.assert_letter_standardization(
+                '&#79; &#x4F; &#x4f; O',
+                'O O O O',
+            )
+
+        with self.subTest('Test P'):
+            self.assert_letter_standardization(
+                '&#80; &#x50; P',
+                'P P P',
+            )
+
+        with self.subTest('Test Q'):
+            self.assert_letter_standardization(
+                '&#81; &#x51; Q',
+                'Q Q Q',
+            )
+
+        with self.subTest('Test R'):
+            self.assert_letter_standardization(
+                '&#82; &#x52; R',
+                'R R R',
+            )
+
+        with self.subTest('Test S'):
+            self.assert_letter_standardization(
+                '&#83; &#x53; S',
+                'S S S',
+            )
+
+        with self.subTest('Test T'):
+            self.assert_letter_standardization(
+                '&#84; &#x54; T',
+                'T T T',
+            )
+
+        with self.subTest('Test U'):
+            self.assert_letter_standardization(
+                '&#85; &#x55; U',
+                'U U U',
+            )
+
+        with self.subTest('Test V'):
+            self.assert_letter_standardization(
+                '&#86; &#x56; V',
+                'V V V',
+            )
+
+        with self.subTest('Test W'):
+            self.assert_letter_standardization(
+                '&#87; &#x57; W',
+                'W W W',
+            )
+
+        with self.subTest('Test X'):
+            self.assert_letter_standardization(
+                '&#88; &#x58; X',
+                'X X X',
+            )
+
+        with self.subTest('Test Y'):
+            self.assert_letter_standardization(
+                '&#89; &#x59; Y',
+                'Y Y Y',
+            )
+
+        with self.subTest('Test Z'):
+            self.assert_letter_standardization(
+                '&#90; &#x5A; &#x5a; Z',
+                'Z Z Z Z',
+            )
+
+        with self.subTest('Test a'):
+            self.assert_letter_standardization(
+                '&#97; &#x61; a',
+                'a a a',
+            )
+
+        with self.subTest('Test b'):
+            self.assert_letter_standardization(
+                '&#98; &#x62; b',
+                'b b b',
+            )
+
+        with self.subTest('Test c'):
+            self.assert_letter_standardization(
+                '&#99; &#x63; c',
+                'c c c',
+            )
+
+        with self.subTest('Test d'):
+            self.assert_letter_standardization(
+                '&#100; &#x64; d',
+                'd d d',
+            )
+
+        with self.subTest('Test e'):
+            self.assert_letter_standardization(
+                '&#101; &#x65; e',
+                'e e e',
+            )
+
+        with self.subTest('Test f'):
+            self.assert_letter_standardization(
+                '&#102; &#x66; f',
+                'f f f',
+            )
+
+        with self.subTest('Test g'):
+            self.assert_letter_standardization(
+                '&#103; &#x67; g',
+                'g g g',
+            )
+
+        with self.subTest('Test h'):
+            self.assert_letter_standardization(
+                '&#104; &#x68; h',
+                'h h h',
+            )
+
+        with self.subTest('Test i'):
+            self.assert_letter_standardization(
+                '&#105; &#x69; i',
+                'i i i',
+            )
+
+        with self.subTest('Test j'):
+            self.assert_letter_standardization(
+                '&#106; &#x6A; &#x6a; j',
+                'j j j j',
+            )
+
+        with self.subTest('Test k'):
+            self.assert_letter_standardization(
+                '&#107; &#x6B; &#x6b; k',
+                'k k k k',
+            )
+
+        with self.subTest('Test l'):
+            self.assert_letter_standardization(
+                '&#108; &#x6C; &#x6c; l',
+                'l l l l',
+            )
+
+        with self.subTest('Test m'):
+            self.assert_letter_standardization(
+                '&#109; &#x6D; &#x6d; m',
+                'm m m m',
+            )
+
+        with self.subTest('Test n'):
+            self.assert_letter_standardization(
+                '&#110; &#x6E; &#x6e; n',
+                'n n n n',
+            )
+
+        with self.subTest('Test o'):
+            self.assert_letter_standardization(
+                '&#111; &#x6F; &#x6f; o',
+                'o o o o',
+            )
+
+        with self.subTest('Test p'):
+            self.assert_letter_standardization(
+                '&#112; &#x70; p',
+                'p p p',
+            )
+
+        with self.subTest('Test q'):
+            self.assert_letter_standardization(
+                '&#113; &#x71; q',
+                'q q q',
+            )
+
+        with self.subTest('Test r'):
+            self.assert_letter_standardization(
+                '&#114; &#x72; r',
+                'r r r',
+            )
+
+        with self.subTest('Test s'):
+            self.assert_letter_standardization(
+                '&#115; &#x73; s',
+                's s s',
+            )
+
+        with self.subTest('Test t'):
+            self.assert_letter_standardization(
+                '&#116; &#x74; t',
+                't t t',
+            )
+
+        with self.subTest('Test u'):
+            self.assert_letter_standardization(
+                '&#117; &#x75; u',
+                'u u u',
+            )
+
+        with self.subTest('Test v'):
+            self.assert_letter_standardization(
+                '&#118; &#x76; v',
+                'v v v',
+            )
+
+        with self.subTest('Test w'):
+            self.assert_letter_standardization(
+                '&#119; &#x77; w',
+                'w w w',
+            )
+
+        with self.subTest('Test x'):
+            self.assert_letter_standardization(
+                '&#120; &#x78; x',
+                'x x x',
+            )
+
+        with self.subTest('Test y'):
+            self.assert_letter_standardization(
+                '&#121; &#x79; y',
+                'y y y',
+            )
+
+        with self.subTest('Test z'):
+            self.assert_letter_standardization(
+                '&#122; &#x7A; &#x7a; z',
+                'z z z z',
+            )
 
     # endregion Helper Function Tests
