@@ -11,9 +11,10 @@ from django.urls.exceptions import NoReverseMatch
 
 # User Imports.
 from .base_test_case import BaseTestCase
+from django_expanded_test_cases.mixins.response_mixin import ResponseTestCaseMixin
 
 
-class IntegrationTestCase(BaseTestCase):
+class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
     """Testing functionality for views and other multi-part components."""
 
     @classmethod

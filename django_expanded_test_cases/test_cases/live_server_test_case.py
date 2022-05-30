@@ -9,10 +9,10 @@ Tends to take longer to test. So consider using IntegrationTestCase instead, whe
 from channels.testing import ChannelsLiveServerTestCase
 
 # User Imports.
-from django_expanded_test_cases.mixins.core_mixin import CoreTestCaseMixin
+from django_expanded_test_cases.mixins.response_mixin import ResponseTestCaseMixin
 
 
-class LiveServerTestCase(ChannelsLiveServerTestCase, CoreTestCaseMixin):
+class LiveServerTestCase(ChannelsLiveServerTestCase, ResponseTestCaseMixin):
     """Testing functionality through selenium, to simulate web browser navigation."""
 
     def setUp(self):
