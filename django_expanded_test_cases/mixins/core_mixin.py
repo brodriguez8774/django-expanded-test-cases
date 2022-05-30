@@ -7,7 +7,6 @@ import re
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
-from django.http.response import HttpResponseBase
 from django.utils.http import urlencode
 
 
@@ -343,6 +342,9 @@ class CoreTestCaseMixin:
 
         Will reduce possible newline character types to the \n character.
         Also, whitespace between newlines is removed, and outer newlines/whitespace is removed.
+
+        Note: Handles similar to standardize_whitespace(), except that newlines are preserved.
+
         :param value: Str value to standardize.
         :return: Sanitized str.
         """
@@ -361,6 +363,34 @@ class CoreTestCaseMixin:
 
         # Replace any repeating linebreaks.
         value = re.sub(r'\n\n+', '\n', value)
+
+        # Strip final calculated string of extra outer whitespace.
+        value = str(value).strip()
+
+        return value
+
+    def standardize_whitespace(self, value):
+        """Standardizes whitespace in provided variable.
+
+        When possible, all whitespace and whitespace-esque characters (including newlines)
+        are reduced down to a single space.
+
+        Note: Handles similar to standardize_newlines(), except that all newlines are removed.
+
+        :param value: Str value to standardize.
+        :return: Sanitized str.
+        """
+        # Strip initial string of extra outer whitespace.
+        value = str(value)
+
+        # Replace html linebreak with actual newline character.
+        value = re.sub('<br>|</br>|<br/>|<br />', ' ', value)
+
+        # Remove any newline characters.
+        value = re.sub(r'(\r)|(\n)', ' ', value)
+
+        # Reduce any repeating whitespace instances.
+        value = re.sub(r'( )+', ' ', value)
 
         # Strip final calculated string of extra outer whitespace.
         value = str(value).strip()

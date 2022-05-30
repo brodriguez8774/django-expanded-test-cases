@@ -908,4 +908,80 @@ class BaseClassTest(BaseTestCase):
             return_val = self.standardize_newlines('A\n   \n   \nB')
             self.assertEqual(return_val, 'A\nB')
 
+    def test__standardize_whitespace(self):
+        """
+        Tests standardize_whitespace() function.
+        """
+        with self.subTest('Test <br> tag - Isolated'):
+            return_val = self.standardize_whitespace('<br>')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_whitespace('</br>')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_whitespace('<br/>')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_whitespace('<br />')
+            self.assertEqual(return_val, '')
+        with self.subTest('Test <br> tag - As inner element'):
+            return_val = self.standardize_whitespace('A<br>B')
+            self.assertEqual(return_val, 'A B')
+            return_val = self.standardize_whitespace('A</br>B')
+            self.assertEqual(return_val, 'A B')
+            return_val = self.standardize_whitespace('A<br/>B')
+            self.assertEqual(return_val, 'A B')
+            return_val = self.standardize_whitespace('A<br />B')
+            self.assertEqual(return_val, 'A B')
+
+        with self.subTest('Test single newline characters - Isolated'):
+            return_val = self.standardize_whitespace('\n')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_whitespace('\r\n')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_whitespace('\n\r')
+            self.assertEqual(return_val, '')
+        with self.subTest('Test single newline characters - As inner element'):
+            return_val = self.standardize_whitespace('A\nB')
+            self.assertEqual(return_val, 'A B')
+            return_val = self.standardize_whitespace('A\r\nB')
+            self.assertEqual(return_val, 'A B')
+            return_val = self.standardize_whitespace('A\n\rB')
+            self.assertEqual(return_val, 'A B')
+
+        with self.subTest('Test repeated newline characters - Isolated'):
+            return_val = self.standardize_whitespace('\n\n')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_whitespace('\n\n\n')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_whitespace('\n\r\n\r\n')
+            self.assertEqual(return_val, '')
+        with self.subTest('Test repeated newline characters - As inner element'):
+            return_val = self.standardize_whitespace('A\n\nB')
+            self.assertEqual(return_val, 'A B')
+            return_val = self.standardize_whitespace('A\n\n\nB')
+            self.assertEqual(return_val, 'A B')
+            return_val = self.standardize_whitespace('A\n\r\n\r\nB')
+            self.assertEqual(return_val, 'A B')
+
+        with self.subTest('Test with whitespace - Isolated'):
+            return_val = self.standardize_whitespace('<br>   <br>')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_whitespace('<br>   <br>   <br>')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_whitespace('<br>   \n   <br>')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_whitespace('\n   \n')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_whitespace('\n   \n   \n')
+            self.assertEqual(return_val, '')
+        with self.subTest('Test with whitespace - As inner element'):
+            return_val = self.standardize_whitespace('A<br>   <br>B')
+            self.assertEqual(return_val, 'A B')
+            return_val = self.standardize_whitespace('A<br>   <br>   <br>B')
+            self.assertEqual(return_val, 'A B')
+            return_val = self.standardize_whitespace('A<br>   \n   <br>B')
+            self.assertEqual(return_val, 'A B')
+            return_val = self.standardize_whitespace('A\n   \nB')
+            self.assertEqual(return_val, 'A B')
+            return_val = self.standardize_whitespace('A\n   \n   \nB')
+            self.assertEqual(return_val, 'A B')
+
     # endregion Helper Function Tests
