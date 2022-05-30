@@ -832,4 +832,80 @@ class BaseClassTest(BaseTestCase):
                 'z z z z',
             )
 
+    def test__standardize_newlines(self):
+        """
+        Tests standardize_newlines() function.
+        """
+        with self.subTest('Test <br> tag - Isolated'):
+            return_val = self.standardize_newlines('<br>')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_newlines('</br>')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_newlines('<br/>')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_newlines('<br />')
+            self.assertEqual(return_val, '')
+        with self.subTest('Test <br> tag - As inner element'):
+            return_val = self.standardize_newlines('A<br>B')
+            self.assertEqual(return_val, 'A\nB')
+            return_val = self.standardize_newlines('A</br>B')
+            self.assertEqual(return_val, 'A\nB')
+            return_val = self.standardize_newlines('A<br/>B')
+            self.assertEqual(return_val, 'A\nB')
+            return_val = self.standardize_newlines('A<br />B')
+            self.assertEqual(return_val, 'A\nB')
+
+        with self.subTest('Test single newline characters - Isolated'):
+            return_val = self.standardize_newlines('\n')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_newlines('\r\n')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_newlines('\n\r')
+            self.assertEqual(return_val, '')
+        with self.subTest('Test single newline characters - As inner element'):
+            return_val = self.standardize_newlines('A\nB')
+            self.assertEqual(return_val, 'A\nB')
+            return_val = self.standardize_newlines('A\r\nB')
+            self.assertEqual(return_val, 'A\nB')
+            return_val = self.standardize_newlines('A\n\rB')
+            self.assertEqual(return_val, 'A\nB')
+
+        with self.subTest('Test repeated newline characters - Isolated'):
+            return_val = self.standardize_newlines('\n\n')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_newlines('\n\n\n')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_newlines('\n\r\n\r\n')
+            self.assertEqual(return_val, '')
+        with self.subTest('Test repeated newline characters - As inner element'):
+            return_val = self.standardize_newlines('A\n\nB')
+            self.assertEqual(return_val, 'A\nB')
+            return_val = self.standardize_newlines('A\n\n\nB')
+            self.assertEqual(return_val, 'A\nB')
+            return_val = self.standardize_newlines('A\n\r\n\r\nB')
+            self.assertEqual(return_val, 'A\nB')
+
+        with self.subTest('Test with whitespace - Isolated'):
+            return_val = self.standardize_newlines('<br>   <br>')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_newlines('<br>   <br>   <br>')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_newlines('<br>   \n   <br>')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_newlines('\n   \n')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_newlines('\n   \n   \n')
+            self.assertEqual(return_val, '')
+        with self.subTest('Test with whitespace - As inner element'):
+            return_val = self.standardize_newlines('A<br>   <br>B')
+            self.assertEqual(return_val, 'A\nB')
+            return_val = self.standardize_newlines('A<br>   <br>   <br>B')
+            self.assertEqual(return_val, 'A\nB')
+            return_val = self.standardize_newlines('A<br>   \n   <br>B')
+            self.assertEqual(return_val, 'A\nB')
+            return_val = self.standardize_newlines('A\n   \nB')
+            self.assertEqual(return_val, 'A\nB')
+            return_val = self.standardize_newlines('A\n   \n   \nB')
+            self.assertEqual(return_val, 'A\nB')
+
     # endregion Helper Function Tests
