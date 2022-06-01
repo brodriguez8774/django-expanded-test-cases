@@ -654,4 +654,32 @@ class IntegrationClassTest(IntegrationTestCase):
             self.assertIn('Test warning message.', messages)
             self.assertIn('Test error message.', messages)
 
+    def test__standardize_html_tags(self):
+        """
+        Tests letters in standardize_html_tags() functions.
+        """
+        with self.subTest('Test html tag - No spaces'):
+            value = self.standardize_html_tags('<h1>Test Header</h1><p>Aaa</p>')
+            self.assertEqual(value, '<h1>Test Header</h1><p>Aaa</p>')
+
+        with self.subTest('Test html tag - With spaces'):
+            value = self.standardize_html_tags('  <h1>  Test Header  </h1> <p> Aaa </p>  ')
+            self.assertEqual(value, '<h1>Test Header</h1><p>Aaa</p>')
+
+        with self.subTest('Test array - No spaces'):
+            value = self.standardize_html_tags('[1, 2, 3]')
+            self.assertEqual(value, '[1, 2, 3]')
+
+        with self.subTest('Test array - with spaces'):
+            value = self.standardize_html_tags('  [  1, 2, 3  ]  ')
+            self.assertEqual(value, '[1, 2, 3]')
+
+        with self.subTest('Test dict - No spaces'):
+            value = self.standardize_html_tags('{"one": 1, "two": 2}')
+            self.assertEqual(value, '{"one": 1, "two": 2}')
+
+        with self.subTest('Test dict - With spaces'):
+            value = self.standardize_html_tags('{  "one": 1, "two": 2  }  ')
+            self.assertEqual(value, '{"one": 1, "two": 2}')
+
     # endregion Helper Function Tests

@@ -3,6 +3,7 @@ Core testing logic that pertains to handling Response objects.
 """
 
 # System Imports.
+import re
 from django.contrib.auth import get_user_model
 from django.http.response import HttpResponseBase
 
@@ -136,3 +137,36 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             ))
 
     # endregion Debug Output Functions.
+
+    def standardize_html_tags(self, value):
+        """Standardizes spacing around html-esque elements, to remove unnecessary spacing.
+
+        For example, "<h1> MyHeader </h1>" will simplify down to "<h1>MyHeader</h1>".
+
+        Ensures that the actual expected value can be directly checked,
+        instead of trying to account for extraneous template whitespacing.
+
+        :param value: Str value to standardize.
+        :return: Sanitized str.
+        """
+        value = str(value)
+
+        # Remove any whitespace around an opening html bracket ( < ).
+        value = re.sub(r'((\s)*)<((\s)*)', '<', value)
+
+        # Remove any whitespace around a closing html bracket ( > ).
+        value = re.sub(r'((\s)*)>((\s)*)', '>', value)
+
+        # Remove any whitespace around an opening array bracket ( [ ).
+        value = re.sub(r'((\s)*)\[((\s)*)', '[', value)
+
+        # Remove any whitespace around a closing array bracket ( ] ).
+        value = re.sub(r'((\s)*)]((\s)*)', ']', value)
+
+        # Remove any whitespace around an opening dict bracket ( { ).
+        value = re.sub(r'((\s)*){((\s)*)', '{', value)
+
+        # Remove any whitespace around a closing dict bracket ( } ).
+        value = re.sub(r'((\s)*)}((\s)*)', '}', value)
+
+        return value
