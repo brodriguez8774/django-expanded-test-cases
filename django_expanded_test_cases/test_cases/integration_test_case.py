@@ -107,6 +107,25 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Return status in case user wants to run additional logic on it.
         return actual_status
 
+    def assertPageContent(self, response, expected_content):
+        """Verifies the page content html.
+
+        :param response: Response object to check against.
+        :param expected_content: Expected full string of HTML content.
+        :return: Parsed out and formatted content string.
+        """
+        # Sanitize and format actual response content.
+        actual_content = self.get_minimized_response_content(response, strip_newlines=True)
+
+        # For easy comparison, also sanitize and format expected response content.
+        expected_content = self.get_minimized_response_content(expected_content, strip_newlines=True)
+
+        # Compare the two values.
+        self.assertEqual(actual_content, expected_content, 'Response content does not match expected.')
+
+        # Return page content in case user wants to run additional logic on it.
+        return actual_content
+
     def assertPageTitle(self, response, expected_title, exact_match=True):
         """Verifies the page title HTML element.
 

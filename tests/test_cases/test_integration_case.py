@@ -258,6 +258,93 @@ class IntegrationClassTest(IntegrationTestCase):
             with self.assertRaises(AssertionError):
                 self.assertStatusCode(response.status_code, 500)
 
+    def test__assertPageContent__success(self):
+        """
+        Tests assertPageContent() function, in cases when it should succeed.
+        """
+        with self.subTest('Empty response, no value passed.'):
+            response = HttpResponse('')
+            self.assertPageContent(response, '')
+
+        with self.subTest('Minimal Response - No change'):
+            response = HttpResponse('<h1>Test Title</h1>')
+            self.assertPageContent(response, '<h1>Test Title</h1>')
+
+        with self.subTest('Minimal Response - Outer whitespace'):
+            response = HttpResponse('&nbsp; <h1>Test Title</h1> &nbsp; ')
+            self.assertPageContent(response, '<h1>Test Title</h1>')
+
+        with self.subTest('Minimal Response - Inner whitespace'):
+            response = HttpResponse('<h1>Test  &nbsp;  Title</h1>')
+            self.assertPageContent(response, '<h1>Test Title</h1>')
+
+        with self.subTest('Minimal Response - Inner whitespace'):
+            response = HttpResponse('<h1>Test  &nbsp;  Title</h1>')
+            self.assertPageContent(response, '<h1>Test Title</h1>')
+
+        with self.subTest('Minimal Response - With Newlines'):
+            response = HttpResponse('<h1>Test  \n  Title</h1>')
+            self.assertPageContent(response, '<h1>Test Title</h1>')
+
+        with self.subTest('Standard Response - Login Page'):
+            response = self._get_page_response('expanded_test_cases:login')
+            self.assertPageContent(response, '<h1>Login Page</h1><p>Pretend this is a login page.</p>')
+
+        with self.subTest('Standard Response - Render() Home Page'):
+            response = self._get_page_response('expanded_test_cases:index')
+            self.assertPageContent(response, '<h1>Home Page</h1><p>Pretend this is the project landing page.</p>')
+
+        with self.subTest('Standard Response - TemplateResponse Home Page'):
+            response = self._get_page_response('expanded_test_cases:template-response-index')
+            self.assertPageContent(response, '<h1>Home Page</h1><p>Pretend this is the project landing page.</p>')
+
+        with self.subTest('Standard Response - One Message Page'):
+            response = self._get_page_response('expanded_test_cases:one-message')
+            self.assertPageContent(
+                response,
+                (
+                    '<ul><li><p>This is a test message.</p></li></ul>'
+                    '<h1>View with One Message</h1>'
+                    '<p>Pretend useful stuff is displayed here, for one-message render() view.</p>'
+                ),
+            )
+
+    def test__assertPageContent__fail(self):
+        """
+        Tests assertPageContent() function, in cases when it should fail.
+        """
+        with self.subTest('Empty response, but value passed.'):
+            with self.assertRaises(AssertionError):
+                response = HttpResponse('')
+                self.assertPageContent(response, '<h1>Test Title</h1>')
+
+        with self.subTest('Minimal Response, no value passed'):
+            with self.assertRaises(AssertionError):
+                response = HttpResponse('<h1>Test Title</h1>')
+                self.assertPageContent(response, '')
+
+        with self.subTest('Minimal Response, wrong value passed'):
+            with self.assertRaises(AssertionError):
+                response = HttpResponse('<h1>Test Title</h1>')
+                self.assertPageContent(response, '<h1>Testing</h1>')
+
+        with self.subTest('Standard Response, no value passed'):
+            with self.assertRaises(AssertionError):
+                response = self._get_page_response('expanded_test_cases:login')
+                self.assertPageContent(response, '')
+
+        with self.subTest('Standard Response, missing part of value'):
+            response = self._get_page_response('expanded_test_cases:login')
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(response, '<h1>Login Page</h1>')
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(response, '<p>Pretend this is a login page.</p>')
+
+        with self.subTest('Standard Response, wrong value passed'):
+            with self.assertRaises(AssertionError):
+                response = self._get_page_response('expanded_test_cases:login')
+                self.assertPageContent(response, '<h1>Testing</h1><p>Pretend this is a page.</p>')
+
     def test__assertPageTitle__success(self):
         """
         Tests assertPageTitle() function, in cases when it should succeed.
