@@ -212,6 +212,9 @@ class CoreTestCaseMixin:
         :return: Sanitized str.
         """
         # Regex Format: ( decimal_equivalent | hex_equivalent | english_equivalent )
+        value = re.sub(r'(&#32;|&#x20;)', ' ', value)  # Standard space character.
+        value = re.sub(r'(&#160;|&#x[Aa]0;|&nbsp;)', ' ', value)  # Non-breaking space character.
+
         value = re.sub(r'(&#33;|&#x21;|&excl;)', '!', value)  # Exclamation mark character.
         value = re.sub(r'(&#34;|&#x22;|&quot;)', '"', value)  # Quotation character.
         value = re.sub(r'(&#35;|&#x23;|&num;)', '#', value)  # Number sign character.
@@ -354,6 +357,9 @@ class CoreTestCaseMixin:
         # Replace html linebreak with actual newline character.
         value = re.sub('<br>|</br>|<br/>|<br />', '\n', value)
 
+        # Replace non-breaking space with actual space character.
+        value = re.sub('&nbsp;', ' ', value)
+
         # Remove any carriage return characters.
         value = re.sub(r'\r', '', value)
 
@@ -383,8 +389,11 @@ class CoreTestCaseMixin:
         # Strip initial string of extra outer whitespace.
         value = str(value)
 
-        # Replace html linebreak with actual newline character.
+        # Replace html linebreak with space character.
         value = re.sub('<br>|</br>|<br/>|<br />', ' ', value)
+
+        # Replace non-breaking space with actual space character.
+        value = re.sub('&nbsp;', ' ', value)
 
         # Remove any newline characters.
         value = re.sub(r'(\r)|(\n)', ' ', value)

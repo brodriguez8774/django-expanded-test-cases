@@ -261,6 +261,18 @@ class BaseClassTest(BaseTestCase):
         """
         Tests symbols in standardize_characters() functions.
         """
+        with self.subTest('Test standard spaces'):
+            self.assert_symbol_standardization(
+                '&#32; &#x20;  ',
+                '     ',
+            )
+
+        with self.subTest('Test non-breaking spaces'):
+            self.assert_symbol_standardization(
+                '&#160; &#xA0; &#xa0; &nbsp;  ',
+                '         ',
+            )
+
         with self.subTest('Test exclamation mark'):
             self.assert_symbol_standardization(
                 '&#33; &#x21; &excl; !',
@@ -908,6 +920,29 @@ class BaseClassTest(BaseTestCase):
             return_val = self.standardize_newlines('A\n   \n   \nB')
             self.assertEqual(return_val, 'A\nB')
 
+        with self.subTest('Test with non-breaking space - Isolated'):
+            return_val = self.standardize_newlines('<br> &nbsp; <br>')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_newlines('<br> &nbsp; <br> &nbsp; <br>')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_newlines('<br> &nbsp; \n &nbsp; <br>')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_newlines('\n &nbsp; \n')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_newlines('\n &nbsp; \n &nbsp; \n')
+            self.assertEqual(return_val, '')
+        with self.subTest('Test with non-breaking space - As inner element'):
+            return_val = self.standardize_newlines('A<br> &nbsp; <br>B')
+            self.assertEqual(return_val, 'A\nB')
+            return_val = self.standardize_newlines('A<br> &nbsp; <br> &nbsp; <br>B')
+            self.assertEqual(return_val, 'A\nB')
+            return_val = self.standardize_newlines('A<br> &nbsp; \n &nbsp; <br>B')
+            self.assertEqual(return_val, 'A\nB')
+            return_val = self.standardize_newlines('A\n &nbsp; \nB')
+            self.assertEqual(return_val, 'A\nB')
+            return_val = self.standardize_newlines('A\n &nbsp; \n &nbsp; \nB')
+            self.assertEqual(return_val, 'A\nB')
+
     def test__standardize_whitespace(self):
         """
         Tests standardize_whitespace() function.
@@ -982,6 +1017,29 @@ class BaseClassTest(BaseTestCase):
             return_val = self.standardize_whitespace('A\n   \nB')
             self.assertEqual(return_val, 'A B')
             return_val = self.standardize_whitespace('A\n   \n   \nB')
+            self.assertEqual(return_val, 'A B')
+
+        with self.subTest('Test with whitespace - Isolated'):
+            return_val = self.standardize_whitespace('<br> &nbsp; <br>')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_whitespace('<br> &nbsp; <br> &nbsp; <br>')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_whitespace('<br> &nbsp; \n &nbsp; <br>')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_whitespace('\n &nbsp; \n')
+            self.assertEqual(return_val, '')
+            return_val = self.standardize_whitespace('\n &nbsp; \n &nbsp; \n')
+            self.assertEqual(return_val, '')
+        with self.subTest('Test with whitespace - As inner element'):
+            return_val = self.standardize_whitespace('A<br> &nbsp; <br>B')
+            self.assertEqual(return_val, 'A B')
+            return_val = self.standardize_whitespace('A<br> &nbsp; <br> &nbsp; <br>B')
+            self.assertEqual(return_val, 'A B')
+            return_val = self.standardize_whitespace('A<br> &nbsp; \n &nbsp; <br>B')
+            self.assertEqual(return_val, 'A B')
+            return_val = self.standardize_whitespace('A\n &nbsp; \nB')
+            self.assertEqual(return_val, 'A B')
+            return_val = self.standardize_whitespace('A\n &nbsp; \n &nbsp; \nB')
             self.assertEqual(return_val, 'A B')
 
     # endregion Helper Function Tests
