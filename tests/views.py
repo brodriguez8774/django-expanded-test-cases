@@ -14,7 +14,7 @@ def index(request):
     # Render response.
     return render(request, 'django_expanded_test_cases/index.html', {
         'header': 'Home Page',
-        'text': 'Pretend this the project landing page.',
+        'text': 'Pretend this is the project landing page.',
     })
 
 
@@ -23,7 +23,7 @@ def template_response_index(request):
     # Render response.
     return render(request, 'django_expanded_test_cases/index.html', {
         'header': 'Home Page',
-        'text': 'Pretend this the project landing page.',
+        'text': 'Pretend this is the project landing page.',
     })
 
 
@@ -44,8 +44,7 @@ def view_with_one_message(request):
     return render(request, 'django_expanded_test_cases/index.html', {
         'header': 'View with One Message',
         'text': (
-            'Pretend the message is displayed here. It still shows up in context var though, '
-            'which is what we care about for verifying TextCase functionality.'
+            'Pretend useful stuff is displayed here, for one-message render() view.'
         )
     })
 
@@ -59,8 +58,7 @@ def view_with_two_messages(request):
     return render(request, 'django_expanded_test_cases/index.html', {
         'header': 'View with Two Messages',
         'text': (
-            'Pretend the messages are displayed here. They still show up in context var though, '
-            'which is what we care about for verifying TextCase functionality.'
+            'Pretend useful stuff is displayed here, for two-message render() view.'
         )
     })
 
@@ -75,8 +73,7 @@ def view_with_three_messages(request):
     return render(request, 'django_expanded_test_cases/index.html', {
         'header': 'View with Three Messages',
         'text': (
-            'Pretend the messages are displayed here. They still show up in context var though, '
-            'which is what we care about for verifying TextCase functionality.'
+            'Pretend useful stuff is displayed here, for three-message render() view.'
         )
     })
 
@@ -91,8 +88,7 @@ def template_response_with_three_messages(request):
     return TemplateResponse(request, 'django_expanded_test_cases/index.html', {
         'header': 'View with Three Messages',
         'text': (
-            'Pretend the messages are displayed here. They still show up in context var though, '
-            'which is what we care about for verifying TextCase functionality.'
+            'Pretend useful stuff is displayed here, for three-message TemplateResponse view.'
         )
     })
 
