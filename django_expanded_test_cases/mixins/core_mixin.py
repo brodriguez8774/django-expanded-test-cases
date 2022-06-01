@@ -351,8 +351,7 @@ class CoreTestCaseMixin:
         :param value: Str value to standardize.
         :return: Sanitized str.
         """
-        # Strip initial string of extra outer whitespace.
-        value = str(value).strip()
+        value = str(value)
 
         # Replace html linebreak with actual newline character.
         value = re.sub('<br>|</br>|<br/>|<br />', '\n', value)
@@ -370,6 +369,9 @@ class CoreTestCaseMixin:
         # Replace any repeating linebreaks.
         value = re.sub(r'\n\n+', '\n', value)
 
+        # Reduce any repeating whitespace instances.
+        value = re.sub(r'( )+', ' ', value)
+
         # Strip final calculated string of extra outer whitespace.
         value = str(value).strip()
 
@@ -386,7 +388,6 @@ class CoreTestCaseMixin:
         :param value: Str value to standardize.
         :return: Sanitized str.
         """
-        # Strip initial string of extra outer whitespace.
         value = str(value)
 
         # Replace html linebreak with space character.

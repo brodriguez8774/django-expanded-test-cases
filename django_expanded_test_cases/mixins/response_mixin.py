@@ -152,21 +152,57 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         value = str(value)
 
         # Remove any whitespace around an opening html bracket ( < ).
-        value = re.sub(r'((\s)*)<((\s)*)', '<', value)
+        value = re.sub(r'(( )*)<(( )*)', '<', value)
 
         # Remove any whitespace around a closing html bracket ( > ).
-        value = re.sub(r'((\s)*)>((\s)*)', '>', value)
+        value = re.sub(r'(( )*)>(( )*)', '>', value)
 
         # Remove any whitespace around an opening array bracket ( [ ).
-        value = re.sub(r'((\s)*)\[((\s)*)', '[', value)
+        value = re.sub(r'(( )*)\[(( )*)', '[', value)
 
         # Remove any whitespace around a closing array bracket ( ] ).
-        value = re.sub(r'((\s)*)]((\s)*)', ']', value)
+        value = re.sub(r'(( )*)](( )*)', ']', value)
 
         # Remove any whitespace around an opening dict bracket ( { ).
-        value = re.sub(r'((\s)*){((\s)*)', '{', value)
+        value = re.sub(r'(( )*){(( )*)', '{', value)
 
         # Remove any whitespace around a closing dict bracket ( } ).
-        value = re.sub(r'((\s)*)}((\s)*)', '}', value)
+        value = re.sub(r'(( )*)}(( )*)', '}', value)
 
         return value
+
+    def get_minimized_response_content(self, response, strip_newlines=False):
+        """Returns response content, but with minimalistic formatting.
+
+        For example, will trim all newline characters and repeating spaces.
+        Also will standardize common characters to output in a single format.
+
+        :param response: Response object or response content to parse.
+        :param strip_newlines: Optional bool, indicating if all newlines should be converted into spaces,
+            for extra-minimalistic formatting.
+            Generally True for UnitTest direct comparison. False for console output/human examination.
+        :return: Formatted response content.
+        """
+        # Handle for provided response types.
+        if isinstance(response, HttpResponseBase):
+            response_content = response.content.decode('utf-8')
+        else:
+            response_content = str(response)
+
+        # Standardize basic characters, for easier comparison.
+        response_content = self.standardize_characters(response_content)
+
+        # Trim all extra whitespaces, for easier comparison.
+        if strip_newlines:
+            # All whitespace is converted into a single space.
+            # Newlines are also converted into a single space.
+            response_content = self.standardize_whitespace(response_content)
+        else:
+            # All whitespace is converted into a single space.
+            # Repeating newlines are condensed down into a single newline.
+            response_content = self.standardize_newlines(response_content)
+
+        # Further trim whitespace around specific characters, for easier comparison.
+        response_content = self.standardize_html_tags(response_content)
+
+        return response_content

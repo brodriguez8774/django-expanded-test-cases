@@ -654,6 +654,113 @@ class IntegrationClassTest(IntegrationTestCase):
             self.assertIn('Test warning message.', messages)
             self.assertIn('Test error message.', messages)
 
+    def test__get_minimized_response_content__strip_newlines_is_true(self):
+        """
+        Tests get_minimized_response_content() function.
+        """
+        with self.subTest('Minimal Response - No change'):
+            response = HttpResponse('<h1>Test Title</h1>')
+            response = self.get_minimized_response_content(response, strip_newlines=True)
+            self.assertEqual(response, '<h1>Test Title</h1>')
+
+        with self.subTest('Minimal Response - Outer whitespace'):
+            response = HttpResponse('&nbsp; <h1>Test Title</h1> &nbsp; ')
+            response = self.get_minimized_response_content(response, strip_newlines=True)
+            self.assertEqual(response, '<h1>Test Title</h1>')
+
+        with self.subTest('Minimal Response - Inner whitespace'):
+            response = HttpResponse('<h1>Test  &nbsp;  Title</h1>')
+            response = self.get_minimized_response_content(response, strip_newlines=True)
+            self.assertEqual(response, '<h1>Test Title</h1>')
+
+        with self.subTest('Minimal Response - Inner whitespace'):
+            response = HttpResponse('<h1>Test  &nbsp;  Title</h1>')
+            response = self.get_minimized_response_content(response, strip_newlines=True)
+            self.assertEqual(response, '<h1>Test Title</h1>')
+
+        with self.subTest('Minimal Response - With Newlines'):
+            response = HttpResponse('<h1>Test  \n  Title</h1>')
+            response = self.get_minimized_response_content(response, strip_newlines=True)
+            self.assertEqual(response, '<h1>Test Title</h1>')
+
+        with self.subTest('Standard Response - Login Page'):
+            response = self._get_page_response('expanded_test_cases:login')
+            response = self.get_minimized_response_content(response, strip_newlines=True)
+            self.assertEqual(response, '<h1>Login Page</h1><p>Pretend this is a login page.</p>')
+
+        with self.subTest('Standard Response - Render() Home Page'):
+            response = self._get_page_response('expanded_test_cases:index')
+            response = self.get_minimized_response_content(response, strip_newlines=True)
+            self.assertEqual(response, '<h1>Home Page</h1><p>Pretend this is the project landing page.</p>')
+
+        with self.subTest('Standard Response - TemplateResponse Home Page'):
+            response = self._get_page_response('expanded_test_cases:template-response-index')
+            response = self.get_minimized_response_content(response, strip_newlines=True)
+            self.assertEqual(response, '<h1>Home Page</h1><p>Pretend this is the project landing page.</p>')
+
+        with self.subTest('Standard Response - One Message Page'):
+            response = self._get_page_response('expanded_test_cases:one-message')
+            response = self.get_minimized_response_content(response, strip_newlines=True)
+            self.assertEqual(
+                response,
+                (
+                    '<ul><li><p>This is a test message.</p></li></ul>'
+                    '<h1>View with One Message</h1>'
+                    '<p>Pretend useful stuff is displayed here, for one-message render() view.</p>'
+                ),
+            )
+
+    def test__get_minimized_response_content__strip_newlines_is_false(self):
+        """
+        Tests get_minimized_response_content() function.
+        """
+        with self.subTest('Minimal Response - No change'):
+            response = HttpResponse('<h1>Test Title</h1>')
+            response = self.get_minimized_response_content(response, strip_newlines=False)
+            self.assertEqual(response, '<h1>Test Title</h1>')
+
+        with self.subTest('Minimal Response - Outer whitespace'):
+            response = HttpResponse('&nbsp; <h1>Test Title</h1> &nbsp; ')
+            response = self.get_minimized_response_content(response, strip_newlines=False)
+            self.assertEqual(response, '<h1>Test Title</h1>')
+
+        with self.subTest('Minimal Response - Inner whitespace'):
+            response = HttpResponse('<h1>Test  &nbsp;  Title</h1>')
+            response = self.get_minimized_response_content(response, strip_newlines=False)
+            self.assertEqual(response, '<h1>Test Title</h1>')
+
+        with self.subTest('Minimal Response - With Newlines'):
+            response = HttpResponse('<h1>Test  \n  Title</h1>')
+            response = self.get_minimized_response_content(response, strip_newlines=False)
+            self.assertEqual(response, '<h1>Test \n Title</h1>')
+
+        with self.subTest('Standard Response - Login Page'):
+            response = self._get_page_response('expanded_test_cases:login')
+            response = self.get_minimized_response_content(response, strip_newlines=False)
+            self.assertEqual(response, '<h1>Login Page</h1>\n<p>Pretend this is a login page.</p>')
+
+        with self.subTest('Standard Response - Render() Home Page'):
+            response = self._get_page_response('expanded_test_cases:index')
+            response = self.get_minimized_response_content(response, strip_newlines=False)
+            self.assertEqual(response, '<h1>Home Page</h1>\n<p>Pretend this is the project landing page.</p>')
+
+        with self.subTest('Standard Response - TemplateResponse Home Page'):
+            response = self._get_page_response('expanded_test_cases:template-response-index')
+            response = self.get_minimized_response_content(response, strip_newlines=False)
+            self.assertEqual(response, '<h1>Home Page</h1>\n<p>Pretend this is the project landing page.</p>')
+
+        with self.subTest('Standard Response - One Message Page'):
+            response = self._get_page_response('expanded_test_cases:one-message')
+            response = self.get_minimized_response_content(response, strip_newlines=False)
+            self.assertEqual(
+                response,
+                (
+                    '<ul>\n<li><p>\n This is a test message.\n</p></li>\n</ul>\n'
+                    '<h1>View with One Message</h1>\n'
+                    '<p>Pretend useful stuff is displayed here, for one-message render() view.</p>'
+                ),
+            )
+
     def test__standardize_html_tags(self):
         """
         Tests letters in standardize_html_tags() functions.
