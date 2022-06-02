@@ -40,6 +40,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
 
         # Standardize output for easier analysis.
         response_content = self.standardize_characters(response_content)
+        response_content = self.standardize_newlines(response_content)
 
         self._debug_print()
         self._debug_print(('{0} {1} {0}'.format('=' * 10, 'response.content')))

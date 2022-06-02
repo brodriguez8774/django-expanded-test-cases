@@ -154,6 +154,10 @@ class IntegrationClassTest(IntegrationTestCase):
             response = self.assertResponse('expanded_test_cases:index')
             self.assertEqual(response.status_code, 200)
 
+            # With non-200 code provided.
+            with self.assertRaises(AssertionError):
+                self.assertResponse('expanded_test_cases:index', expected_status=400)
+
         with self.subTest('With status_code=200 - View with params'):
             # Test 200 in direct url.
             response = self.assertResponse('user/detail/1/')
@@ -167,6 +171,10 @@ class IntegrationClassTest(IntegrationTestCase):
             response = self.assertResponse('expanded_test_cases:user-detail', kwargs={'pk': 3})
             self.assertEqual(response.status_code, 200)
 
+            # With non-200 code provided.
+            with self.assertRaises(AssertionError):
+                self.assertResponse('user/detail/1/', expected_status=500)
+
         with self.subTest('With status_code=404'):
             # Test 404 in direct url.
             response = self.assertResponse('bad_url', expected_status=404)
@@ -179,6 +187,106 @@ class IntegrationClassTest(IntegrationTestCase):
             # Test 404 in reverse() url, via kwargs.
             response = self.assertResponse('expanded_test_cases:user-detail', kwargs={'pk': 345}, expected_status=404)
             self.assertEqual(response.status_code, 404)
+
+            # With non-404 code provided.
+            with self.assertRaises(AssertionError):
+                self.assertResponse('bad_url', expected_status=200)
+
+    def test__assertResponse__expected_title(self):
+        """
+        Tests "expected_title" functionality of assertResponse() function.
+        """
+        with self.subTest('Title match'):
+            self.assertResponse('expanded_test_cases:index', expected_title='Home Page | Test Views')
+
+        with self.subTest('Title mismatch'):
+            with self.assertRaises(AssertionError):
+                self.assertResponse('expanded_test_cases:index', expected_title='Wrong Title')
+
+    def test__assertResponse__expected_header(self):
+        """
+        Tests "expected_header" functionality of assertResponse() function.
+        """
+        with self.subTest('Header match'):
+            self.assertResponse('expanded_test_cases:index', expected_header='Home Page Header')
+
+        with self.subTest('Header mismatch'):
+            with self.assertRaises(AssertionError):
+                self.assertResponse('expanded_test_cases:index', expected_header='Wrong Header')
+
+    def test__assertResponse__expected_messages(self):
+        """
+        Tests "expected_messages" functionality of assertResponse() function.
+        """
+        with self.subTest('No messages on page - match'):
+            self.assertResponse('expanded_test_cases:index', expected_messages='')
+            self.assertResponse('expanded_test_cases:index', expected_messages=[''])
+
+        with self.subTest('No messages on page - mismatch'):
+            with self.assertRaises(AssertionError):
+                self.assertResponse('expanded_test_cases:index', expected_messages='Wrong message.')
+            with self.assertRaises(AssertionError):
+                self.assertResponse('expanded_test_cases:index', expected_messages=['Wrong message.'])
+
+        with self.subTest('Multiple messages on page - match'):
+            self.assertResponse('expanded_test_cases:three-messages', expected_messages='Test info message.')
+            self.assertResponse('expanded_test_cases:three-messages', expected_messages=['Test warning message.'])
+            self.assertResponse(
+                'expanded_test_cases:three-messages',
+                expected_messages=['Test info message.', 'Test warning message.'],
+            )
+            self.assertResponse(
+                'expanded_test_cases:three-messages',
+                expected_messages=['Test info message.', 'Test warning message.', 'Test error message.'],
+            )
+
+        with self.subTest('Multiple messages on page - mismatch'):
+            with self.assertRaises(AssertionError):
+                self.assertResponse('expanded_test_cases:three-messages', expected_messages='Wrong message.')
+            with self.assertRaises(AssertionError):
+                self.assertResponse(
+                    'expanded_test_cases:three-messages',
+                    expected_messages=['Test info message.', 'Wrong message.'],
+                )
+
+    def test__assertResponse__expected_content(self):
+        """
+        Tests "expected_content" functionality of assertResponse() function.
+        """
+        with self.subTest('Content match - With tags'):
+            self.assertResponse(
+                'expanded_test_cases:index',
+                expected_content=[
+                    '<title>Home Page | Test Views</title>',
+                    '<h1>Home Page Header</h1>',
+                    '<p>Pretend this is',
+                    'the project landing page.</p>',
+                ]
+            )
+
+        with self.subTest('Content match - Without tags'):
+            self.assertResponse(
+                'expanded_test_cases:index',
+                expected_content=[
+                    'Home Page | Test Views',
+                    'Home Page Header',
+                    'Pretend this is',
+                    'the project landing page.',
+                ]
+            )
+
+        with self.subTest('Content mismatch'):
+            with self.assertRaises(AssertionError):
+                self.assertResponse('expanded_test_cases:index', expected_content='Wrong value')
+            with self.assertRaises(AssertionError):
+                self.assertResponse(
+                    'expanded_test_cases:index',
+                    expected_content=[
+                        'Home Page Header',
+                        'Pretend this is',
+                        'Wrong value'
+                    ],
+                )
 
     def test__assertGetResponse(self):
         """

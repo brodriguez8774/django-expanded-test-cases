@@ -28,22 +28,72 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
     # region Custom Assertions
 
-    def assertResponse(self, url, *args, get=True, data=None, expected_status=200, **kwargs):
+    def assertResponse(
+        self,
+        url, *args,
+        get=True, data=None,
+        expected_status=200, expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
+        **kwargs,
+    ):
         """Verifies the view response object at given URL matches provided parameters.
 
+        At minimum, gets a response object from parsing provided url, then asserts the status code matches.
+        Optionally also allows testing:
+            * Title - The expected title, aka what displays in the browser tab text at the top of the browser.
+            * Header (H1 tag) - The expected H1 header tag on the page.
+            * Messages - One or more messages, generated from the Django messages framework.
+            * Content - One or more values that should physically appear within html rendering.
+
         :param url: Url to get response object from.
+        :param get: Bool indicating if response is GET or POST. Defaults to GET.
+        :param data: Optional dict of items to pass into response generation.
         :param expected_status: Expected status code, after any redirections. Default code of 200.
+        :param expected_title: Expected page title to verify. Skips title test if left as None.
+        :param expected_header: Expected page h1 to verify. Skips header test if left as None.
+        :param expected_messages: Expected context messages to verify. Skips message test if left as None.
+        :param expected_content: Expected page content elements to verify. Skips content test if left as None.
         """
         # Run logic to get corresponding response object.
         response = self._get_page_response(url, *args, get=get, data=data, **kwargs)
 
+        # Optionally output all debug info for found response.
+        if self._debug_print_bool:
+            self.show_debug_content(response)
+            # self.show_debug_context(response)
+            self.show_debug_session_data(response)
+            # self.show_debug_form_data(response)
+            self.show_debug_messages(response)
+            self.show_debug_user_info(response)
+
         # Verify page status code.
         self.assertStatusCode(response, expected_status)
+
+        # Verify page title.
+        if expected_title is not None:
+            self.assertPageTitle(response, expected_title)
+
+        # Verify page header.
+        if expected_header is not None:
+            self.assertPageHeader(response, expected_header)
+
+        # Verify page messages.
+        if expected_messages is not None:
+            self.assertContextMessages(response, expected_messages, debug_output=False)
+
+        # Verify page content.
+        if expected_content is not None:
+            self.assertPageContent(response, expected_content, debug_output=False)
 
         # All assertions passed so far. Return response in case user wants to do further checks.
         return response
 
-    def assertGetResponse(self, url, *args, data=None, expected_status=200, **kwargs):
+    def assertGetResponse(
+        self,
+        url, *args,
+        data=None,
+        expected_status=200, expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
+        **kwargs,
+    ):
         """Verifies a GET response was found at given URL, and matches provided parameters."""
 
         # Call base function to handle actual logic.
@@ -53,10 +103,20 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             get=True,
             data=data,
             expected_status=expected_status,
+            expected_title=expected_title,
+            expected_header=expected_header,
+            expected_messages=expected_messages,
+            expected_content=expected_content,
             **kwargs,
         )
 
-    def assertPostResponse(self, url, *args, data=None, expected_status=200, **kwargs):
+    def assertPostResponse(
+        self,
+        url, *args,
+        data=None,
+        expected_status=200, expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
+        **kwargs,
+    ):
         """Verifies a GET response was found at given URL, and matches provided parameters."""
 
         # Handle mutable data defaults.
@@ -75,6 +135,10 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             get=False,
             data=data,
             expected_status=expected_status,
+            expected_title=expected_title,
+            expected_header=expected_header,
+            expected_messages=expected_messages,
+            expected_content=expected_content,
             **kwargs,
         )
 
