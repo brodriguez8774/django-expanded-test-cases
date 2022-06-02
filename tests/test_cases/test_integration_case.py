@@ -267,6 +267,157 @@ class IntegrationClassTest(IntegrationTestCase):
             with self.assertRaises(AssertionError):
                 self.assertStatusCode(response.status_code, 500)
 
+    def test__assertPageTitle__success(self):
+        """
+        Tests assertPageTitle() function, in cases when it should succeed.
+        """
+        with self.subTest('Including title tag in expected'):
+            response = HttpResponse('<title>Test Title</title>')
+            self.assertPageTitle(response, '<title>Test Title</title>')
+
+        with self.subTest('Including title tag in expected, with extra whitespace around tag'):
+            response = HttpResponse('<title>Test Title</title>')
+            self.assertPageTitle(response, '   <title>    Test Title    </title>   ')
+
+        with self.subTest('No title element in response (simulates things like file downloads)'):
+            response = HttpResponse('')
+            self.assertPageTitle(response, '')
+
+        with self.subTest('Title exists, but is empty'):
+            response = HttpResponse('<title></title>')
+            self.assertPageTitle(response, '')
+
+        with self.subTest('Title exists, but is whitespace'):
+            response = HttpResponse('<title>   </title>')
+            self.assertPageTitle(response, '')
+
+        with self.subTest('Basic title'):
+            response = HttpResponse('<title>Test Title</title>')
+            self.assertPageTitle(response, 'Test Title')
+
+        with self.subTest('Basic title, with extra whitespace (to simulate Django templating)'):
+            response = HttpResponse('<title>   Test    Title   </title>')
+            self.assertPageTitle(response, 'Test Title')
+
+        with self.subTest('Complex title - Exact Match'):
+            response = HttpResponse('<title>Test Title | My Custom App | My Really Cool Site</title>')
+            self.assertPageTitle(response, 'Test Title | My Custom App | My Really Cool Site', exact_match=True)
+
+        with self.subTest('Complex title, with extra whitespace (to simulate Django templating) - Exact Match'):
+            response = HttpResponse(
+                '<title>   Test   Title    \n|\n   My Custom App   \n|\n   My Really Cool Site   </title>'
+            )
+            self.assertPageTitle(response, 'Test Title | My Custom App | My Really Cool Site', exact_match=True)
+
+        with self.subTest('Complex title - Loose Match'):
+            response = HttpResponse('<title>Test Title | My Custom App | My Really Cool Site</title>')
+            self.assertPageTitle(response, 'Test Title', exact_match=False)
+            self.assertPageTitle(response, 'My Custom App', exact_match=False)
+            self.assertPageTitle(response, 'My Really Cool Site', exact_match=False)
+
+        with self.subTest('Complex title, with extra whitespace (to simulate Django templating) - Loose Match'):
+            response = HttpResponse(
+                '<title>   Test   Title    \n|\n   My Custom App   \n|\n   My Really Cool Site   </title>'
+            )
+            self.assertPageTitle(response, 'Test Title', exact_match=False)
+            self.assertPageTitle(response, 'My Custom App', exact_match=False)
+            self.assertPageTitle(response, 'My Really Cool Site', exact_match=False)
+
+    def test__assertPageTitle__failure(self):
+        """
+        Tests assertPageTitle() function, in cases when it should fail.
+        """
+        with self.subTest('Checking for title when none exists'):
+            with self.assertRaises(AssertionError):
+                response = HttpResponse('')
+                self.assertPageTitle(response, 'Test Title')
+
+        with self.subTest('Expected value is on page, but not in title tag'):
+            with self.assertRaises(AssertionError):
+                response = HttpResponse('Test Title')
+                self.assertPageTitle(response, 'Test Title')
+            with self.assertRaises(AssertionError):
+                response = HttpResponse('<h1>Test Title</h1><p>Test Title</p>')
+                self.assertPageTitle(response, 'Test Title')
+
+        with self.subTest('Assuming extra whitespace is still present'):
+            with self.assertRaises(AssertionError):
+                response = HttpResponse('<title>   Test    Title   </title>')
+                self.assertPageTitle(response, '   Test    Title   ')
+
+        with self.subTest('Set to exact match, but only passing in title subsection'):
+            with self.assertRaises(AssertionError):
+                response = HttpResponse('<title>Test Title | My Custom App | My Really Cool Site</title>')
+                self.assertPageTitle(response, 'Test Title')
+            with self.assertRaises(AssertionError):
+                response = HttpResponse('<title>Test Title | My Custom App | My Really Cool Site</title>')
+                self.assertPageTitle(response, 'My Custom App')
+            with self.assertRaises(AssertionError):
+                response = HttpResponse('<title>Test Title | My Custom App | My Really Cool Site</title>')
+                self.assertPageTitle(response, 'My Really Cool Site')
+
+        with self.subTest('Set to partial match, but value is not in title'):
+            with self.assertRaises(AssertionError):
+                response = HttpResponse('Test Title')
+                self.assertPageTitle(response, 'Wrong Value')
+            with self.assertRaises(AssertionError):
+                response = HttpResponse('Test Title')
+                self.assertPageTitle(response, 'Test Title and More')
+
+    def test__assertPageHeader__success(self):
+        """
+        Tests assertPageHeader() function, in cases when it should succeed.
+        """
+        with self.subTest('Including header tag in expected'):
+            response = HttpResponse('<h1>Test Header</h1>')
+            self.assertPageHeader(response, '<h1>Test Header</h1>')
+
+        with self.subTest('Including header tag in expected, with extra whitespace around tag'):
+            response = HttpResponse('<h1>Test Header</h1>')
+            self.assertPageHeader(response, '   <h1>    Test Header    </h1>   ')
+
+        with self.subTest('No header element in response (simulates things like file downloads)'):
+            response = HttpResponse('')
+            self.assertPageHeader(response, '')
+
+        with self.subTest('Header exists, but is empty'):
+            response = HttpResponse('<h1></h1>')
+            self.assertPageHeader(response, '')
+
+        with self.subTest('Header exists, but is whitespace'):
+            response = HttpResponse('<h1>   </h1>')
+            self.assertPageHeader(response, '')
+
+        with self.subTest('Basic header'):
+            response = HttpResponse('<h1>Test Header</h1>')
+            self.assertPageHeader(response, 'Test Header')
+
+        with self.subTest('Basic header, with extra whitespace (to simulate Django templating)'):
+            response = HttpResponse('<h1>   Test    Header   </h1>')
+            self.assertPageHeader(response, 'Test Header')
+
+    def test__assertPageHeader__failure(self):
+        """
+        Tests assertPageHeader() function, in cases when it should fail.
+        """
+        with self.subTest('Checking for header when none exists'):
+            with self.assertRaises(AssertionError):
+                response = HttpResponse('')
+                self.assertPageHeader(response, 'Test Header')
+
+        with self.subTest('Expected value is on page, but not in header tag'):
+            with self.assertRaises(AssertionError):
+                response = HttpResponse('Test Header')
+                self.assertPageHeader(response, 'Test Header')
+            with self.assertRaises(AssertionError):
+                response = HttpResponse('<h2>Test Header</h2><p>Test Header</p>')
+                self.assertPageHeader(response, 'Test Header')
+
+        with self.subTest('Assuming extra whitespace is still present'):
+            with self.assertRaises(AssertionError):
+                response = HttpResponse('<h1>   Test    Header   </h1>')
+                self.assertPageHeader(response, '   Test    Header   ')
+
     def test__assertPageContent__success(self):
         """
         Tests assertPageContent() function, in cases when it should succeed.
@@ -424,157 +575,6 @@ class IntegrationClassTest(IntegrationTestCase):
                 self.assertPageContent(response, ('<h1>Home Page</h1>', 'Wrong text'))
             with self.assertRaises(AssertionError):
                 self.assertPageContent(response, ('<h1>Wrong Header</h1>', 'project landing page'))
-
-    def test__assertPageTitle__success(self):
-        """
-        Tests assertPageTitle() function, in cases when it should succeed.
-        """
-        with self.subTest('Including title tag in expected'):
-            response = HttpResponse('<title>Test Title</title>')
-            self.assertPageTitle(response, '<title>Test Title</title>')
-
-        with self.subTest('Including title tag in expected, with extra whitespace around tag'):
-            response = HttpResponse('<title>Test Title</title>')
-            self.assertPageTitle(response, '   <title>    Test Title    </title>   ')
-
-        with self.subTest('No title element in response (simulates things like file downloads)'):
-            response = HttpResponse('')
-            self.assertPageTitle(response, '')
-
-        with self.subTest('Title exists, but is empty'):
-            response = HttpResponse('<title></title>')
-            self.assertPageTitle(response, '')
-
-        with self.subTest('Title exists, but is whitespace'):
-            response = HttpResponse('<title>   </title>')
-            self.assertPageTitle(response, '')
-
-        with self.subTest('Basic title'):
-            response = HttpResponse('<title>Test Title</title>')
-            self.assertPageTitle(response, 'Test Title')
-
-        with self.subTest('Basic title, with extra whitespace (to simulate Django templating)'):
-            response = HttpResponse('<title>   Test    Title   </title>')
-            self.assertPageTitle(response, 'Test Title')
-
-        with self.subTest('Complex title - Exact Match'):
-            response = HttpResponse('<title>Test Title | My Custom App | My Really Cool Site</title>')
-            self.assertPageTitle(response, 'Test Title | My Custom App | My Really Cool Site', exact_match=True)
-
-        with self.subTest('Complex title, with extra whitespace (to simulate Django templating) - Exact Match'):
-            response = HttpResponse(
-                '<title>   Test   Title    \n|\n   My Custom App   \n|\n   My Really Cool Site   </title>'
-            )
-            self.assertPageTitle(response, 'Test Title | My Custom App | My Really Cool Site', exact_match=True)
-
-        with self.subTest('Complex title - Loose Match'):
-            response = HttpResponse('<title>Test Title | My Custom App | My Really Cool Site</title>')
-            self.assertPageTitle(response, 'Test Title', exact_match=False)
-            self.assertPageTitle(response, 'My Custom App', exact_match=False)
-            self.assertPageTitle(response, 'My Really Cool Site', exact_match=False)
-
-        with self.subTest('Complex title, with extra whitespace (to simulate Django templating) - Loose Match'):
-            response = HttpResponse(
-                '<title>   Test   Title    \n|\n   My Custom App   \n|\n   My Really Cool Site   </title>'
-            )
-            self.assertPageTitle(response, 'Test Title', exact_match=False)
-            self.assertPageTitle(response, 'My Custom App', exact_match=False)
-            self.assertPageTitle(response, 'My Really Cool Site', exact_match=False)
-
-    def test__assertPageTitle__failure(self):
-        """
-        Tests assertPageTitle() function, in cases when it should fail.
-        """
-        with self.subTest('Checking for title when none exists'):
-            with self.assertRaises(AssertionError):
-                response = HttpResponse('')
-                self.assertPageTitle(response, 'Test Title')
-
-        with self.subTest('Expected value is on page, but not in title tag'):
-            with self.assertRaises(AssertionError):
-                response = HttpResponse('Test Title')
-                self.assertPageTitle(response, 'Test Title')
-            with self.assertRaises(AssertionError):
-                response = HttpResponse('<h1>Test Title</h1><p>Test Title</p>')
-                self.assertPageTitle(response, 'Test Title')
-
-        with self.subTest('Assuming extra whitespace is still present'):
-            with self.assertRaises(AssertionError):
-                response = HttpResponse('<title>   Test    Title   </title>')
-                self.assertPageTitle(response, '   Test    Title   ')
-
-        with self.subTest('Set to exact match, but only passing in title subsection'):
-            with self.assertRaises(AssertionError):
-                response = HttpResponse('<title>Test Title | My Custom App | My Really Cool Site</title>')
-                self.assertPageTitle(response, 'Test Title')
-            with self.assertRaises(AssertionError):
-                response = HttpResponse('<title>Test Title | My Custom App | My Really Cool Site</title>')
-                self.assertPageTitle(response, 'My Custom App')
-            with self.assertRaises(AssertionError):
-                response = HttpResponse('<title>Test Title | My Custom App | My Really Cool Site</title>')
-                self.assertPageTitle(response, 'My Really Cool Site')
-
-        with self.subTest('Set to partial match, but value is not in title'):
-            with self.assertRaises(AssertionError):
-                response = HttpResponse('Test Title')
-                self.assertPageTitle(response, 'Wrong Value')
-            with self.assertRaises(AssertionError):
-                response = HttpResponse('Test Title')
-                self.assertPageTitle(response, 'Test Title and More')
-
-    def test__assertPageHeader__success(self):
-        """
-        Tests assertPageHeader() function, in cases when it should succeed.
-        """
-        with self.subTest('Including header tag in expected'):
-            response = HttpResponse('<h1>Test Header</h1>')
-            self.assertPageHeader(response, '<h1>Test Header</h1>')
-
-        with self.subTest('Including header tag in expected, with extra whitespace around tag'):
-            response = HttpResponse('<h1>Test Header</h1>')
-            self.assertPageHeader(response, '   <h1>    Test Header    </h1>   ')
-
-        with self.subTest('No header element in response (simulates things like file downloads)'):
-            response = HttpResponse('')
-            self.assertPageHeader(response, '')
-
-        with self.subTest('Header exists, but is empty'):
-            response = HttpResponse('<h1></h1>')
-            self.assertPageHeader(response, '')
-
-        with self.subTest('Header exists, but is whitespace'):
-            response = HttpResponse('<h1>   </h1>')
-            self.assertPageHeader(response, '')
-
-        with self.subTest('Basic header'):
-            response = HttpResponse('<h1>Test Header</h1>')
-            self.assertPageHeader(response, 'Test Header')
-
-        with self.subTest('Basic header, with extra whitespace (to simulate Django templating)'):
-            response = HttpResponse('<h1>   Test    Header   </h1>')
-            self.assertPageHeader(response, 'Test Header')
-
-    def test__assertPageHeader__failure(self):
-        """
-        Tests assertPageHeader() function, in cases when it should fail.
-        """
-        with self.subTest('Checking for header when none exists'):
-            with self.assertRaises(AssertionError):
-                response = HttpResponse('')
-                self.assertPageHeader(response, 'Test Header')
-
-        with self.subTest('Expected value is on page, but not in header tag'):
-            with self.assertRaises(AssertionError):
-                response = HttpResponse('Test Header')
-                self.assertPageHeader(response, 'Test Header')
-            with self.assertRaises(AssertionError):
-                response = HttpResponse('<h2>Test Header</h2><p>Test Header</p>')
-                self.assertPageHeader(response, 'Test Header')
-
-        with self.subTest('Assuming extra whitespace is still present'):
-            with self.assertRaises(AssertionError):
-                response = HttpResponse('<h1>   Test    Header   </h1>')
-                self.assertPageHeader(response, '   Test    Header   ')
 
     @override_settings(DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS=True)
     def test__assertContextMessages__success__allow_partials(self):
