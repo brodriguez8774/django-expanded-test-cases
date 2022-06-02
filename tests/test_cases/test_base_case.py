@@ -3,19 +3,15 @@ Tests for test_cases/base_test_case.py.
 """
 
 # System Imports.
-
-# User Imports.
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from django_expanded_test_cases.test_cases import BaseTestCase
+
+# User Imports.
+from django_expanded_test_cases import BaseTestCase
 
 
 class BaseClassTest(BaseTestCase):
     """Tests for BaseTestCase class."""
-
-    def setUp(self, debug_print=None):
-        # Run parent setup logic.
-        super().setUp(debug_print=debug_print)
 
     # region User Management Function Tests
 

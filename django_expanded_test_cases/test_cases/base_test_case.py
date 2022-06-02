@@ -6,15 +6,22 @@ Testing class for generalized logic.
 from django.test import TestCase
 
 # User Imports.
-from django_expanded_test_cases.mixins.core_mixin import CoreTestCaseMixin
+from django_expanded_test_cases.mixins import CoreTestCaseMixin
 
 
 class BaseTestCase(TestCase, CoreTestCaseMixin):
     """Generalized testing functionality. Builds upon Django's default TestCase class."""
 
-    def setUp(self, debug_print=None):
+    @classmethod
+    def setUpClass(cls, debug_print=None):
         # Run parent setup logic.
-        super().setUp()
+        super().setUpClass()
 
         # Also call CoreMixin setup logic.
-        self.set_up(debug_print=debug_print)
+        cls.set_up_class(debug_print=debug_print)
+
+
+# Define acceptable imports on file.
+__all__ = [
+    'BaseTestCase',
+]

@@ -15,6 +15,13 @@ from django_expanded_test_cases.mixins.response_mixin import ResponseTestCaseMix
 class LiveServerTestCase(ChannelsLiveServerTestCase, ResponseTestCaseMixin):
     """Testing functionality through selenium, to simulate web browser navigation."""
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         # Run parent setup logic.
-        super().setUp()
+        super().setUpClass()
+
+
+# Define acceptable imports on file.
+__all__ = [
+    'LiveServerTestCase',
+]

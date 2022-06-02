@@ -23,34 +23,35 @@ class CoreTestCaseMixin:
 
     # region Class Functions
 
-    def set_up(self, debug_print=None):
+    @classmethod
+    def set_up_class(cls, debug_print=None):
         """
-        Acts as the equivalent of the UnitTesting "setUp()" function.
+        Acts as the equivalent of the UnitTesting "setUpClass()" function.
 
         However, since this is not inheriting from a given TestCase, calling the literal function
         here would override instead.
         :param debug_print: Optional bool that indicates if debug output should print to console.
-            Overrides setting value if both are present.
+            Param overrides setting value if both param and setting are set.
         """
         # Generate "special case" test user instances.
         # Guarantees that there will always be at least some default User models when tests are run.
-        self.test_superuser = get_user_model().objects.create_user(
+        cls.test_superuser = get_user_model().objects.create_user(
             username='test_superuser',
             password='password',
             is_superuser=True,
         )
-        self.test_admin = get_user_model().objects.create_user(
+        cls.test_admin = get_user_model().objects.create_user(
             username='test_admin',
             password='password',
             is_staff=True,
         )
-        self.test_user = get_user_model().objects.create_user(username='test_user', password='password')
+        cls.test_user = get_user_model().objects.create_user(username='test_user', password='password')
 
         # Check user debug_print option.
         if debug_print is not None:
-            self._debug_print_bool = bool(debug_print)
+            cls._debug_print_bool = bool(debug_print)
         else:
-            self._debug_print_bool = getattr(settings, 'DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT', True)
+            cls._debug_print_bool = getattr(settings, 'DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT', True)
 
     def _debug_print(self, *args, **kwargs):
         """Prints or suppresses output, based on DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT settings variable.
@@ -436,3 +437,9 @@ class CoreTestCaseMixin:
         self._site_root_url = value
 
     # endregion Properties
+
+
+# Define acceptable imports on file.
+__all__ = [
+    'CoreTestCaseMixin',
+]

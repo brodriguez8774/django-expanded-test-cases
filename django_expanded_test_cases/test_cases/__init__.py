@@ -1,5 +1,5 @@
 """
-Imports logic for "test_cases/" folder.
+Imports logic for "django_expanded_test_cases/test_cases/" folder.
 Makes project imports to this folder behave like a standard file.
 """
 

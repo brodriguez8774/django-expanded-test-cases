@@ -11,24 +11,20 @@ from django.urls.exceptions import NoReverseMatch
 
 # User Imports.
 from .base_test_case import BaseTestCase
-from django_expanded_test_cases.mixins.response_mixin import ResponseTestCaseMixin
+from django_expanded_test_cases.mixins import ResponseTestCaseMixin
 
 
 class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
     """Testing functionality for views and other multi-part components."""
 
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls, *args, debug_print=None, **kwargs):
         # Run parent setup logic.
-        super().setUpClass()
+        super().setUpClass(debug_print=None)
 
         # Initialize url variables.
         cls.login_url = reverse(settings.LOGIN_URL)
         cls._site_root_url = None
-
-    def setUp(self):
-        # Run parent setup logic.
-        super().setUp()
 
     # region Custom Assertions
 
@@ -456,3 +452,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         return found_messages
 
     # endregion Helper Functions
+
+
+# Define acceptable imports on file.
+__all__ = [
+    'IntegrationTestCase',
+]

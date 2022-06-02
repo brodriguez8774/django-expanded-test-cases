@@ -7,19 +7,20 @@ from django.http import HttpResponse
 from django.test import override_settings
 
 # User Imports.
-from django_expanded_test_cases.test_cases import IntegrationTestCase
+from django_expanded_test_cases import IntegrationTestCase
 
 
 class IntegrationClassTest(IntegrationTestCase):
     """Tests for IntegrationTestCase class."""
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         # Run parent setup logic.
-        super().setUp()
+        super().setUpClass()
 
-        self.test_superuser.first_name = 'TestFirst'
-        self.test_superuser.last_name = 'TestLast'
-        self.test_superuser.save()
+        cls.test_superuser.first_name = 'TestFirst'
+        cls.test_superuser.last_name = 'TestLast'
+        cls.test_superuser.save()
 
     # region Assertion Tests
 
