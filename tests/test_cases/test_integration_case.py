@@ -456,20 +456,20 @@ class IntegrationClassTest(IntegrationTestCase):
 
         with self.subTest('Standard Response - Login Page'):
             response = self._get_page_response('expanded_test_cases:login')
-            self.assertPageContent(response, '<h1>Login Page</h1><p>Pretend this is a login page.</p>')
+            self.assertPageContent(response, '<h1>Login Page Header</h1><p>Pretend this is a login page.</p>')
 
         with self.subTest('Standard Response, missing part of value'):
             response = self._get_page_response('expanded_test_cases:login')
-            self.assertPageContent(response, '<h1>Login Page</h1>')
+            self.assertPageContent(response, '<h1>Login Page Header</h1>')
             self.assertPageContent(response, '<p>Pretend this is a login page.</p>')
 
         with self.subTest('Standard Response - Render() Home Page'):
             response = self._get_page_response('expanded_test_cases:index')
-            self.assertPageContent(response, '<h1>Home Page</h1><p>Pretend this is the project landing page.</p>')
+            self.assertPageContent(response, '<h1>Home Page Header</h1><p>Pretend this is the project landing page.</p>')
 
         with self.subTest('Standard Response - TemplateResponse Home Page'):
             response = self._get_page_response('expanded_test_cases:template-response-index')
-            self.assertPageContent(response, '<h1>Home Page</h1><p>Pretend this is the project landing page.</p>')
+            self.assertPageContent(response, '<h1>Home Page Header</h1><p>Pretend this is the project landing page.</p>')
 
         with self.subTest('Standard Response - One Message Page'):
             response = self._get_page_response('expanded_test_cases:one-message')
@@ -477,7 +477,7 @@ class IntegrationClassTest(IntegrationTestCase):
                 response,
                 (
                     '<ul><li><p>This is a test message.</p></li></ul>'
-                    '<h1>View with One Message</h1>'
+                    '<h1>View with One Message Header</h1>'
                     '<p>Pretend useful stuff is displayed here, for one-message render() view.</p>'
                 ),
             )
@@ -488,7 +488,7 @@ class IntegrationClassTest(IntegrationTestCase):
             self.assertPageContent(
                 response,
                 [
-                    '<h1>Home Page</h1>',
+                    '<h1>Home Page Header</h1>',
                     '<p>Pretend this is the project landing page.</p>',
                     'Pretend this',
                     'project landing',
@@ -498,7 +498,7 @@ class IntegrationClassTest(IntegrationTestCase):
             self.assertPageContent(
                 response,
                 (
-                    '<h1>Home Page</h1>',
+                    '<h1>Home Page Header</h1>',
                     '<p>Pretend this is the project landing page.</p>',
                     'Pretend this',
                     'project landing',
@@ -511,7 +511,7 @@ class IntegrationClassTest(IntegrationTestCase):
             self.assertPageContent(
                 response,
                 [
-                    '<h1>User Detail Page</h1>',
+                    '<h1>User Detail Page Header</h1>',
                     'User Detail',
                     'First Name: "TestFirst"',
                     'Last Name: "TestLast"',
@@ -521,7 +521,7 @@ class IntegrationClassTest(IntegrationTestCase):
             self.assertPageContent(
                 response,
                 (
-                    '<h1>User Detail Page</h1>',
+                    '<h1>User Detail Page Header</h1>',
                     'User Detail',
                     'First Name: "TestFirst"',
                     'Last Name: "TestLast"',
@@ -545,34 +545,34 @@ class IntegrationClassTest(IntegrationTestCase):
         with self.subTest('Standard Response, wrong value passed'):
             with self.assertRaises(AssertionError):
                 response = self._get_page_response('expanded_test_cases:login')
-                self.assertPageContent(response, '<h1>Testing</h1><p>Pretend this is a page.</p>')
+                self.assertPageContent(response, '<h1>Testing Header</h1><p>Pretend this is a page.</p>')
 
         with self.subTest('Standard Response - Set of items with wrong values'):
             response = self._get_page_response('expanded_test_cases:index')
             # Test as list.
             with self.assertRaises(AssertionError):
-                self.assertPageContent(response, ['<h1>Test Page</h1>'])
+                self.assertPageContent(response, ['<h1>Test Page Header</h1>'])
             with self.assertRaises(AssertionError):
                 self.assertPageContent(response, ['Wrong Content'])
             with self.assertRaises(AssertionError):
-                self.assertPageContent(response, ['<h1>Home Test'])
+                self.assertPageContent(response, ['<h1>Home Page Wrong'])
             with self.assertRaises(AssertionError):
-                self.assertPageContent(response, ['Test Home</h1>'])
+                self.assertPageContent(response, ['Wrong Page Header</h1>'])
             with self.assertRaises(AssertionError):
-                self.assertPageContent(response, ['<h1>Home Page</h1>', 'Wrong text'])
+                self.assertPageContent(response, ['<h1>Home Page Header</h1>', 'Wrong text'])
             with self.assertRaises(AssertionError):
                 self.assertPageContent(response, ['<h1>Wrong Header</h1>', 'project landing page'])
             # Test as tuple.
             with self.assertRaises(AssertionError):
-                self.assertPageContent(response, ('<h1>Test Page</h1>',))
+                self.assertPageContent(response, ('<h1>Test Page Header</h1>',))
             with self.assertRaises(AssertionError):
                 self.assertPageContent(response, ('Wrong Content',))
             with self.assertRaises(AssertionError):
-                self.assertPageContent(response, ('<h1>Home Test',))
+                self.assertPageContent(response, ('<h1>Home Page Wrong',))
             with self.assertRaises(AssertionError):
-                self.assertPageContent(response, ('Test Home</h1>',))
+                self.assertPageContent(response, ('Wrong Page Header</h1>',))
             with self.assertRaises(AssertionError):
-                self.assertPageContent(response, ('<h1>Home Page</h1>', 'Wrong text'))
+                self.assertPageContent(response, ('<h1>Home Page Header</h1>', 'Wrong text'))
             with self.assertRaises(AssertionError):
                 self.assertPageContent(response, ('<h1>Wrong Header</h1>', 'project landing page'))
 
@@ -853,17 +853,41 @@ class IntegrationClassTest(IntegrationTestCase):
         with self.subTest('Standard Response - Login Page'):
             response = self._get_page_response('expanded_test_cases:login')
             response = self.get_minimized_response_content(response, strip_newlines=True)
-            self.assertEqual(response, '<h1>Login Page</h1><p>Pretend this is a login page.</p>')
+            self.assertEqual(
+                response,
+                (
+                    '<head><meta charset="utf-8"><title>Login Page | Test Views</title></head>'
+                    '<body>'
+                    '<h1>Login Page Header</h1><p>Pretend this is a login page.</p>'
+                    '</body>'
+                ),
+            )
 
         with self.subTest('Standard Response - Render() Home Page'):
             response = self._get_page_response('expanded_test_cases:index')
             response = self.get_minimized_response_content(response, strip_newlines=True)
-            self.assertEqual(response, '<h1>Home Page</h1><p>Pretend this is the project landing page.</p>')
+            self.assertEqual(
+                response,
+                (
+                    '<head><meta charset="utf-8"><title>Home Page | Test Views</title></head>'
+                    '<body>'
+                    '<h1>Home Page Header</h1><p>Pretend this is the project landing page.</p>'
+                    '</body>'
+                ),
+            )
 
         with self.subTest('Standard Response - TemplateResponse Home Page'):
             response = self._get_page_response('expanded_test_cases:template-response-index')
             response = self.get_minimized_response_content(response, strip_newlines=True)
-            self.assertEqual(response, '<h1>Home Page</h1><p>Pretend this is the project landing page.</p>')
+            self.assertEqual(
+                response,
+                (
+                    '<head><meta charset="utf-8"><title>Home Page | Test Views</title></head>'
+                    '<body>'
+                    '<h1>Home Page Header</h1><p>Pretend this is the project landing page.</p>'
+                    '</body>'
+                ),
+            )
 
         with self.subTest('Standard Response - One Message Page'):
             response = self._get_page_response('expanded_test_cases:one-message')
@@ -871,9 +895,12 @@ class IntegrationClassTest(IntegrationTestCase):
             self.assertEqual(
                 response,
                 (
+                    '<head><meta charset="utf-8"><title>View with One Message | Test Views</title></head>'
+                    '<body>'
                     '<ul><li><p>This is a test message.</p></li></ul>'
-                    '<h1>View with One Message</h1>'
+                    '<h1>View with One Message Header</h1>'
                     '<p>Pretend useful stuff is displayed here, for one-message render() view.</p>'
+                    '</body>'
                 ),
             )
 
@@ -904,17 +931,41 @@ class IntegrationClassTest(IntegrationTestCase):
         with self.subTest('Standard Response - Login Page'):
             response = self._get_page_response('expanded_test_cases:login')
             response = self.get_minimized_response_content(response, strip_newlines=False)
-            self.assertEqual(response, '<h1>Login Page</h1>\n<p>Pretend this is a login page.</p>')
+            self.assertEqual(
+                response,
+                (
+                    '<head>\n<meta charset="utf-8">\n<title>Login Page | Test Views</title>\n</head>\n'
+                    '<body>\n'
+                    '<h1>Login Page Header</h1>\n<p>Pretend this is a login page.</p>\n'
+                    '</body>'
+                )
+            )
 
         with self.subTest('Standard Response - Render() Home Page'):
             response = self._get_page_response('expanded_test_cases:index')
             response = self.get_minimized_response_content(response, strip_newlines=False)
-            self.assertEqual(response, '<h1>Home Page</h1>\n<p>Pretend this is the project landing page.</p>')
+            self.assertEqual(
+                response,
+                (
+                    '<head>\n<meta charset="utf-8">\n<title>Home Page | Test Views</title>\n</head>\n'
+                    '<body>\n'
+                    '<h1>Home Page Header</h1>\n<p>Pretend this is the project landing page.</p>\n'
+                    '</body>'
+                )
+            )
 
         with self.subTest('Standard Response - TemplateResponse Home Page'):
             response = self._get_page_response('expanded_test_cases:template-response-index')
             response = self.get_minimized_response_content(response, strip_newlines=False)
-            self.assertEqual(response, '<h1>Home Page</h1>\n<p>Pretend this is the project landing page.</p>')
+            self.assertEqual(
+                response,
+                (
+                    '<head>\n<meta charset="utf-8">\n<title>Home Page | Test Views</title>\n</head>\n'
+                    '<body>\n'
+                    '<h1>Home Page Header</h1>\n<p>Pretend this is the project landing page.</p>\n'
+                    '</body>'
+                )
+            )
 
         with self.subTest('Standard Response - One Message Page'):
             response = self._get_page_response('expanded_test_cases:one-message')
@@ -922,9 +973,12 @@ class IntegrationClassTest(IntegrationTestCase):
             self.assertEqual(
                 response,
                 (
+                    '<head>\n<meta charset="utf-8">\n<title>View with One Message | Test Views</title>\n</head>\n'
+                    '<body>\n'
                     '<ul>\n<li><p>\n This is a test message.\n</p></li>\n</ul>\n'
-                    '<h1>View with One Message</h1>\n'
-                    '<p>Pretend useful stuff is displayed here, for one-message render() view.</p>'
+                    '<h1>View with One Message Header</h1>\n'
+                    '<p>Pretend useful stuff is displayed here, for one-message render() view.</p>\n'
+                    '</body>'
                 ),
             )
 
