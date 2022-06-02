@@ -16,3 +16,11 @@
 {% if text %}
   <p>{{ text }}</p>
 {% endif %}
+
+{% if li_set %}
+  <ul>
+    {% for li_item in li_set %}
+      <li><p>{{ li_item}}</p></li>
+    {% endfor %}
+  </ul>
+{% endif %}

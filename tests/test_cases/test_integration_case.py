@@ -13,6 +13,14 @@ from django_expanded_test_cases.test_cases import IntegrationTestCase
 class IntegrationClassTest(IntegrationTestCase):
     """Tests for IntegrationTestCase class."""
 
+    def setUp(self):
+        # Run parent setup logic.
+        super().setUp()
+
+        self.test_superuser.first_name = 'TestFirst'
+        self.test_superuser.last_name = 'TestLast'
+        self.test_superuser.save()
+
     # region Assertion Tests
 
     # region Response Assertion Tests
@@ -266,6 +274,10 @@ class IntegrationClassTest(IntegrationTestCase):
             response = HttpResponse('')
             self.assertPageContent(response, '')
 
+        with self.subTest('Minimal Response, no value passed'):
+            response = HttpResponse('<h1>Test Title</h1>')
+            self.assertPageContent(response, '')
+
         with self.subTest('Minimal Response - No change'):
             response = HttpResponse('<h1>Test Title</h1>')
             self.assertPageContent(response, '<h1>Test Title</h1>')
@@ -286,9 +298,18 @@ class IntegrationClassTest(IntegrationTestCase):
             response = HttpResponse('<h1>Test  \n  Title</h1>')
             self.assertPageContent(response, '<h1>Test Title</h1>')
 
+        with self.subTest('Standard Response, no value passed'):
+            response = self._get_page_response('expanded_test_cases:login')
+            self.assertPageContent(response, '')
+
         with self.subTest('Standard Response - Login Page'):
             response = self._get_page_response('expanded_test_cases:login')
             self.assertPageContent(response, '<h1>Login Page</h1><p>Pretend this is a login page.</p>')
+
+        with self.subTest('Standard Response, missing part of value'):
+            response = self._get_page_response('expanded_test_cases:login')
+            self.assertPageContent(response, '<h1>Login Page</h1>')
+            self.assertPageContent(response, '<p>Pretend this is a login page.</p>')
 
         with self.subTest('Standard Response - Render() Home Page'):
             response = self._get_page_response('expanded_test_cases:index')
@@ -309,6 +330,52 @@ class IntegrationClassTest(IntegrationTestCase):
                 ),
             )
 
+        with self.subTest('Standard Response - Set of items on index page'):
+            response = self._get_page_response('expanded_test_cases:index')
+            # Test as list.
+            self.assertPageContent(
+                response,
+                [
+                    '<h1>Home Page</h1>',
+                    '<p>Pretend this is the project landing page.</p>',
+                    'Pretend this',
+                    'project landing',
+                ],
+            )
+            # Test as tuple.
+            self.assertPageContent(
+                response,
+                (
+                    '<h1>Home Page</h1>',
+                    '<p>Pretend this is the project landing page.</p>',
+                    'Pretend this',
+                    'project landing',
+                ),
+            )
+
+        with self.subTest('Standard Response - Set of items on user page'):
+            response = self._get_page_response('expanded_test_cases:user-detail', args=(1,))
+            # Test as list.
+            self.assertPageContent(
+                response,
+                [
+                    '<h1>User Detail Page</h1>',
+                    'User Detail',
+                    'First Name: "TestFirst"',
+                    'Last Name: "TestLast"',
+                ],
+            )
+            # Test as tuple.
+            self.assertPageContent(
+                response,
+                (
+                    '<h1>User Detail Page</h1>',
+                    'User Detail',
+                    'First Name: "TestFirst"',
+                    'Last Name: "TestLast"',
+                ),
+            )
+
     def test__assertPageContent__fail(self):
         """
         Tests assertPageContent() function, in cases when it should fail.
@@ -318,32 +385,44 @@ class IntegrationClassTest(IntegrationTestCase):
                 response = HttpResponse('')
                 self.assertPageContent(response, '<h1>Test Title</h1>')
 
-        with self.subTest('Minimal Response, no value passed'):
-            with self.assertRaises(AssertionError):
-                response = HttpResponse('<h1>Test Title</h1>')
-                self.assertPageContent(response, '')
-
         with self.subTest('Minimal Response, wrong value passed'):
             with self.assertRaises(AssertionError):
                 response = HttpResponse('<h1>Test Title</h1>')
                 self.assertPageContent(response, '<h1>Testing</h1>')
 
-        with self.subTest('Standard Response, no value passed'):
-            with self.assertRaises(AssertionError):
-                response = self._get_page_response('expanded_test_cases:login')
-                self.assertPageContent(response, '')
-
-        with self.subTest('Standard Response, missing part of value'):
-            response = self._get_page_response('expanded_test_cases:login')
-            with self.assertRaises(AssertionError):
-                self.assertPageContent(response, '<h1>Login Page</h1>')
-            with self.assertRaises(AssertionError):
-                self.assertPageContent(response, '<p>Pretend this is a login page.</p>')
-
         with self.subTest('Standard Response, wrong value passed'):
             with self.assertRaises(AssertionError):
                 response = self._get_page_response('expanded_test_cases:login')
                 self.assertPageContent(response, '<h1>Testing</h1><p>Pretend this is a page.</p>')
+
+        with self.subTest('Standard Response - Set of items with wrong values'):
+            response = self._get_page_response('expanded_test_cases:index')
+            # Test as list.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(response, ['<h1>Test Page</h1>'])
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(response, ['Wrong Content'])
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(response, ['<h1>Home Test'])
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(response, ['Test Home</h1>'])
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(response, ['<h1>Home Page</h1>', 'Wrong text'])
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(response, ['<h1>Wrong Header</h1>', 'project landing page'])
+            # Test as tuple.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(response, ('<h1>Test Page</h1>',))
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(response, ('Wrong Content',))
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(response, ('<h1>Home Test',))
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(response, ('Test Home</h1>',))
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(response, ('<h1>Home Page</h1>', 'Wrong text'))
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(response, ('<h1>Wrong Header</h1>', 'project landing page'))
 
     def test__assertPageTitle__success(self):
         """

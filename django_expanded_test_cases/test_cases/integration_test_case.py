@@ -108,20 +108,38 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         return actual_status
 
     def assertPageContent(self, response, expected_content):
-        """Verifies the page content html.
+        """Verifies the page content html, similar to the built-in assertContains() function.
+
+        The main difference is that Django templating may create large amounts of whitespace in response html,
+        often in places where we wouldn't intuitively expect it, when running tests.
+
+        Technically, the built-in assertHTMLEqual() and assertInHTML() functions exist, and probably could accomplish
+        the same assertions. But we still need to parse and format full response object, to display for test failure
+        debugging. So I'm not sure if it's helpful at that point to use those or use separate assertions like here.
+        Perhaps examine more closely at a later date.
 
         :param response: Response object to check against.
-        :param expected_content: Expected full string of HTML content.
+        :param expected_content: Expected full string (or set of strings) of HTML content.
         :return: Parsed out and formatted content string.
         """
         # Sanitize and format actual response content.
         actual_content = self.get_minimized_response_content(response, strip_newlines=True)
 
-        # For easy comparison, also sanitize and format expected response content.
-        expected_content = self.get_minimized_response_content(expected_content, strip_newlines=True)
+        err_msg = 'Response content does not match expected.'
 
-        # Compare the two values.
-        self.assertEqual(actual_content, expected_content, 'Response content does not match expected.')
+        # Handle possible types.
+        if expected_content is None:
+            expected_content = ''
+        if isinstance(expected_content, list) or isinstance(expected_content, tuple):
+            # The expected_content param is an array of items. Verify they all exist on page.
+            for expected in expected_content:
+                expected = self.get_minimized_response_content(expected, strip_newlines=True)
+                self.assertIn(expected, actual_content, err_msg)
+
+        else:
+            # Not an array of items. Assume is a single str value.
+            expected_content = self.get_minimized_response_content(expected_content, strip_newlines=True)
+            self.assertIn(expected_content, actual_content, err_msg)
 
         # Return page content in case user wants to run additional logic on it.
         return actual_content

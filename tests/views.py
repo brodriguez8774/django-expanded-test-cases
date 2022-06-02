@@ -102,5 +102,13 @@ def user_detail(request, pk):
     return render(request, 'django_expanded_test_cases/index.html', {
         'header': 'User Detail Page',
         'text': '{0}'.format(user),
+        'li_set': (
+            'Username: "{0}"'.format(user.username),
+            'First Name: "{0}"'.format(user.first_name),
+            'Last Name: "{0}"'.format(user.last_name),
+            'Is Active: "{0}"'.format(user.is_active),
+            'Is SuperUser: "{0}"'.format(user.is_superuser),
+            'Is Staff: "{0}"'.format(user.is_staff),
+        )
     })
 
