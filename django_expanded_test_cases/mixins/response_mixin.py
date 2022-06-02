@@ -38,10 +38,14 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         elif isinstance(response_content, bytes):
             response_content = response_content.decode('utf-8')
 
+        # Standardize output for easier analysis.
+        response_content = self.standardize_characters(response_content)
+
+        self._debug_print()
+        self._debug_print(('{0} {1} {0}'.format('=' * 10, 'response.content')))
+
         # Print out data, if present.
         if response_content:
-            self._debug_print()
-            self._debug_print(('{0} {1} {0}'.format('=' * 10, 'response.content')))
             self._debug_print(response_content)
             self._debug_print()
 
@@ -148,6 +152,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                 type(user),
                 type(get_user_model()),
             ))
+        self._debug_print()
 
     # endregion Debug Output Functions.
 

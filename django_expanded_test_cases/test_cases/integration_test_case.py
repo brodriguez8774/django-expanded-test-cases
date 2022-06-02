@@ -103,7 +103,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Return status in case user wants to run additional logic on it.
         return actual_status
 
-    def assertPageContent(self, response, expected_content):
+    def assertPageContent(self, response, expected_content, debug_output=True):
         """Verifies the page content html, similar to the built-in assertContains() function.
 
         The main difference is that Django templating may create large amounts of whitespace in response html,
@@ -116,8 +116,13 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         :param response: Response object to check against.
         :param expected_content: Expected full string (or set of strings) of HTML content.
+        :param debug_output: Bool indicating if debug output should be shown or not. Used for debugging test failures.
         :return: Parsed out and formatted content string.
         """
+        if debug_output:
+            # Print out actual response content, for debug output.
+            self.show_debug_content(response)
+
         # Sanitize and format actual response content.
         actual_content = self.get_minimized_response_content(response, strip_newlines=True)
 
@@ -219,14 +224,19 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Return header in case user wants to run additional logic on it.
         return actual_header
 
-    def assertContextMessages(self, response, expected_messages, allow_partials=None):
+    def assertContextMessages(self, response, expected_messages, allow_partials=None, debug_output=True):
         """Verifies the context messages.
 
         :param response: Response object to check against.
         :param expected_messages: Expected string for message data.
         :param allow_partials: Bool indicating if messages should fully match or allow partial matches.
+        :param debug_output: Bool indicating if debug output should be shown or not. Used for debugging test failures.
         :return: Parsed out header string.
         """
+        if debug_output:
+            # Print out actual messages, for debug output.
+            self.show_debug_messages(response)
+
         # Parse out settings values.
         if allow_partials is None:
             allow_partials = getattr(settings, 'DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS', True)
