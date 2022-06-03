@@ -3,13 +3,19 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Django Expanded Test Cases' documentation!
-=====================================================
+Django "Expanded Test Cases" Package
+====================================
+
+Expands the existing Django TestCase class with extra functionality.
+
+Different TestCase classes are provided, each providing separate sets of functionality.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   quickstart
+   configuration
 
 
 Indices and tables
