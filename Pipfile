@@ -44,6 +44,11 @@ pytest-xdist = "*"              # Additional Pytest features, such as multithrea
 selenium = "*"                  # Support for running UnitTests that directly simulate browser usage.
 
 # Docs build dependencies.
+pip-tools = "*"
 sphinx = "*"
 sphinx-autobuild = "*"
 sphinx-rtd-theme = "*"
+
+# Project pypi dependencies.
+build = "*"
+twine = "*"
