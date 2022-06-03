@@ -12,4 +12,9 @@ from .integration_test_case import IntegrationTestCase
 
 
 # Expanded "Live Server" TestCase utility class.
-from .live_server_test_case import LiveServerTestCase
+try:
+    from .live_server_test_case import LiveServerTestCase
+except ModuleNotFoundError:
+    # Project likely does not have DjangoChannels package installed.
+    # This is okay, as we don't want this logic as a hard requirement to use this library.
+    pass
