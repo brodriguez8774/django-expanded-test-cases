@@ -42,3 +42,8 @@ pytest-asyncio = "*"            # Additional Pytest logic for asyncio support.
 pytest-django = "*"             # Additional Pytest logic for Django support.
 pytest-xdist = "*"              # Additional Pytest features, such as multithreading and looping.
 selenium = "*"                  # Support for running UnitTests that directly simulate browser usage.
+
+# Docs build dependencies.
+sphinx = "*"
+sphinx-autobuild = "*"
+sphinx-rtd-theme = "*"
