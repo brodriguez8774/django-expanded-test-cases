@@ -16,6 +16,14 @@ set -e
 cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 
+# Forcibly remove existing generated docs, to ensure build command actually updates everything properly.
+if [[ -d "./docs/build/" ]]
+then
+    rm -r "./docs/build/"
+fi
+mkdir "./docs/build/"
+
+
 # Auto-generate docs source files, from actual Python code in project.
 sphinx-apidoc -o ./docs/source/ ./django_expanded_test_cases/
 
