@@ -107,7 +107,7 @@ class CoreTestCaseMixin:
 
         :param user_permission: Permission to add.
         :param user: User to add Permission to. If not provided, defaults to test_user model.
-        :return: None
+        :return: Updated user object.
         """
         # Check if instance is a Permission model.
         if isinstance(user_permission, Permission):
@@ -127,14 +127,18 @@ class CoreTestCaseMixin:
                     raise ValueError('Failed to find permission of "{0}".'.format(user_permission))
 
         # If we made it this far, then valid Permission was found. Apply to user.
-        self.get_user(user).user_permissions.add(permission)
+        user = self.get_user(user)
+        user.user_permissions.add(permission)
+
+        # Return user object in case user wants to run additional checks.
+        return user
 
     def add_user_group(self, user_group, user='test_user'):
         """Adds Group to given user.
 
         :param user_group: Group to add.
         :param user: User to add Group to. If not provided, defaults to test_user model.
-        :return: None
+        :return: Updated user object.
         """
         # Check if instance is a Group model.
         if isinstance(user_group, Group):
@@ -150,7 +154,11 @@ class CoreTestCaseMixin:
                 raise ValueError('Failed to find Group of "{0}".'.format(user_group))
 
         # If we made it this far, then valid Group was found. Apply to user.
-        self.get_user(user).groups.add(group)
+        user = self.get_user(user)
+        user.groups.add(group)
+
+        # Return user object in case user wants to run additional checks.
+        return user
 
     # endregion User Management Functions
 

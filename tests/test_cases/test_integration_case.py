@@ -3,6 +3,8 @@ Tests for test_cases/integration_test_case.py.
 """
 
 # System Imports.
+from django.contrib.auth.models import AnonymousUser, Group, Permission
+from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponse
 from django.test import override_settings
 
@@ -140,6 +142,65 @@ class IntegrationClassTest(IntegrationTestCase):
             # Test "user detail" page url via kwargs.
             response = self.assertResponse('expanded_test_cases:user-detail', kwargs={'pk': 2})
             self.assertEqual(response.url, 'https://my_really_cool_site.com/user/detail/2/')
+
+    def test__assertResponse__user(self):
+        """"""
+        with self.subTest('With login as test user'):
+            response = self.assertResponse('')
+            self.assertEqual(response.user, self.test_user)
+            self.assertEqual(str(self.test_user.pk), self.client.session['_auth_user_id'])
+            response = self.assertResponse('', user=self.test_user)
+            self.assertEqual(response.user, self.test_user)
+            self.assertEqual(str(self.test_user.pk), self.client.session['_auth_user_id'])
+            response = self.assertResponse('', user='test_user')
+            self.assertEqual(response.user, self.test_user)
+            self.assertEqual(str(self.test_user.pk), self.client.session['_auth_user_id'])
+
+        with self.subTest('With login as admin user'):
+            response = self.assertResponse('', user=self.test_admin)
+            self.assertEqual(response.user, self.test_admin)
+            self.assertEqual(str(self.test_admin.pk), self.client.session['_auth_user_id'])
+            response = self.assertResponse('', user='test_admin')
+            self.assertEqual(response.user, self.test_admin)
+            self.assertEqual(str(self.test_admin.pk), self.client.session['_auth_user_id'])
+
+        with self.subTest('With login as superuser'):
+            response = self.assertResponse('', user=self.test_superuser)
+            self.assertEqual(response.user, self.test_superuser)
+            self.assertEqual(str(self.test_superuser.pk), self.client.session['_auth_user_id'])
+            response = self.assertResponse('', user='test_superuser')
+            self.assertEqual(response.user, self.test_superuser)
+            self.assertEqual(str(self.test_superuser.pk), self.client.session['_auth_user_id'])
+
+        with self.subTest('Without login, but test user passed'):
+            # Basically, passing a user should not really do anything here.
+            response = self.assertResponse('', auto_login=False)
+            self.assertEqual(response.user, AnonymousUser())
+            self.assertNotIn('_auth_user_id', self.client.session.keys())
+            response = self.assertResponse('', user=self.test_user, auto_login=False)
+            self.assertEqual(response.user, AnonymousUser())
+            self.assertNotIn('_auth_user_id', self.client.session.keys())
+            response = self.assertResponse('', user='test_user', auto_login=False)
+            self.assertEqual(response.user, AnonymousUser())
+            self.assertNotIn('_auth_user_id', self.client.session.keys())
+
+        with self.subTest('Without login, but admin user passed'):
+            # Basically, passing a user should not really do anything here.
+            response = self.assertResponse('', user=self.test_admin, auto_login=False)
+            self.assertEqual(response.user, AnonymousUser())
+            self.assertNotIn('_auth_user_id', self.client.session.keys())
+            response = self.assertResponse('', user='test_admin', auto_login=False)
+            self.assertEqual(response.user, AnonymousUser())
+            self.assertNotIn('_auth_user_id', self.client.session.keys())
+
+        with self.subTest('Without login, but superuser passed'):
+            # Basically, passing a user should not really do anything here.
+            response = self.assertResponse('', user=self.test_superuser, auto_login=False)
+            self.assertEqual(response.user, AnonymousUser())
+            self.assertNotIn('_auth_user_id', self.client.session.keys())
+            response = self.assertResponse('', user='test_superuser', auto_login=False)
+            self.assertEqual(response.user, AnonymousUser())
+            self.assertNotIn('_auth_user_id', self.client.session.keys())
 
     def test__assertResponse__status_code(self):
         """
@@ -794,6 +855,259 @@ class IntegrationClassTest(IntegrationTestCase):
     # endregion Assertion Tests
 
     # region Helper Function Tests
+
+    def test___get_login_user__verify_login(self):
+        """"""
+        with self.subTest('Auto login as test user'):
+            # Verify no user is logged in.
+            self.assertNotIn('_auth_user_id', self.client.session.keys())
+
+            # Run _get_login_user() function. Should log in provided user.
+            return_val = self._get_login_user('test_user', auto_login=True)
+            self.assertEqual(return_val, self.test_user)
+
+            # Verify user is now logged in.
+            self.assertIn('_auth_user_id', self.client.session.keys())
+            self.assertEqual(str(self.test_user.pk), self.client.session['_auth_user_id'])
+
+        # Reset login state.
+        self.client.logout()
+
+        with self.subTest('Auto login as test admin'):
+            # Verify no user is logged in.
+            self.assertNotIn('_auth_user_id', self.client.session.keys())
+
+            # Run _get_login_user() function. Should log in provided user.
+            return_val = self._get_login_user(self.test_admin, auto_login=True)
+            self.assertEqual(return_val, self.test_admin)
+
+            # Verify user is now logged in.
+            self.assertIn('_auth_user_id', self.client.session.keys())
+            self.assertEqual(str(self.test_admin.pk), self.client.session['_auth_user_id'])
+
+        # Reset login state.
+        self.client.logout()
+
+        with self.subTest('Auto login as test superuser'):
+            # Verify no user is logged in.
+            self.assertNotIn('_auth_user_id', self.client.session.keys())
+
+            # Run _get_login_user() function. Should log in provided user.
+            return_val = self._get_login_user('test_superuser', auto_login=True)
+            self.assertEqual(return_val, self.test_superuser)
+
+            # Verify user is now logged in.
+            self.assertIn('_auth_user_id', self.client.session.keys())
+            self.assertEqual(str(self.test_superuser.pk), self.client.session['_auth_user_id'])
+
+        # Reset login state.
+        self.client.logout()
+
+        with self.subTest('No login as test user'):
+            # Verify no user is logged in.
+            self.assertNotIn('_auth_user_id', self.client.session.keys())
+
+            # Run _get_login_user() function. Should not log in provided user.
+            return_val = self._get_login_user('test_user', auto_login=False)
+            self.assertEqual(return_val, self.test_user)
+
+            # Verify user is still not logged in.
+            self.assertNotIn('_auth_user_id', self.client.session.keys())
+
+        # Reset login state.
+        self.client.logout()
+
+        with self.subTest('No login as test admin'):
+            # Verify no user is logged in.
+            self.assertNotIn('_auth_user_id', self.client.session.keys())
+
+            # Run _get_login_user() function. Should not log in provided user.
+            return_val = self._get_login_user('test_admin', auto_login=False)
+            self.assertEqual(return_val, self.test_admin)
+
+            # Verify user is still not logged in.
+            self.assertNotIn('_auth_user_id', self.client.session.keys())
+
+        # Reset login state.
+        self.client.logout()
+
+        with self.subTest('No login as test superuser'):
+            # Verify no user is logged in.
+            self.assertNotIn('_auth_user_id', self.client.session.keys())
+
+            # Run _get_login_user() function. Should not log in provided user.
+            return_val = self._get_login_user('test_superuser', auto_login=False)
+            self.assertEqual(return_val, self.test_superuser)
+
+            # Verify user is still not logged in.
+            self.assertNotIn('_auth_user_id', self.client.session.keys())
+
+    def test___get_login_user__set_permissions(self):
+        """"""
+        # Generate dummy content_type.
+        test_content_type = ContentType.objects.create(app_label='test_app', model='test_model')
+
+        # Initialize Permission models.
+        perm_1 = Permission.objects.create(
+            content_type=test_content_type,
+            codename='test_perm_1',
+            name='Test Perm 1',
+        )
+        perm_2 = Permission.objects.create(
+            content_type=test_content_type,
+            codename='test_perm_2',
+            name='Test Perm 2',
+        )
+        perm_3 = Permission.objects.create(
+            content_type=test_content_type,
+            codename='test_perm_3',
+            name='Test Perm 3',
+        )
+
+        # Verify initial user Permissions.
+        self.assertFalse(self.test_superuser.user_permissions.all().exists())
+        self.assertFalse(self.test_admin.user_permissions.all().exists())
+        self.assertFalse(self.test_user.user_permissions.all().exists())
+
+        with self.subTest('Test adding single permission'):
+            # Test adding permission.
+            return_val = self._get_login_user(self.test_user, user_permissions='test_perm_1')
+            self.assertEqual(return_val, self.test_user)
+
+            # Verify respective users received expected permissions.
+            self.assertEqual(self.test_user.user_permissions.all().count(), 1)
+            self.assertEqual(self.test_user.user_permissions.all()[0], perm_1)
+
+            # Verify other users are unaffected.
+            self.assertFalse(self.test_admin.user_permissions.all().exists())
+            self.assertFalse(self.test_superuser.user_permissions.all().exists())
+
+            # Test adding different permission.
+            return_val = self._get_login_user('test_admin', user_permissions='test_perm_2')
+            self.assertEqual(return_val, self.test_admin)
+
+            # Verify respective users received expected permissions.
+            self.assertEqual(self.test_user.user_permissions.all().count(), 1)
+            self.assertEqual(self.test_user.user_permissions.all()[0], perm_1)
+            self.assertEqual(self.test_admin.user_permissions.all().count(), 1)
+            self.assertEqual(self.test_admin.user_permissions.all()[0], perm_2)
+
+            # Verify other users are unaffected.
+            self.assertFalse(self.test_superuser.user_permissions.all().exists())
+
+        # Reset permission relations.
+        self.test_user.user_permissions.remove(perm_1)
+        self.test_admin.user_permissions.remove(perm_2)
+
+        # Verify user Permission states.
+        self.assertFalse(self.test_superuser.user_permissions.all().exists())
+        self.assertFalse(self.test_admin.user_permissions.all().exists())
+        self.assertFalse(self.test_user.user_permissions.all().exists())
+
+        with self.subTest('Test adding multiple permissions'):
+            # Test adding permission.
+            return_val = self._get_login_user('test_user', user_permissions=['test_perm_1', 'Test Perm 2'])
+            self.assertEqual(return_val, self.test_user)
+
+            # Verify respective users received expected permissions.
+            self.assertEqual(self.test_user.user_permissions.all().count(), 2)
+            self.assertIn(perm_1, self.test_user.user_permissions.all())
+            self.assertIn(perm_2, self.test_user.user_permissions.all())
+
+            # Verify other users are unaffected.
+            self.assertFalse(self.test_admin.user_permissions.all().exists())
+            self.assertFalse(self.test_superuser.user_permissions.all().exists())
+
+            # Test adding different permission.
+            return_val = self._get_login_user(self.test_admin, user_permissions=[perm_2, 'test_perm_3'])
+            self.assertEqual(return_val, self.test_admin)
+
+            # Verify respective users received expected permissions.
+            self.assertEqual(self.test_user.user_permissions.all().count(), 2)
+            self.assertIn(perm_1, self.test_user.user_permissions.all())
+            self.assertIn(perm_2, self.test_user.user_permissions.all())
+            self.assertEqual(self.test_admin.user_permissions.all().count(), 2)
+            self.assertIn(perm_2, self.test_admin.user_permissions.all())
+            self.assertIn(perm_3, self.test_admin.user_permissions.all())
+
+            # Verify other users are unaffected.
+            self.assertFalse(self.test_superuser.user_permissions.all().exists())
+
+    def test___get_login_user__set_groups(self):
+        """"""
+        # Initialize Group models.
+        group_1 = Group.objects.create(name='group_1')
+        group_2 = Group.objects.create(name='group_2')
+        group_3 = Group.objects.create(name='group_3')
+
+        with self.subTest('Test adding single group'):
+            # Verify initial user Groups.
+            self.assertFalse(self.test_superuser.groups.all().exists())
+            self.assertFalse(self.test_admin.groups.all().exists())
+            self.assertFalse(self.test_user.groups.all().exists())
+
+            # Test adding group.
+            return_val = self._get_login_user('test_user', user_groups='group_1')
+            self.assertEqual(return_val, self.test_user)
+
+            # Verify respective users received expected groups.
+            self.assertEqual(self.test_user.groups.all().count(), 1)
+            self.assertEqual(self.test_user.groups.all()[0], group_1)
+
+            # Verify other users are unaffected.
+            self.assertFalse(self.test_admin.groups.all().exists())
+            self.assertFalse(self.test_superuser.groups.all().exists())
+
+            # Test adding different group.
+            return_val = self._get_login_user(self.test_admin, user_groups='group_2')
+            self.assertEqual(return_val, self.test_admin)
+
+            # Verify respective users received expected groups.
+            self.assertEqual(self.test_user.groups.all().count(), 1)
+            self.assertEqual(self.test_user.groups.all()[0], group_1)
+            self.assertEqual(self.test_admin.groups.all().count(), 1)
+            self.assertEqual(self.test_admin.groups.all()[0], group_2)
+
+            # Verify other users are unaffected.
+            self.assertFalse(self.test_superuser.groups.all().exists())
+
+        # Reset group relations.
+        self.test_user.groups.remove(group_1)
+        self.test_admin.groups.remove(group_2)
+
+        # Verify user Group states.
+        self.assertFalse(self.test_superuser.groups.all().exists())
+        self.assertFalse(self.test_admin.groups.all().exists())
+        self.assertFalse(self.test_user.groups.all().exists())
+
+        with self.subTest('Test adding multiple group'):
+            # Test adding group.
+            return_val = self._get_login_user('test_user', user_groups=['group_1', group_2])
+            self.assertEqual(return_val, self.test_user)
+
+            # Verify respective users received expected groups.
+            self.assertEqual(self.test_user.groups.all().count(), 2)
+            self.assertIn(group_1, self.test_user.groups.all())
+            self.assertIn(group_2, self.test_user.groups.all())
+
+            # Verify other users are unaffected.
+            self.assertFalse(self.test_admin.groups.all().exists())
+            self.assertFalse(self.test_superuser.groups.all().exists())
+
+            # Test adding different group.
+            return_val = self._get_login_user(self.test_admin, user_groups=['group_2', group_3])
+            self.assertEqual(return_val, self.test_admin)
+
+            # Verify respective users received expected groups.
+            self.assertEqual(self.test_user.groups.all().count(), 2)
+            self.assertIn(group_1, self.test_user.groups.all())
+            self.assertIn(group_2, self.test_user.groups.all())
+            self.assertEqual(self.test_admin.groups.all().count(), 2)
+            self.assertIn(group_2, self.test_admin.groups.all())
+            self.assertIn(group_3, self.test_admin.groups.all())
+
+            # Verify other users are unaffected.
+            self.assertFalse(self.test_superuser.groups.all().exists())
 
     def test__get_page_title__empty_title(self):
         """

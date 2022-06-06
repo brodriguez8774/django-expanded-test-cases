@@ -73,14 +73,26 @@ class BaseClassTest(BaseTestCase):
         self.assertFalse(self.test_admin.user_permissions.all().exists())
         self.assertFalse(self.test_user.user_permissions.all().exists())
 
-        with self.subTest('Test add perm by codename'):
+        with self.subTest('Test add permission by codename'):
             # Test adding permission.
-            self.add_user_permission('test_perm_1', user='test_user')
+            return_val = self.add_user_permission('test_perm_1', user='test_user')
+            self.assertEqual(return_val, self.test_user)
+
+            # Verify respective users received expected permissions.
             self.assertEqual(self.test_user.user_permissions.all().count(), 1)
             self.assertEqual(self.test_user.user_permissions.all()[0], perm_1)
 
+            # Verify other users are unaffected.
+            self.assertFalse(self.test_admin.user_permissions.all().exists())
+            self.assertFalse(self.test_superuser.user_permissions.all().exists())
+
             # Test adding different permission.
-            self.add_user_permission('test_perm_2', user='test_admin')
+            return_val = self.add_user_permission('test_perm_2', user='test_admin')
+            self.assertEqual(return_val, self.test_admin)
+
+            # Verify respective users received expected permissions.
+            self.assertEqual(self.test_user.user_permissions.all().count(), 1)
+            self.assertEqual(self.test_user.user_permissions.all()[0], perm_1)
             self.assertEqual(self.test_admin.user_permissions.all().count(), 1)
             self.assertEqual(self.test_admin.user_permissions.all()[0], perm_2)
 
@@ -96,14 +108,26 @@ class BaseClassTest(BaseTestCase):
         self.assertFalse(self.test_admin.user_permissions.all().exists())
         self.assertFalse(self.test_user.user_permissions.all().exists())
 
-        with self.subTest('Test add perm by name'):
+        with self.subTest('Test add permission by name'):
             # Test adding permission.
-            self.add_user_permission('Test Perm 1', user='test_user')
+            return_val = self.add_user_permission('Test Perm 1', user='test_user')
+            self.assertEqual(return_val, self.test_user)
+
+            # Verify respective users received expected permissions.
             self.assertEqual(self.test_user.user_permissions.all().count(), 1)
             self.assertEqual(self.test_user.user_permissions.all()[0], perm_1)
 
+            # Verify other users are unaffected.
+            self.assertFalse(self.test_admin.user_permissions.all().exists())
+            self.assertFalse(self.test_superuser.user_permissions.all().exists())
+
             # Test adding different permission.
-            self.add_user_permission('Test Perm 2', user='test_admin')
+            return_val = self.add_user_permission('Test Perm 2', user='test_admin')
+            self.assertEqual(return_val, self.test_admin)
+
+            # Verify respective users received expected permissions.
+            self.assertEqual(self.test_user.user_permissions.all().count(), 1)
+            self.assertEqual(self.test_user.user_permissions.all()[0], perm_1)
             self.assertEqual(self.test_admin.user_permissions.all().count(), 1)
             self.assertEqual(self.test_admin.user_permissions.all()[0], perm_2)
 
@@ -124,12 +148,14 @@ class BaseClassTest(BaseTestCase):
         self.assertFalse(self.test_user.groups.all().exists())
 
         # Test adding group.
-        self.add_user_group('group_1', user='test_user')
+        return_val = self.add_user_group('group_1', user='test_user')
+        self.assertEqual(return_val, self.test_user)
         self.assertEqual(self.test_user.groups.all().count(), 1)
         self.assertEqual(self.test_user.groups.all()[0], group_1)
 
         # Test adding different group.
-        self.add_user_group('group_2', user='test_admin')
+        return_val = self.add_user_group('group_2', user='test_admin')
+        self.assertEqual(return_val, self.test_admin)
         self.assertEqual(self.test_admin.groups.all().count(), 1)
         self.assertEqual(self.test_admin.groups.all()[0], group_2)
 

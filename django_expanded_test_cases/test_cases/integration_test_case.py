@@ -5,6 +5,7 @@ Testing logic for views and other multi-part components.
 # System Imports.
 import re
 from django.conf import settings
+from django.contrib.auth.models import AnonymousUser, Group, Permission
 from django.http.response import HttpResponseBase
 from django.urls import reverse
 from django.urls.exceptions import NoReverseMatch
@@ -33,6 +34,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         url, *args,
         get=True, data=None,
         expected_status=200, expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
+        auto_login=True, user='test_user', user_permissions=None, user_groups=None,
         **kwargs,
     ):
         """Verifies the view response object at given URL matches provided parameters.
@@ -53,8 +55,25 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param expected_messages: Expected context messages to verify. Skips message test if left as None.
         :param expected_content: Expected page content elements to verify. Skips content test if left as None.
         """
+        # Reset client "user login" state for new response generation.
+        self.client.logout()
+
+        # Handle if auto login is set to False.
+        if auto_login is False:
+            user = AnonymousUser()
+
         # Run logic to get corresponding response object.
-        response = self._get_page_response(url, *args, get=get, data=data, **kwargs)
+        response = self._get_page_response(
+            url,
+            *args,
+            get=get,
+            data=data,
+            auto_login=auto_login,
+            user=user,
+            user_permissions=user_permissions,
+            user_groups=user_groups,
+            **kwargs,
+        )
 
         # Optionally output all debug info for found response.
         if self._debug_print_bool:
@@ -63,7 +82,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             self.show_debug_session_data(response)
             # self.show_debug_form_data(response)
             self.show_debug_messages(response)
-            self.show_debug_user_info(response)
+            self.show_debug_user_info(self.get_user(user))
 
         # Verify page status code.
         self.assertStatusCode(response, expected_status)
@@ -371,16 +390,38 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
     # region Helper Functions
 
-    def _get_page_response(self, url, *args, get=True, data=None, **kwargs):
+    def _get_page_response(
+        self,
+        url,
+        *args,
+        get=True, data=None,
+        auto_login=True, user='test_user', user_permissions=None, user_groups=None,
+        **kwargs,
+    ):
         """Helper function for assertResponse().
 
         Fully parses provided user url, and returns corresponding response object.
 
         :param url: Url to get response object from.
+        :param get: Bool indicating if response is GET or POST. Defaults to GET.
+        :param data: Optional dict of items to pass into response generation.
+        :param auto_login: Bool indicating if User should be "logged in" to client or not.
+        :param user_permissions: Set of Django Permissions to give to test user before accessing page.
+        :param user_groups: Set of Django PermissionGroups to give to test user before accessing page.
         :return: Django response object for provided url.
         """
         # Handle mutable data defaults.
         data = data or {}
+
+        # Validate data types.
+        if not isinstance(data, dict):
+            raise TypeError('Provided "data" arg must be a dict, for passing into POST requests.')
+
+        # Handle for logging in a user.
+        if auto_login:
+            user = self._get_login_user(user, auto_login=auto_login, user_permissions=user_permissions, user_groups=user_groups)
+        else:
+            user = AnonymousUser()
 
         # Preprocess all potential url values.
         url = str(url).strip()
@@ -392,7 +433,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         if self.site_root_url is not None:
             current_site = self.site_root_url
 
-        # Standardize if literal site url was provided and user included site_root.
+        # Standardize if literal site url was provided and included site_root.
         if url.startswith(current_site):
             url = url[len(current_site):]
 
@@ -429,8 +470,73 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             response = self.client.get(url, data=data, follow=True)
         else:
             response = self.client.post(url, data=data, follow=True)
+
+        # Update response object with additional useful values for further testing/analysis.
         response.url = current_site
+        response.user = user
+
+        # Return generated response.
         return response
+
+    def _get_login_user(self, user, auto_login=True, user_permissions=None, user_groups=None):
+        """Handles simulating user login with corresponding permissions/groups/etc.
+
+        :param user: User to manipulate.
+        :param auto_login: Bool indicating if User should be "logged in" to client or not.
+        :param user_permissions: Django Permissions to give to User.
+        :param user_groups: Django Groups to give to User.
+        :return: Updated User object.
+        """
+        # Handle mutable data defaults.
+        user_permissions = user_permissions or []
+        user_groups = user_groups or []
+
+        # Handle possible types for Permissions.
+        if isinstance(user_permissions, list) or isinstance(user_permissions, tuple):
+            # Is array. This is expected.
+            pass
+        elif isinstance(user_permissions, str) or isinstance(user_permissions, Permission):
+            # Is str or model instance. So assume single permission value.
+            user_permissions = [user_permissions]
+        else:
+            # Invalid/unknown type. Raise error.
+            raise TypeError('Provided Django Permissions must be either a str, array, or model format.')
+
+        # Add all Permissions to provided user.
+        for permission in user_permissions:
+            user = self.add_user_permission(permission, user=user)
+
+        # Handle possible types for Groups.
+        if isinstance(user_groups, list) or isinstance(user_groups, tuple):
+            # Is array. This is expected.
+            pass
+        elif isinstance(user_groups, str) or isinstance(user_groups, Group):
+            # Is str or model instance. So assume single permission value.
+            user_groups = [user_groups]
+        else:
+            # Invalid/unknown type. Raise error.
+            raise TypeError('Provided Django Groups must be either a str, array, or model format.')
+
+        # Add all Groups to provided user.
+        for group in user_groups:
+            user = self.add_user_group(group, user=user)
+
+        # Optional hook to run additional authentication logic/setup on User.
+        # For example, if project has 2-Factor setup that needs to be run.
+        user = self._extra_user_auth_setup(user)
+
+        # Ensure by this point that we have a proper instance of the User object.
+        # If no Permissions or Groups were set, we might still have a Str or something.
+        user = self.get_user(user)
+
+        # Handle logging in with user.
+        # This forces all response objects to act like this user is logged in for all page accesses.
+        # Otherwise, it will act like an anonymous user is navigating the site.
+        if auto_login:
+            self.client.force_login(user)
+
+        # Return modified user instance.
+        return self.get_user(user)
 
     def get_page_title(self, response):
         """Parses out title HTML element from provided response.
@@ -526,6 +632,19 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         return found_messages
 
     # endregion Helper Functions
+
+    # region Hook Functions
+
+    def _extra_user_auth_setup(self, user):
+        """Empty hook function, to allow running extra authentication setup logic on User object.
+
+        Useful such as for running things like 2-Factor setup logic for User.
+        :param user: User model to run extra auth setup logic on.
+        :return: Updated User object.
+        """
+        return user
+
+    # endregion Hook Functions
 
 
 # Define acceptable imports on file.
