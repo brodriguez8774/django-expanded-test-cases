@@ -33,7 +33,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         self,
         url, *args,
         get=True, data=None,
-        expected_status=200, expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
+        expected_redirect_url=None, expected_status=200,
+        expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
         auto_login=True, user='test_user', user_permissions=None, user_groups=None,
         **kwargs,
     ):
@@ -83,6 +84,10 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             # self.show_debug_form_data(response)
             self.show_debug_messages(response)
             self.show_debug_user_info(self.get_user(user))
+
+        # Verify page redirect.
+        if expected_redirect_url is not None:
+            self.assertRedirects(response, expected_redirect_url)
 
         # Verify page status code.
         self.assertStatusCode(response, expected_status)
@@ -160,6 +165,32 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             expected_content=expected_content,
             **kwargs,
         )
+
+    def assertRedirects(self, response, expected_redirect_url, *args, **kwargs):
+        """Assert that a response redirected to a specific URL and that the redirect URL can be loaded.
+
+        Most functionality is in the default Django assertRedirects() function.
+        However, this acts as a wrapper to also:
+         * Check that provided response param is a valid Response object. Attempts to generate one if not.
+         * Attempt url as reverse, before trying assertion.
+        """
+        # Ensure provided response is actual response.
+        if isinstance(response, HttpResponseBase):
+            # Is literal response.
+            pass
+        else:
+            # Is not response. Attempt to get.
+            response = self._get_page_response(response)
+
+        # Try to get reverse of provided redirect.
+        try:
+            expected_redirect_url = reverse(expected_redirect_url)
+        except NoReverseMatch:
+            # Not a reverse for url. Assume is a literal url.
+            pass
+
+        # Run assertion on provided value.
+        return super().assertRedirects(response, expected_redirect_url, *args, **kwargs)
 
     def assertStatusCode(self, response, expected_status):
         """Verifies the page status code value.

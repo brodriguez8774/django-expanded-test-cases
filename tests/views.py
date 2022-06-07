@@ -5,7 +5,7 @@ Testing views for django-expanded-test-cases project.
 # System Imports.
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template.response import TemplateResponse
 
 
@@ -112,3 +112,7 @@ def user_detail(request, pk):
         )
     })
 
+
+def redirect_to_index(request):
+    """"""
+    return redirect('expanded_test_cases:index')

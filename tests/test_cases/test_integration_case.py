@@ -7,6 +7,7 @@ from django.contrib.auth.models import AnonymousUser, Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponse
 from django.test import override_settings
+from django.urls import reverse
 
 # User Imports.
 from django_expanded_test_cases import IntegrationTestCase
@@ -143,8 +144,47 @@ class IntegrationClassTest(IntegrationTestCase):
             response = self.assertResponse('expanded_test_cases:user-detail', kwargs={'pk': 2})
             self.assertEqual(response.url, 'https://my_really_cool_site.com/user/detail/2/')
 
+    def test__assertResponse__url_redirect(self):
+        """
+        Tests "url_redirect" functionality of assertResponse() function.
+        """
+        with self.subTest('With view that redirects'):
+            # Using direct url.
+            self.assertResponse('redirect/index/')
+            self.assertResponse('redirect/index/', expected_redirect_url='/')
+            self.assertResponse('redirect/index/', expected_redirect_url='expanded_test_cases:index')
+
+            # Using reverse.
+            self.assertResponse('expanded_test_cases:redirect-to-index')
+            self.assertResponse('expanded_test_cases:redirect-to-index', expected_redirect_url='/')
+            self.assertResponse(
+                'expanded_test_cases:redirect-to-index',
+                expected_redirect_url='expanded_test_cases:index',
+            )
+
+        with self.subTest('With view that does not redirect'):
+            # Using direct url.
+            self.assertResponse('')
+            with self.assertRaises(AssertionError):
+                self.assertResponse('', expected_redirect_url='/')
+            with self.assertRaises(AssertionError):
+                self.assertResponse('', expected_redirect_url='expanded_test_cases:index')
+            with self.assertRaises(AssertionError):
+                self.assertResponse('login/', expected_redirect_url='expanded_test_cases:index')
+
+            # Using reverse.
+            self.assertResponse('expanded_test_cases:index')
+            with self.assertRaises(AssertionError):
+                self.assertResponse('expanded_test_cases:index', expected_redirect_url='/')
+            with self.assertRaises(AssertionError):
+                self.assertResponse('expanded_test_cases:index', expected_redirect_url='expanded_test_cases:index')
+                with self.assertRaises(AssertionError):
+                    self.assertResponse('expanded_test_cases:login', expected_redirect_url='expanded_test_cases:index')
+
     def test__assertResponse__user(self):
-        """"""
+        """
+        Tests "user" functionality of assertResponse() function.
+        """
         with self.subTest('With login as test user'):
             response = self.assertResponse('')
             self.assertEqual(response.user, self.test_user)
@@ -374,6 +414,47 @@ class IntegrationClassTest(IntegrationTestCase):
     # endregion Response Assertion Tests
 
     # region Element Assertion Tests
+
+    def test__assertResponseRedirects__success(self):
+        """
+        Tests assertResponseRedirects() function, in cases when it should succeed.
+        """
+        with self.subTest('With view that redirects'):
+            # Using direct url.
+            self.assertRedirects('redirect/index/', expected_redirect_url='/')
+            self.assertRedirects('redirect/index/', expected_redirect_url='expanded_test_cases:index')
+
+            # Using reverse.
+            self.assertRedirects('expanded_test_cases:redirect-to-index', expected_redirect_url='/')
+            self.assertRedirects(
+                'expanded_test_cases:redirect-to-index',
+                expected_redirect_url='expanded_test_cases:index',
+            )
+
+    def test__assertResponseRedirects__failure(self):
+        """
+        Tests assertResponseRedirects() function, in cases when it should fail.
+        """
+        with self.subTest('With view that does not redirect - Invalid page'):
+            request = self._get_page_response('bad_page/')
+            with self.assertRaises(AssertionError):
+                self.assertRedirects(request, expected_redirect_url='/')
+            with self.assertRaises(AssertionError):
+                self.assertRedirects(request, expected_redirect_url='expanded_test_cases:invalid')
+
+        with self.subTest('With view that does not redirect - Index page'):
+            request = self._get_page_response('')
+            with self.assertRaises(AssertionError):
+                self.assertRedirects(request, expected_redirect_url='/')
+            with self.assertRaises(AssertionError):
+                self.assertRedirects(request, expected_redirect_url='expanded_test_cases:index')
+
+        with self.subTest('With view that does not redirect - Non-index page'):
+            request = self._get_page_response('login/')
+            with self.assertRaises(AssertionError):
+                self.assertRedirects(request, expected_redirect_url='/')
+            with self.assertRaises(AssertionError):
+                self.assertRedirects(request, expected_redirect_url='expanded_test_cases:login')
 
     def test__assertStatusCode__success(self):
         """

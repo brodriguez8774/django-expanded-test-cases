@@ -26,6 +26,9 @@ urlpatterns = [
     # Model test views.
     path('user/detail/<int:pk>/', views.user_detail, name='user-detail'),
 
+    # Redirect views.
+    path('redirect/index/', views.redirect_to_index, name='redirect-to-index'),
+
     # Index view.
     path('', views.index, name='index'),
 ]
