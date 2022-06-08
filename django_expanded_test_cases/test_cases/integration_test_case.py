@@ -115,7 +115,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         self,
         url, *args,
         data=None,
-        expected_status=200, expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
+        expected_redirect_url=None, expected_status=200,
+        expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
+        auto_login=True, user='test_user', user_permissions=None, user_groups=None,
         **kwargs,
     ):
         """Verifies a GET response was found at given URL, and matches provided parameters."""
@@ -126,11 +128,16 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             *args,
             get=True,
             data=data,
+            expected_redirect_url=expected_redirect_url,
             expected_status=expected_status,
             expected_title=expected_title,
             expected_header=expected_header,
             expected_messages=expected_messages,
             expected_content=expected_content,
+            auto_login=auto_login,
+            user=user,
+            user_permissions=user_permissions,
+            user_groups=user_groups,
             **kwargs,
         )
 
@@ -138,7 +145,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         self,
         url, *args,
         data=None,
-        expected_status=200, expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
+        expected_redirect_url=None, expected_status=200,
+        expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
+        auto_login=True, user='test_user', user_permissions=None, user_groups=None,
         **kwargs,
     ):
         """Verifies a GET response was found at given URL, and matches provided parameters."""
@@ -158,11 +167,16 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             *args,
             get=False,
             data=data,
+            expected_redirect_url=expected_redirect_url,
             expected_status=expected_status,
             expected_title=expected_title,
             expected_header=expected_header,
             expected_messages=expected_messages,
             expected_content=expected_content,
+            auto_login=auto_login,
+            user=user,
+            user_permissions=user_permissions,
+            user_groups=user_groups,
             **kwargs,
         )
 
