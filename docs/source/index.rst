@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Django "Expanded Test Cases" Package
-====================================
+Django-Expanded-Test-Cases Package
+==================================
 
 Expands the existing Django TestCase class with extra functionality.
 
@@ -18,8 +18,25 @@ functionality.
 
    quickstart
    general_usage
-   test_cases
    configuration
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Provided Test Cases:
+
+   test_cases/overview
+   test_cases/base_test_case
+   test_cases/integration_test_case
+   test_cases/live_server_test_case
+
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Versions:
+
+   roadmap
+   version_history
 
 
 Indices and tables
