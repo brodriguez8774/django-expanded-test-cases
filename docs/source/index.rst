@@ -18,6 +18,7 @@ functionality.
 
    quickstart
    general_usage
+   test_cases
    configuration
 
 
