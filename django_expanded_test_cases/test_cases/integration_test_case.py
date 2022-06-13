@@ -36,6 +36,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         expected_redirect_url=None, expected_status=200,
         expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
         auto_login=True, user='test_user', user_permissions=None, user_groups=None,
+        ignore_content_ordering=False,
         **kwargs,
     ):
         """Verifies the view response object at given URL matches provided parameters.
@@ -55,6 +56,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param expected_header: Expected page h1 to verify. Skips header test if left as None.
         :param expected_messages: Expected context messages to verify. Skips message test if left as None.
         :param expected_content: Expected page content elements to verify. Skips content test if left as None.
+        :param ignore_ordering: Bool indicating if ordering should be verified. Defaults to checking ordering.
         """
         # Reset client "user login" state for new response generation.
         self.client.logout()
@@ -106,7 +108,12 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Verify page content.
         if expected_content is not None:
-            self.assertPageContent(response, expected_content, debug_output=False)
+            self.assertPageContent(
+                response,
+                expected_content,
+                ignore_ordering=ignore_content_ordering,
+                debug_output=False,
+            )
 
         # All assertions passed so far. Return response in case user wants to do further checks.
         return response
@@ -231,7 +238,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Return status in case user wants to run additional logic on it.
         return actual_status
 
-    def assertPageContent(self, response, expected_content, debug_output=True):
+    def assertPageContent(self, response, expected_content, ignore_ordering=False, debug_output=True):
         """Verifies the page content html, similar to the built-in assertContains() function.
 
         The main difference is that Django templating may create large amounts of whitespace in response html,
@@ -244,6 +251,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         :param response: Response object to check against.
         :param expected_content: Expected full string (or set of strings) of HTML content.
+        :param ignore_ordering: Bool indicating if ordering should be verified. Defaults to checking ordering.
         :param debug_output: Bool indicating if debug output should be shown or not. Used for debugging test failures.
         :return: Parsed out and formatted content string.
         """
@@ -254,21 +262,42 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Sanitize and format actual response content.
         actual_content = self.get_minimized_response_content(response, strip_newlines=True)
 
-        err_msg = 'Response content does not match expected.'
+        main_err_msg = 'Response content does not match expected.'
+        ordering_err_msg = 'Expected value was found, but ordering of values do not match. Problem value:\n"{0}"'
 
         # Handle possible types.
         if expected_content is None:
             expected_content = ''
+        orig_actual = actual_content
         if isinstance(expected_content, list) or isinstance(expected_content, tuple):
             # The expected_content param is an array of items. Verify they all exist on page.
             for expected in expected_content:
                 expected = self.get_minimized_response_content(expected, strip_newlines=True)
-                self.assertIn(expected, actual_content, err_msg)
+                if ignore_ordering:
+                    # Ignoring ordering. Check as-is.
+                    self.assertIn(expected, actual_content, main_err_msg)
+                else:
+                    # Verifying ordering.
+                    try:
+                        # Attempt initial assertion in provided subsection.
+                        self.assertIn(expected, actual_content)
+                    except AssertionError:
+                        # Failed to find content in subsection. Check full content set.
+                        self.assertIn(expected, orig_actual, main_err_msg)
+
+                        # If we made it this far, then item was found in full content, but came after a previous
+                        # expected value. Raise error.
+                        self.fail(ordering_err_msg.format(expected))
+
+                # If we made it this far, then value was found. Handle for ordering.
+                if not ignore_ordering:
+                    # Ordering is being checked. Strip off first section of matching.
+                    actual_content = ''.join(actual_content.split(expected)[1:])
 
         else:
             # Not an array of items. Assume is a single str value.
             expected_content = self.get_minimized_response_content(expected_content, strip_newlines=True)
-            self.assertIn(expected_content, actual_content, err_msg)
+            self.assertIn(expected_content, actual_content, main_err_msg)
 
         # Return page content in case user wants to run additional logic on it.
         return actual_content

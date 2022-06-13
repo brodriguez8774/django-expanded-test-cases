@@ -355,6 +355,7 @@ class IntegrationClassTest(IntegrationTestCase):
         Tests "expected_content" functionality of assertResponse() function.
         """
         with self.subTest('Content match - With tags'):
+            # With non-repeating values.
             self.assertResponse(
                 'expanded_test_cases:index',
                 expected_content=[
@@ -362,10 +363,24 @@ class IntegrationClassTest(IntegrationTestCase):
                     '<h1>Home Page Header</h1>',
                     '<p>Pretend this is',
                     'the project landing page.</p>',
-                ]
+                ],
+            )
+
+            # With repeated values.
+            self.assertResponse(
+                'expanded_test_cases:index',
+                expected_content=[
+                    '<title>Home Page | Test Views</title>',
+                    '<h1>Home Page Header</h1>',
+                    '<p>Pretend this is',
+                    'is the project',
+                    'the project landing page.</p>',
+                ],
+                ignore_content_ordering=True,  # Ignore because we recheck the same values.
             )
 
         with self.subTest('Content match - Without tags'):
+            # With non-repeating values.
             self.assertResponse(
                 'expanded_test_cases:index',
                 expected_content=[
@@ -373,7 +388,20 @@ class IntegrationClassTest(IntegrationTestCase):
                     'Home Page Header',
                     'Pretend this is',
                     'the project landing page.',
-                ]
+                ],
+            )
+
+            # With repeated values.
+            self.assertResponse(
+                'expanded_test_cases:index',
+                expected_content=[
+                    'Home Page | Test Views',
+                    'Home Page Header',
+                    'Pretend this is',
+                    'is the project',
+                    'the project landing page.',
+                ],
+                ignore_content_ordering=True,  # Ignore because we recheck the same values.
             )
 
         with self.subTest('Content mismatch'):
@@ -743,6 +771,7 @@ class IntegrationClassTest(IntegrationTestCase):
                     'Pretend this',
                     'project landing',
                 ],
+                ignore_ordering=True,  # Ignore because we recheck the same values.
             )
             # Test as tuple.
             self.assertPageContent(
@@ -753,29 +782,107 @@ class IntegrationClassTest(IntegrationTestCase):
                     'Pretend this',
                     'project landing',
                 ),
+                ignore_ordering=True,  # Ignore because we recheck the same values.
             )
 
-        with self.subTest('Standard Response - Set of items on user page'):
+        with self.subTest('Standard Response - Set of items on user page - As list'):
             response = self._get_page_response('expanded_test_cases:user-detail', args=(1,))
-            # Test as list.
+
+            # Standard, ordered page match.
+            self.assertPageContent(
+                response,
+                [
+                    '<h1>User Detail Page Header</h1>',
+                    'Username: "test_superuser"',
+                    'First Name: "TestFirst"',
+                    'Last Name: "TestLast"',
+                    'Is Active: "True"',
+                    'Is SuperUser: "True"',
+                    'Is Staff: "False"',
+                ],
+            )
+
+            # With repeating values.
             self.assertPageContent(
                 response,
                 [
                     '<h1>User Detail Page Header</h1>',
                     'User Detail',
+                    'Username: "test_superuser"',
                     'First Name: "TestFirst"',
                     'Last Name: "TestLast"',
+                    'Is Active: "True"',
+                    'Is SuperUser: "True"',
+                    'Is Staff: "False"',
+                    'TestFirst',
+                    'TestLast',
                 ],
+                ignore_ordering=True,  # Ignore because we recheck the same values.
             )
-            # Test as tuple.
+
+            # Standard page match but values are unordered.
+            self.assertPageContent(
+                response,
+                [
+                    'Is Active: "True"',
+                    'Is SuperUser: "True"',
+                    'Is Staff: "False"',
+                    'Username: "test_superuser"',
+                    'First Name: "TestFirst"',
+                    'Last Name: "TestLast"',
+                    '<h1>User Detail Page Header</h1>',
+                ],
+                ignore_ordering=True,  # Ignore because unordered.
+            )
+
+        with self.subTest('Standard Response - Set of items on user page - As Tuple'):
+            response = self._get_page_response('expanded_test_cases:user-detail', args=(1,))
+
+            # Standard, ordered page match.
+            self.assertPageContent(
+                response,
+                (
+                    '<h1>User Detail Page Header</h1>',
+                    'Username: "test_superuser"',
+                    'First Name: "TestFirst"',
+                    'Last Name: "TestLast"',
+                    'Is Active: "True"',
+                    'Is SuperUser: "True"',
+                    'Is Staff: "False"',
+                ),
+            )
+
+            # With repeating values.
             self.assertPageContent(
                 response,
                 (
                     '<h1>User Detail Page Header</h1>',
                     'User Detail',
+                    'Username: "test_superuser"',
                     'First Name: "TestFirst"',
                     'Last Name: "TestLast"',
+                    'Is Active: "True"',
+                    'Is SuperUser: "True"',
+                    'Is Staff: "False"',
+                    'TestFirst',
+                    'TestLast',
                 ),
+                ignore_ordering=True,  # Ignore because we recheck the same values.
+            )
+
+            # Standard page match but values are unordered.
+            self.assertPageContent(
+                response,
+                (
+                    'Is Active: "True"',
+                    'Is SuperUser: "True"',
+                    'Is Staff: "False"',
+                    'Username: "test_superuser"',
+                    'First Name: "TestFirst"',
+                    'Last Name: "TestLast"',
+                    '<h1>User Detail Page Header</h1>',
+                ),
+                ignore_ordering=True,  # Ignore because unordered.
             )
 
     def test__assertPageContent__fail(self):
@@ -825,6 +932,101 @@ class IntegrationClassTest(IntegrationTestCase):
                 self.assertPageContent(response, ('<h1>Home Page Header</h1>', 'Wrong text'))
             with self.assertRaises(AssertionError):
                 self.assertPageContent(response, ('<h1>Wrong Header</h1>', 'project landing page'))
+
+        with self.subTest('Wrong ordering'):
+            response = self._get_page_response('expanded_test_cases:user-detail', args=(1,))
+
+            with self.assertRaises(AssertionError):
+                # Test "first name" string at top.
+                self.assertPageContent(
+                    response,
+                    [
+                        'First Name: "TestFirst"',
+                        '<h1>User Detail Page Header</h1>',
+                        'Username: "test_superuser"',
+                        'First Name: "TestFirst"',
+                        'Last Name: "TestLast"',
+                        'Is Active: "True"',
+                        'Is SuperUser: "True"',
+                        'Is Staff: "False"',
+                    ],
+                )
+
+            with self.assertRaises(AssertionError):
+                # Test "first name" string after header.
+                self.assertPageContent(
+                    response,
+                    [
+                        '<h1>User Detail Page Header</h1>',
+                        'First Name: "TestFirst"',
+                        'Username: "test_superuser"',
+                        'First Name: "TestFirst"',
+                        'Last Name: "TestLast"',
+                        'Is Active: "True"',
+                        'Is SuperUser: "True"',
+                        'Is Staff: "False"',
+                    ],
+                )
+
+            with self.assertRaises(AssertionError):
+                # Test "first name" string after last name.
+                self.assertPageContent(
+                    response,
+                    [
+                        '<h1>User Detail Page Header</h1>',
+                        'Username: "test_superuser"',
+                        'Last Name: "TestLast"',
+                        'First Name: "TestFirst"',
+                        'Is Active: "True"',
+                        'Is SuperUser: "True"',
+                        'Is Staff: "False"',
+                    ],
+                )
+
+            with self.assertRaises(AssertionError):
+                # Test "first name" string after active.
+                self.assertPageContent(
+                    response,
+                    [
+                        '<h1>User Detail Page Header</h1>',
+                        'Username: "test_superuser"',
+                        'Last Name: "TestLast"',
+                        'Is Active: "True"',
+                        'First Name: "TestFirst"',
+                        'Is SuperUser: "True"',
+                        'Is Staff: "False"',
+                    ],
+                )
+
+            with self.assertRaises(AssertionError):
+                # Test "first name" string after superuser.
+                self.assertPageContent(
+                    response,
+                    [
+                        '<h1>User Detail Page Header</h1>',
+                        'Username: "test_superuser"',
+                        'Last Name: "TestLast"',
+                        'Is Active: "True"',
+                        'Is SuperUser: "True"',
+                        'First Name: "TestFirst"',
+                        'Is Staff: "False"',
+                    ],
+                )
+
+            with self.assertRaises(AssertionError):
+                # Test "first name" string after staff.
+                self.assertPageContent(
+                    response,
+                    [
+                        '<h1>User Detail Page Header</h1>',
+                        'Username: "test_superuser"',
+                        'Last Name: "TestLast"',
+                        'Is Active: "True"',
+                        'Is SuperUser: "True"',
+                        'Is Staff: "False"',
+                        'First Name: "TestFirst"',
+                    ],
+                )
 
     @override_settings(DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS=True)
     def test__assertContextMessages__success__allow_partials(self):
