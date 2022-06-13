@@ -46,6 +46,11 @@ class CoreTestCaseMixin:
             is_staff=True,
         )
         cls.test_user = get_user_model().objects.create_user(username='test_user', password='password')
+        cls.test_inactive_user = get_user_model().objects.create_user(
+            username='test_inactive',
+            password='password',
+            is_active=False,
+        )
 
         # Check user debug_print option.
         if debug_print is not None:
@@ -130,6 +135,8 @@ class CoreTestCaseMixin:
             user = self.test_admin
         elif user == 'test_user':
             user = self.test_user
+        elif user == 'test_inactive':
+            user = self.test_inactive_user
 
         else:
             # Is not User model. Get or create.
