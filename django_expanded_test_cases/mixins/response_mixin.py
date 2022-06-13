@@ -21,8 +21,9 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
 
         However, since this is not inheriting from a given TestCase, calling the literal function
         here would override instead.
+        
         :param debug_print: Optional bool that indicates if debug output should print to console.
-            Param overrides setting value if both param and setting are set.
+                            Param overrides setting value if both param and setting are set.
         """
         # Run parent setup logic.
         super().set_up_class(debug_print=debug_print)
