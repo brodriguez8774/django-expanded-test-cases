@@ -10,8 +10,150 @@ from django.contrib.contenttypes.models import ContentType
 from django_expanded_test_cases import BaseTestCase
 
 
+lorem_str = """
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec dui ex, convallis eu nulla dignissim, pretium luctus
+tellus. In hac habitasse platea dictumst. Interdum et malesuada fames ac ante ipsum primis in faucibus. Pellentesque
+porttitor accumsan dapibus. Nulla gravida malesuada suscipit. Ut diam ante, viverra nec tincidunt sit amet, pulvinar
+sit amet augue. Curabitur rutrum ut tortor vitae lobortis. Nulla tincidunt libero eros, non ullamcorper ipsum
+condimentum nec. Quisque id diam ultrices lacus vehicula congue. Aenean luctus, velit non imperdiet porttitor, felis
+leo lobortis quam, vitae porttitor nunc ligula convallis felis. Nullam aliquam fringilla mauris, at bibendum mauris
+malesuada id. Nullam eu placerat augue. Vestibulum ultrices metus in nisl iaculis bibendum. Ut nec bibendum erat.
+Curabitur pretium massa et eros rutrum volutpat.
+
+Nulla nec lectus mollis, accumsan tellus non, ullamcorper leo. Pellentesque ac risus ut est dignissim dictum a ac
+sapien. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Maecenas vitae massa vel
+nisi varius finibus. In hac habitasse platea dictumst. Nam lorem sapien, auctor ac velit ut, venenatis malesuada mauris.
+Vestibulum rhoncus, est at tristique laoreet, ipsum magna feugiat libero, quis interdum odio tellus non diam.
+Suspendisse mattis aliquam arcu, in efficitur velit mattis at. Sed sodales purus in nisl interdum mollis. Aenean pretium
+volutpat nibh sit amet sagittis. Suspendisse dignissim egestas elit, sed efficitur massa consectetur eu. Phasellus a
+sodales velit. Donec ac viverra ex.
+
+Ut fringilla sem nec consequat rutrum. Nunc pharetra vel purus vulputate pharetra. Nulla eget euismod nisl. Etiam
+tincidunt nulla at viverra feugiat. Donec efficitur ante in dui posuere blandit sit amet tincidunt enim. Aenean
+fermentum maximus nisl, quis consectetur massa interdum quis. Maecenas convallis tincidunt orci et maximus. Phasellus
+sit amet vestibulum purus, sit amet vestibulum neque. Fusce aliquam leo vitae neque egestas, et lobortis tortor
+tristique. Ut tempor pharetra nibh ac pretium. Suspendisse ante sem, vestibulum in volutpat at, iaculis vitae libero.
+Aenean faucibus interdum rutrum. Curabitur blandit ac lectus quis posuere. Donec nisl purus, pellentesque vitae ligula
+eget, pharetra gravida nulla.
+
+Nulla pharetra nisl non ligula tempus, non dictum nisi aliquet. Sed volutpat velit sed mauris feugiat, eget porttitor
+odio hendrerit. Morbi ac leo molestie, aliquam eros eu, dapibus neque. Duis rhoncus elit a justo lacinia mattis. Nullam
+commodo tortor nisl, ac suscipit nisl sodales scelerisque. Mauris nec turpis ac lacus accumsan scelerisque a id neque.
+Ut vel mi et nisl cursus egestas.
+
+Phasellus posuere vitae felis vitae laoreet. Aenean tellus lorem, rhoncus ut consequat nec, finibus vel est. Etiam nisl
+ante, tincidunt at ante vitae, iaculis rutrum erat. Quisque est massa, molestie eget consectetur vel, eleifend in arcu.
+Vestibulum elementum nisl ut lorem fermentum viverra. Quisque augue dui, finibus ut consectetur tempor, bibendum non ex.
+Nunc pretium ipsum in nulla accumsan pretium. Mauris nec volutpat leo, nec venenatis lacus. Quisque non magna id ipsum
+ullamcorper iaculis sed sit amet ligula. Morbi sem lacus, tempor id eros sed, vestibulum sollicitudin velit. Cras sed
+tortor ante. Fusce tincidunt, massa sed fermentum ultricies, justo ipsum venenatis purus, quis mollis nunc eros et
+libero.
+"""
+
+
 class BaseClassTest(BaseTestCase):
     """Tests for BaseTestCase class."""
+
+    # region Assertion Tests
+
+    def test__assertText__success(self):
+        """
+        Tests assertText() function, in cases when it should succeed.
+        """
+        with self.subTest('Empty string'):
+            self.assertText('', '')
+
+        with self.subTest('Single character'):
+            # Direct match.
+            self.assertText('a', 'a')
+            self.assertText(1, 1)
+            self.assertText('1', 1)
+            self.assertText(1, '1')
+
+            # Match with outer whitespace.
+            self.assertText(' a ', 'a')
+            self.assertText('a', ' a ')
+            self.assertText(' a ', ' a ')
+
+        with self.subTest('Small string'):
+            # Direct match.
+            self.assertText('abc', 'abc')
+
+            # Match with inner whitespace.
+            self.assertText('a b c', 'a b c')
+
+            # Match with outer whitespace.
+            self.assertText(' abc ', 'abc')
+            self.assertText('abc', ' abc ')
+            self.assertText(' abc ', ' abc ')
+
+            # Match with inner and outer whitespace.
+            self.assertText(' a b c ', 'a b c')
+            self.assertText('a b c', ' a b c ')
+            self.assertText(' a b c ', ' a b c ')
+
+        with self.subTest('Large string'):
+            # Full lorem.
+            self.assertText(lorem_str, lorem_str)
+
+            # Substring match.
+            lorem_len = len(lorem_str)
+            self.assertText(lorem_str[:int(lorem_len / 2)], lorem_str[:int(lorem_len / 2)])
+            self.assertText(lorem_str[int(lorem_len / 2):], lorem_str[int(lorem_len / 2):])
+
+    def test__assertText__fail(self):
+        """
+        Tests assertText() function, in cases when it should fail.
+        """
+        with self.subTest('Single character mismatch'):
+            with self.assertRaises(AssertionError):
+                self.assertText('a', 'b')
+
+            with self.assertRaises(AssertionError):
+                self.assertText('a', 'A')
+
+            with self.assertRaises(AssertionError):
+                self.assertText('a', 1)
+
+        with self.subTest('Whitespace mismatch'):
+            with self.assertRaises(AssertionError):
+                self.assertText('a b c', 'abc')
+
+            with self.assertRaises(AssertionError):
+                self.assertText('abc', 'a b c')
+
+        with self.subTest('Inner value mismatch'):
+            with self.assertRaises(AssertionError):
+                self.assertText('This is a test sentence.', 'This is a test')
+
+            with self.assertRaises(AssertionError):
+                self.assertText('This is a test sentence.', 'This is test sentence.')
+
+            with self.assertRaises(AssertionError):
+                self.assertText('This is a test sentence.', 'test sentence.')
+
+            with self.assertRaises(AssertionError):
+                self.assertText('This is a test sentence.', 'This is a test.')
+
+        with self.subTest('Large string'):
+            half_lorem_len = int(len(lorem_str) / 2)
+
+            # With character replaced.
+            with self.assertRaises(AssertionError):
+                modified_str = lorem_str[:(half_lorem_len - 1)] + 'z' + lorem_str[(half_lorem_len + 1):]
+                self.assertText(lorem_str, modified_str)
+
+            # With character added.
+            with self.assertRaises(AssertionError):
+                modified_str = lorem_str[:(half_lorem_len)] + 'z' + lorem_str[(half_lorem_len + 1):]
+                self.assertText(lorem_str, modified_str)
+
+            # With character removed.
+            with self.assertRaises(AssertionError):
+                modified_str = lorem_str[:(half_lorem_len - 1)] + lorem_str[(half_lorem_len + 1):]
+                self.assertText(lorem_str, modified_str)
+
+    # endregion Assertion Tests
 
     # region User Management Function Tests
 

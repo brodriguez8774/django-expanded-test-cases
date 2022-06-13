@@ -62,6 +62,53 @@ class CoreTestCaseMixin:
         if self._debug_print_bool:
             print(*args, **kwargs)
 
+    # region Custom Assertions
+
+    def assertText(self, actual_text, expected_text, strip=True):
+        """Wrapper for assertEqual(), that prints full values to console on mismatch.
+
+        NOTE: Outer whitespace is stripped if either strip or standardize params are set to True.
+
+        :param actual_text: Actual text value to compare.
+        :param expected_text: Expected text value to check against.
+        :param strip: Bool indicating if outer whitespace should be stripped. Defaults to True.
+        """
+        # Enforce str type.
+        actual_text = str(actual_text)
+        expected_text = str(expected_text)
+
+        # Handle optional cleaning params.
+        if strip:
+            actual_text = actual_text.strip()
+            expected_text = expected_text.strip()
+
+        # Attempt assertion.
+        try:
+            self.assertEqual(actual_text, expected_text)
+        except AssertionError as err:
+            # Assertion failed. Provide debug output.
+            self._debug_print('')
+            self._debug_print('')
+            self._debug_print('')
+            self._debug_print('')
+            self._debug_print('')
+            self._debug_print('ACTUAL:')
+            self._debug_print(actual_text)
+            self._debug_print('')
+            self._debug_print('')
+            self._debug_print('EXPECTED:')
+            self._debug_print(expected_text)
+            self._debug_print('')
+            self._debug_print('')
+            self._debug_print('')
+            self._debug_print('')
+            self._debug_print('')
+
+            # Raise original error.
+            raise AssertionError(err)
+
+    # endregion Custom Assertions
+
     # region User Management Functions
 
     def get_user(self, user, password='password'):
