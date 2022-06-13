@@ -51,12 +51,17 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param url: Url to get response object from.
         :param get: Bool indicating if response is GET or POST. Defaults to GET.
         :param data: Optional dict of items to pass into response generation.
+        :param expected_redirect_url: Expected url, after any redirections.
         :param expected_status: Expected status code, after any redirections. Default code of 200.
         :param expected_title: Expected page title to verify. Skips title test if left as None.
         :param expected_header: Expected page h1 to verify. Skips header test if left as None.
         :param expected_messages: Expected context messages to verify. Skips message test if left as None.
         :param expected_content: Expected page content elements to verify. Skips content test if left as None.
-        :param ignore_ordering: Bool indicating if ordering should be verified. Defaults to checking ordering.
+        :param auto_login: Bool indicating if user should be auto-logged-in.
+        :param user: User to log in with, if auto_login is True. Defaults to `test_user`.
+        :param user_permissions: Optional permissions to provide to login user.
+        :param user_groups: Optional groups to provide to login user.
+        :param ignore_content_ordering: Bool indicating if ordering should be verified. Defaults to checking ordering.
         """
         # Reset client "user login" state for new response generation.
         self.client.logout()
@@ -125,6 +130,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         expected_redirect_url=None, expected_status=200,
         expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
         auto_login=True, user='test_user', user_permissions=None, user_groups=None,
+        ignore_content_ordering=False,
         **kwargs,
     ):
         """Verifies a GET response was found at given URL, and matches provided parameters."""
@@ -145,6 +151,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             user=user,
             user_permissions=user_permissions,
             user_groups=user_groups,
+            ignore_content_ordering=ignore_content_ordering,
             **kwargs,
         )
 
@@ -155,6 +162,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         expected_redirect_url=None, expected_status=200,
         expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
         auto_login=True, user='test_user', user_permissions=None, user_groups=None,
+        ignore_content_ordering=False,
         **kwargs,
     ):
         """Verifies a GET response was found at given URL, and matches provided parameters."""
@@ -184,6 +192,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             user=user,
             user_permissions=user_permissions,
             user_groups=user_groups,
+            ignore_content_ordering=ignore_content_ordering,
             **kwargs,
         )
 
@@ -192,8 +201,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         Most functionality is in the default Django assertRedirects() function.
         However, this acts as a wrapper to also:
-         * Check that provided response param is a valid Response object. Attempts to generate one if not.
-         * Attempt url as reverse, before trying assertion.
+            * Check that provided response param is a valid Response object. Attempts to generate one if not.
+            * Attempt url as reverse, before trying assertion.
         """
         # Ensure provided response is actual response.
         if isinstance(response, HttpResponseBase):
