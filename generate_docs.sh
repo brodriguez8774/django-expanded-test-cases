@@ -22,13 +22,13 @@ mkdir "./docs/build/"
 
 
 # Auto-generate docs source files, from actual Python code in project.
-sphinx-apidoc -o ./docs/source/ ./django_expanded_test_cases/
+sphinx-apidoc -o ./docs/source/api/ ./django_expanded_test_cases/
 
 
 # Remove modules .rst file, because we don't actually care about it.
-if [[ -f "./docs/source/modules.rst" ]]
+if [[ -f "./docs/source/api/modules.rst" ]]
 then
-    rm ./docs/source/modules.rst
+    rm ./docs/source/api/modules.rst
 fi
 
 
