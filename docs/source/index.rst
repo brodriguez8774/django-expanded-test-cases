@@ -7,20 +7,25 @@
 Django-Expanded-Test-Cases Package
 ==================================
 
-The **Django-Expanded-TestCases** package is meant to be a set of utility
-classes and functions, which expands upon those defined in Django's default
+The **Django-Expanded-Test-Cases** package is a set of TestCase
+classes that expand upon Django's default
 `TestCase <https://docs.djangoproject.com/en/dev/topics/testing/overview/>`_
 class and
 `UnitTesting <https://docs.python.org/3/library/unittest.html>`_ logic.
 
-A majority of logic provided in this package amounts to helper wrappers around
-sets of commonly used testing statements. So what might normally take 5 or 10
-lines of testing logic is condensed down to a single assertion.
+A majority of additional features provided in this package amounts to helper
+wrappers around sets of commonly used testing statements.
+So what might normally take 5 or 10 lines of testing logic is condensed down
+to a single assertion.
 
 For a large project with many thousands of tests, this can add up fast.
 
-Within this package, different TestCase classes are provided, each providing
-separate sets of functionality.
+Within this package, are three different TestCase classes that can be used as
+a drop-in replacement for
+`Django's included TestCases <https://docs.djangoproject.com/en/4.0/topics/testing/tools/#provided-test-case-classes>`_
+They are :ref:`BaseTestCase`, :ref:`IntegrationTestCase`, and
+:ref:`LiveServerTestCase`.
+Each one provides separate sets of additional functionality.
 
 
 .. toctree::
