@@ -1,11 +1,12 @@
 General Usage
 *************
 
-Reminder that the **Django-Expanded-TestCases** package is meant expand the
+Reminder that the **Django-Expanded-Test-Cases** package is meant to expand the
 existing Django
 `TestCase <https://docs.djangoproject.com/en/dev/topics/testing/overview/>`_
 class and
-`UnitTesting <https://docs.python.org/3/library/unittest.html>`_ logic with extra functionality.
+`UnitTesting <https://docs.python.org/3/library/unittest.html>`_
+logic with some extra functionality.
 
 Below are examples of what this actually means:
 
@@ -49,7 +50,7 @@ In standard Python code, this may look roughly like:
             self.assertEqual('Expected H1 Value', response_header)
 
 
-Alternatively, using the **Django-Expanded-TestCases** package, we can use the
+Alternatively, using the **Django-Expanded-Test-Cases** package, we can use the
 ``assertPageHeader()`` function to simplify that same check down to:
 
 .. code:: python
@@ -68,7 +69,8 @@ Alternatively, using the **Django-Expanded-TestCases** package, we can use the
             response = self.client.get(url, follow=True)
             self.assertPageHeader(response, 'Expected H1 Value')
 
-We can then use the ``assertResponse()`` check to simplify even further:
+As you can see, we were able to eliminate quite a bit of setup. But, we can
+then use the ``assertResponse()`` check to simplify this even further:
 
 .. code:: python
 
@@ -84,10 +86,12 @@ We can then use the ``assertResponse()`` check to simplify even further:
             self.assertResponse('my-url-string', url_args, expected_header='Expected H1 Value')
 
 
-The three above code snippets are effectively equivalent in what they
-accomplish.
+.. note::
 
-As you can see, the **Django-Expanded-TestCases** package isn't doing anything
+    The three above code snippets are effectively equivalent in what they
+    accomplish.
+
+As you can see, the **Django-Expanded-Test-Cases** package isn't doing anything
 groundbreaking, per say. Yet it makes the same test significantly easier and
 faster to write, allowing the developer to focus on the actual meat and bones
 of the test, rather than wasting significant time writing repeated code to
@@ -104,14 +108,16 @@ Debug Output Overview
 .. warning::
 
     While this project can function with ``manage.py test``, the debug output
-    functionality will be effectively unavailable. Instead, we strongly
-    recommend considering using PyTest to run project UnitTests.
+    functionality will send content to the console on every test regardless of
+    pass or fail leading to an overwhelming amount of output. Instead, we
+    **strongly** recommend that you consider using PyTest to run tests as
+    PyTest will only output debug info on test failure.
 
     For an explanation of why this is, see our note on
     :doc:`Testing Environments <quickstart>`.
 
 
-Any testing responses that were generated via the **Django-Expanded-TestCases**
+Any testing responses that were generated via the **Django-Expanded-Test-Cases**
 assertions and classes can automatically output response debug information, in
 an attempt to make it faster to troubleshoot failing tests (This functionality
 can be toggled via the ``DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT`` setting. See
