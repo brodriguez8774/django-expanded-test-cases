@@ -3,7 +3,7 @@ LiveServerTestCase
 
 
 The **LiveServerTestCase** class provides additional wrapper functionality for
-writing UnitTests which directly check a browser window instance, such as
+writing tests that directly check a browser window instance, such as
 `Selenium <https://www.selenium.dev/documentation/>`_.
 
 

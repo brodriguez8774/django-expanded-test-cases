@@ -7,26 +7,27 @@ the Django
 `TestCase <https://docs.djangoproject.com/en/dev/topics/testing/overview/>`_
 class provides.
 
-This class is intended to be a minimalistic, lightweight addition to what Django
-provides out of the box.
+This classes main focus is to add some basic users that can be used in testing,
+as well as some helper functions to work with those users.
 
 
-Test User Logic
-===============
+Test Users
+==========
 
 Provided User Instances
 -----------------------
 
-Out of the box, the **BaseTestCase** provides four separate users to all tests,
-to ensure testing with a non-empty database. They have usernames follows:
+Out of the box, the **BaseTestCase** provides four separate users to all tests.
+These users help to ensure that tests are using a non-empty database.
+They have usernames follows:
 
 * ``test_user`` - The default user, used in all corresponding functionality.
 * ``test_admin`` - A pre-provided "is_staff" user, who can see the Django admin.
 * ``test_superuser`` - A pre-provided "is_superuser" user, who can see all.
 * ``test_inactive`` - A pre-provided "disabled" user.
 
-By itself, the BaseTestCase class does not manipulate these users further, other
-than using the ``test_user`` object as the default for most function calls.
+By itself, the BaseTestCase class does not manipulate these users further.
+The ``test_user`` object is used as the default for most function calls.
 
 Feel free to change (or ignore) these users as needed to best serve project
 tests.

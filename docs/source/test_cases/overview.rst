@@ -3,7 +3,7 @@ Overview
 
 All TestCases in ``django-expanded-test-cases`` use Django's original
 `TestCase <https://docs.djangoproject.com/en/dev/topics/testing/overview/>`_
-as a baseline.
+as a base class.
 
 From there, the following TestCase classes provide additional functionality:
 

@@ -42,7 +42,7 @@ of the possible individual property assertions.
    ``_extra_user_auth_setup()`` function and add your logic there.
 
    This ``_extra_user_auth_setup()`` function is an empty hook into
-   **Response Assertion** User login logic, that runs in the after the user
+   **Response Assertion** User login logic, that runs after the user
    is grabbed, but before the response is rendered.
 
 
@@ -65,40 +65,44 @@ redirects) matches the provided ``expected_status`` param.
 Only "expected" params that are provided will be checked, with the exception
 of ``status_code``, which will assume a default of ``200`` if not provided.
 
-Both ``assertGetResponse()`` and ``assertPostResponse()`` technically call
-this.
+.. note::
 
-For clarity, it's recommended to instead call the above
-``assertGetResponse()`` or ``assertPostResponse()`` assertions, to make it
-explicitly visible what the expected response type is that's being checked.
+    This assertion is the base assertion for two others assertions that are much
+    more explicit.
+    :ref:`assertGetResponse() <assertGetResponse>` and
+    :ref:`assertPostResponse() <assertPostResponse>`.
+    It is recommended that you use these more explicit versions so that your
+    test expresses clarity as to what the expected request type should be.
 
 :param url: The url to grab the response from.
-:param get: Bool indicating if response is GET or POST. True means GET.
-:param data: Dictionary of values to pass to response, if response is POST.
+:param get: Bool indicating if the response should be created with a GET or POST
+           request. True means GET.
+:param data: Dictionary of values to pass to the request, if the request is
+            POST.
 :param expected_redirect_url: Expected url that response should end at, after
-                             any redirections that occur.
-:param expected_status: Expected status code response should have, after any
-                       redirections.
-:param expected_title: Expected response title (``<title>`` tag) response
-                      should have.
+                             any redirections have completed.
+:param expected_status: Expected status code the response should have, after all
+                       redirections have completed.
+:param expected_title: Expected title (``<title>`` tag) the response should
+                      include.
 :param expected_header: Expected page header (``<h1>`` tag) response should
                        have.
-:param expected_messages: Expected messages response should contain. Usually
-                         generated with the
+:param expected_messages: Expected messages that the response should contain.
+                         Usually these are generated with the
                          `Django Messages Framework <https://docs.djangoproject.com/en/dev/ref/contrib/messages/>`_.
-:param expected_content: Expected page content response should contain.
+:param expected_content: Expected page content that the response should contain.
 :param auto_login: Bool indicating if user should be auto-logged-in, before
-                  trying to render response. Useful for verifying behavior
+                  trying to render the response. Useful for verifying behavior
                   of views with login/permission requirements.
-:param user: User to log in with, if ``auto_login`` is True. Defaults to
+:param user: User to log in with, if ``auto_login`` is set to True. Defaults to
             ``test_user`` if not provided.
-:param user_permissions: Optional permissions to provide User, before
-                        attempting to render response.
-:param user_groups: Optional groups to provide User, before attempting to
-                   render response.
-:param ignore_content_ordering: Bool indicating if ordering of
+:param user_permissions: Optional permissions to provide to the User before
+                        attempting to render the response.
+:param user_groups: Optional groups to provide to the User, before attempting to
+                   render the response.
+:param ignore_content_ordering: Bool indicating if ordering of the
                                ``expected_content`` is important or not.
-                               Defaults to assuming ordering matters.
+                               Defaults to assuming that ordering matters.
 
 :return: The generated response object, in case tests need to run additional
         logic on it.
@@ -111,8 +115,8 @@ assertGetResponse
 
     assertGetResponse()
 
-A wrapper for above ``assertResponse()``, that has minimal extra logic for
-assuming a page is a GET response.
+A wrapper for the above ``assertResponse()``, that has minimal extra logic for
+ensuring that the response is generated from a GET request.
 
 All above params are applicable, except for ``get``.
 
@@ -124,8 +128,8 @@ assertPostResponse
 
     assertPostResponse()
 
-A wrapper for above ``assertResponse()``, that has minimal extra logic for
-assuming a page is a POST response.
+A wrapper for the above ``assertResponse()``, that has minimal extra logic for
+ensuring that the response is generated from a POST request.
 
 All above params are applicable, except for ``get`` and ``data``.
 
@@ -140,8 +144,9 @@ The **Element Assertions** check for the existence and state of a specific
 element within a `Django Response Object
 <https://docs.djangoproject.com/en/dev/ref/request-response/#httpresponse-objects>`_.
 
-They then each return the verified element, in case further testing is required
-that the assertion cannot handle.
+Each assertion returns the verified element. This is so that any further
+required testing that the assertion didn't handle can be easily performed on
+the element.
 
 
 assertRedirects
@@ -151,15 +156,16 @@ assertRedirects
 
     assertRedirects()
 
-Asserts that a response is redirected to a specific URL.
+Asserts that a request is redirected to a specific URL.
 
 Most functionality comes from Django's default assertRedirects() function.
 
 However, this adds additional wrapper logic to:
+
 * Check that provided response param is a valid Response object, and attempts
-to generate one if not.
-* Attempts to grab URL as a
-`reverse <https://docs.djangoproject.com/en/dev/ref/urlresolvers/#reverse>`_.
+  to generate one if not.
+* Attempts to grab the URL as a
+  `reverse <https://docs.djangoproject.com/en/dev/ref/urlresolvers/#reverse>`_.
 
 :param response: Response object to check against.
 :param expected_redirect_url: Expected path that response should redirect to.
@@ -178,7 +184,7 @@ Asserts that a response has a given status code value.
 
 :param response: Response object to check against.
 :param expected_status: Expected status code that response should have, after
-                       any redirections.
+                       any redirections are completed.
 
 :return: The found status code value, in case tests need to run additional
         logic on it.
@@ -277,17 +283,17 @@ expected strings.
    is provided into the ``expected_messages`` param, and then not found in the
    page response.
 
-   It will NOT fail if messages exist in the response, but are not checked.
+   It will **NOT** fail if messages exist in the response, but are not checked.
 
    For example, if we have a response containing messages of
-   ["Message #1", "Message #2", "Message #3"], then the following will check
-   for a single message, find it, and then ignore the remaining other two
-   messages pass:
+   ["Message #1", "Message #2", "Message #3"] and use the following code to
+   check for a single message, the unchecked messages (#1 and #3) will be
+   ignored and the assertion will pass:
 
    ``self.assertContextMessages(response, 'Message #2')``
 
    In the future, there will likely be an option to change this behavior, so
-   that if there are messages on the page that are NOT checked via the
+   that if there are messages on the page that are **NOT** checked via the
    ``expected_messages`` param, then the ``assertContextMessages()`` assertion
    will fail.
 
@@ -339,4 +345,4 @@ usually generated with the
 
 :param response: Response object to pull messages from.
 
-:return Found message elements.
+:return: Found message elements.
