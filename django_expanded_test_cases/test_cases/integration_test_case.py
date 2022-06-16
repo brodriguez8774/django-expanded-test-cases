@@ -24,7 +24,11 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         super().setUpClass(debug_print=None)
 
         # Initialize url variables.
-        cls.login_url = reverse(settings.LOGIN_URL)
+        try:
+            cls.login_url = reverse(settings.LOGIN_URL)
+        except NoReverseMatch:
+            # Login url is not defined.
+            cls.login_url = None
         cls._site_root_url = None
 
     # region Custom Assertions
