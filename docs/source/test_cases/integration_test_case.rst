@@ -27,9 +27,12 @@ view logic does not require interactive elements, such as JavaScript.
 Custom Response Assertions
 ==========================
 
-The **Response Assertions** are utility assertions that can check for multiple
-of the below :ref:`custom element assertions` at once, in a single function
-call.
+The **Response Assertions** are utility functions that can generate a response
+according to provided URL parameters, and then check for one or more properties
+upon the generated response object.
+
+See the below :ref:`custom element assertions` section for further documentation
+of the possible individual property assertions.
 
 
 .. note::

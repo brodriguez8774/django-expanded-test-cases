@@ -32,8 +32,8 @@ Feel free to change (or ignore) these users as needed to best serve project
 tests.
 
 
-Default Test User Logic
------------------------
+Test User Logic
+---------------
 
 For most logic in this class, it defaults to manipulating a User object with
 the username of ``test_user``. This behavior can be changed by providing a
@@ -58,6 +58,7 @@ updated first and last name, unless a separate user is explicitly provided.
 Custom Assertions
 =================
 
+
 assertText
 ----------
 
@@ -79,6 +80,10 @@ output, particularly for long values.
 Helper Functions
 ================
 
+Reminder that the ``BaseTestCase`` class is meant to be minimalistic. So most
+"helper functions" here are simply basic wrappers which sanitize all reasonable
+types of input, and then return the expected value.
+
 
 get_user
 --------
@@ -89,10 +94,12 @@ get_user
 
 Helper function to obtain a given User object.
 
-Checks if the provided value is a User object. If not, then a new User object
-is obtained, using the provided value as the `username` field.
+Treats the provided value as the `username` field. Returns the User object that
+matches. If no such User exists in the database yet, then a new one is first
+created.
 
-If no such User exists in the database yet, then a new one is first created.
+For testing purposes, also makes sure the provided password is assigned to the
+user, and then includes this raw value as an attribute on the returned object.
 
 :param password: The password to assign this user. On the returned User
                 object, the raw password value can be accessed via a

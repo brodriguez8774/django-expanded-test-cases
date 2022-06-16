@@ -19,23 +19,35 @@ requirements file.
 Testing Environments
 ====================
 
-One of the most useful features the `Django Expanded TestCases` library provides
-is automatically displaying debug page response output to console, on test
-failure.
+One of the most useful features of the **Django-Expanded-TestCases** package
+is that it automatical displays debug page response output to console, on test
+failure. For reasons described in the notice below, this debug output works
+best when running project tests via PyTest.
 
-This technically works with Django's default
+However, this package will still work with Django's default
 `manage.py test <https://docs.djangoproject.com/en/dev/topics/testing/overview/>`_
-command. But ``manage.py``'s base functionality is to assume all testing console
-output is meaningful, and display it to console unconditionally. As far as we
-can tell, there does not seem to be a way to change this behavior.
+command. As such, we have provided quickstart documentation for setting up the
+project in both scenarios.
 
-With large projects (or even small and medium projects with decent amounts of
-tests), this ends with unwieldy amounts of unhelpful text outputting to
-console, even when all tests pass. And when tests fail, this drowns out any
-useful debug output that might have occurred.
 
-Thus, when using this package, we **strongly** recommend switching to running
-tests via PyTest.
+.. important::
+
+    When running tests, ``manage.py``'s base functionality is to assume all
+    testing console output is meaningful, and display it to console
+    unconditionally. As far as we can tell, there does not seem to be a way to
+    change this behavior.
+
+    Because of this behavior, when using this package in large projects
+    (or even in small and medium projects that have decent amounts of tests),
+    this results in unwieldy amounts of unhelpful text outputting to console,
+    even when all tests pass. And when tests fail, this drowns out any useful
+    debug output that might have occurred.
+
+    Thus, when using this package, we **strongly** recommend switching to
+    running tests via PyTest.
+
+    PyTest will only output console output on test failure, so when it shows,
+    this debug information is always relevant.
 
 
 PyTest Configuration QuickStart

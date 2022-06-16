@@ -1,26 +1,20 @@
 General Usage
 *************
 
-
-Functionality Overview
-======================
-
-The `Django Expanded TestCases` library is meant to be a set of utility
-classes and functions, which expands upon those defined in Django's default
+Reminder that the **Django-Expanded-TestCases** package is meant expand the
+existing Django
 `TestCase <https://docs.djangoproject.com/en/dev/topics/testing/overview/>`_
-class and UnitTesting logic.
+class and
+`UnitTesting <https://docs.python.org/3/library/unittest.html>`_ logic with extra functionality.
 
-A majority of logic provided in this library amounts to helper wrappers around
-sets of commonly used testing statements. So what might normally take 5 or 10
-lines of testing logic is condensed down to a single assertion.
-
-For a large project with many thousands of tests, this can add up fast.
+Below are examples of what this actually means:
 
 
-Functionality Example
----------------------
+Functionality Example #1
+========================
 
-For example, if you wanted a basic response test to check that a given
+In any given web framework, the most common use case is to generate some page
+response from a url. So if you wanted a basic test to check that a given
 `url reverse <https://docs.djangoproject.com/en/4.0/ref/urlresolvers/#reverse>`_,
 renders the expected page, you might need to:
 
@@ -55,12 +49,12 @@ In standard Python code, this may look roughly like:
             self.assertEqual('Expected H1 Value', response_header)
 
 
-Alternatively, using the `Django Expanded TestCases` library, we can use the
-``assertHeader()`` function to simplify the same check down to:
+Alternatively, using the **Django-Expanded-TestCases** package, we can use the
+``assertPageHeader()`` function to simplify that same check down to:
 
 .. code:: python
 
-    """Slightly simplified test, using provided assertHeader() function."""
+    """Slightly simplified test, using provided assertPageHeader() function."""
 
     from django.urls import reverse
     from django_expanded_test_cases import IntegrationTestCase
@@ -72,7 +66,7 @@ Alternatively, using the `Django Expanded TestCases` library, we can use the
             self.client.force_login(self.get_user('john'))
             url = reverse('my-url-string', args=(url_args))
             response = self.client.get(url, follow=True)
-            self.assertHeader(assertPageHeader, 'Expected H1 Value')
+            self.assertPageHeader(response, 'Expected H1 Value')
 
 We can then use the ``assertResponse()`` check to simplify even further:
 
@@ -93,14 +87,14 @@ We can then use the ``assertResponse()`` check to simplify even further:
 The three above code snippets are effectively equivalent in what they
 accomplish.
 
-As you can see, the `Django Expanded TestCases` library isn't doing anything
+As you can see, the **Django-Expanded-TestCases** package isn't doing anything
 groundbreaking, per say. Yet it makes the same test significantly easier and
 faster to write, allowing the developer to focus on the actual meat and bones
 of the test, rather than wasting significant time writing repeated code to
 simply generate response objects and pull values from them.
 
 Writing tests in such a way will also generally reduce the amount of visual
-clutter in a test, resulting in a project tests that are generally more
+clutter in a test, resulting in project tests that are generally more
 immediately obvious as to exactly what is being tested.
 
 
@@ -113,10 +107,11 @@ Debug Output Overview
     functionality will be effectively unavailable. Instead, we strongly
     recommend considering using PyTest to run project UnitTests.
 
-    See :doc:`quickstart` for details.
+    For an explanation of why this is, see our note on
+    :doc:`Testing Environments <quickstart>`.
 
 
-Any testing responses that were generated via the `Django Expanded TestCases`
+Any testing responses that were generated via the **Django-Expanded-TestCases**
 assertions and classes can automatically output response debug information, in
 an attempt to make it faster to troubleshoot failing tests (This functionality
 can be toggled via the ``DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT`` setting. See
@@ -125,7 +120,7 @@ can be toggled via the ``DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT`` setting. See
 
 As result, helpful information is immediately visible in the console, after any
 test failure, allowing immediate feedback as to what actually rendered during
-the testing assertions. This can make troubleshooting and cleaning up tests
+the testing assertions. This can make test troubleshooting and cleaning up
 take significantly less time, and be overall less cumbersome to troubleshoot
 when they inevitably do fail.
 
