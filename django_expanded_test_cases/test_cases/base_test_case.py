@@ -3,6 +3,7 @@ Testing class for generalized logic.
 """
 
 # System Imports.
+import os
 import sys
 from io import StringIO
 from django.test import TestCase
@@ -39,7 +40,7 @@ class BaseTestCase(TestCase, CoreTestCaseMixin):
         # Intercept std out/err so we don't output useless garbage.
         str_buffer = [StringIO(), StringIO()]
         sys.stdout, sys.stderr = str_buffer
-        print_debug_output = False
+        base_seperator_str = '{0:-^' + str(os.get_terminal_size().columns) + '}'
         try:
             # Call parent logic.
             result = super().run(*args, *kwargs)
@@ -48,23 +49,51 @@ class BaseTestCase(TestCase, CoreTestCaseMixin):
             sys.stdout = orig_stdout
             sys.stderr = orig_stderr
 
+            # Check if result object has "errors" populated. Intercept if so.
             global BASE_ERROR_COUNT
-
-            # Check result attributes.
             if hasattr(result, 'errors'):
                 if len(result.errors) > BASE_ERROR_COUNT:
-                    print_debug_output = True
+                    err_output = '\n{0}\n{1}\n{2}\n{3}\n{4}\n{5}\n\n\n'.format(
+                        base_seperator_str.format(' Captured Print Statements '),
+                        str_buffer[0].getvalue(),
+                        base_seperator_str.format(' Captured Error Statements '),
+                        str_buffer[1].getvalue(),
+                        base_seperator_str.format(' Captured Stack Trace '),
+                        result.errors[BASE_ERROR_COUNT][1],
+                    )
+                    updated_err = ()
+                    for index in range(len(result.errors[BASE_ERROR_COUNT])):
+                        if index == 1:
+                            updated_err += (err_output,)
+                        else:
+                            updated_err += (result.errors[BASE_ERROR_COUNT][index],)
+
+                    result.errors[BASE_ERROR_COUNT] = result.errors
+
                     BASE_ERROR_COUNT += 1
 
+            # Check if result object has "failures" populated. Intercept if so.
             global BASE_FAILURE_COUNT
             if hasattr(result, 'failures'):
                 if len(result.failures) > BASE_FAILURE_COUNT:
-                    print_debug_output = True
-                    BASE_FAILURE_COUNT += 1
+                    fail_output = '\n{0}\n{1}\n{2}\n{3}\n{4}\n{5}\n\n\n'.format(
+                        base_seperator_str.format(' Captured Print Statements '),
+                        str_buffer[0].getvalue(),
+                        base_seperator_str.format(' Captured Error Statements '),
+                        str_buffer[1].getvalue(),
+                        base_seperator_str.format(' Captured Stack Trace '),
+                        result.failures[BASE_FAILURE_COUNT][1],
+                    )
+                    updated_fail = ()
+                    for index in range(len(result.failures[BASE_FAILURE_COUNT])):
+                        if index == 1:
+                            updated_fail += (fail_output,)
+                        else:
+                            updated_fail += (result.failures[BASE_FAILURE_COUNT][index],)
 
-            if print_debug_output:
-                for buffer in str_buffer:
-                    print(buffer.getvalue())
+                    result.failures[BASE_FAILURE_COUNT] = updated_fail
+
+                    BASE_FAILURE_COUNT += 1
 
         finally:
             return result
