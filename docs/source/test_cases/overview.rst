@@ -1,7 +1,7 @@
 Overview
 ********
 
-All TestCases in ``django-expanded-test-cases`` use Django's original
+All TestCases in **Django-Expanded-Test-Cases** use Django's original
 `TestCase <https://docs.djangoproject.com/en/dev/topics/testing/overview/>`_
 as a base class.
 

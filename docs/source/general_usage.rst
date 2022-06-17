@@ -43,7 +43,7 @@ In standard Python code, this may look roughly like:
         def test_response_header():
             user = get_user_model().objects.get(username='john')
             self.client.force_login(user)
-            url = reverse('my-url-string', args=(url_args))
+            url = reverse('my-url-string', args=(url_args,))
             response = self.client.get(url, follow=True)
             content = response.content.decode('utf-8')
             response_header = re.search(r'<h1>([\S\s]+)</h1>', response)
@@ -65,7 +65,7 @@ Alternatively, using the **Django-Expanded-Test-Cases** package, we can use the
 
         def test_response_header():
             self.client.force_login(self.get_user('john'))
-            url = reverse('my-url-string', args=(url_args))
+            url = reverse('my-url-string', args=(url_args,))
             response = self.client.get(url, follow=True)
             self.assertPageHeader(response, 'Expected H1 Value')
 

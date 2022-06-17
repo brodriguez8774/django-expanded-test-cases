@@ -27,9 +27,9 @@ view logic does not require interactive elements, such as JavaScript.
 Custom Response Assertions
 ==========================
 
-The **Response Assertions** are utility functions that can generate a response
-according to provided URL parameters, and then check for one or more properties
-upon the generated response object.
+The **Response Assertions** are utility functions that can generate a page
+response according to provided URL parameters, and then check for one or more
+properties upon the generated response object.
 
 See the below :ref:`custom element assertions` section for further documentation
 of the possible individual property assertions.
@@ -67,7 +67,7 @@ of ``status_code``, which will assume a default of ``200`` if not provided.
 
 .. note::
 
-    This assertion is the base assertion for two others assertions that are much
+    This assertion is the base for two others assertions that are much
     more explicit.
     :ref:`assertGetResponse() <assertGetResponse>` and
     :ref:`assertPostResponse() <assertPostResponse>`.
@@ -77,7 +77,7 @@ of ``status_code``, which will assume a default of ``200`` if not provided.
 :param url: The url to grab the response from.
 :param get: Bool indicating if the response should be created with a GET or POST
            request. True means GET.
-:param data: Dictionary of values to pass to the request, if the request is
+:param data: Dictionary of values to pass for request generation, if method is
             POST.
 :param expected_redirect_url: Expected url that response should end at, after
                              any redirections have completed.
@@ -91,6 +91,7 @@ of ``status_code``, which will assume a default of ``200`` if not provided.
                          Usually these are generated with the
                          `Django Messages Framework <https://docs.djangoproject.com/en/dev/ref/contrib/messages/>`_.
 :param expected_content: Expected page content that the response should contain.
+                         See also ``ignore_content_ordering`` param.
 :param auto_login: Bool indicating if user should be auto-logged-in, before
                   trying to render the response. Useful for verifying behavior
                   of views with login/permission requirements.
@@ -118,7 +119,7 @@ assertGetResponse
 A wrapper for the above ``assertResponse()``, that has minimal extra logic for
 ensuring that the response is generated from a GET request.
 
-All above params are applicable, except for ``get``.
+All above params are applicable, except for ``get`` and ``data``.
 
 
 assertPostResponse
@@ -131,7 +132,7 @@ assertPostResponse
 A wrapper for the above ``assertResponse()``, that has minimal extra logic for
 ensuring that the response is generated from a POST request.
 
-All above params are applicable, except for ``get`` and ``data``.
+All above params are applicable, except for ``get``.
 
 
 ----

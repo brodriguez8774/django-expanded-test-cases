@@ -28,7 +28,7 @@ package is that it automatically displays debug page response output to the
 console on test failure.
 This feature works best when running tests via **PyTest** and thus is
 the recommend way to run tests.
-For a complete explanation as to why, see the important note below.
+For a complete explanation as to why, see the "important" note below.
 
 Please refer to the `PyTest Configuration QuickStart`_ section for setting up
 **PyTest** to work with this package.
@@ -107,6 +107,9 @@ the following commands:
     pytest                  # Run pytest on all files that match ini definition.
     pytest path/to/check    # Run PyTest on a specific folder.
     pytest -n auto          # Run PyTest parallel, if pytest-xdist is installed.
+
+For additional details about configuration and setup, see the
+:doc:`configuration` page.
 
 For information on how to use this package, see the :doc:`general_usage` page.
 
