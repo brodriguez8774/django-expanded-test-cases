@@ -13,37 +13,7 @@ from functools import wraps
 from types import FunctionType
 
 
-# region Debug Print Wrapper Logic
-
-def wrapper(method):
-    """Wrapper logic to intercept all functions on AssertionError and print error at bottom of output."""
-    @wraps(method)
-    def wrapped(*args, **kwargs):
-        try:
-            return method(*args, **kwargs)
-        except AssertionError as err:
-            print('\n')
-            print(err)
-            print('')
-            raise err
-    return wrapped
-
-
-class DebugPrintMetaClass(type):
-    """Courtesy of https://stackoverflow.com/a/11350487"""
-    def __new__(meta, classname, bases, classDict):
-        newClassDict = {}
-        for attributeName, attribute in classDict.items():
-            if isinstance(attribute, FunctionType):
-                # Replace function with a DebugPrint-wrapped version.
-                attribute = wrapper(attribute)
-            newClassDict[attributeName] = attribute
-        return type.__new__(meta, classname, bases, newClassDict)
-
-# endregion Debug Print Wrapper Logic
-
-
-class CoreTestCaseMixin(metaclass=DebugPrintMetaClass):
+class CoreTestCaseMixin:
     """Core testing logic, used in all other expanded TestCase classes.
 
     For compatibility, does not inherit from
