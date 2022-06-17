@@ -885,6 +885,33 @@ class IntegrationClassTest(IntegrationTestCase):
                 ignore_ordering=True,  # Ignore because unordered.
             )
 
+        with self.subTest('Standard Response - Checking repeated values on page'):
+            """
+            Ensures the str.split() logic does not entirely remove values from the 'actual' response, for later checks.
+
+            This is important for repeated checks against similar/identical values, where the test is maybe testing
+            more for value ordering and instance count, rather than just that the value exists at all.
+            """
+            response = self._get_page_response('expanded_test_cases:index')
+            self.assertPageContent(
+                response,
+                [
+                    'Home Page',
+                    'body>',
+                    'h1',
+                    'Home Page Header</h1>',
+                    '<p>',
+                    'Pretend ',
+                    'this',
+                    'is the project landing page.</p>',
+                    '<p>Pretend this',
+                    'project landing',
+                    '</p>',
+                    '</body>',
+                ],
+                ignore_ordering=True,  # Ignore because we recheck the same values.
+            )
+
     def test__assertPageContent__fail(self):
         """
         Tests assertPageContent() function, in cases when it should fail.

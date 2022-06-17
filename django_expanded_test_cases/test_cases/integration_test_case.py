@@ -311,7 +311,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                 # If we made it this far, then value was found. Handle for ordering.
                 if not ignore_ordering:
                     # Ordering is being checked. Strip off first section of matching.
-                    actual_content = ''.join(actual_content.split(expected)[1:])
+                    actual_content = expected.join(actual_content.split(expected)[1:])
 
         else:
             # Not an array of items. Assume is a single str value.
