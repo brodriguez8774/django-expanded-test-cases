@@ -275,7 +275,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Sanitize and format actual response content.
         actual_content = self.get_minimized_response_content(response, strip_newlines=True)
 
-        main_err_msg = 'Response content does not match expected.'
+        main_err_msg = 'Could not find expected value in response. Expected was:\n{0}'
         ordering_err_msg = 'Expected value was found, but ordering of values do not match. Problem value:\n"{0}"'
 
         # Handle possible types.
@@ -288,7 +288,10 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                 expected = self.get_minimized_response_content(expected, strip_newlines=True)
                 if ignore_ordering:
                     # Ignoring ordering. Check as-is.
-                    self.assertIn(expected, actual_content, main_err_msg)
+                    try:
+                        self.assertIn(expected, actual_content, main_err_msg)
+                    except AssertionError:
+                        self.fail(main_err_msg.format(expected))
                 else:
                     # Verifying ordering.
                     try:
@@ -296,7 +299,10 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                         self.assertIn(expected, actual_content)
                     except AssertionError:
                         # Failed to find content in subsection. Check full content set.
-                        self.assertIn(expected, orig_actual, main_err_msg)
+                        try:
+                            self.assertIn(expected, orig_actual, main_err_msg)
+                        except AssertionError:
+                            self.fail(main_err_msg.format(expected))
 
                         # If we made it this far, then item was found in full content, but came after a previous
                         # expected value. Raise error.
@@ -310,7 +316,10 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         else:
             # Not an array of items. Assume is a single str value.
             expected_content = self.get_minimized_response_content(expected_content, strip_newlines=True)
-            self.assertIn(expected_content, actual_content, main_err_msg)
+            try:
+                self.assertIn(expected_content, actual_content)
+            except AssertionError:
+                self.fail(main_err_msg.format(expected_content))
 
         # Return page content in case user wants to run additional logic on it.
         return actual_content
