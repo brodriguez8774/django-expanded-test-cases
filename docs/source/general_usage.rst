@@ -105,18 +105,6 @@ immediately obvious as to exactly what is being tested.
 Debug Output Overview
 =====================
 
-.. warning::
-
-    While this project can function with ``manage.py test``, the debug output
-    functionality will send content to the console on every test regardless of
-    pass or fail leading to an overwhelming amount of output. Instead, we
-    **strongly** recommend that you consider using PyTest to run tests as
-    PyTest will only output debug info on test failure.
-
-    For an explanation of why this is, see our note on
-    :doc:`Testing Environments <quickstart>`.
-
-
 Any testing responses that were generated via the **Django-Expanded-Test-Cases**
 assertions and classes can automatically output response debug information, in
 an attempt to make it faster to troubleshoot failing tests (This functionality

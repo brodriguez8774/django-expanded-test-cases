@@ -19,43 +19,13 @@ requirements file.
 Testing Environments
 ====================
 
-The functionality provided by **Django-Expanded-Test-Cases** will work with
-both the default
+The functionality provided by **Django-Expanded-Test-Cases** has been tested
+with both
 `Django Manage.py testing framework <https://docs.djangoproject.com/en/dev/topics/testing/overview/>`_
 and `PyTest <docs.pytest.org>`_.
-However, one of the most useful features of the **Django-Expanded-Test-Cases**
-package is that it automatically displays debug page response output to the
-console on test failure.
-This feature works best when running tests via **PyTest** and thus is
-the recommend way to run tests.
-For a complete explanation as to why, see the "important" note below.
 
-Please refer to the `PyTest Configuration QuickStart`_ section for setting up
-**PyTest** to work with this package.
-Refer to the `Manage.py Test QuickStart`_ section for setting up
-**Manage.py** to work with this package.
-
-
-.. important::
-
-    When running tests, ``manage.py``'s base functionality is to assume all
-    testing console output is meaningful, and display it to the console
-    unconditionally. As far as we can tell, there does not seem to be a way to
-    change this behavior.
-
-    Because of this behavior, when using this package in a project with a
-    decent amount of tests, output results in an unwieldy amount of unhelpful
-    text being sent to the console.
-    This happens regardless of whether all tests pass or there are failures to
-    review. Any useful information that might have occurred quickly becomes
-    near impossible to find and gain knowledge from.
-
-    Thus, when using this package, we **strongly** recommend switching to
-    running tests via `PyTest <docs.pytest.org>`_.
-
-    PyTest only sends extra output to the console on test failure. So, when
-    there is extra output, you know that all of it is relevant to the failing
-    tests.
+Please see `PyTest Configuration QuickStart`_ or
+`Manage.py Test QuickStart`_.
 
 
 PyTest Configuration QuickStart
@@ -117,26 +87,8 @@ For information on how to use this package, see the :doc:`general_usage` page.
 Manage.py Test QuickStart
 -------------------------
 
-.. warning::
-
-    While this project can function with ``manage.py test``, the debug output
-    functionality will send content to the console on every test regardless of
-    pass or fail leading to an overwhelming amount of output. Instead, we
-    **strongly** recommend that you consider using PyTest to run tests as
-    PyTest will only output debug info on test failure.
-
 Nothing extra needs to be done in order for the provided TestCase classes to
 work with Django's default ``manage.py test`` command.
-
-However, since you will get debug output on every test that uses the additional
-asserts provided by the TestCases, it is recommended that you disable the debug
-output so that console output is manageable.
-
-To do so, add the following line to your ``settings.py`` file:
-
-.. code:: python
-
-    DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT = False
 
 For more details about available settings, see the :doc:`configuration` page.
 
