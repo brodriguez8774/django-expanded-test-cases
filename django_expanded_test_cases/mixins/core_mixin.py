@@ -4,14 +4,16 @@ Core testing logic, universal to all test cases.
 
 # System Imports.
 import re
-from django.conf import settings
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group, Permission
-from django.utils.http import urlencode
 
 from functools import wraps
 from types import FunctionType
 
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group, Permission
+from django.utils.http import urlencode
+
+# User Imports.
+from django_expanded_test_cases.constants import DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT
 
 # region Debug Print Wrapper Logic
 
@@ -22,9 +24,10 @@ def wrapper(method):
         try:
             return method(*args, **kwargs)
         except AssertionError as err:
-            print('\n')
-            print(err)
-            print('')
+            if DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT:
+                print('\n')
+                print(err)
+                print('')
             raise err
     return wrapped
 
@@ -90,7 +93,7 @@ class CoreTestCaseMixin(metaclass=DebugPrintMetaClass):
         if debug_print is not None:
             cls._debug_print_bool = bool(debug_print)
         else:
-            cls._debug_print_bool = getattr(settings, 'DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT', True)
+            cls._debug_print_bool = DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT
 
     def _debug_print(self, *args, **kwargs):
         """Prints or suppresses output, based on DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT settings variable.
