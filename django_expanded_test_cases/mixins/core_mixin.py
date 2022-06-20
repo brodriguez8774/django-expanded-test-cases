@@ -147,7 +147,7 @@ class CoreTestCaseMixin(metaclass=DebugPrintMetaClass):
             self._debug_print('')
 
             # Raise original error.
-            raise AssertionError(err)
+            raise AssertionError(err) from err
 
     # endregion Custom Assertions
 
@@ -214,8 +214,8 @@ class CoreTestCaseMixin(metaclass=DebugPrintMetaClass):
                 # Failed to get by codename. Attempt again with name.
                 try:
                     permission = Permission.objects.get(name=user_permission)
-                except Permission.DoesNotExist:
-                    raise ValueError('Failed to find permission of "{0}".'.format(user_permission))
+                except Permission.DoesNotExist as pde:
+                    raise ValueError('Failed to find permission of "{0}".'.format(user_permission)) from pde
 
         # If we made it this far, then valid Permission was found. Apply to user.
         user = self.get_user(user)
@@ -241,8 +241,8 @@ class CoreTestCaseMixin(metaclass=DebugPrintMetaClass):
             user_group = str(user_group)
             try:
                 group = Group.objects.get(name=user_group)
-            except Group.DoesNotExist:
-                raise ValueError('Failed to find Group of "{0}".'.format(user_group))
+            except Group.DoesNotExist as gde:
+                raise ValueError('Failed to find Group of "{0}".'.format(user_group)) from gde
 
         # If we made it this far, then valid Group was found. Apply to user.
         user = self.get_user(user)
