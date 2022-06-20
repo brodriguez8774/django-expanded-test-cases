@@ -212,31 +212,6 @@ contents.
         on it.
 
 
-assertPageContent
------------------
-
-.. code::
-
-    assertPageContent()
-
-Asserts that a response has the given page content html.
-
-Expected content can be provided as a single string, or a list of multiple
-expected strings.
-
-Optionally can also verify ordering of expected elements, with the assertion
-failing if elements are not found in order on the page. Default is to assume
-that ordering is important.
-
-:param response: Response object to check against.
-:param expected_content: Expected content that response should contain.
-:param ignore_ordering: Bool indicating if content ordering matters. Defaults
-                       to assuming ordering should be obeyed.
-
-:return: The found response content, in case tests need to run additional
-        logic on it.
-
-
 assertPageHeader
 ----------------
 
@@ -297,6 +272,31 @@ expected strings.
    that if there are messages on the page that are **NOT** checked via the
    ``expected_messages`` param, then the ``assertContextMessages()`` assertion
    will fail.
+
+
+assertPageContent
+-----------------
+
+.. code::
+
+    assertPageContent()
+
+Asserts that a response has the given page content html.
+
+Expected content can be provided as a single string, or a list of multiple
+expected strings.
+
+Optionally can also verify ordering of expected elements, with the assertion
+failing if elements are not found in order on the page. Default is to assume
+that ordering is important.
+
+:param response: Response object to check against.
+:param expected_content: Expected content that response should contain.
+:param ignore_ordering: Bool indicating if content ordering matters. Defaults
+                       to assuming ordering should be obeyed.
+
+:return: The found response content, in case tests need to run additional
+        logic on it.
 
 
 ----

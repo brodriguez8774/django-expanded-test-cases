@@ -252,79 +252,6 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Return status in case user wants to run additional logic on it.
         return actual_status
 
-    def assertPageContent(self, response, expected_content, ignore_ordering=False, debug_output=True):
-        """Verifies the page content html, similar to the built-in assertContains() function.
-
-        The main difference is that Django templating may create large amounts of whitespace in response html,
-        often in places where we wouldn't intuitively expect it, when running tests.
-
-        Technically, the built-in assertHTMLEqual() and assertInHTML() functions exist, and probably could accomplish
-        the same assertions. But we still need to parse and format full response object, to display for test failure
-        debugging. So I'm not sure if it's helpful at that point to use those or use separate assertions like here.
-        Perhaps examine more closely at a later date.
-
-        :param response: Response object to check against.
-        :param expected_content: Expected full string (or set of strings) of HTML content.
-        :param ignore_ordering: Bool indicating if ordering should be verified. Defaults to checking ordering.
-        :param debug_output: Bool indicating if debug output should be shown or not. Used for debugging test failures.
-        :return: Parsed out and formatted content string.
-        """
-        if debug_output:
-            # Print out actual response content, for debug output.
-            self.show_debug_content(response)
-
-        # Sanitize and format actual response content.
-        actual_content = self.get_minimized_response_content(response, strip_newlines=True)
-
-        main_err_msg = 'Could not find expected value in response. Expected was:\n{0}'
-        ordering_err_msg = 'Expected value was found, but ordering of values do not match. Problem value:\n"{0}"'
-
-        # Handle possible types.
-        if expected_content is None:
-            expected_content = ''
-        orig_actual = actual_content
-        if isinstance(expected_content, list) or isinstance(expected_content, tuple):
-            # The expected_content param is an array of items. Verify they all exist on page.
-            for expected in expected_content:
-                expected = self.get_minimized_response_content(expected, strip_newlines=True)
-                if ignore_ordering:
-                    # Ignoring ordering. Check as-is.
-                    try:
-                        self.assertIn(expected, actual_content, main_err_msg)
-                    except AssertionError:
-                        self.fail(main_err_msg.format(expected))
-                else:
-                    # Verifying ordering.
-                    try:
-                        # Attempt initial assertion in provided subsection.
-                        self.assertIn(expected, actual_content)
-                    except AssertionError:
-                        # Failed to find content in subsection. Check full content set.
-                        try:
-                            self.assertIn(expected, orig_actual, main_err_msg)
-                        except AssertionError:
-                            self.fail(main_err_msg.format(expected))
-
-                        # If we made it this far, then item was found in full content, but came after a previous
-                        # expected value. Raise error.
-                        self.fail(ordering_err_msg.format(expected))
-
-                # If we made it this far, then value was found. Handle for ordering.
-                if not ignore_ordering:
-                    # Ordering is being checked. Strip off first section of matching.
-                    actual_content = expected.join(actual_content.split(expected)[1:])
-
-        else:
-            # Not an array of items. Assume is a single str value.
-            expected_content = self.get_minimized_response_content(expected_content, strip_newlines=True)
-            try:
-                self.assertIn(expected_content, actual_content)
-            except AssertionError:
-                self.fail(main_err_msg.format(expected_content))
-
-        # Return page content in case user wants to run additional logic on it.
-        return actual_content
-
     def assertPageTitle(self, response, expected_title, exact_match=True):
         """Verifies the page title HTML element.
 
@@ -482,6 +409,79 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                         'is' if allow_partials else 'is NOT'
                     ),
                 )
+
+    def assertPageContent(self, response, expected_content, ignore_ordering=False, debug_output=True):
+        """Verifies the page content html, similar to the built-in assertContains() function.
+
+        The main difference is that Django templating may create large amounts of whitespace in response html,
+        often in places where we wouldn't intuitively expect it, when running tests.
+
+        Technically, the built-in assertHTMLEqual() and assertInHTML() functions exist, and probably could accomplish
+        the same assertions. But we still need to parse and format full response object, to display for test failure
+        debugging. So I'm not sure if it's helpful at that point to use those or use separate assertions like here.
+        Perhaps examine more closely at a later date.
+
+        :param response: Response object to check against.
+        :param expected_content: Expected full string (or set of strings) of HTML content.
+        :param ignore_ordering: Bool indicating if ordering should be verified. Defaults to checking ordering.
+        :param debug_output: Bool indicating if debug output should be shown or not. Used for debugging test failures.
+        :return: Parsed out and formatted content string.
+        """
+        if debug_output:
+            # Print out actual response content, for debug output.
+            self.show_debug_content(response)
+
+        # Sanitize and format actual response content.
+        actual_content = self.get_minimized_response_content(response, strip_newlines=True)
+
+        main_err_msg = 'Could not find expected value in response. Expected was:\n{0}'
+        ordering_err_msg = 'Expected value was found, but ordering of values do not match. Problem value:\n"{0}"'
+
+        # Handle possible types.
+        if expected_content is None:
+            expected_content = ''
+        orig_actual = actual_content
+        if isinstance(expected_content, list) or isinstance(expected_content, tuple):
+            # The expected_content param is an array of items. Verify they all exist on page.
+            for expected in expected_content:
+                expected = self.get_minimized_response_content(expected, strip_newlines=True)
+                if ignore_ordering:
+                    # Ignoring ordering. Check as-is.
+                    try:
+                        self.assertIn(expected, actual_content, main_err_msg)
+                    except AssertionError:
+                        self.fail(main_err_msg.format(expected))
+                else:
+                    # Verifying ordering.
+                    try:
+                        # Attempt initial assertion in provided subsection.
+                        self.assertIn(expected, actual_content)
+                    except AssertionError:
+                        # Failed to find content in subsection. Check full content set.
+                        try:
+                            self.assertIn(expected, orig_actual, main_err_msg)
+                        except AssertionError:
+                            self.fail(main_err_msg.format(expected))
+
+                        # If we made it this far, then item was found in full content, but came after a previous
+                        # expected value. Raise error.
+                        self.fail(ordering_err_msg.format(expected))
+
+                # If we made it this far, then value was found. Handle for ordering.
+                if not ignore_ordering:
+                    # Ordering is being checked. Strip off first section of matching.
+                    actual_content = expected.join(actual_content.split(expected)[1:])
+
+        else:
+            # Not an array of items. Assume is a single str value.
+            expected_content = self.get_minimized_response_content(expected_content, strip_newlines=True)
+            try:
+                self.assertIn(expected_content, actual_content)
+            except AssertionError:
+                self.fail(main_err_msg.format(expected_content))
+
+        # Return page content in case user wants to run additional logic on it.
+        return actual_content
 
     # endregion Custom Assertions
 
