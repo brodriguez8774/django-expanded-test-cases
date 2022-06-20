@@ -40,8 +40,7 @@ Refer to the `Manage.py Test QuickStart`_ section for setting up
 
     When running tests, ``manage.py``'s base functionality is to assume all
     testing console output is meaningful, and display it to the console
-    unconditionally. As far as we can tell, there does not seem to be a way to
-    change this behavior.
+    unconditionally.
 
     Because of this behavior, when using this package in a project with a
     decent amount of tests, output results in an unwieldy amount of unhelpful
@@ -52,10 +51,18 @@ Refer to the `Manage.py Test QuickStart`_ section for setting up
 
     Thus, when using this package, we **strongly** recommend switching to
     running tests via `PyTest <docs.pytest.org>`_.
-
     PyTest only sends extra output to the console on test failure. So, when
     there is extra output, you know that all of it is relevant to the failing
-    tests.
+    test(s).
+
+    If you really don't want to use PyTest, but still want to use this package,
+    you can also consider using the ``--buffer`` flag with manage.py, which will
+    hide output for passing tests, but failing test output won't be formatted
+    as neatly as in PyTest. Ex: ``manage.py test --buffer``
+
+    If you would like further explanation of "manage.py vs pytest", as well as
+    why we DON'T try change this manage.py behavior in our project, see
+    `<https://adamj.eu/tech/2020/09/05/what-happens-when-you-run-manage.py-test/#no-composition>`_.
 
 
 PyTest Configuration QuickStart
@@ -124,6 +131,11 @@ Manage.py Test QuickStart
     pass or fail leading to an overwhelming amount of output. Instead, we
     **strongly** recommend that you consider using PyTest to run tests as
     PyTest will only output debug info on test failure.
+
+    If you really don't want to use PyTest, but still want to use this package,
+    you can also consider using the ``--buffer`` flag with manage.py, which will
+    hide output for passing tests, but failing test output won't be formatted
+    as neatly as in PyTest. Ex: ``manage.py test --buffer``
 
 Nothing extra needs to be done in order for the provided TestCase classes to
 work with Django's default ``manage.py test`` command.
