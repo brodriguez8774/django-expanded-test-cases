@@ -14,6 +14,7 @@ from django.utils.http import urlencode
 
 # User Imports.
 from django_expanded_test_cases.constants import DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT
+from django_expanded_test_cases.constants import TERM_COLORS
 
 # region Debug Print Wrapper Logic
 
@@ -95,14 +96,16 @@ class CoreTestCaseMixin(metaclass=DebugPrintMetaClass):
         else:
             cls._debug_print_bool = DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT
 
-    def _debug_print(self, *args, **kwargs):
+    def _debug_print(self, *args, color='', **kwargs):
         """Prints or suppresses output, based on DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT settings variable.
 
         Variable defaults to display output, if not provided.
         Mostly used for internal testcase logic.
         """
         if self._debug_print_bool:
-            print(*args, **kwargs)
+            print(color, end="")
+            print(*args, **kwargs, end="")
+            print(TERM_COLORS.NC)
 
     # region Custom Assertions
 
@@ -134,12 +137,12 @@ class CoreTestCaseMixin(metaclass=DebugPrintMetaClass):
             self._debug_print('')
             self._debug_print('')
             self._debug_print('')
-            self._debug_print('ACTUAL:')
-            self._debug_print(actual_text)
+            self._debug_print('ACTUAL:', color=TERM_COLORS.RED)
+            self._debug_print(actual_text, color=TERM_COLORS.RED)
             self._debug_print('')
             self._debug_print('')
-            self._debug_print('EXPECTED:')
-            self._debug_print(expected_text)
+            self._debug_print('EXPECTED:', color=TERM_COLORS.GREEN)
+            self._debug_print(expected_text, color=TERM_COLORS.GREEN)
             self._debug_print('')
             self._debug_print('')
             self._debug_print('')
