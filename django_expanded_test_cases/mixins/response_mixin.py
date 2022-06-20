@@ -9,6 +9,7 @@ from django.http.response import HttpResponseBase
 
 # User Imports.
 from . import CoreTestCaseMixin
+from django_expanded_test_cases.constants import TERM_COLORS
 
 
 class ResponseTestCaseMixin(CoreTestCaseMixin):
@@ -21,7 +22,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
 
         However, since this is not inheriting from a given TestCase, calling the literal function
         here would override instead.
-        
+
         :param debug_print: Optional bool that indicates if debug output should print to console.
                             Param overrides setting value if both param and setting are set.
         """
@@ -44,7 +45,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         response_content = self.standardize_newlines(response_content)
 
         self._debug_print()
-        self._debug_print(('{0} {1} {0}'.format('=' * 10, 'response.content')))
+        self._debug_print(('{0} {1} {0}'.format('=' * 10, 'response.content')), color=TERM_COLORS.WHITE)
 
         # Print out data, if present.
         if response_content:
@@ -67,12 +68,12 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                 response_headers = None
 
         self._debug_print()
-        self._debug_print(('{0} {1} {0}'.format('=' * 10, 'response.headers')))
+        self._debug_print('{0} {1} {0}'.format('=' * 10, 'response.headers'), color=TERM_COLORS.WHITE)
 
         # Print out data, if present.
         if response_headers is not None and len(response_headers) > 0:
             for key, value in response_headers.items():
-                self._debug_print('    * "{0}": "{1}"'.format(key, value))
+                self._debug_print('    * "{0}": "{1}"'.format(key, value), color=TERM_COLORS.YELLOW)
         else:
             self._debug_print('    No response headers found.')
         self._debug_print()
@@ -89,11 +90,11 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             client = client.client
 
         self._debug_print()
-        self._debug_print('{0} {1} {0}'.format('=' * 10, 'client.session'))
+        self._debug_print('{0} {1} {0}'.format('=' * 10, 'client.session'), color=TERM_COLORS.WHITE)
 
         if client is not None and len(client.session.items()) > 0:
             for key, value in client.session.items():
-                self._debug_print('    * {0}: {1}'.format(key, value))
+                self._debug_print('    * {0}: {1}'.format(key, value), color=TERM_COLORS.PURPLE)
         else:
             self._debug_print('    No session data found.')
         self._debug_print('')
@@ -110,14 +111,14 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             response_context = response_context.context
 
         self._debug_print()
-        self._debug_print(('{0} {1} {0}'.format('=' * 10, 'response.context["messages"]')))
+        self._debug_print(('{0} {1} {0}'.format('=' * 10, 'response.context["messages"]')), color=TERM_COLORS.WHITE)
 
         # Print out data, if present.
         if response_context is not None and 'messages' in response_context:
             messages = response_context['messages']
             if len(messages) > 0:
                 for message in messages:
-                    self._debug_print('    * "{0}"'.format(message))
+                    self._debug_print('    * "{0}"'.format(message), color=TERM_COLORS.BLUE)
             else:
                 self._debug_print('    No context messages found.')
         self._debug_print()
@@ -126,25 +127,25 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         """Prints debug user data."""
 
         self._debug_print()
-        self._debug_print('{0} {1} {0}'.format('=' * 10, 'User Info'))
+        self._debug_print('{0} {1} {0}'.format('=' * 10, 'User Info'), color=TERM_COLORS.WHITE)
 
         # Only proceed if we got a proper user model.
         if isinstance(user, get_user_model()):
 
             # General user information.
-            self._debug_print('    * Username: "{0}"'.format(user.username))
-            self._debug_print('    * First: "{0}"'.format(user.first_name))
-            self._debug_print('    * Last: "{0}"'.format(user.last_name))
-            self._debug_print('    * Email: "{0}"'.format(user.email))
+            self._debug_print('    * Username: "{0}"'.format(user.username), color=TERM_COLORS.CYAN)
+            self._debug_print('    * First: "{0}"'.format(user.first_name), color=TERM_COLORS.CYAN)
+            self._debug_print('    * Last: "{0}"'.format(user.last_name), color=TERM_COLORS.CYAN)
+            self._debug_print('    * Email: "{0}"'.format(user.email), color=TERM_COLORS.CYAN)
 
             # User auth data.
-            self._debug_print('    * is_authenticated: {0}'.format(user.is_authenticated))
+            self._debug_print('    * is_authenticated: {0}'.format(user.is_authenticated), color=TERM_COLORS.CYAN)
 
             # User groups.
-            self._debug_print('    * User Groups: {0}'.format(user.groups.all()))
+            self._debug_print('    * User Groups: {0}'.format(user.groups.all()), color=TERM_COLORS.CYAN)
 
             # User permissions.
-            self._debug_print('    * User Permissions: {0}'.format(user.user_permissions.all()))
+            self._debug_print('    * User Permissions: {0}'.format(user.user_permissions.all()), color=TERM_COLORS.CYAN)
 
             self._debug_print()
 
@@ -153,7 +154,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                 user,
                 type(user),
                 type(get_user_model()),
-            ))
+            ), color=TERM_COLORS.RED)
         self._debug_print()
 
     # endregion Debug Output Functions.
