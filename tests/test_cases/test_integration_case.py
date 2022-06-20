@@ -3,11 +3,11 @@ Tests for test_cases/integration_test_case.py.
 """
 
 # System Imports.
+from unittest.mock import patch
+
 from django.contrib.auth.models import AnonymousUser, Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponse
-from django.test import override_settings
-from django.urls import reverse
 
 # User Imports.
 from django_expanded_test_cases import IntegrationTestCase
@@ -1057,7 +1057,7 @@ class IntegrationClassTest(IntegrationTestCase):
                     ],
                 )
 
-    @override_settings(DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS=True)
+    @patch('django_expanded_test_cases.test_cases.integration_test_case.DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS', True)
     def test__assertContextMessages__success__allow_partials(self):
         """
         Tests assertContextMessages() function, in cases when it should succeed.
@@ -1075,7 +1075,7 @@ class IntegrationClassTest(IntegrationTestCase):
             response = self._get_page_response('expanded_test_cases:three-messages')
             self.assertContextMessages(response, ['info', 'warning message', 'Test error'])
 
-    @override_settings(DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS=False)
+    @patch('django_expanded_test_cases.test_cases.integration_test_case.DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS', False)
     def test__assertContextMessages__success__disallow_partials(self):
         """
         Tests assertContextMessages() function, in cases when it should succeed.
@@ -1111,7 +1111,7 @@ class IntegrationClassTest(IntegrationTestCase):
             response = self._get_page_response('expanded_test_cases:three-messages')
             self.assertContextMessages(response, ['Test info message.', 'Test warning message.', 'Test error message.'])
 
-    @override_settings(DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS=False)
+    @patch('django_expanded_test_cases.test_cases.integration_test_case.DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS', False)
     def test__assertContextMessages__failure(self):
         """
         Tests assertContextMessages() function, in cases when it should fail.
