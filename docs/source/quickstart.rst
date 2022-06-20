@@ -13,7 +13,24 @@ Load up your VirtualEnvironment of choice and run:
 
 
 Alternatively, add ``django-expanded-test-cases`` to your respective project
-requirements file.
+requirements file, and then follow the standard package installation method
+for your project
+(`requirements.txt <https://pip.pypa.io/en/stable/user_guide/#requirements-files>`_,
+`pipenv <https://pipenv.pypa.io/en/latest/>`_, etc).
+
+
+Currently, this package also assumes use of some kind of User model
+implementation, which requires Django's ``sessions`` app.
+Double check that the following is added to your INSTALLED_APPS project settings
+definition:
+
+.. code:: python
+
+    INSTALLED_APPS = (
+        ...
+
+        'django.contrib.sessions',
+    )
 
 
 Testing Environments
