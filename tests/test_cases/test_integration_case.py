@@ -887,7 +887,9 @@ class IntegrationClassTest(IntegrationTestCase):
 
         with self.subTest('Standard Response - Checking repeated values on page'):
             """
-            Ensures the str.split() logic does not entirely remove values from the 'actual' response, for later checks.
+            Ensures the str.split() logic does not entirely remove values from the 'actual' response search space, for
+            later checks. Aka, if we check for an <hr> tag in output, it only removes the first one found, not every
+            single one in the entire response output.
 
             This is important for repeated checks against similar/identical values, where the test is maybe testing
             more for value ordering and instance count, rather than just that the value exists at all.
