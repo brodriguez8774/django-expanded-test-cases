@@ -5,6 +5,7 @@ Core testing logic, universal to all test cases.
 # System Imports.
 import re
 
+from colorama import Fore, Style
 from functools import wraps
 from types import FunctionType
 
@@ -14,7 +15,6 @@ from django.utils.http import urlencode
 
 # User Imports.
 from django_expanded_test_cases.constants import DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT
-from django_expanded_test_cases.constants import TERM_COLORS
 
 # region Debug Print Wrapper Logic
 
@@ -27,7 +27,7 @@ def wrapper(method):
         except AssertionError as err:
             if DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT:
                 print('\n')
-                print(err)
+                print('{0}{1}{2}'.format(Fore.RED, err, Style.RESET_ALL))
                 print('')
             raise err
     return wrapped
@@ -96,16 +96,18 @@ class CoreTestCaseMixin(metaclass=DebugPrintMetaClass):
         else:
             cls._debug_print_bool = DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT
 
-    def _debug_print(self, *args, color='', **kwargs):
+    def _debug_print(self, *args, fore='', back='', style='', **kwargs):
         """Prints or suppresses output, based on DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT settings variable.
 
         Variable defaults to display output, if not provided.
         Mostly used for internal testcase logic.
         """
         if self._debug_print_bool:
-            print(color, end="")
+            print(fore, end="")
+            print(back, end="")
+            print(style, end="")
             print(*args, **kwargs, end="")
-            print(TERM_COLORS.NC)
+            print(Style.RESET_ALL)
 
     # region Custom Assertions
 
@@ -137,12 +139,12 @@ class CoreTestCaseMixin(metaclass=DebugPrintMetaClass):
             self._debug_print('')
             self._debug_print('')
             self._debug_print('')
-            self._debug_print('ACTUAL:', color=TERM_COLORS.RED)
-            self._debug_print(actual_text, color=TERM_COLORS.RED)
+            self._debug_print('ACTUAL:', fore=Fore.RED)
+            self._debug_print(actual_text, fore=Fore.RED)
             self._debug_print('')
             self._debug_print('')
-            self._debug_print('EXPECTED:', color=TERM_COLORS.GREEN)
-            self._debug_print(expected_text, color=TERM_COLORS.GREEN)
+            self._debug_print('EXPECTED:', fore=Fore.GREEN)
+            self._debug_print(expected_text, fore=Fore.GREEN)
             self._debug_print('')
             self._debug_print('')
             self._debug_print('')
