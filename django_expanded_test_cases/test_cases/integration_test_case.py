@@ -292,9 +292,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                     actual_title,
                 ))
         else:
-            try:
-                self.assertIn(expected_title, actual_title)
-            except AssertionError:
+            if expected_title not in actual_title:
                 self.fail(err_msg.format(
                     expected_title,
                     'using partial matching',
@@ -459,9 +457,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             # First check that value actually exists in provided response.
             # Because we can't strip if this initial value is not present.
             strip_actual_start = self.get_minimized_response_content(strip_actual_start, strip_newlines=True)
-            try:
-                self.assertIn(strip_actual_start, actual_content_search_set)
-            except AssertionError:
+            if strip_actual_start not in actual_content_search_set:
                 self.fail(strip_err_msg.format('content_starts_after', strip_actual_start))
             # If we made it this far, then value was found. Remove.
             actual_content_search_set = strip_actual_start.join(actual_content_search_set.split(strip_actual_start)[1:])
@@ -474,9 +470,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             # First check that value actually exists in provided response.
             # Because we can't strip if this initial value is not present.
             strip_actual_end = self.get_minimized_response_content(strip_actual_end, strip_newlines=True)
-            try:
-                self.assertIn(strip_actual_end, actual_content_search_set)
-            except AssertionError:
+            if strip_actual_end not in actual_content_search_set:
                 self.fail(strip_err_msg.format('content_ends_before', strip_actual_end))
             # If we made it this far, then value was found. Remove.
             actual_content_search_set = strip_actual_end.join(actual_content_search_set.split(strip_actual_end)[:1])
@@ -491,9 +485,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                 expected = self.get_minimized_response_content(expected, strip_newlines=True)
                 if ignore_ordering:
                     # Ignoring ordering. Check as-is.
-                    try:
-                        self.assertIn(expected, actual_content_search_set)
-                    except AssertionError:
+                    if expected not in actual_content_search_set:
                         # Not found. Raise message based on content_starts_after/content_ends_before variables.
                         self._assertPageContent(
                             orig_actual_content,
@@ -504,14 +496,10 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                         )
                 else:
                     # Verifying ordering.
-                    try:
-                        # Attempt initial assertion in provided subsection.
-                        self.assertIn(expected, actual_content_search_set)
-                    except AssertionError:
+                    # Attempt initial assertion in provided subsection.
+                    if expected not in actual_content_search_set:
                         # Failed to find content in subsection. Check full content set.
-                        try:
-                            self.assertIn(expected, trimmed_orig_actual)
-                        except AssertionError:
+                        if expected not in trimmed_orig_actual:
                             # Not found. Raise message based on content_starts_after/content_ends_before variables.
                             self._assertPageContent(
                                 orig_actual_content,
@@ -533,9 +521,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         else:
             # Not an array of items. Assume is a single str value.
             expected_content = self.get_minimized_response_content(expected_content, strip_newlines=True)
-            try:
-                self.assertIn(expected_content, actual_content_search_set)
-            except AssertionError:
+            if expected_content not in actual_content_search_set:
                 # Not found. Raise message based on content_starts_after/content_ends_before variables.
                 self._assertPageContent(
                     orig_actual_content,
@@ -556,19 +542,13 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         found_expected = False
         if strip_actual_start:
             stripped_start_section = str(actual_content.split(strip_actual_start)[0] + strip_actual_start)
-            try:
-                self.assertIn(expected_content, stripped_start_section)
+            if expected_content in stripped_start_section:
                 found_expected = 'content_starts_after'
-            except AssertionError:
-                pass
 
         if strip_actual_end:
             stripped_end_section = str(strip_actual_end + actual_content.split(strip_actual_end)[-1])
-            try:
-                self.assertIn(expected_content, stripped_end_section)
+            if expected_content in stripped_end_section:
                 found_expected = 'content_ends_before'
-            except AssertionError:
-                pass
 
         # Output message based on above searches.
         if found_expected:
