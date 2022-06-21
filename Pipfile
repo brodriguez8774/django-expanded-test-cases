@@ -20,8 +20,9 @@ python_version = "3.9"
  ##
 [packages]
 # General Django dependencies.
-django = "*"                    # Core Django package.
 channels = "*"                  # Django websocket/background-task dependencies.
+colorama = "*"                  # Console coloring package.
+django = "*"                    # Core Django package.
 
 
 ###
