@@ -41,7 +41,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         expected_redirect_url=None, expected_status=200,
         expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
         auto_login=True, user='test_user', user_permissions=None, user_groups=None,
-        ignore_content_ordering=False,
+        ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
         **kwargs,
     ):
         """Verifies the view response object at given URL matches provided parameters.
@@ -67,6 +67,10 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param user_permissions: Optional permissions to provide to login user.
         :param user_groups: Optional groups to provide to login user.
         :param ignore_content_ordering: Bool indicating if ordering should be verified. Defaults to checking ordering.
+        :param content_starts_after: The HTML that expected_content should occur after. This HTML and everything
+                                     preceding is stripped out of the "search space" for the expected_content value.
+        :param content_ends_before: The HTML that expected_content should occur before. This HTML and everything
+                                    following is stripped out of the "search space" for the expected_content value.
         """
         # Reset client "user login" state for new response generation.
         self.client.logout()
@@ -122,6 +126,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                 response,
                 expected_content,
                 ignore_ordering=ignore_content_ordering,
+                content_starts_after=content_starts_after,
+                content_ends_before=content_ends_before,
                 debug_output=False,
             )
 
@@ -135,7 +141,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         expected_redirect_url=None, expected_status=200,
         expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
         auto_login=True, user='test_user', user_permissions=None, user_groups=None,
-        ignore_content_ordering=False,
+        ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
         **kwargs,
     ):
         """Verifies a GET response was found at given URL, and matches provided parameters."""
@@ -157,6 +163,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             user_permissions=user_permissions,
             user_groups=user_groups,
             ignore_content_ordering=ignore_content_ordering,
+            content_starts_after=content_starts_after,
+            content_ends_before=content_ends_before,
             **kwargs,
         )
 
@@ -167,7 +175,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         expected_redirect_url=None, expected_status=200,
         expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
         auto_login=True, user='test_user', user_permissions=None, user_groups=None,
-        ignore_content_ordering=False,
+        ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
         **kwargs,
     ):
         """Verifies a GET response was found at given URL, and matches provided parameters."""
@@ -198,6 +206,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             user_permissions=user_permissions,
             user_groups=user_groups,
             ignore_content_ordering=ignore_content_ordering,
+            content_starts_after=content_starts_after,
+            content_ends_before=content_ends_before,
             **kwargs,
         )
 

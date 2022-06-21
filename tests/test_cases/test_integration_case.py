@@ -449,6 +449,27 @@ class IntegrationClassTest(IntegrationTestCase):
                 )
             self.assertEqual(str(err.exception), exception_msg.format('Wrong value'))
 
+        with self.subTest('With search subsections'):
+            # Strip start.
+            self.assertResponse(
+                'expanded_test_cases:index',
+                expected_content='<p>Pretend this is the project landing page.</p>',
+                content_starts_after='<h1>Home Page Header</h1>',
+            )
+            # Strip end.
+            self.assertResponse(
+                'expanded_test_cases:index',
+                expected_content='<title>Home Page | Test Views</title>',
+                content_ends_before='<h1>Home Page Header</h1>',
+            )
+            # Strip both.
+            self.assertResponse(
+                'expanded_test_cases:index',
+                expected_content='<h1>Home Page Header</h1>',
+                content_starts_after='<title>Home Page | Test Views</title>',
+                content_ends_before='<p>Pretend this is the project landing page.</p>',
+            )
+
     def test__assertGetResponse(self):
         """
         Tests assertGetResponse() function.
