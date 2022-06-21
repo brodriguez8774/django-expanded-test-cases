@@ -470,6 +470,80 @@ class IntegrationClassTest(IntegrationTestCase):
                 content_ends_before='<p>Pretend this is the project landing page.</p>',
             )
 
+        with self.subTest('With content blocks'):
+            # Entire page as one block.
+            self.assertResponse(
+                'expanded_test_cases:index',
+                expected_content="""
+                <head>
+                    <meta charset="utf-8">
+                    <title>Home Page | Test Views</title>
+                </head>
+                <body>
+                    <h1>Home Page Header</h1>
+                    <p>Pretend this is the project landing page.</p>
+                </body>
+                """,
+            )
+            # Header and body each a block.
+            self.assertResponse(
+                'expanded_test_cases:index',
+                expected_content=[
+                    """
+                    <head>
+                        <meta charset="utf-8">
+                        <title>Home Page | Test Views</title>
+                    </head>
+                    """,
+                    """
+                    <body>
+                        <h1>Home Page Header</h1>
+                        <p>Pretend this is the project landing page.</p>
+                    </body>
+                    """,
+                ],
+            )
+            # With start stripped.
+            self.assertResponse(
+                'expanded_test_cases:index',
+                expected_content=[
+                    """
+                    <body>
+                        <h1>Home Page Header</h1>
+                        <p>Pretend this is the project landing page.</p>
+                    </body>
+                    """,
+                ],
+                content_starts_after='</head>',
+            )
+            # With end stripped.
+            self.assertResponse(
+                'expanded_test_cases:index',
+                expected_content=[
+                    """
+                    <head>
+                        <meta charset="utf-8">
+                        <title>Home Page | Test Views</title>
+                    </head>
+                    """,
+                ],
+                content_ends_before='<body>',
+            )
+            # With both stripped.
+            self.assertResponse(
+                'expanded_test_cases:index',
+                expected_content=[
+                    """
+                    <title>Home Page | Test Views</title>
+                    </head>
+                    <body>
+                    <h1>Home Page Header</h1>
+                    """,
+                ],
+                content_starts_after='<meta charset="utf-8">',
+                content_ends_before='<p>Pretend this is the project landing page.</p>',
+            )
+
     def test__assertGetResponse(self):
         """
         Tests assertGetResponse() function.
