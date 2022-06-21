@@ -1019,6 +1019,72 @@ class IntegrationClassTest(IntegrationTestCase):
                 ignore_ordering=True,  # Ignore because we recheck the same values.
             )
 
+        with self.subTest('Standard Response - With content_starts_after defined'):
+            response = self._get_page_response('expanded_test_cases:index')
+
+            # Expected as single value.
+            self.assertPageContent(
+                response,
+                expected_content='<p>Pretend this is the project landing page.</p>',
+                content_starts_after='<h1>Home Page Header</h1>',
+            )
+
+            # Expected as array.
+            self.assertPageContent(
+                response,
+                expected_content=[
+                    '<p>Pretend this is the project landing page.</p>',
+                    '</body>',
+                ],
+                content_starts_after='<h1>Home Page Header</h1>',
+            )
+
+        with self.subTest('Standard Response - With content_ends_before defined'):
+            response = self._get_page_response('expanded_test_cases:index')
+
+            # Expected as single value.
+            self.assertPageContent(
+                response,
+                expected_content='<meta charset="utf-8">',
+                content_ends_before='<h1>Home Page Header</h1>',
+            )
+
+            # Expected as array.
+            self.assertPageContent(
+                response,
+                expected_content=[
+                    '<head>',
+                    '<meta charset="utf-8">',
+                    '<title>Home Page | Test Views</title>',
+                    '</head>',
+                    '<body>',
+                ],
+                content_ends_before='<h1>Home Page Header</h1>',
+            )
+
+        with self.subTest('Standard Response - With both content containers defined'):
+            response = self._get_page_response('expanded_test_cases:index')
+
+            # Expected as single value.
+            self.assertPageContent(
+                response,
+                expected_content='<h1>Home Page Header</h1>',
+                content_starts_after='<title>Home Page | Test Views</title>',
+                content_ends_before='<p>Pretend this is the project landing page.</p>',
+            )
+
+            # Expected as array.
+            self.assertPageContent(
+                response,
+                expected_content=[
+                    '</head>',
+                    '<body>',
+                    '<h1>Home Page Header</h1>',
+                ],
+                content_starts_after='<title>Home Page | Test Views</title>',
+                content_ends_before='<p>Pretend this is the project landing page.</p>',
+            )
+
     def test__assertPageContent__fail(self):
         """
         Tests assertPageContent() function, in cases when it should fail.
@@ -1028,12 +1094,12 @@ class IntegrationClassTest(IntegrationTestCase):
                 response = HttpResponse('')
                 self.assertPageContent(response, '<h1>Test Title</h1>')
 
-        with self.subTest('Minimal Response, wrong value passed'):
+        with self.subTest('Minimal Response - Wrong value passed'):
             with self.assertRaises(AssertionError):
                 response = HttpResponse('<h1>Test Title</h1>')
                 self.assertPageContent(response, '<h1>Testing</h1>')
 
-        with self.subTest('Standard Response, wrong value passed'):
+        with self.subTest('Standard Response - Wrong value passed'):
             with self.assertRaises(AssertionError):
                 response = self._get_page_response('expanded_test_cases:login')
                 self.assertPageContent(response, '<h1>Testing Header</h1><p>Pretend this is a page.</p>')
@@ -1067,7 +1133,7 @@ class IntegrationClassTest(IntegrationTestCase):
             with self.assertRaises(AssertionError):
                 self.assertPageContent(response, ('<h1>Wrong Header</h1>', 'project landing page'))
 
-        with self.subTest('Wrong ordering'):
+        with self.subTest('Standard Response - Wrong ordering'):
             response = self._get_page_response('expanded_test_cases:user-detail', args=(1,))
 
             with self.assertRaises(AssertionError):
@@ -1160,6 +1226,276 @@ class IntegrationClassTest(IntegrationTestCase):
                         'Is Staff: "False"',
                         'First Name: "TestFirst"',
                     ],
+                )
+
+    def test__assertPageContent__fail_with_limited_search_space(self):
+        with self.subTest('Standard Response - With content_starts_after defined'):
+            response = self._get_page_response('expanded_test_cases:index')
+
+            # Expected as single value.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content='<head>',
+                    content_starts_after='<h1>Home Page Header</h1>',
+                )
+            # Expected as single value.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content='<meta charset="utf-8">',
+                    content_starts_after='<h1>Home Page Header</h1>',
+                )
+            # Expected as single value.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content='</head>',
+                    content_starts_after='<h1>Home Page Header</h1>',
+                    ignore_ordering=True,
+                )
+            # Expected as single value.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content='<body>',
+                    content_starts_after='<h1>Home Page Header</h1>',
+                )
+            # Expected as single value - With exact match.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content='<h1>Home Page Header</h1>',
+                    content_starts_after='<h1>Home Page Header</h1>',
+                )
+            # Expected as single value - With partial of exact match.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content='h1>',
+                    content_starts_after='<h1>Home Page Header</h1>',
+                )
+
+            # Expected as array.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content=[
+                        '<meta charset="utf-8">',
+                        '<title>Home Page | Test Views</title>',
+                    ],
+                    content_starts_after='<h1>Home Page Header</h1>',
+                )
+            # Expected as array - With ignore_ordering.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content=[
+                        '<meta charset="utf-8">',
+                        '<title>Home Page | Test Views</title>',
+                    ],
+                    ignore_ordering=True,
+                    content_starts_after='<h1>Home Page Header</h1>',
+                )
+            # Expected as array - With ignore_ordering and content mis-ordered.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content=[
+                        '<title>Home Page | Test Views</title>',
+                        '<meta charset="utf-8">',
+                    ],
+                    ignore_ordering=True,
+                    content_starts_after='<h1>Home Page Header</h1>',
+                )
+
+        with self.subTest('Standard Response - With content_ends_before defined'):
+            response = self._get_page_response('expanded_test_cases:index')
+
+            # Expected as single value - Exact match.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content='<h1>Home Page Header</h1>',
+                    content_ends_before='<h1>Home Page Header</h1>',
+                )
+            # Expected as single value - Partial of exact match.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content='h1>',
+                    content_ends_before='<h1>Home Page Header</h1>',
+                )
+            # Expected as single value.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content='<p>Pretend this is the project landing page.</p>',
+                    content_ends_before='<h1>Home Page Header</h1>',
+                )
+            # Expected as single value - With ignore_ordering (should have no effect here).
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content='<p>Pretend this is the project landing page.</p>',
+                    ignore_ordering=True,
+                    content_ends_before='<h1>Home Page Header</h1>',
+                )
+            # Expected as single value.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content='</body>',
+                    content_ends_before='<h1>Home Page Header</h1>',
+                )
+
+            # Expected as array.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content=[
+                        '<p>Pretend this is the project landing page.</p>',
+                        '</body>',
+                    ],
+                    content_ends_before='<h1>Home Page Header</h1>',
+                )
+            # Expected as array - With ignore_ordering.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content=[
+                        '<p>Pretend this is the project landing page.</p>',
+                        '</body>',
+                    ],
+                    ignore_ordering=True,
+                    content_ends_before='<h1>Home Page Header</h1>',
+                )
+            # Expected as array - With ignore_ordering and content mis-ordered.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content=[
+                        '</body>',
+                        '<p>Pretend this is the project landing page.</p>',
+                    ],
+                    ignore_ordering=True,
+                    content_ends_before='<h1>Home Page Header</h1>',
+                )
+
+        with self.subTest('Standard Response - With both content containers defined'):
+            response = self._get_page_response('expanded_test_cases:index')
+
+            # Expected as single value - above search area.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content='<meta charset="utf-8">',
+                    content_starts_after='<title>Home Page | Test Views</title>',
+                    content_ends_before='<p>Pretend this is the project landing page.</p>',
+                )
+            # Expected as single value - above search area, exact match.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content='<title>Home Page | Test Views</title>',
+                    content_starts_after='<title>Home Page | Test Views</title>',
+                    content_ends_before='<p>Pretend this is the project landing page.</p>',
+                )
+            # Expected as single value - below search area.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content='<p>Pretend this is the project landing page.</p>',
+                    content_starts_after='<title>Home Page | Test Views</title>',
+                    content_ends_before='<p>Pretend this is the project landing page.</p>',
+                )
+            # Expected as single value - below search area, exact match.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content='</body>',
+                    content_starts_after='<title>Home Page | Test Views</title>',
+                    content_ends_before='<p>Pretend this is the project landing page.</p>',
+                )
+            # Expected as single value - with ignore_ordering (should have no effect here).
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content='<meta charset="utf-8">',
+                    ignore_ordering=True,
+                    content_starts_after='<title>Home Page | Test Views</title>',
+                    content_ends_before='<p>Pretend this is the project landing page.</p>',
+                )
+
+            # Expected as array - Above search area.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content=[
+                        '<head>',
+                        '<meta charset="utf-8"',
+                    ],
+                    content_starts_after='<title>Home Page | Test Views</title>',
+                    content_ends_before='<p>Pretend this is the project landing page.</p>',
+                )
+            # Expected as array - Above search area, with ignore_ordering.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content=[
+                        '<head>',
+                        '<meta charset="utf-8"',
+                    ],
+                    ignore_ordering=True,
+                    content_starts_after='<title>Home Page | Test Views</title>',
+                    content_ends_before='<p>Pretend this is the project landing page.</p>',
+                )
+            # Expected as array - Above search area, with ignore_ordering and content mis-ordered.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content=[
+                        '<meta charset="utf-8"',
+                        '<head>',
+                    ],
+                    ignore_ordering=True,
+                    content_starts_after='<title>Home Page | Test Views</title>',
+                    content_ends_before='<p>Pretend this is the project landing page.</p>',
+                )
+            # Expected as array - Below search area.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content=[
+                        'the project landing page.</p>',
+                        '</body>',
+                    ],
+                    content_starts_after='<title>Home Page | Test Views</title>',
+                    content_ends_before='<p>Pretend this is',
+                )
+            # Expected as array - Below search area, with ignore_ordering.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content=[
+                        'the project landing page.</p>',
+                        '</body>',
+                    ],
+                    ignore_ordering=True,
+                    content_starts_after='<title>Home Page | Test Views</title>',
+                    content_ends_before='<p>Pretend this is',
+                )
+            # Expected as array - Below search area, with ignore_ordering and content mis-ordered.
+            with self.assertRaises(AssertionError):
+                self.assertPageContent(
+                    response,
+                    expected_content=[
+                        '</body>',
+                        'the project landing page.</p>',
+                    ],
+                    ignore_ordering=True,
+                    content_starts_after='<title>Home Page | Test Views</title>',
+                    content_ends_before='<p>Pretend this is',
                 )
 
     # endregion Element Assertion Tests

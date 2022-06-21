@@ -410,7 +410,11 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                     ),
                 )
 
-    def assertPageContent(self, response, expected_content, ignore_ordering=False, debug_output=True):
+    def assertPageContent(
+        self,
+        response, expected_content,
+        ignore_ordering=False, content_starts_after=None, content_ends_before=None, debug_output=True,
+    ):
         """Verifies the page content html, similar to the built-in assertContains() function.
 
         The main difference is that Django templating may create large amounts of whitespace in response html,
@@ -424,6 +428,10 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param response: Response object to check against.
         :param expected_content: Expected full string (or set of strings) of HTML content.
         :param ignore_ordering: Bool indicating if ordering should be verified. Defaults to checking ordering.
+        :param content_starts_after: The HTML that expected_content should occur after. This HTML and everything
+                                     preceding is stripped out of the "search space" for the expected_content value.
+        :param content_ends_before: The HTML that expected_content should occur before. This HTML and everything
+                                    following is stripped out of the "search space" for the expected_content value.
         :param debug_output: Bool indicating if debug output should be shown or not. Used for debugging test failures.
         :return: Parsed out and formatted content string.
         """
@@ -434,13 +442,50 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Sanitize and format actual response content.
         actual_content = self.get_minimized_response_content(response, strip_newlines=True)
 
-        main_err_msg = 'Could not find expected value in response. Expected was:\n{0}'
+        main_err_msg = 'Could not find "expected_content" value in response. Expected was:\n{0}'
         ordering_err_msg = 'Expected value was found, but ordering of values do not match. Problem value:\n"{0}"'
+        strip_err_msg = 'Could not find "{0}" value in response. Provided value was:\n{1}'
+
+        # Rename variables for internal readability.
+        strip_actual_start = content_starts_after
+        strip_actual_end = content_ends_before
+
+        # Extra setup logic if content_starts_after/content_ends_before variables are defined.
+        orig_actual = actual_content
+        if strip_actual_start:
+            # Value passed that expected_content should occur AFTER.
+            # Find first instance (from top of HTML output) of where this value occurs,
+            # and then strip this and all above output.
+
+            # First check that value actually exists in provided response.
+            # Because we can't strip if this initial value is not present.
+            strip_actual_start = self.get_minimized_response_content(strip_actual_start, strip_newlines=True)
+            try:
+                self.assertIn(strip_actual_start, actual_content)
+            except AssertionError:
+                self.fail(strip_err_msg.format('content_starts_after', strip_actual_start))
+            # If we made it this far, then value was found. Remove.
+            actual_content = strip_actual_start.join(actual_content.split(strip_actual_start)[1:])
+
+        if strip_actual_end:
+            # Value passed that expected_content should occur BEFORE.
+            # Find first instance (from bottom of HTML output) of where this value occurs,
+            # and then strip this and all below output.
+
+            # First check that value actually exists in provided response.
+            # Because we can't strip if this initial value is not present.
+            strip_actual_end = self.get_minimized_response_content(strip_actual_end, strip_newlines=True)
+            try:
+                self.assertIn(strip_actual_end, actual_content)
+            except AssertionError:
+                self.fail(strip_err_msg.format('content_ends_before', strip_actual_end))
+            # If we made it this far, then value was found. Remove.
+            actual_content = strip_actual_end.join(actual_content.split(strip_actual_end)[:1])
 
         # Handle possible types.
+        trimmed_orig_actual = actual_content
         if expected_content is None:
             expected_content = ''
-        orig_actual = actual_content
         if isinstance(expected_content, list) or isinstance(expected_content, tuple):
             # The expected_content param is an array of items. Verify they all exist on page.
             for expected in expected_content:
@@ -450,7 +495,14 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                     try:
                         self.assertIn(expected, actual_content, main_err_msg)
                     except AssertionError:
-                        self.fail(main_err_msg.format(expected))
+                        # Not found. Raise message based on content_starts_after/content_ends_before variables.
+                        self._assertPageContent(
+                            orig_actual,
+                            expected,
+                            strip_actual_start,
+                            strip_actual_end,
+                            main_err_msg,
+                        )
                 else:
                     # Verifying ordering.
                     try:
@@ -459,9 +511,16 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                     except AssertionError:
                         # Failed to find content in subsection. Check full content set.
                         try:
-                            self.assertIn(expected, orig_actual, main_err_msg)
+                            self.assertIn(expected, trimmed_orig_actual, main_err_msg)
                         except AssertionError:
-                            self.fail(main_err_msg.format(expected))
+                            # Not found. Raise message based on content_starts_after/content_ends_before variables.
+                            self._assertPageContent(
+                                orig_actual,
+                                expected,
+                                strip_actual_start,
+                                strip_actual_end,
+                                main_err_msg,
+                            )
 
                         # If we made it this far, then item was found in full content, but came after a previous
                         # expected value. Raise error.
@@ -478,10 +537,52 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             try:
                 self.assertIn(expected_content, actual_content)
             except AssertionError:
-                self.fail(main_err_msg.format(expected_content))
+                # Not found. Raise message based on content_starts_after/content_ends_before variables.
+                self._assertPageContent(
+                    orig_actual,
+                    expected_content,
+                    strip_actual_start,
+                    strip_actual_end,
+                    main_err_msg,
+                )
 
         # Return page content in case user wants to run additional logic on it.
         return actual_content
+
+    def _assertPageContent(self, actual_content, expected_content, strip_actual_start, strip_actual_end, err_msg):
+        """Internal sub-assertion for assertPageContent() function."""
+        strip_err_msg = 'Expected value was found, but occurred in "{0}" section. Expected was:\n"{1}"'
+
+        # Check if error was due to content_starts_after/content_ends_before variables.
+        found_expected = False
+        if strip_actual_start:
+            try:
+                self.assertIn(
+                    expected_content,
+                    (strip_actual_start.join(actual_content.split(strip_actual_start)[0]) + strip_actual_start),
+                )
+                found_expected = 'content_starts_after'
+            except AssertionError:
+                pass
+
+        if strip_actual_end:
+            try:
+                self.assertIn(
+                    expected_content,
+                    (strip_actual_end.join(actual_content.split(strip_actual_end)[-1]) + strip_actual_end),
+                )
+                found_expected = 'content_ends_before'
+            except AssertionError:
+                pass
+
+        # Output message based on above searches.
+        if found_expected:
+            # Content value was in stripped section. Raise corresponding strip message.
+            self.fail(strip_err_msg.format(found_expected, expected_content))
+
+        else:
+            # Content value was physically not present at all. Raise "main" message.
+            self.fail(err_msg.format(expected_content))
 
     # endregion Custom Assertions
 
