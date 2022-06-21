@@ -104,6 +104,16 @@ of ``status_code``, which will assume a default of ``200`` if not provided.
 :param ignore_content_ordering: Bool indicating if ordering of the
                                ``expected_content`` is important or not.
                                Defaults to assuming that ordering matters.
+:param content_starts_after: Optional content value to strip out of search
+                             space. This value and anything above will be
+                             removed. If multiple instances exist on page, then
+                             the first found instance (from top of HTML output)
+                             is selected.
+:param content_ends_before: Optional content value to strip out of search space.
+                            This value and anything below will be removed. If
+                            multiple instances exist on page, then the first
+                            found instance (from bottom of HTML output) is
+                            selected.
 
 :return: The generated response object, in case tests need to run additional
         logic on it.
@@ -294,6 +304,16 @@ that ordering is important.
 :param expected_content: Expected content that response should contain.
 :param ignore_ordering: Bool indicating if content ordering matters. Defaults
                        to assuming ordering should be obeyed.
+:param content_starts_after: Optional content value to strip out of search
+                             space. This value and anything above will be
+                             removed. If multiple instances exist on page, then
+                             the first found instance (from top of HTML output)
+                             is selected.
+:param content_ends_before: Optional content value to strip out of search space.
+                            This value and anything below will be removed. If
+                            multiple instances exist on page, then the first
+                            found instance (from bottom of HTML output) is
+                            selected.
 
 :return: The found response content, in case tests need to run additional
         logic on it.
