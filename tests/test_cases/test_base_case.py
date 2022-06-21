@@ -105,53 +105,84 @@ class BaseClassTest(BaseTestCase):
         """
         Tests assertText() function, in cases when it should fail.
         """
+        exception_msg = '\'{0}\' != \'{1}\'\n- {0}\n{2}+ {1}\n{3}'
+
         with self.subTest('Single character mismatch'):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertText('a', 'b')
+            self.assertEqual(str(err.exception), exception_msg.format('a', 'b', '', ''))
 
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertText('a', 'A')
+            self.assertEqual(str(err.exception), exception_msg.format('a', 'A', '', ''))
 
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertText('a', 1)
+            self.assertEqual(str(err.exception), exception_msg.format('a', '1', '', ''))
 
         with self.subTest('Whitespace mismatch'):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertText('a b c', 'abc')
+            self.assertEqual(str(err.exception), exception_msg.format('a b c', 'abc', '?  - -\n', ''))
 
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertText('abc', 'a b c')
+            self.assertEqual(str(err.exception), exception_msg.format('abc', 'a b c', '', '?  + +\n'))
 
         with self.subTest('Inner value mismatch'):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertText('This is a test sentence.', 'This is a test')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format(
+                    'This is a test sentence.',
+                    'This is a test',
+                    '?               ----------\n',
+                    '',
+                ),
+            )
 
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertText('This is a test sentence.', 'This is test sentence.')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('This is a test sentence.', 'This is test sentence.', '?        --\n', ''),
+            )
 
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertText('This is a test sentence.', 'test sentence.')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('This is a test sentence.', 'test sentence.', '? ----------\n', ''),
+            )
 
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertText('This is a test sentence.', 'This is a test.')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('This is a test sentence.', 'This is a test.', '?               ---------\n', ''),
+            )
 
         with self.subTest('Large string'):
             half_lorem_len = int(len(lorem_str) / 2)
 
             # With character replaced.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 modified_str = lorem_str[:(half_lorem_len - 1)] + 'z' + lorem_str[(half_lorem_len + 1):]
                 self.assertText(lorem_str, modified_str)
+            # self.assertEqual(str(err.exception), exception_msg)
 
             # With character added.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 modified_str = lorem_str[:(half_lorem_len)] + 'z' + lorem_str[(half_lorem_len + 1):]
                 self.assertText(lorem_str, modified_str)
+            # self.assertEqual(str(err.exception), exception_msg)
 
             # With character removed.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 modified_str = lorem_str[:(half_lorem_len - 1)] + lorem_str[(half_lorem_len + 1):]
                 self.assertText(lorem_str, modified_str)
+            # self.assertEqual(str(err.exception), exception_msg)
 
     # endregion Assertion Tests
 

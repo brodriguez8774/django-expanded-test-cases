@@ -148,6 +148,8 @@ class IntegrationClassTest(IntegrationTestCase):
         """
         Tests "url_redirect" functionality of assertResponse() function.
         """
+        exception_msg = 'Response didn\'t redirect as expected. Response code was 200 (expected 302).'
+
         with self.subTest('With view that redirects'):
             # Using direct url.
             self.assertResponse('redirect/index/')
@@ -165,21 +167,27 @@ class IntegrationClassTest(IntegrationTestCase):
         with self.subTest('With view that does not redirect'):
             # Using direct url.
             self.assertResponse('')
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertResponse('', expected_redirect_url='/')
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg)
+            with self.assertRaises(AssertionError) as err:
                 self.assertResponse('', expected_redirect_url='expanded_test_cases:index')
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg)
+            with self.assertRaises(AssertionError) as err:
                 self.assertResponse('login/', expected_redirect_url='expanded_test_cases:index')
+            self.assertEqual(str(err.exception), exception_msg)
 
             # Using reverse.
             self.assertResponse('expanded_test_cases:index')
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertResponse('expanded_test_cases:index', expected_redirect_url='/')
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg)
+            with self.assertRaises(AssertionError) as err:
                 self.assertResponse('expanded_test_cases:index', expected_redirect_url='expanded_test_cases:index')
-                with self.assertRaises(AssertionError):
-                    self.assertResponse('expanded_test_cases:login', expected_redirect_url='expanded_test_cases:index')
+            self.assertEqual(str(err.exception), exception_msg)
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse('expanded_test_cases:login', expected_redirect_url='expanded_test_cases:index')
+            self.assertEqual(str(err.exception), exception_msg)
 
     def test__assertResponse__user(self):
         """
@@ -246,6 +254,8 @@ class IntegrationClassTest(IntegrationTestCase):
         """
         Tests "status_code" functionality of assertResponse() function.
         """
+        exception_msg = '{0} != {1} : Expected status code (after potential redirects) of "{1}". Actual code was "{0}".'
+
         with self.subTest('With status_code=200 - Basic view'):
             # Test 200 in direct url.
             response = self.assertResponse('')
@@ -256,8 +266,9 @@ class IntegrationClassTest(IntegrationTestCase):
             self.assertEqual(response.status_code, 200)
 
             # With non-200 code provided.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertResponse('expanded_test_cases:index', expected_status=400)
+            self.assertEqual(str(err.exception), exception_msg.format(200, 400))
 
         with self.subTest('With status_code=200 - View with params'):
             # Test 200 in direct url.
@@ -273,8 +284,9 @@ class IntegrationClassTest(IntegrationTestCase):
             self.assertEqual(response.status_code, 200)
 
             # With non-200 code provided.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertResponse('user/detail/1/', expected_status=500)
+            self.assertEqual(str(err.exception), exception_msg.format(200, 500))
 
         with self.subTest('With status_code=404'):
             # Test 404 in direct url.
@@ -290,44 +302,58 @@ class IntegrationClassTest(IntegrationTestCase):
             self.assertEqual(response.status_code, 404)
 
             # With non-404 code provided.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertResponse('bad_url', expected_status=200)
+            self.assertEqual(str(err.exception), exception_msg.format(404, 200))
 
     def test__assertResponse__expected_title(self):
         """
         Tests "expected_title" functionality of assertResponse() function.
         """
+        exception_msg = (
+            'Expected title HTML contents of "Wrong Title" (using exact matching). '
+            'Actual value was "Home Page | Test Views".'
+        )
+
         with self.subTest('Title match'):
             self.assertResponse('expanded_test_cases:index', expected_title='Home Page | Test Views')
 
         with self.subTest('Title mismatch'):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertResponse('expanded_test_cases:index', expected_title='Wrong Title')
+            self.assertEqual(str(err.exception), exception_msg)
 
     def test__assertResponse__expected_header(self):
         """
         Tests "expected_header" functionality of assertResponse() function.
         """
+        exception_msg = 'Expected H1 header HTML contents of "Wrong Header". Actual value was "Home Page Header".'
+
         with self.subTest('Header match'):
             self.assertResponse('expanded_test_cases:index', expected_header='Home Page Header')
 
         with self.subTest('Header mismatch'):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertResponse('expanded_test_cases:index', expected_header='Wrong Header')
+            self.assertEqual(str(err.exception), exception_msg)
 
     def test__assertResponse__expected_messages(self):
         """
         Tests "expected_messages" functionality of assertResponse() function.
         """
+        exception_msg = 'Failed to find message "{0}" in context (Partial matching {1} allowed).'
+
         with self.subTest('No messages on page - match'):
             self.assertResponse('expanded_test_cases:index', expected_messages='')
             self.assertResponse('expanded_test_cases:index', expected_messages=[''])
 
         with self.subTest('No messages on page - mismatch'):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertResponse('expanded_test_cases:index', expected_messages='Wrong message.')
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg.format('Wrong message.', 'is'))
+            with self.assertRaises(AssertionError) as err:
                 self.assertResponse('expanded_test_cases:index', expected_messages=['Wrong message.'])
+            self.assertEqual(str(err.exception), exception_msg.format('Wrong message.', 'is'))
 
         with self.subTest('Multiple messages on page - match'):
             self.assertResponse('expanded_test_cases:three-messages', expected_messages='Test info message.')
@@ -342,18 +368,22 @@ class IntegrationClassTest(IntegrationTestCase):
             )
 
         with self.subTest('Multiple messages on page - mismatch'):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertResponse('expanded_test_cases:three-messages', expected_messages='Wrong message.')
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg.format('Wrong message.', 'is'))
+            with self.assertRaises(AssertionError) as err:
                 self.assertResponse(
                     'expanded_test_cases:three-messages',
                     expected_messages=['Test info message.', 'Wrong message.'],
                 )
+            self.assertEqual(str(err.exception), exception_msg.format('Wrong message.', 'is'))
 
     def test__assertResponse__expected_content(self):
         """
         Tests "expected_content" functionality of assertResponse() function.
         """
+        exception_msg = 'Could not find expected content value in response. Provided value was:\n{0}'
+
         with self.subTest('Content match - With tags'):
             # With non-repeating values.
             self.assertResponse(
@@ -405,9 +435,10 @@ class IntegrationClassTest(IntegrationTestCase):
             )
 
         with self.subTest('Content mismatch'):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertResponse('expanded_test_cases:index', expected_content='Wrong value')
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg.format('Wrong value'))
+            with self.assertRaises(AssertionError) as err:
                 self.assertResponse(
                     'expanded_test_cases:index',
                     expected_content=[
@@ -416,6 +447,7 @@ class IntegrationClassTest(IntegrationTestCase):
                         'Wrong value'
                     ],
                 )
+            self.assertEqual(str(err.exception), exception_msg.format('Wrong value'))
 
     def test__assertGetResponse(self):
         """
@@ -463,26 +495,34 @@ class IntegrationClassTest(IntegrationTestCase):
         """
         Tests assertResponseRedirects() function, in cases when it should fail.
         """
+        exception_msg = 'Response didn\'t redirect as expected. Response code was {0} (expected 302).'
+
         with self.subTest('With view that does not redirect - Invalid page'):
             request = self._get_page_response('bad_page/')
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertRedirects(request, expected_redirect_url='/')
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg.format(request.status_code))
+            with self.assertRaises(AssertionError) as err:
                 self.assertRedirects(request, expected_redirect_url='expanded_test_cases:invalid')
+            self.assertEqual(str(err.exception), exception_msg.format(request.status_code))
 
         with self.subTest('With view that does not redirect - Index page'):
             request = self._get_page_response('')
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertRedirects(request, expected_redirect_url='/')
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg.format(request.status_code))
+            with self.assertRaises(AssertionError) as err:
                 self.assertRedirects(request, expected_redirect_url='expanded_test_cases:index')
+            self.assertEqual(str(err.exception), exception_msg.format(request.status_code))
 
         with self.subTest('With view that does not redirect - Non-index page'):
             request = self._get_page_response('login/')
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertRedirects(request, expected_redirect_url='/')
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg.format(request.status_code))
+            with self.assertRaises(AssertionError) as err:
                 self.assertRedirects(request, expected_redirect_url='expanded_test_cases:login')
+            self.assertEqual(str(err.exception), exception_msg.format(request.status_code))
 
     def test__assertStatusCode__success(self):
         """
@@ -513,37 +553,47 @@ class IntegrationClassTest(IntegrationTestCase):
             self.assertStatusCode(response, 500)
             self.assertStatusCode(response.status_code, 500)
 
-    def test__assertStatusCode__fail(self):
+    def test__assertStatusCode__failure(self):
         """
         Tests assertStatusCode() function, in cases when it should fail.
         """
+        exception_msg = '{0} != {1} : Expected status code (after potential redirects) of "{1}". Actual code was "{0}".'
+
         with self.subTest('Expected 200, got 404'):
             response = HttpResponse(status=404)
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertStatusCode(response, 200)
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg.format('404', '200'))
+            with self.assertRaises(AssertionError) as err:
                 self.assertStatusCode(response.status_code, 200)
+            self.assertEqual(str(err.exception), exception_msg.format('404', '200'))
 
         with self.subTest('Expected 404, got 200'):
             response = HttpResponse(status=200)
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertStatusCode(response, 404)
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg.format('200', '404'))
+            with self.assertRaises(AssertionError) as err:
                 self.assertStatusCode(response.status_code, 404)
+            self.assertEqual(str(err.exception), exception_msg.format('200', '404'))
 
         with self.subTest('Expected 200, got 500'):
             response = HttpResponse(status=500)
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertStatusCode(response, 200)
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg.format('500', '200'))
+            with self.assertRaises(AssertionError) as err:
                 self.assertStatusCode(response.status_code, 200)
+            self.assertEqual(str(err.exception), exception_msg.format('500', '200'))
 
         with self.subTest('Expected 500, got 200'):
             response = HttpResponse(status=200)
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertStatusCode(response, 500)
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg.format('200', '500'))
+            with self.assertRaises(AssertionError) as err:
                 self.assertStatusCode(response.status_code, 500)
+            self.assertEqual(str(err.exception), exception_msg.format('200', '500'))
 
     def test__assertPageTitle__success(self):
         """
@@ -605,42 +655,73 @@ class IntegrationClassTest(IntegrationTestCase):
         """
         Tests assertPageTitle() function, in cases when it should fail.
         """
+        exception_msg = 'Expected title HTML contents of "{0}" (using exact matching). Actual value was "{1}".'
+
         with self.subTest('Checking for title when none exists'):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 response = HttpResponse('')
                 self.assertPageTitle(response, 'Test Title')
+            self.assertEqual(str(err.exception), exception_msg.format('Test Title', ''))
 
         with self.subTest('Expected value is on page, but not in title tag'):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 response = HttpResponse('Test Title')
                 self.assertPageTitle(response, 'Test Title')
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg.format('Test Title', ''))
+            with self.assertRaises(AssertionError) as err:
                 response = HttpResponse('<h1>Test Title</h1><p>Test Title</p>')
                 self.assertPageTitle(response, 'Test Title')
+            self.assertEqual(str(err.exception), exception_msg.format('Test Title', ''))
 
         with self.subTest('Assuming extra whitespace is still present'):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 response = HttpResponse('<title>   Test    Title   </title>')
                 self.assertPageTitle(response, '   Test    Title   ')
+            self.assertEqual(str(err.exception), exception_msg.format('Test    Title', 'Test Title'))
 
         with self.subTest('Set to exact match, but only passing in title subsection'):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 response = HttpResponse('<title>Test Title | My Custom App | My Really Cool Site</title>')
                 self.assertPageTitle(response, 'Test Title')
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg.format(
+                'Test Title',
+                'Test Title | My Custom App | My Really Cool Site',
+            ))
+            with self.assertRaises(AssertionError) as err:
                 response = HttpResponse('<title>Test Title | My Custom App | My Really Cool Site</title>')
                 self.assertPageTitle(response, 'My Custom App')
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg.format(
+                'My Custom App',
+                'Test Title | My Custom App | My Really Cool Site',
+            ))
+            with self.assertRaises(AssertionError) as err:
                 response = HttpResponse('<title>Test Title | My Custom App | My Really Cool Site</title>')
                 self.assertPageTitle(response, 'My Really Cool Site')
+            self.assertEqual(str(err.exception), exception_msg.format(
+                'My Really Cool Site',
+                'Test Title | My Custom App | My Really Cool Site',
+            ))
 
         with self.subTest('Set to partial match, but value is not in title'):
-            with self.assertRaises(AssertionError):
+            # Full mismatch.
+            with self.assertRaises(AssertionError) as err:
                 response = HttpResponse('Test Title')
                 self.assertPageTitle(response, 'Wrong Value')
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg.format('Wrong Value', ''))
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<title>Test Title</title>')
+                self.assertPageTitle(response, 'Wrong Value')
+            self.assertEqual(str(err.exception), exception_msg.format('Wrong Value', 'Test Title'))
+
+            # Partial match, but also has extra.
+            with self.assertRaises(AssertionError) as err:
                 response = HttpResponse('Test Title')
                 self.assertPageTitle(response, 'Test Title and More')
+            self.assertEqual(str(err.exception), exception_msg.format('Test Title and More', ''))
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<title>Test Title</title>')
+                self.assertPageTitle(response, 'Test Title and More')
+            self.assertEqual(str(err.exception), exception_msg.format('Test Title and More', 'Test Title'))
 
     def test__assertPageHeader__success(self):
         """
@@ -678,23 +759,35 @@ class IntegrationClassTest(IntegrationTestCase):
         """
         Tests assertPageHeader() function, in cases when it should fail.
         """
+        exception_msg = 'Expected H1 header HTML contents of "{0}". Actual value was "{1}".'
+
         with self.subTest('Checking for header when none exists'):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 response = HttpResponse('')
                 self.assertPageHeader(response, 'Test Header')
+            self.assertEqual(str(err.exception), exception_msg.format('Test Header', ''))
 
         with self.subTest('Expected value is on page, but not in header tag'):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 response = HttpResponse('Test Header')
                 self.assertPageHeader(response, 'Test Header')
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg.format('Test Header', ''))
+            with self.assertRaises(AssertionError) as err:
                 response = HttpResponse('<h2>Test Header</h2><p>Test Header</p>')
                 self.assertPageHeader(response, 'Test Header')
+            self.assertEqual(str(err.exception), exception_msg.format('Test Header', ''))
 
         with self.subTest('Assuming extra whitespace is still present'):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 response = HttpResponse('<h1>   Test    Header   </h1>')
                 self.assertPageHeader(response, '   Test    Header   ')
+            self.assertEqual(str(err.exception), exception_msg.format('Test    Header', 'Test Header'))
+
+        with self.subTest('Expected value is present, plus extra'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>Test Header</h1>')
+                self.assertPageHeader(response, 'Test Header plus Extra')
+            self.assertEqual(str(err.exception), exception_msg.format('Test Header plus Extra', 'Test Header'))
 
     @patch('django_expanded_test_cases.test_cases.integration_test_case.DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS', True)
     def test__assertContextMessages__success__allow_partials(self):
@@ -755,51 +848,64 @@ class IntegrationClassTest(IntegrationTestCase):
         """
         Tests assertContextMessages() function, in cases when it should fail.
         """
+        exception_msg = 'Failed to find message "{0}" in context (Partial matching {1} allowed).'
+
         with self.subTest('Checking for single message, none exist'):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 response = self._get_page_response('expanded_test_cases:index')
                 self.assertContextMessages(response, 'This is a test message.')
+            self.assertEqual(str(err.exception), exception_msg.format('This is a test message.', 'is NOT'))
 
         with self.subTest('Checking for single message, one exists but doesn\'t match'):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 response = self._get_page_response('expanded_test_cases:one-message')
                 self.assertContextMessages(response, 'Testing!')
+            self.assertEqual(str(err.exception), exception_msg.format('Testing!', 'is NOT'))
 
         with self.subTest('Checking for single message, but it\'s only a partial match'):
             response = self._get_page_response('expanded_test_cases:one-message')
-            # with self.assertRaises(AssertionError):
-            #     self.assertContextMessages(response, 'This is a test message')
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
+                self.assertContextMessages(response, 'This is a test message')
+            self.assertEqual(str(err.exception), exception_msg.format('This is a test message', 'is NOT'))
+            with self.assertRaises(AssertionError) as err:
                 self.assertContextMessages(response, 'test message.')
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg.format('test message.', 'is NOT'))
+            with self.assertRaises(AssertionError) as err:
                 self.assertContextMessages(response, 'test')
+            self.assertEqual(str(err.exception), exception_msg.format('test', 'is NOT'))
 
         with self.subTest('Checking for single message, multiple exist but don\'t match'):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 response = self._get_page_response('expanded_test_cases:three-messages')
                 self.assertContextMessages(response, 'Testing!')
+            self.assertEqual(str(err.exception), exception_msg.format('Testing!', 'is NOT'))
 
         with self.subTest('Checking for two messages, none exist'):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 response = self._get_page_response('expanded_test_cases:index')
                 self.assertContextMessages(response, ['This is a test message.', 'Another message.'])
+            self.assertEqual(str(err.exception), exception_msg.format('This is a test message.', 'is NOT'))
 
         with self.subTest('Checking for two messages, but only one exists'):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 response = self._get_page_response('expanded_test_cases:one-message')
                 self.assertContextMessages(response, ['This is a test message.', 'Another message.'])
+            self.assertEqual(str(err.exception), exception_msg.format('Another message.', 'is NOT'))
 
         with self.subTest('Checking for two messages, multiple exist but one doesn\'t match'):
             response = self._get_page_response('expanded_test_cases:three-messages')
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertContextMessages(response, ['Test info message.', 'Another message.'])
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg.format('Another message.', 'is NOT'))
+            with self.assertRaises(AssertionError) as err:
                 self.assertContextMessages(response, ['Bad message', 'Test info message.'])
+            self.assertEqual(str(err.exception), exception_msg.format('Bad message', 'is NOT'))
 
         with self.subTest('Checking for two messages, multiple exist but none match'):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 response = self._get_page_response('expanded_test_cases:three-messages')
                 self.assertContextMessages(response, ['Testing!', 'Testing again!'])
+            self.assertEqual(str(err.exception), exception_msg.format('Testing!', 'is NOT'))
 
     def test__assertPageContent__success(self):
         """
@@ -1019,6 +1125,7 @@ class IntegrationClassTest(IntegrationTestCase):
                 ignore_ordering=True,  # Ignore because we recheck the same values.
             )
 
+    def test__assertPageContent__success_with_limited_search_space(self):
         with self.subTest('Standard Response - With content_starts_after defined'):
             response = self._get_page_response('expanded_test_cases:index')
 
@@ -1085,58 +1192,82 @@ class IntegrationClassTest(IntegrationTestCase):
                 content_ends_before='<p>Pretend this is the project landing page.</p>',
             )
 
-    def test__assertPageContent__fail(self):
+    def test__assertPageContent__failure(self):
         """
         Tests assertPageContent() function, in cases when it should fail.
         """
+        exception_msg_not_found = 'Could not find expected content value in response. Provided value was:\n{0}'
+        exception_msg_bad_order = (
+            'Expected content value was found, but ordering of values do not match. Problem value:\n{0}'
+        )
+
         with self.subTest('Empty response, but value passed.'):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 response = HttpResponse('')
                 self.assertPageContent(response, '<h1>Test Title</h1>')
+            self.assertEqual(str(err.exception), exception_msg_not_found.format('<h1>Test Title</h1>'))
 
         with self.subTest('Minimal Response - Wrong value passed'):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 response = HttpResponse('<h1>Test Title</h1>')
                 self.assertPageContent(response, '<h1>Testing</h1>')
+            self.assertEqual(str(err.exception), exception_msg_not_found.format('<h1>Testing</h1>'))
 
         with self.subTest('Standard Response - Wrong value passed'):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 response = self._get_page_response('expanded_test_cases:login')
                 self.assertPageContent(response, '<h1>Testing Header</h1><p>Pretend this is a page.</p>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg_not_found.format('<h1>Testing Header</h1><p>Pretend this is a page.</p>'),
+            )
 
         with self.subTest('Standard Response - Set of items with wrong values'):
             response = self._get_page_response('expanded_test_cases:index')
+
             # Test as list.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(response, ['<h1>Test Page Header</h1>'])
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg_not_found.format('<h1>Test Page Header</h1>'))
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(response, ['Wrong Content'])
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg_not_found.format('Wrong Content'))
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(response, ['<h1>Home Page Wrong'])
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg_not_found.format('<h1>Home Page Wrong'))
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(response, ['Wrong Page Header</h1>'])
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg_not_found.format('Wrong Page Header</h1>'))
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(response, ['<h1>Home Page Header</h1>', 'Wrong text'])
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg_not_found.format('Wrong text'))
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(response, ['<h1>Wrong Header</h1>', 'project landing page'])
+            self.assertEqual(str(err.exception), exception_msg_not_found.format('<h1>Wrong Header</h1>'))
             # Test as tuple.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(response, ('<h1>Test Page Header</h1>',))
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg_not_found.format('<h1>Test Page Header</h1>'))
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(response, ('Wrong Content',))
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg_not_found.format('Wrong Content'))
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(response, ('<h1>Home Page Wrong',))
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg_not_found.format('<h1>Home Page Wrong'))
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(response, ('Wrong Page Header</h1>',))
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg_not_found.format('Wrong Page Header</h1>'))
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(response, ('<h1>Home Page Header</h1>', 'Wrong text'))
-            with self.assertRaises(AssertionError):
+            self.assertEqual(str(err.exception), exception_msg_not_found.format('Wrong text'))
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(response, ('<h1>Wrong Header</h1>', 'project landing page'))
+            self.assertEqual(str(err.exception), exception_msg_not_found.format('<h1>Wrong Header</h1>'))
 
         with self.subTest('Standard Response - Wrong ordering'):
             response = self._get_page_response('expanded_test_cases:user-detail', args=(1,))
 
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 # Test "first name" string at top.
                 self.assertPageContent(
                     response,
@@ -1144,15 +1275,15 @@ class IntegrationClassTest(IntegrationTestCase):
                         'First Name: "TestFirst"',
                         '<h1>User Detail Page Header</h1>',
                         'Username: "test_superuser"',
-                        'First Name: "TestFirst"',
                         'Last Name: "TestLast"',
                         'Is Active: "True"',
                         'Is SuperUser: "True"',
                         'Is Staff: "False"',
                     ],
                 )
+            self.assertEqual(str(err.exception), exception_msg_bad_order.format('<h1>User Detail Page Header</h1>'))
 
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 # Test "first name" string after header.
                 self.assertPageContent(
                     response,
@@ -1160,15 +1291,15 @@ class IntegrationClassTest(IntegrationTestCase):
                         '<h1>User Detail Page Header</h1>',
                         'First Name: "TestFirst"',
                         'Username: "test_superuser"',
-                        'First Name: "TestFirst"',
                         'Last Name: "TestLast"',
                         'Is Active: "True"',
                         'Is SuperUser: "True"',
                         'Is Staff: "False"',
                     ],
                 )
+            self.assertEqual(str(err.exception), exception_msg_bad_order.format('Username: "test_superuser"'))
 
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 # Test "first name" string after last name.
                 self.assertPageContent(
                     response,
@@ -1182,8 +1313,9 @@ class IntegrationClassTest(IntegrationTestCase):
                         'Is Staff: "False"',
                     ],
                 )
+            self.assertEqual(str(err.exception), exception_msg_bad_order.format('First Name: "TestFirst"'))
 
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 # Test "first name" string after active.
                 self.assertPageContent(
                     response,
@@ -1197,8 +1329,9 @@ class IntegrationClassTest(IntegrationTestCase):
                         'Is Staff: "False"',
                     ],
                 )
+            self.assertEqual(str(err.exception), exception_msg_bad_order.format('First Name: "TestFirst"'))
 
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 # Test "first name" string after superuser.
                 self.assertPageContent(
                     response,
@@ -1212,8 +1345,9 @@ class IntegrationClassTest(IntegrationTestCase):
                         'Is Staff: "False"',
                     ],
                 )
+            self.assertEqual(str(err.exception), exception_msg_bad_order.format('First Name: "TestFirst"'))
 
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 # Test "first name" string after staff.
                 self.assertPageContent(
                     response,
@@ -1227,57 +1361,127 @@ class IntegrationClassTest(IntegrationTestCase):
                         'First Name: "TestFirst"',
                     ],
                 )
+            self.assertEqual(str(err.exception), exception_msg_bad_order.format('First Name: "TestFirst"'))
 
-    def test__assertPageContent__fail_with_limited_search_space(self):
+    def test__assertPageContent__failure__with_bad_search_space(self):
+        exception_msg = 'Could not find "{0}" value in content response. Provided value was:\n{1}'
+        response = self._get_page_response('expanded_test_cases:index')
+
+        # Bad content_starts_after values.
+        with self.subTest('With content_starts_after not found'):
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(
+                    response,
+                    expected_content='<h1>Home Page Header</h1>',
+                    content_starts_after='Wrong value.',
+                )
+            self.assertEqual(str(err.exception), exception_msg.format('content_starts_after', 'Wrong value.'))
+        with self.subTest('With content_starts_after not found'):
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(
+                    response,
+                    expected_content='Wrong content value.',
+                    content_starts_after='Wrong value.',
+                )
+            self.assertEqual(str(err.exception), exception_msg.format('content_starts_after', 'Wrong value.'))
+        with self.subTest('With content_starts_after found with extra'):
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(
+                    response,
+                    expected_content='<h1>Home Page Header</h1>',
+                    content_starts_after='Home Page Header plus Extra',
+                )
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('content_starts_after', 'Home Page Header plus Extra'),
+            )
+
+        # Bad content_ends_before values.
+        with self.subTest('With content_ends_before not found'):
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(
+                    response,
+                    expected_content='<h1>Home Page Header</h1>',
+                    content_ends_before='Wrong value.',
+                )
+            self.assertEqual(str(err.exception), exception_msg.format('content_ends_before', 'Wrong value.'))
+        with self.subTest('With content_ends_before and expected_content not found'):
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(
+                    response,
+                    expected_content='Wrong content value.',
+                    content_ends_before='Wrong value.',
+                )
+            self.assertEqual(str(err.exception), exception_msg.format('content_ends_before', 'Wrong value.'))
+        with self.subTest('With content_ends_before found with extra'):
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(
+                    response,
+                    expected_content='<h1>Home Page Header</h1>',
+                    content_ends_before='Home Page Header plus Extra',
+                )
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('content_ends_before', 'Home Page Header plus Extra'),
+            )
+
+    def test__assertPageContent__fail__with_limited_search_space(self):
+        exception_msg = 'Expected content value was found, but occurred in "{0}" section. Expected was:\n{1}'
+        response = self._get_page_response('expanded_test_cases:index')
+
         with self.subTest('Standard Response - With content_starts_after defined'):
-            response = self._get_page_response('expanded_test_cases:index')
-
             # Expected as single value.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content='<head>',
                     content_starts_after='<h1>Home Page Header</h1>',
                 )
+            self.assertEqual(str(err.exception), exception_msg.format('content_starts_after', '<head>'))
             # Expected as single value.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content='<meta charset="utf-8">',
                     content_starts_after='<h1>Home Page Header</h1>',
                 )
+            self.assertEqual(str(err.exception), exception_msg.format('content_starts_after', '<meta charset="utf-8">'))
             # Expected as single value.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content='</head>',
                     content_starts_after='<h1>Home Page Header</h1>',
                     ignore_ordering=True,
                 )
+            self.assertEqual(str(err.exception), exception_msg.format('content_starts_after', '</head>'))
             # Expected as single value.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content='<body>',
                     content_starts_after='<h1>Home Page Header</h1>',
                 )
+            self.assertEqual(str(err.exception), exception_msg.format('content_starts_after', '<body>'))
             # Expected as single value - With exact match.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content='<h1>Home Page Header</h1>',
                     content_starts_after='<h1>Home Page Header</h1>',
                 )
+            self.assertEqual(str(err.exception), exception_msg.format('content_starts_after', '<h1>Home Page Header</h1>'))
             # Expected as single value - With partial of exact match.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content='h1>',
                     content_starts_after='<h1>Home Page Header</h1>',
                 )
+            self.assertEqual(str(err.exception), exception_msg.format('content_starts_after', 'h1>'))
 
             # Expected as array.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content=[
@@ -1286,8 +1490,12 @@ class IntegrationClassTest(IntegrationTestCase):
                     ],
                     content_starts_after='<h1>Home Page Header</h1>',
                 )
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('content_starts_after', '<meta charset="utf-8">'),
+            )
             # Expected as array - With ignore_ordering.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content=[
@@ -1297,8 +1505,12 @@ class IntegrationClassTest(IntegrationTestCase):
                     ignore_ordering=True,
                     content_starts_after='<h1>Home Page Header</h1>',
                 )
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('content_starts_after', '<meta charset="utf-8">'),
+            )
             # Expected as array - With ignore_ordering and content mis-ordered.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content=[
@@ -1308,49 +1520,64 @@ class IntegrationClassTest(IntegrationTestCase):
                     ignore_ordering=True,
                     content_starts_after='<h1>Home Page Header</h1>',
                 )
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('content_starts_after', '<title>Home Page | Test Views</title>'),
+            )
 
         with self.subTest('Standard Response - With content_ends_before defined'):
             response = self._get_page_response('expanded_test_cases:index')
 
             # Expected as single value - Exact match.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content='<h1>Home Page Header</h1>',
                     content_ends_before='<h1>Home Page Header</h1>',
                 )
+            self.assertEqual(str(err.exception), exception_msg.format('content_ends_before', '<h1>Home Page Header</h1>'))
             # Expected as single value - Partial of exact match.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content='h1>',
                     content_ends_before='<h1>Home Page Header</h1>',
                 )
+            self.assertEqual(str(err.exception), exception_msg.format('content_ends_before', 'h1>'))
             # Expected as single value.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content='<p>Pretend this is the project landing page.</p>',
                     content_ends_before='<h1>Home Page Header</h1>',
                 )
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('content_ends_before', '<p>Pretend this is the project landing page.</p>'),
+            )
             # Expected as single value - With ignore_ordering (should have no effect here).
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content='<p>Pretend this is the project landing page.</p>',
                     ignore_ordering=True,
                     content_ends_before='<h1>Home Page Header</h1>',
                 )
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('content_ends_before', '<p>Pretend this is the project landing page.</p>'),
+            )
             # Expected as single value.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content='</body>',
                     content_ends_before='<h1>Home Page Header</h1>',
                 )
+            self.assertEqual(str(err.exception), exception_msg.format('content_ends_before', '</body>'))
 
             # Expected as array.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content=[
@@ -1359,8 +1586,12 @@ class IntegrationClassTest(IntegrationTestCase):
                     ],
                     content_ends_before='<h1>Home Page Header</h1>',
                 )
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('content_ends_before', '<p>Pretend this is the project landing page.</p>'),
+            )
             # Expected as array - With ignore_ordering.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content=[
@@ -1370,8 +1601,12 @@ class IntegrationClassTest(IntegrationTestCase):
                     ignore_ordering=True,
                     content_ends_before='<h1>Home Page Header</h1>',
                 )
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('content_ends_before', '<p>Pretend this is the project landing page.</p>'),
+            )
             # Expected as array - With ignore_ordering and content mis-ordered.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content=[
@@ -1381,44 +1616,58 @@ class IntegrationClassTest(IntegrationTestCase):
                     ignore_ordering=True,
                     content_ends_before='<h1>Home Page Header</h1>',
                 )
+            self.assertEqual(str(err.exception), exception_msg.format('content_ends_before', '</body>'))
 
         with self.subTest('Standard Response - With both content containers defined'):
             response = self._get_page_response('expanded_test_cases:index')
 
             # Expected as single value - above search area.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content='<meta charset="utf-8">',
                     content_starts_after='<title>Home Page | Test Views</title>',
                     content_ends_before='<p>Pretend this is the project landing page.</p>',
                 )
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('content_starts_after', '<meta charset="utf-8">'),
+            )
             # Expected as single value - above search area, exact match.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content='<title>Home Page | Test Views</title>',
                     content_starts_after='<title>Home Page | Test Views</title>',
                     content_ends_before='<p>Pretend this is the project landing page.</p>',
                 )
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('content_starts_after', '<title>Home Page | Test Views</title>'),
+            )
             # Expected as single value - below search area.
-            with self.assertRaises(AssertionError):
-                self.assertPageContent(
-                    response,
-                    expected_content='<p>Pretend this is the project landing page.</p>',
-                    content_starts_after='<title>Home Page | Test Views</title>',
-                    content_ends_before='<p>Pretend this is the project landing page.</p>',
-                )
-            # Expected as single value - below search area, exact match.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content='</body>',
                     content_starts_after='<title>Home Page | Test Views</title>',
                     content_ends_before='<p>Pretend this is the project landing page.</p>',
                 )
+            self.assertEqual(str(err.exception), exception_msg.format('content_ends_before', '</body>'))
+            # Expected as single value - below search area, exact match.
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(
+                    response,
+                    expected_content='<p>Pretend this is the project landing page.</p>',
+                    content_starts_after='<title>Home Page | Test Views</title>',
+                    content_ends_before='<p>Pretend this is the project landing page.</p>',
+                )
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('content_ends_before', '<p>Pretend this is the project landing page.</p>'),
+            )
             # Expected as single value - with ignore_ordering (should have no effect here).
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content='<meta charset="utf-8">',
@@ -1426,44 +1675,54 @@ class IntegrationClassTest(IntegrationTestCase):
                     content_starts_after='<title>Home Page | Test Views</title>',
                     content_ends_before='<p>Pretend this is the project landing page.</p>',
                 )
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('content_starts_after', '<meta charset="utf-8">'),
+            )
 
             # Expected as array - Above search area.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content=[
                         '<head>',
-                        '<meta charset="utf-8"',
+                        '<meta charset="utf-8">',
                     ],
                     content_starts_after='<title>Home Page | Test Views</title>',
                     content_ends_before='<p>Pretend this is the project landing page.</p>',
                 )
+            self.assertEqual(str(err.exception), exception_msg.format('content_starts_after', '<head>'))
             # Expected as array - Above search area, with ignore_ordering.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content=[
                         '<head>',
-                        '<meta charset="utf-8"',
+                        '<meta charset="utf-8">',
                     ],
                     ignore_ordering=True,
                     content_starts_after='<title>Home Page | Test Views</title>',
                     content_ends_before='<p>Pretend this is the project landing page.</p>',
                 )
+            self.assertEqual(str(err.exception), exception_msg.format('content_starts_after', '<head>'))
             # Expected as array - Above search area, with ignore_ordering and content mis-ordered.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content=[
-                        '<meta charset="utf-8"',
+                        '<meta charset="utf-8">',
                         '<head>',
                     ],
                     ignore_ordering=True,
                     content_starts_after='<title>Home Page | Test Views</title>',
                     content_ends_before='<p>Pretend this is the project landing page.</p>',
                 )
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('content_starts_after', '<meta charset="utf-8">'),
+            )
             # Expected as array - Below search area.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content=[
@@ -1473,8 +1732,12 @@ class IntegrationClassTest(IntegrationTestCase):
                     content_starts_after='<title>Home Page | Test Views</title>',
                     content_ends_before='<p>Pretend this is',
                 )
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('content_ends_before', 'the project landing page.</p>'),
+            )
             # Expected as array - Below search area, with ignore_ordering.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content=[
@@ -1485,8 +1748,12 @@ class IntegrationClassTest(IntegrationTestCase):
                     content_starts_after='<title>Home Page | Test Views</title>',
                     content_ends_before='<p>Pretend this is',
                 )
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('content_ends_before', 'the project landing page.</p>'),
+            )
             # Expected as array - Below search area, with ignore_ordering and content mis-ordered.
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
                     response,
                     expected_content=[
@@ -1497,6 +1764,7 @@ class IntegrationClassTest(IntegrationTestCase):
                     content_starts_after='<title>Home Page | Test Views</title>',
                     content_ends_before='<p>Pretend this is',
                 )
+            self.assertEqual(str(err.exception), exception_msg.format('content_ends_before', '</body>'))
 
     # endregion Element Assertion Tests
 
