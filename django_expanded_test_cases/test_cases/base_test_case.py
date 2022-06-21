@@ -18,7 +18,14 @@ class BaseTestCase(TestCase, CoreTestCaseMixin):
         super().setUpClass()
 
         # Also call CoreMixin setup logic.
-        cls.set_up_class(debug_print=debug_print)
+        cls._set_up_class(debug_print=debug_print)
+
+    def setUp(self):
+        # Run parent setup logic.
+        super().setUp()
+
+        # Also call CoreMixin setup logic.
+        self._set_up()
 
 
 # Define acceptable imports on file.

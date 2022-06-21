@@ -4,44 +4,80 @@ Core testing logic, universal to all test cases.
 
 # System Imports.
 import re
-
-from functools import wraps
-from types import FunctionType
-
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.utils.http import urlencode
+from functools import wraps
+from types import FunctionType
 
 # User Imports.
 from django_expanded_test_cases.constants import DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT
 
+
 # region Debug Print Wrapper Logic
 
-def wrapper(method):
+def wrapper(method, parent_class):
     """Wrapper logic to intercept all functions on AssertionError and print error at bottom of output."""
     @wraps(method)
     def wrapped(*args, **kwargs):
-        try:
+        if not DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT:
+            # Debug printing not enabled. Return original function logic.
             return method(*args, **kwargs)
-        except AssertionError as err:
-            if DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT:
-                print('\n')
-                print(err)
-                print('')
-            raise err
+        else:
+            try:
+                return method(*args, **kwargs)
+            except AssertionError as err:
+                # Assertion occurred.
+                # Only display error message if there were no child assertions that have already done so.
+                print('parent_class.err_display_check: "{0}"'.format(parent_class.debug_err_displayed))
+                if parent_class.debug_err_displayed is False:
+                    parent_class.debug_err_displayed = True
+                    print('\n')
+                    print(err)
+                    print('')
+                raise err
     return wrapped
 
 
 class DebugPrintMetaClass(type):
     """Courtesy of https://stackoverflow.com/a/11350487"""
-    def __new__(meta, classname, bases, classDict):
-        newClassDict = {}
-        for attributeName, attribute in classDict.items():
-            if isinstance(attribute, FunctionType):
-                # Replace function with a DebugPrint-wrapped version.
-                attribute = wrapper(attribute)
-            newClassDict[attributeName] = attribute
-        return type.__new__(meta, classname, bases, newClassDict)
+
+    def __new__(cls, name, bases, dct):
+        ncls = super().__new__(cls, name, bases, dct)
+
+        # Check all callables in our generated class.
+        for attr_name, attr in dct.items():
+            # If is function, then replace with a DebugPrint-wrapped version.
+            if isinstance(attr, FunctionType):
+                setattr(ncls, attr_name, wrapper(attr, ncls))
+
+        # Add err_display_check value.
+        ncls.debug_err_displayed = False
+
+        # Return updated class.
+        return ncls
+
+        # # Wrap all functions with above wrapper.
+        # newClassDict = {}
+        # for attributeName, attribute in dct.items():
+        #     # If function, then replace a DebugPrint-wrapped version.
+        #     if isinstance(attribute, FunctionType):
+        #         attribute = wrapper(attribute, cls)
+        #     # Add key-value pairing to new class namespace-dictionary definition.
+        #     newClassDict[attributeName] = attribute
+        #
+        # # Add err_display_check value.
+        # newClassDict['err_display_check'] = {'Aaa': 'Bbb'}
+        #
+        # # Return new instance, but using newly defined class namespace-dictionary (that has wrapped functions).
+        # return type.__new__(cls, name, bases, newClassDict)
+
+        # orig_init = dct.get('__init__')
+        # newClassDict = dct
+        # def init_wrapper(self, *args, **kwargs):
+        #     if orig_init:
+        #         orig_init(self, *args, **kwargs)
+        #     self.err_display_check = {'has_displayed': False}
 
 # endregion Debug Print Wrapper Logic
 
@@ -60,12 +96,12 @@ class CoreTestCaseMixin(metaclass=DebugPrintMetaClass):
     # region Class Functions
 
     @classmethod
-    def set_up_class(cls, debug_print=None):
+    def _set_up_class(cls, debug_print=None):
         """
         Acts as the equivalent of the UnitTesting "setUpClass()" function.
 
         However, since this is not inheriting from a given TestCase, calling the literal function
-        here would override instead.
+        here would fully override the base "setUpClass()" function, which we do not want.
 
         :param debug_print: Optional bool that indicates if debug output should print to console.
                             Param overrides setting value if both param and setting are set.
@@ -94,6 +130,15 @@ class CoreTestCaseMixin(metaclass=DebugPrintMetaClass):
             cls._debug_print_bool = bool(debug_print)
         else:
             cls._debug_print_bool = DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT
+
+    def _set_up(self):
+        """
+        Acts as the equivalent of the UnitTesting "setUp()" function.
+
+        However, since this is not inheriting from a given TestCase, calling the literal function
+        here would fully override the base "setUp()" function, which we do not want.
+        """
+        self.debug_err_displayed = False
 
     def _debug_print(self, *args, **kwargs):
         """Prints or suppresses output, based on DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT settings variable.

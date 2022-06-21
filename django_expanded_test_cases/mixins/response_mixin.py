@@ -15,18 +15,18 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
     """Includes testing logic used in handling Response objects."""
 
     @classmethod
-    def set_up_class(cls, debug_print=None):
+    def _set_up_class(cls, debug_print=None):
         """
         Acts as the equivalent of the UnitTesting "setUpClass()" function.
 
         However, since this is not inheriting from a given TestCase, calling the literal function
         here would override instead.
-        
+
         :param debug_print: Optional bool that indicates if debug output should print to console.
                             Param overrides setting value if both param and setting are set.
         """
         # Run parent setup logic.
-        super().set_up_class(debug_print=debug_print)
+        super()._set_up_class(debug_print=debug_print)
 
     # region Debug Output Functions
 
