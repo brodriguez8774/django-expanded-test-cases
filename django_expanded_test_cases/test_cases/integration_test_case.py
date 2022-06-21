@@ -4,6 +4,7 @@ Testing logic for views and other multi-part components.
 
 # System Imports.
 import re
+from colorama import Fore, Style
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Group, Permission
 from django.http.response import HttpResponseBase
@@ -656,7 +657,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             current_site = '{0}{1}'.format(self.site_root_url, url)
         else:
             current_site = '127.0.0.1{0}'.format(url)
-        self._debug_print('Attempting to access url "{0}"'.format(current_site))
+        message = 'Attempting to access url "{0}"'.format(current_site)
+        self._debug_print(message, fore=Fore.YELLOW, style=Style.BRIGHT)
+        self._debug_print('{0}'.format('-' * len(message)), fore=Fore.YELLOW, style=Style.BRIGHT)
 
         # Get response object.
         if bool(get):
