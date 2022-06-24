@@ -2,6 +2,13 @@ Version History
 ***************
 
 
+0.2.0
+=====
+* Core TestCase classes seem stable and tested in a real project environment.
+* Improved/cleaned general assertion error messages.
+* Improved functionality of AssertContent function.
+
+
 0.1.1
 =====
 
