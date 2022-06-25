@@ -467,7 +467,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             # First check that value actually exists in provided response.
             # Because we can't strip if this initial value is not present.
             stripped_start = self.get_minimized_response_content(strip_actual_start, strip_newlines=True)
-            if strip_actual_start not in actual_content_search_set:
+            if stripped_start not in actual_content_search_set:
                 display_start = self.get_minimized_response_content(strip_actual_start, strip_newlines=False)
                 self.fail(strip_err_msg.format('content_starts_after', display_start))
             # If we made it this far, then value was found. Remove.

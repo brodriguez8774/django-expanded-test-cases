@@ -1221,7 +1221,7 @@ class IntegrationClassTest(IntegrationTestCase):
             )
 
     def test__assertPageContent__success_with_limited_search_space(self):
-        with self.subTest('Standard Response - With content_starts_after defined'):
+        with self.subTest('Standard Response - With "content_starts_after" defined'):
             response = self._get_page_response('expanded_test_cases:index')
 
             # Expected as single value.
@@ -1241,7 +1241,38 @@ class IntegrationClassTest(IntegrationTestCase):
                 content_starts_after='<h1>Home Page Header</h1>',
             )
 
-        with self.subTest('Standard Response - With content_ends_before defined'):
+        with self.subTest('Standard Response - With multi-lined "content_starts_after" defined'):
+            # Can be useful in cases such as where there is no directly-unique element in desired section.
+            # But there are groupings of elements together that make a unique desired section to limit by.
+            response = self._get_page_response('expanded_test_cases:index')
+
+            # Expected as single value.
+            self.assertPageContent(
+                response,
+                expected_content='<p>Pretend this is the project landing page.</p>',
+                content_starts_after='<h1>Home Page Header</h1>',
+            )
+
+            # Expected as array.
+            self.assertPageContent(
+                response,
+                expected_content=[
+                    """
+                    <body>
+                        <h1>Home Page Header</h1>
+                        <p>Pretend this is the project landing page.</p>
+                    </body>
+                    """,
+                ],
+                content_starts_after="""
+                <head>
+                    <meta charset="utf-8">
+                    <title>Home Page | Test Views</title>
+                </head>
+                """,
+            )
+
+        with self.subTest('Standard Response - With "content_ends_before" defined'):
             response = self._get_page_response('expanded_test_cases:index')
 
             # Expected as single value.
@@ -1262,6 +1293,37 @@ class IntegrationClassTest(IntegrationTestCase):
                     '<body>',
                 ],
                 content_ends_before='<h1>Home Page Header</h1>',
+            )
+
+        with self.subTest('Standard Response - With multi-lined "content_ends_before" defined'):
+            # Can be useful in cases such as where there is no directly-unique element in desired section.
+            # But there are groupings of elements together that make a unique desired section to limit by.
+            response = self._get_page_response('expanded_test_cases:index')
+
+            # Expected as single value.
+            self.assertPageContent(
+                response,
+                expected_content='<meta charset="utf-8">',
+                content_ends_before='<h1>Home Page Header</h1>',
+            )
+
+            # Expected as array.
+            self.assertPageContent(
+                response,
+                expected_content=[
+                    """
+                    <head>
+                        <meta charset="utf-8">
+                        <title>Home Page | Test Views</title>
+                    </head>
+                    """,
+                ],
+                content_ends_before="""
+                <body>
+                    <h1>Home Page Header</h1>
+                    <p>Pretend this is the project landing page.</p>
+                </body>
+                """,
             )
 
         with self.subTest('Standard Response - With both content containers defined'):
