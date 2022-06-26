@@ -4,7 +4,6 @@ Core testing logic, universal to all test cases.
 
 # System Imports.
 import re
-
 from colorama import Fore, Style
 from functools import wraps
 from types import FunctionType
@@ -47,7 +46,7 @@ class DebugPrintMetaClass(type):
 # endregion Debug Print Wrapper Logic
 
 
-class CoreTestCaseMixin(metaclass=DebugPrintMetaClass):
+class CoreTestCaseMixin:
     """Core testing logic, used in all other expanded TestCase classes.
 
     For compatibility, does not inherit from

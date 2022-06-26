@@ -4,7 +4,7 @@ Core testing logic that pertains to handling Response objects.
 
 # System Imports.
 import re
-from colorama import Fore, Back, Style
+from colorama import Fore, Style
 from django.contrib.auth import get_user_model
 from django.http.response import HttpResponseBase
 
