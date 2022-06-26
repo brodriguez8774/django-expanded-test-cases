@@ -46,7 +46,11 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         response_content = self.standardize_newlines(response_content)
 
         self._debug_print()
-        self._debug_print(('{0} {1} {0}'.format('=' * 10, 'response.content')), fore=Fore.WHITE, style=f"{Style.BRIGHT}{UNDERLINE}")
+        self._debug_print(
+            '{0} {1} {0}'.format('=' * 10, 'response.content'),
+            fore=Fore.WHITE,
+            style=f"{Style.BRIGHT}{UNDERLINE}",
+        )
 
         # Print out data, if present.
         if response_content:
@@ -69,7 +73,11 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                 response_headers = None
 
         self._debug_print()
-        self._debug_print('{0} {1} {0}'.format('=' * 10, 'response.headers'), fore=Fore.WHITE, style=f"{Style.BRIGHT}{UNDERLINE}")
+        self._debug_print(
+            '{0} {1} {0}'.format('=' * 10, 'response.headers'),
+            fore=Fore.WHITE,
+            style=f"{Style.BRIGHT}{UNDERLINE}",
+        )
 
         # Print out data, if present.
         if response_headers is not None and len(response_headers) > 0:
@@ -91,13 +99,17 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             client = client.client
 
         self._debug_print()
-        self._debug_print('{0} {1} {0}'.format('=' * 10, 'client.session'), fore=Fore.WHITE, back=Back.MAGENTA, style=f"{Style.BRIGHT}{UNDERLINE}")
+        self._debug_print(
+            '{0} {1} {0}'.format('=' * 10, 'client.session'),
+            fore=Fore.MAGENTA,
+            style=f"{Style.BRIGHT}{UNDERLINE}",
+        )
 
         if client is not None and len(client.session.items()) > 0:
             for key, value in client.session.items():
                 self._debug_print('    * {0}: {1}'.format(key, value), fore=Fore.MAGENTA)
         else:
-            self._debug_print('    No session data found.')
+            self._debug_print('    No session data found.', fore=Fore.MAGENTA)
         self._debug_print('')
 
     def show_debug_form_data(self, response_context):
@@ -112,7 +124,11 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             response_context = response_context.context
 
         self._debug_print()
-        self._debug_print(('{0} {1} {0}'.format('=' * 10, 'response.context["messages"]')), fore=Fore.WHITE, back=Back.BLUE, style=f"{Style.BRIGHT}{UNDERLINE}")
+        self._debug_print(
+            '{0} {1} {0}'.format('=' * 10, 'response.context["messages"]'),
+            fore=Fore.BLUE,
+            style=f"{Style.BRIGHT}{UNDERLINE}",
+        )
 
         # Print out data, if present.
         if response_context is not None and 'messages' in response_context:
@@ -121,14 +137,18 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                 for message in messages:
                     self._debug_print('    * "{0}"'.format(message), fore=Fore.BLUE)
             else:
-                self._debug_print('    No context messages found.')
+                self._debug_print('    No context messages found.', fore=Fore.BLUE)
         self._debug_print()
 
     def show_debug_user_info(self, user):
         """Prints debug user data."""
 
         self._debug_print()
-        self._debug_print('{0} {1} {0}'.format('=' * 10, 'User Info'), fore=Fore.WHITE, back=Back.CYAN, style=f"{Style.BRIGHT}{UNDERLINE}")
+        self._debug_print(
+            '{0} {1} {0}'.format('=' * 10, 'User Info'),
+            fore=Fore.CYAN,
+            style=f"{Style.BRIGHT}{UNDERLINE}",
+        )
 
         # Only proceed if we got a proper user model.
         if isinstance(user, get_user_model()):
