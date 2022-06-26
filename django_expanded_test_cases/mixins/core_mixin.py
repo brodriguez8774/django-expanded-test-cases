@@ -4,17 +4,16 @@ Core testing logic, universal to all test cases.
 
 # System Imports.
 import re
-
 from colorama import Fore, Style
-from functools import wraps
-from types import FunctionType
-
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.utils.http import urlencode
+from functools import wraps
+from types import FunctionType
 
 # User Imports.
 from django_expanded_test_cases.constants import DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT
+
 
 # region Debug Print Wrapper Logic
 

@@ -95,7 +95,11 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Optionally output all debug info for found response.
         if self._debug_print_bool:
-            self.show_debug_content(response)
+            self._debug_print('content_starts_after:')
+            self._debug_print(content_starts_after)
+            self._debug_print('content_ends_before:')
+            self._debug_print(content_ends_before)
+            self.show_debug_content(response, strip_start=content_starts_after, strip_end=content_ends_before)
             # self.show_debug_context(response)
             self.show_debug_session_data(response)
             # self.show_debug_form_data(response)
@@ -443,16 +447,26 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param debug_output: Bool indicating if debug output should be shown or not. Used for debugging test failures.
         :return: Parsed out and formatted content string.
         """
+        # Handle for potential param types.
+        if isinstance(response, HttpResponseBase):
+            response_content = response.content.decode('utf-8')
+        elif isinstance(response, bytes):
+            response_content = response.decode('utf-8')
+        else:
+            response_content = str(response)
+
         if debug_output:
             # Print out actual response content, for debug output.
-            self.show_debug_content(response)
+            self.show_debug_content(response_content, strip_start=content_starts_after, strip_end=content_ends_before)
 
         # Sanitize and format actual response content.
-        actual_content_search_set = self.get_minimized_response_content(response, strip_newlines=True)
+        actual_content_search_set = self.get_minimized_response_content(response_content, strip_newlines=True)
+
+        self._debug_print('actual_content_search_set:')
+        self._debug_print(actual_content_search_set)
 
         main_err_msg = 'Could not find expected content value in response. Provided value was:\n{0}'
         ordering_err_msg = 'Expected content value was found, but ordering of values do not match. Problem value:\n{0}'
-        strip_err_msg = 'Could not find "{0}" value in content response. Provided value was:\n{1}'
 
         # Rename variables for internal readability.
         strip_actual_start = content_starts_after
@@ -465,28 +479,43 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             # Find first instance (from top of HTML output) of where this value occurs,
             # and then strip this and all above output.
 
-            # First check that value actually exists in provided response.
-            # Because we can't strip if this initial value is not present.
-            stripped_start = self.get_minimized_response_content(strip_actual_start, strip_newlines=True)
-            if stripped_start not in actual_content_search_set:
-                display_start = self.get_minimized_response_content(strip_actual_start, strip_newlines=False)
-                self.fail(strip_err_msg.format('content_starts_after', display_start))
-            # If we made it this far, then value was found. Remove.
-            actual_content_search_set = stripped_start.join(actual_content_search_set.split(stripped_start)[1:])
+            actual_content_search_set = self._strip_content_subsection(
+                actual_content_search_set,
+                strip_actual_start,
+                'content_starts_after',
+            )[0]
+
+            # # First check that value actually exists in provided response.
+            # # Because we can't strip if this initial value is not present.
+            # stripped_start = self._verify_strip_content_value(
+            #     actual_content_search_set,
+            #     strip_actual_start,
+            #     'content_starts_after',
+            # )
+            #
+            # # If we made it this far, then value was found. Remove.
+            # actual_content_search_set = stripped_start.join(actual_content_search_set.split(stripped_start)[1:])
 
         if strip_actual_end:
             # Value passed that expected_content should occur BEFORE.
             # Find first instance (from bottom of HTML output) of where this value occurs,
             # and then strip this and all below output.
+            actual_content_search_set = self._strip_content_subsection(
+                actual_content_search_set,
+                strip_actual_end,
+                'content_ends_before',
+            )[0]
 
-            # First check that value actually exists in provided response.
-            # Because we can't strip if this initial value is not present.
-            stripped_end = self.get_minimized_response_content(strip_actual_end, strip_newlines=True)
-            if stripped_end not in actual_content_search_set:
-                display_end = self.get_minimized_response_content(strip_actual_end, strip_newlines=False)
-                self.fail(strip_err_msg.format('content_ends_before', display_end))
-            # If we made it this far, then value was found. Remove.
-            actual_content_search_set = stripped_end.join(actual_content_search_set.split(stripped_end)[:1])
+            # # First check that value actually exists in provided response.
+            # # Because we can't strip if this initial value is not present.
+            # stripped_end = self._verify_strip_content_value(
+            #     actual_content_search_set,
+            #     strip_actual_end,
+            #     'content_ends_before',
+            # )
+            #
+            # # If we made it this far, then value was found. Remove.
+            # actual_content_search_set = stripped_end.join(actual_content_search_set.split(stripped_end)[:1])
 
         # Handle possible types.
         if expected_content is None:
@@ -555,7 +584,10 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Return page content in case user wants to run additional logic on it.
         return actual_content_search_set
 
-    def _assertPageContent(self, actual_content, minimized_expected, display_expected, strip_actual_start, strip_actual_end, err_msg):
+    def _assertPageContent(
+        self,
+        actual_content, minimized_expected, display_expected, strip_actual_start, strip_actual_end, err_msg,
+    ):
         """Internal sub-assertion for assertPageContent() function."""
         strip_err_msg = 'Expected content value was found, but occurred in "{0}" section. Expected was:\n{1}'
 

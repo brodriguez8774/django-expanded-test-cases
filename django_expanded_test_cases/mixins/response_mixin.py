@@ -4,7 +4,7 @@ Core testing logic that pertains to handling Response objects.
 
 # System Imports.
 import re
-from colorama import Fore, Back, Style
+from colorama import Fore, Style
 from django.contrib.auth import get_user_model
 from django.http.response import HttpResponseBase
 
@@ -32,7 +32,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
 
     # region Debug Output Functions
 
-    def show_debug_content(self, response_content):
+    def show_debug_content(self, response_content, strip_start=None, strip_end=None):
         """Prints debug response page output."""
 
         # Handle for potential param types.
@@ -40,22 +40,93 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             response_content = response_content.content.decode('utf-8')
         elif isinstance(response_content, bytes):
             response_content = response_content.decode('utf-8')
+        else:
+            response_content = str(response_content)
 
         # Standardize output for easier analysis.
         response_content = self.standardize_characters(response_content)
         response_content = self.standardize_newlines(response_content)
 
+        # Print out section header.
         self._debug_print()
+        self._debug_print('strip_start:')
+        self._debug_print(strip_start)
+        self._debug_print('strip_end:')
+        self._debug_print(strip_end)
         self._debug_print(
             '{0} {1} {0}'.format('=' * 10, 'response.content'),
             fore=Fore.WHITE,
             style=f"{Style.BRIGHT}{UNDERLINE}",
         )
 
-        # Print out data, if present.
         if response_content:
-            self._debug_print(response_content)
-            self._debug_print()
+            # Check if strip sections provided.
+            if strip_start or strip_end:
+                # One or both strip sections provided. Add subsection coloring logic.
+
+                # Validate and initialize for coloring.
+                if strip_start is None:
+                    strip_start = ''
+                strip_start = str(strip_start)
+                if strip_end is None:
+                    strip_end = ''
+                strip_end = str(strip_end)
+
+                self._debug_print('\n\n\n\n')
+                self._debug_print()
+                self._debug_print('----------------------')
+                self._debug_print()
+                self._debug_print('response_content:')
+                self._debug_print(response_content)
+
+                # Parse out subsections.
+                response_content, start_subsection = self._strip_content_subsection(
+                    response_content,
+                    strip_start,
+                    'content_starts_after',
+                )
+                response_content, end_subsection = self._strip_content_subsection(
+                    response_content,
+                    strip_end,
+                    'content_ends_before',
+                )
+
+                self._debug_print()
+                self._debug_print('----------------------')
+                self._debug_print()
+                self._debug_print('start_subsection:')
+                self._debug_print(start_subsection)
+                self._debug_print()
+                self._debug_print('----------------------')
+                self._debug_print()
+                self._debug_print('end_subsection:')
+                self._debug_print(end_subsection)
+                self._debug_print()
+                self._debug_print('----------------------')
+                self._debug_print()
+                self._debug_print('response_subsection:')
+                self._debug_print(response_content)
+                self._debug_print()
+                self._debug_print('----------------------')
+                self._debug_print()
+                self._debug_print('\n\n\n\n')
+
+                # Print sections, divided by coloring.
+                # self._debug_print(response_content)
+                self._debug_print('{0}{1}{2}{3}{4}{5}'.format(
+                    Fore.YELLOW,
+                    start_subsection,
+                    Style.RESET_ALL,
+                    response_content,
+                    Fore.YELLOW,
+                    end_subsection,
+                ))
+                self._debug_print()
+
+            else:
+                # No strip sections. Provide standard content output.
+                self._debug_print(response_content)
+                self._debug_print()
 
     def show_debug_headers(self, response_headers):
         """Prints debug response header data."""
@@ -177,6 +248,115 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                 type(get_user_model()),
             ), fore=Fore.RED)
         self._debug_print()
+
+    def _strip_content_subsection(self, current_content_subsection, strip_section, section_desc):
+        """Strips provided value out of current content subsection.
+
+        :param current_content_subsection: Current subsection of content, after previous value strippings.
+        :param strip_section: Current value intended to be stripped out of content for search.
+        :param section_desc: "content_starts_after" / "content_ends_before" variable name.
+        :raises: Assertion failure if "strip" value does not exist in content subsection.
+        :return: Stripped content subsection.
+        """
+        if strip_section is None or strip_section == '':
+            return current_content_subsection, ''
+
+        current_content_subsection = self.get_minimized_response_content(
+            current_content_subsection,
+            strip_newlines=False,
+        )
+
+        # Check which section type we're handling.
+        if section_desc == 'content_starts_after':
+
+            # First check that value actually exists in provided response.
+            # Because we can't strip if this initial value is not present.
+            stripped_val = self._verify_strip_content_value(
+                current_content_subsection,
+                strip_section,
+                section_desc,
+            )
+
+            # If we made it this far, then value exists. Generate subsections.
+            modified_subsection = stripped_val.join(current_content_subsection.split(stripped_val)[1:])
+            stripped_subsection = current_content_subsection.split(stripped_val)[0] + stripped_val
+
+            print('\n')
+            print('modified_subsection:')
+            print(modified_subsection)
+            print('\n')
+            print('stripped_subsection:')
+            print(stripped_subsection)
+            print('\n')
+
+            return (modified_subsection, stripped_subsection)
+        elif section_desc == 'content_ends_before':
+
+            # First check that value actually exists in provided response.
+            # Because we can't strip if this initial value is not present.
+            stripped_val = self._verify_strip_content_value(
+                current_content_subsection,
+                strip_section,
+                section_desc,
+            )
+
+            # If we made it this far, then value exists. Generate subsections.
+            modified_subsection = stripped_val.join(current_content_subsection.split(stripped_val)[:1])
+            stripped_subsection = stripped_val + current_content_subsection.split(stripped_val)[-1]
+            return (modified_subsection, stripped_subsection)
+        else:
+            raise ValueError('Unknown section descriptor of "{0}".'.format(section_desc))
+
+    def _verify_strip_content_value(self, current_content_subsection, strip_section, section_desc):
+        """Verifies that provided "strip" value is found in current content section.
+
+        :param current_content_subsection: Current subsection of content, after previous value strippings.
+        :param strip_section: Current value intended to be stripped out of content for search.
+        :param section_desc: "content_starts_after" / "content_ends_before" variable name.
+        :raises: Assertion failure if "strip" value does not exist in content subsection.
+        :return: Minimized strip section.
+        """
+        strip_err_msg = 'Could not find "{0}" value in content response. Provided value was:\n{1}'
+
+        # Get minimized strip value.
+        # strip_minimized = self.get_minimized_response_content(strip_section, strip_newlines=True)
+        # content_minimized = self.get_minimized_response_content(current_content_subsection, strip_newlines=True)
+
+        # Problem: Template output might not match user-provided test values.
+        # However, can't solve this with the normal "remove all whitespace" solution, because we want to ultimately
+        #   output the stripped value to the console. Removing whitespacing would break the formatting.
+        #   But we also still need to be able to find matches (despite whitespace inconsistencies) and strip down
+        #   subsections, as long as everything except whitespace matches.
+        # Was considering using regex. But then maybe have to sanitize the entire "standardization" for regex output
+        #   and ugh. It gets messy and complicated very fast.
+        # Spent like 6+ hours trying to determine initial logic, make new functions, create tests, determine problem
+        #   location, etc etc. Giving up for the moment.
+        strip_minimized = re.sub(r'((\s)+)', '((\s)+)', strip_section)
+        content_minimized = current_content_subsection
+
+        print('\n\n\n\n')
+        print('strip_minimized:')
+        print(strip_minimized)
+        print('')
+        print('current_content_subsection:')
+        print(current_content_subsection)
+        print('')
+        print('content_minimized:')
+        print(content_minimized)
+
+        # verify that strip value is found in current content subsection.
+        # if strip_minimized not in content_minimized:
+        if not re.search(strip_minimized, content_minimized):
+            # Not found. Raise error.
+            display_strip = self.get_minimized_response_content(strip_section, strip_newlines=False)
+            # print('')
+            # print('display_strip:')
+            # print(display_strip)
+            # print('\n\n\n\n')
+            self.fail(strip_err_msg.format(section_desc, display_strip))
+
+        # Return minimized strip value, so we don't have to recompute it later.
+        return strip_minimized
 
     # endregion Debug Output Functions.
 
