@@ -2,6 +2,12 @@ Version History
 ***************
 
 
+0.2.1
+=====
+* Generally improve project debug print output, including basic coloring.
+* Bug corrections.
+
+
 0.2.0
 =====
 * Core TestCase classes seem stable and tested in a real project environment.
