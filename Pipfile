@@ -20,7 +20,6 @@ python_version = "3.9"
  ##
 [packages]
 # General Django dependencies.
-channels = "*"                  # Django websocket/background-task dependencies.
 colorama = "*"                  # Console coloring package.
 django = "*"                    # Core Django package.
 
@@ -53,3 +52,17 @@ sphinx-rtd-theme = "*"          # Additional Sphinx logic for building with stan
 build = "*"                     # For building packages according to PEP 517 standards (for PyPi deployment).
 pip-tools = "*"                 # Management of Package dependencies and building.
 twine = "*"                     # For pushing/publishing packages.
+
+
+###
+ # Optional packages.
+ # Technically not supported by Pipfile, so they need manual installation.
+ # This section is mostly only present for reference.
+ #
+ # These are dependencies that this package can take advantage of, but are not required for use.
+ # When not present, certain functionality will be disabled, but the project as a whole should still be functional.
+ ##
+[optional-packages]
+# Selenium dependencies.
+channels = "*"                  # Django websocket/background-task dependencies.
+webdriver-manager = "*"         # Auto-magically installs/fetches the correct web driver versions to run tests.
