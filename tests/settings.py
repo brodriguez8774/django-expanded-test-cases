@@ -2,10 +2,22 @@
 Settings for django-expanded-test-cases UnitTesting.
 """
 
-import sys
+import os, sys
 
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'test-secret-key'
+
+
+# Determine if channels is installed.
+try:
+    from channels.testing import ChannelsLiveServerTestCase
+
+    # If we made it this far, channels is installed.
+    CHANNELS_PACKAGE_INSTALLED = True
+except ModuleNotFoundError:
+    # Failed to import channels. Assume not installed.
+    CHANNELS_PACKAGE_INSTALLED = False
 
 
 INSTALLED_APPS = (
@@ -18,12 +30,18 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 )
+if CHANNELS_PACKAGE_INSTALLED:
+    INSTALLED_APPS += ('channels',)
+ASGI_APPLICATION = 'tests.asgi.application'
 
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': ':memory:',
+        'TEST': {
+            'NAME': os.path.join(BASE_DIR, 'db_test.sqlite3'),
+        },
     },
 }
 
@@ -41,6 +59,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'tests.urls_root'
 LOGIN_URL = 'expanded_test_cases:login'
+STATIC_URL = '/static/'
 USE_TZ = True
 
 
@@ -77,3 +96,8 @@ else:
 # Here for personal reference at later point, for documentation and such.
 # DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS = True
 # DJANGO_EXPANDED_TESTCASES_MATCH_ALL_CONTEXT_MESSAGES = False
+
+# Valid, supported selenium browser options.
+# SELENIUM_TEST_BROWSER = 'chrome'
+# SELENIUM_TEST_BROWSER = 'chromium'
+# SELENIUM_TEST_BROWSER = 'firefox'

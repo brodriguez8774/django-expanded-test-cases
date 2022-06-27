@@ -3,8 +3,51 @@ Tests for test_cases/live_server_test_case.py.
 """
 
 # System Imports.
-from django.test import TestCase
+import unittest
+
+# User Imports.
+from django_expanded_test_cases import LiveServerTestCase
 
 
-class LiveServerClassTest(TestCase):
+def skip_if_channels_not_installed():
+    """Skip decorator, to handle when channels package is not installed."""
+    try:
+        from channels.testing import ChannelsLiveServerTestCase
+
+        # If we made it this far, channels is installed. Proceed with test.
+        return False
+    except ModuleNotFoundError:
+        # Failed to import channels. Skip test.
+        return True
+
+
+class LiveServerClassTest(LiveServerTestCase):
     """Tests for LiveServerTestCase class."""
+
+    @classmethod
+    @unittest.skipIf(skip_if_channels_not_installed(), 'Requires "channels" package.')
+    def setUpClass(cls):
+        # Run parent setup logic.
+        super().setUpClass()
+
+    @unittest.skipIf(skip_if_channels_not_installed(), 'Requires "channels" package.')
+    def setUp(self):
+        # Run parent setup logic.
+        super().setUp()
+
+    @unittest.skipIf(skip_if_channels_not_installed(), 'Requires "channels" package.')
+    def __int__(self, *args, **kwargs):
+        # Run parent setup logic.
+        super().__init__(*args, **kwargs)
+
+    # @unittest.skipIf(skip_if_channels_not_installed(), 'Requires "channels" package.')
+    # def test_aaa(self):
+    #     self.create_driver()
+    #
+    #     self.assertTrue(True)
+    #     self.assertFalse(True)
+
+    # @unittest.skipIf(skip_if_channels_not_installed(), 'Requires "channels" package.')
+    # def test_bbb(self):
+    #     self.assertTrue(True)
+    #     self.assertFalse(True)
