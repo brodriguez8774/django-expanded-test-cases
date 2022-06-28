@@ -42,7 +42,16 @@ class LiveServerClassTest(LiveServerTestCase):
 
     # @unittest.skipIf(skip_if_channels_not_installed(), 'Requires "channels" package.')
     # def test_aaa(self):
-    #     self.create_driver()
+    #     window = self.create_driver()
+    #     window2 = self.create_driver()
+    #     window3 = self.create_driver()
+    #
+    #     self.sleep_browser(10)
+    #
+    #     self.close_driver(window)
+    #     # self.close_all_drivers()
+    #     #
+    #     # self.sleep_browser(5)
     #
     #     self.assertTrue(True)
     #     self.assertFalse(True)
