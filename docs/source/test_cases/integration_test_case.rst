@@ -18,7 +18,7 @@ view logic does not require interactive elements, such as JavaScript.
    performance and capabilities.
 
    For the few things this class cannot test (such as JavaScript logic),
-   consider using the :ref:`LiveServerTestCase` class.
+   consider using the :doc:`live_server_test_case` class.
 
 
 ----
@@ -31,7 +31,7 @@ The **Response Assertions** are utility functions that can generate a page
 response according to provided URL parameters, and then check for one or more
 properties upon the generated response object.
 
-See the below :ref:`custom element assertions` section for further documentation
+See the below :ref:`custom element assertions`_ section for further documentation
 of the possible individual property assertions.
 
 
@@ -69,8 +69,8 @@ of ``status_code``, which will assume a default of ``200`` if not provided.
 
     This assertion is the base for two others assertions that are much
     more explicit.
-    :ref:`assertGetResponse() <assertGetResponse>` and
-    :ref:`assertPostResponse() <assertPostResponse>`.
+    :ref:`assertGetResponse() <assertGetResponse>`_ and
+    :ref:`assertPostResponse() <assertPostResponse>`_.
     It is recommended that you use these more explicit versions so that your
     test expresses clarity as to what the expected request type should be.
 

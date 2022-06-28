@@ -3,6 +3,16 @@ Expected Roadmap
 
 Below is the minimum viable state for each version release.
 
+* v 0.2.x
+
+    * Project is in a viable state to import and use in other projects, even if
+      only for only basic response testing.
+    * **BaseTestCase** and **IntegrationTestCase** are roughly stable.
+
+        * Further functionality may still be added at a later date. But core
+          logic is present.
+
+    * At least some documentation exists for BaseTestCase and IntegrationTestCase.
 
 * v 0.3.x
 

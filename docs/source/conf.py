@@ -49,6 +49,9 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
+# Configure autosection so that duplicated titles are unique per page.
+autosectionlabel_prefix_document = True
+
 
 # -- Options for HTML output -------------------------------------------------
 
