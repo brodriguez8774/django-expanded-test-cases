@@ -884,7 +884,7 @@ class IntegrationClassTest(IntegrationTestCase):
                 self.assertPageHeader(response, 'Test Header plus Extra')
             self.assertEqual(str(err.exception), exception_msg.format('Test Header plus Extra', 'Test Header'))
 
-    @patch('django_expanded_test_cases.test_cases.integration_test_case.DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS', True)
+    @patch('django_expanded_test_cases.test_cases.integration_test_case.ETC_ALLOW_MESSAGE_PARTIALS', True)
     def test__assertContextMessages__success__allow_partials(self):
         """
         Tests assertContextMessages() function, in cases when it should succeed.
@@ -902,7 +902,7 @@ class IntegrationClassTest(IntegrationTestCase):
             response = self._get_page_response('expanded_test_cases:three-messages')
             self.assertContextMessages(response, ['info', 'warning message', 'Test error'])
 
-    @patch('django_expanded_test_cases.test_cases.integration_test_case.DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS', False)
+    @patch('django_expanded_test_cases.test_cases.integration_test_case.ETC_ALLOW_MESSAGE_PARTIALS', False)
     def test__assertContextMessages__success__disallow_partials(self):
         """
         Tests assertContextMessages() function, in cases when it should succeed.
@@ -938,7 +938,7 @@ class IntegrationClassTest(IntegrationTestCase):
             response = self._get_page_response('expanded_test_cases:three-messages')
             self.assertContextMessages(response, ['Test info message.', 'Test warning message.', 'Test error message.'])
 
-    @patch('django_expanded_test_cases.test_cases.integration_test_case.DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS', False)
+    @patch('django_expanded_test_cases.test_cases.integration_test_case.ETC_ALLOW_MESSAGE_PARTIALS', False)
     def test__assertContextMessages__failure(self):
         """
         Tests assertContextMessages() function, in cases when it should fail.

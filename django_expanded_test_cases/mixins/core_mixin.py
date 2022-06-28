@@ -13,7 +13,7 @@ from django.contrib.auth.models import Group, Permission
 from django.utils.http import urlencode
 
 # User Imports.
-from django_expanded_test_cases.constants import DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT
+from django_expanded_test_cases.constants import ETC_DEBUG_PRINT
 
 # region Debug Print Wrapper Logic
 
@@ -24,7 +24,7 @@ def wrapper(method):
         try:
             return method(*args, **kwargs)
         except AssertionError as err:
-            if DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT:
+            if ETC_DEBUG_PRINT:
                 print('\n')
                 print('{0}{1}{2}'.format(Fore.RED, err, Style.RESET_ALL))
                 print('')
@@ -93,7 +93,7 @@ class CoreTestCaseMixin:
         if debug_print is not None:
             cls._debug_print_bool = bool(debug_print)
         else:
-            cls._debug_print_bool = DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT
+            cls._debug_print_bool = ETC_DEBUG_PRINT
 
     def _debug_print(self, *args, fore='', back='', style='', **kwargs):
         """Prints or suppresses output, based on DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT settings variable.

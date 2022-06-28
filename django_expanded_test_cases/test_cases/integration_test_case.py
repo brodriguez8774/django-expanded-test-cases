@@ -13,7 +13,7 @@ from django.urls.exceptions import NoReverseMatch
 
 # User Imports.
 from .base_test_case import BaseTestCase
-from django_expanded_test_cases.constants import DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS
+from django_expanded_test_cases.constants import ETC_ALLOW_MESSAGE_PARTIALS
 from django_expanded_test_cases.mixins import ResponseTestCaseMixin
 
 
@@ -356,7 +356,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Parse out settings values.
         if allow_partials is None:
-            allow_partials = DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS
+            allow_partials = ETC_ALLOW_MESSAGE_PARTIALS
         else:
             allow_partials = bool(allow_partials)
 
