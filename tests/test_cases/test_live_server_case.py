@@ -40,6 +40,17 @@ class LiveServerClassTest(LiveServerTestCase):
         # Run parent setup logic.
         super().__init__(*args, **kwargs)
 
+    # def test_window_generate_destroy(self):
+    #     driver = self.create_driver()
+    #
+    #     window2 = self.open_new_window(driver)
+    #     self.sleep_browser(1)
+    #     tab_2 = self.open_new_tab(driver)
+    #
+    #     # for index in range(10):
+    #     #     self.switch_window_at_index(driver, index % 3)
+    #     #     self.sleep_browser(1)
+
     # @unittest.skipIf(skip_if_channels_not_installed(), 'Requires "channels" package.')
     # def test_aaa(self):
     #     window = self.create_driver()

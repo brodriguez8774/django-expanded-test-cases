@@ -84,7 +84,7 @@ class LiveServerTestCase(ChannelsLiveServerTestCase, ResponseTestCaseMixin):
         super().tearDown()
 
     def create_driver(self):
-        """Creates new browser window instance."""
+        """Creates new browser manager instance."""
 
         # Create instance, based on selected driver type.
         if self._browser == 'chrome':
@@ -100,9 +100,9 @@ class LiveServerTestCase(ChannelsLiveServerTestCase, ResponseTestCaseMixin):
         return driver
 
     def close_driver(self, driver):
-        """Closes provided browser window instance.
+        """Closes provided browser manager instance.
 
-        :param driver: Driver/window object to close.
+        :param driver: Driver manager object to close.
         """
         # Remove reference in class.
         self._driver_set.remove(driver)
@@ -111,9 +111,76 @@ class LiveServerTestCase(ChannelsLiveServerTestCase, ResponseTestCaseMixin):
         driver.quit()
 
     def close_all_drivers(self):
-        """Closes all open browser window instances."""
+        """Closes all open browser manager instances."""
         while len(self._driver_set) > 0:
             self.close_driver(self._driver_set[0])
+
+    def open_new_window(self, driver):
+        """Opens a new window for the provided driver.
+
+        :param driver: Driver manager object to generate window for.
+        :return: New focus window.
+        """
+        # Open blank new window.
+        driver.switch_to.new_window('window')
+
+        # Switch to recently created window.
+        return self.switch_to_window_at_index(driver, len(driver.window_handles) - 1)
+
+    def open_new_tab(self, driver):
+        """Opens a new window for the provided driver.
+
+        :param driver: Driver manager object to generate window for.
+        :return: New focus window.
+        """
+        # Open blank new window.
+        driver.switch_to.new_window('tab')
+
+        # Switch to recently created window.
+        return self.switch_to_window_at_index(driver, len(driver.window_handles) - 1)
+
+    def close_window_at_index(self, driver, window_index):
+        """Closes a window at specific index for the provided driver.
+
+        :param driver: Driver manager object containing the desired window.
+        :param window_index: Index of window to close.
+        """
+        # Attempt to get window at specified driver index.
+        try:
+            focus_window = driver.window_handles[window_index]
+        except IndexError:
+            err_msg = 'Attempted to close to window of index "{0}", but driver only has "{1}" windows open.'.format(
+                window_index,
+                len(driver.window_handles)
+            )
+            raise IndexError(err_msg)
+
+        # Close window.
+        self.switch_to_window_at_index(driver, window_index)
+        driver.execute_script('window.close();')
+
+    def switch_to_window_at_index(self, driver, window_index):
+        """Sets window at specific driver/index to be the current focus.
+
+        :param driver: Driver manager object containing the desired window.
+        :param window_index: Index of window to switch to.
+        :return: New focus window.
+        """
+        # Attempt to get window at specified driver index.
+        try:
+            focus_window = driver.window_handles[window_index]
+        except IndexError:
+            err_msg = 'Attempted to switch to window of index "{0}", but driver only has "{1}" windows open.'.format(
+                window_index,
+                len(driver.window_handles)
+            )
+            raise IndexError(err_msg)
+
+        # Switch window to be focused.
+        driver.switch_to.window(focus_window)
+
+        # Return newly switched window.
+        return focus_window
 
     def sleep_browser(self, seconds):
         """Halts browser for provided number of seconds.
