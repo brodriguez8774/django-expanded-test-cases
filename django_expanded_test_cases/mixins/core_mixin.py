@@ -95,6 +95,16 @@ class CoreTestCaseMixin:
         else:
             cls._debug_print_bool = ETC_DEBUG_PRINT
 
+    def sub_test(self):
+        """
+        Acts as the equivalent of the UnitTesting "subtTest()" function.
+
+        However, since this is not inheriting from a given TestCase, calling the literal function
+        here would override instead.
+        """
+        # Reset display error, in case multiple subtests run and fail in a given test.
+        self._error_displayed = False
+
     def _debug_print(self, *args, fore='', back='', style='', **kwargs):
         """Prints or suppresses output, based on DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT settings variable.
 

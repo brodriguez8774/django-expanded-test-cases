@@ -28,6 +28,13 @@ class BaseTestCase(TestCase, CoreTestCaseMixin):
 
         self._error_displayed = False
 
+    def subTest(self, *args, **kwargs):
+        # Call CoreMixin logic.
+        self.sub_test()
+
+        # Run parent logic.
+        return super().subTest(*args, **kwargs)
+
     def _handle_test_error(self, err):
         """
         Handling for errors in UnitTesting.

@@ -76,6 +76,19 @@ class LiveServerTestCase(ChannelsLiveServerTestCase, ResponseTestCaseMixin):
         else:
             raise ValueError('Unknown browser "{0}".'.format(cls._browser))
 
+    def setUp(self):
+        # Run parent setup logic.
+        super().setUp()
+
+        self._error_displayed = False
+
+    def subTest(self, *args, **kwargs):
+        # Call CoreMixin logic.
+        self.sub_test()
+
+        # Run parent logic.
+        return super().subTest(*args, **kwargs)
+
     def tearDown(self):
         # Close all remaining browser instances for test.
         self.close_all_drivers()
