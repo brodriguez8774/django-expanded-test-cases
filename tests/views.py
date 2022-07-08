@@ -5,12 +5,13 @@ Testing views for django-expanded-test-cases project.
 # System Imports.
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.response import TemplateResponse
 
 
 def index(request):
-    """"""
+    """Page that simulates a site index/home."""
     # Render response.
     return render(request, 'django_expanded_test_cases/index.html', {
         'header': 'Home Page',
@@ -19,16 +20,16 @@ def index(request):
 
 
 def template_response_index(request):
-    """"""
+    """Page that simulates a site index/home. Specifically served as TemplateResponse."""
     # Render response.
-    return render(request, 'django_expanded_test_cases/index.html', {
+    return TemplateResponse(request, 'django_expanded_test_cases/index.html', {
         'header': 'Home Page',
         'text': 'Pretend this is the project landing page.',
     })
 
 
 def login(request):
-    """"""
+    """Page that simulates a login page."""
     # Render response.
     return render(request, 'django_expanded_test_cases/index.html', {
         'header': 'Login Page',
@@ -37,7 +38,7 @@ def login(request):
 
 
 def view_with_one_message(request):
-    """"""
+    """Page that simulates a view with a single message."""
     messages.info(request, 'This is a test message.')
 
     # Render response.
@@ -50,7 +51,7 @@ def view_with_one_message(request):
 
 
 def view_with_two_messages(request):
-    """"""
+    """Page that simulates a view with two messages."""
     messages.info(request, 'Test message #1.')
     messages.warning(request, 'Test message #2.')
 
@@ -64,7 +65,7 @@ def view_with_two_messages(request):
 
 
 def view_with_three_messages(request):
-    """"""
+    """Page that simulates a view with three messages."""
     messages.info(request, 'Test info message.')
     messages.warning(request, 'Test warning message.')
     messages.error(request, 'Test error message.')
@@ -79,7 +80,7 @@ def view_with_three_messages(request):
 
 
 def template_response_with_three_messages(request):
-    """"""
+    """Page that simulates a view with three messages. Specifically served as TemplateResponse."""
     messages.info(request, 'Test info message.')
     messages.warning(request, 'Test warning message.')
     messages.error(request, 'Test error message.')
@@ -94,7 +95,7 @@ def template_response_with_three_messages(request):
 
 
 def user_detail(request, pk):
-    """"""
+    """Page that simulates a model detail page."""
     # Pull database info.
     user = get_object_or_404(get_user_model(), pk=pk)
 
@@ -114,5 +115,5 @@ def user_detail(request, pk):
 
 
 def redirect_to_index(request):
-    """"""
+    """Page that simulates a redirect."""
     return redirect('expanded_test_cases:index')
