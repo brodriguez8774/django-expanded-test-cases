@@ -658,6 +658,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         else:
             current_site = '127.0.0.1{0}'.format(url)
         message = 'Attempting to access url "{0}"'.format(current_site)
+        self._debug_print('\n\n')
+        self._debug_print('{0}'.format('-' * len(message)), fore=Fore.YELLOW, style=Style.BRIGHT)
         self._debug_print(message, fore=Fore.YELLOW, style=Style.BRIGHT)
         self._debug_print('{0}'.format('-' * len(message)), fore=Fore.YELLOW, style=Style.BRIGHT)
 

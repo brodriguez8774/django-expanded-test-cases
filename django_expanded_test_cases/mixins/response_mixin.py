@@ -138,6 +138,8 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                     self._debug_print('    * "{0}"'.format(message), fore=Fore.BLUE)
             else:
                 self._debug_print('    No context messages found.', fore=Fore.BLUE)
+        else:
+            self._debug_print('    No context messages found.', fore=Fore.BLUE)
         self._debug_print()
 
     def show_debug_user_info(self, user):
