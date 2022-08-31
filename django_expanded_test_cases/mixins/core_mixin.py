@@ -5,15 +5,14 @@ Core testing logic, universal to all test cases.
 # System Imports.
 import re
 from colorama import Fore, Style
+from django.contrib.auth import get_user_model
+from django.utils.http import urlencode
 from functools import wraps
 from types import FunctionType
 
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group, Permission
-from django.utils.http import urlencode
-
 # User Imports.
 from django_expanded_test_cases.constants import ETC_DEBUG_PRINT
+
 
 # region Debug Print Wrapper Logic
 
@@ -214,6 +213,9 @@ class CoreTestCaseMixin:
         :param user: User to add Permission to. If not provided, defaults to test_user model.
         :return: Updated user object.
         """
+        # Django imports here to avoid situational "Apps aren't loaded yet" error.
+        from django.contrib.auth.models import Permission
+
         # Check if instance is a Permission model.
         if isinstance(user_permission, Permission):
             # Already Permission model. This is fine.
@@ -245,6 +247,9 @@ class CoreTestCaseMixin:
         :param user: User to add Group to. If not provided, defaults to test_user model.
         :return: Updated user object.
         """
+        # Django imports here to avoid situational "Apps aren't loaded yet" error.
+        from django.contrib.auth.models import Group
+
         # Check if instance is a Group model.
         if isinstance(user_group, Group):
             # Already Group model. This is fine.

@@ -6,7 +6,6 @@ Testing logic for views and other multi-part components.
 import re
 from colorama import Fore, Style
 from django.conf import settings
-from django.contrib.auth.models import AnonymousUser, Group, Permission
 from django.http.response import HttpResponseBase
 from django.urls import reverse
 from django.urls.exceptions import NoReverseMatch
@@ -73,6 +72,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param content_ends_before: The HTML that expected_content should occur before. This HTML and everything
                                     following is stripped out of the "search space" for the expected_content value.
         """
+        # Django imports here to avoid situational "Apps aren't loaded yet" error.
+        from django.contrib.auth.models import AnonymousUser
+
         # Reset client "user login" state for new response generation.
         self.client.logout()
 
@@ -604,6 +606,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param user_groups: Set of Django PermissionGroups to give to test user before accessing page.
         :return: Django response object for provided url.
         """
+        # Django imports here to avoid situational "Apps aren't loaded yet" error.
+        from django.contrib.auth.models import AnonymousUser
+
         # Handle mutable data defaults.
         data = data or {}
 
@@ -685,6 +690,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param user_groups: Django Groups to give to User.
         :return: Updated User object.
         """
+        # Django imports here to avoid situational "Apps aren't loaded yet" error.
+        from django.contrib.auth.models import Group, Permission
+
         # Handle mutable data defaults.
         user_permissions = user_permissions or []
         user_groups = user_groups or []
