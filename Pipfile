@@ -36,6 +36,7 @@ pylint-django = "*"             # Improves code analysis for Django projects.
 pylint-plugin-utils = "*"       # Additional pylint functionality for things like Django and Celery.
 
 # Testing/Pytest dependencies.
+beautifulsoup4 = "*"            # Allows easier HTML parsing.
 coverage = "*"                  # Outputs testing coverage data.
 pytest = "*"                    # Base Pytest package. Current preferred testing method.
 pytest-asyncio = "*"            # Additional Pytest logic for asyncio support.
