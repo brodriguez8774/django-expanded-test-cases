@@ -1923,6 +1923,379 @@ class IntegrationClassTest(IntegrationTestCase):
                 )
             self.assertEqual(str(err.exception), exception_msg.format('content_ends_before', '</body>'))
 
+    def test__assertRepeatingElement__success__standard_elements__basic(self):
+        """
+        Tests assertPageContent() function, in cases when it should succeed on "standard" (non-void) elements.
+        """
+        with self.subTest('Response with one item, when one item is expected'):
+            response = HttpResponse('<li></li>')
+            self.assertRepeatingElement(response, 'li', 1)
+            self.assertRepeatingElement(response, '<li>', 1)
+
+        with self.subTest('Response with two items, when two items are expected'):
+            # No spaces.
+            response = HttpResponse('<li></li><li></li>')
+            self.assertRepeatingElement(response, 'li', 2)
+            self.assertRepeatingElement(response, '<li>', 2)
+            # With spaces.
+            response = HttpResponse('<li></li> <li></li>')
+            self.assertRepeatingElement(response, 'li', 2)
+            self.assertRepeatingElement(response, '<li>', 2)
+
+        with self.subTest('Response with three items, when three items are expected'):
+            # No spaces.
+            response = HttpResponse('<li></li><li></li><li></li>')
+            self.assertRepeatingElement(response, 'li', 3)
+            self.assertRepeatingElement(response, '<li>', 3)
+            # With spaces.
+            response = HttpResponse('<li></li> <li></li> <li></li>')
+            self.assertRepeatingElement(response, 'li', 3)
+            self.assertRepeatingElement(response, '<li>', 3)
+
+        with self.subTest('Response with four items, when four items are expected'):
+            # No spaces.
+            response = HttpResponse('<li></li><li></li><li></li><li></li>')
+            self.assertRepeatingElement(response, 'li', 4)
+            self.assertRepeatingElement(response, '<li>', 4)
+            # With spaces.
+            response = HttpResponse('<li></li> <li></li> <li></li> <li></li>')
+            self.assertRepeatingElement(response, 'li', 4)
+            self.assertRepeatingElement(response, '<li>', 4)
+
+    def test__assertRepeatingElement__success__standard_elements__with_noise(self):
+        """
+        Tests assertPageContent() function, in cases when it should succeed on "standard" (non-void) elements that
+        are mixed with various unrelated "noise" elements.
+        """
+        with self.subTest('Response with one item, when one item is expected'):
+            # No spaces.
+            response = HttpResponse('<br><li><p>Test</p></li><hr>')
+            self.assertRepeatingElement(response, '<li>', 1)
+            # With spaces.
+            response = HttpResponse('<br> <li><p>Test</p></li> <hr>')
+            self.assertRepeatingElement(response, '<li>', 1)
+
+        with self.subTest('Response with two items, when two items are expected'):
+            # No spaces.
+            response = HttpResponse('<ul><li><p>Test</p></li><br><li><p>Test</p></li></ul>')
+            self.assertRepeatingElement(response, 'li', 2)
+            self.assertRepeatingElement(response, '<li>', 2)
+            # With spaces.
+            response = HttpResponse('<ul> <li><p>Test</p></li> <br> <li><p>Test</p></li> </ul>')
+            self.assertRepeatingElement(response, 'li', 2)
+            self.assertRepeatingElement(response, '<li>', 2)
+
+        with self.subTest('Response with three items, when three items are expected'):
+            # No spaces.
+            response = HttpResponse('<ul><li><p>Test</p></li><br><li><p>Test</p></li><br><li><p>Test</p></li></ul>')
+            self.assertRepeatingElement(response, 'li', 3)
+            self.assertRepeatingElement(response, '<li>', 3)
+            # With spaces.
+            response = HttpResponse(
+                """
+                <ul>
+                <li><p>Test</p></li> <br>
+                <li><p>Test</p></li> <br>
+                <li><p>Test</p></li>
+                </ul>
+                """
+            )
+            self.assertRepeatingElement(response, 'li', 3)
+            self.assertRepeatingElement(response, '<li>', 3)
+
+        with self.subTest('Response with four items, when four items are expected'):
+            # No spaces.
+            response = HttpResponse(
+                """
+                <ul><li><p>Test</p></li><br><li><p>Test</p></li><br><li><p>Test</p></li><br><li><p>Test</p></li></ul>
+                """
+            )
+            self.assertRepeatingElement(response, 'li', 4)
+            self.assertRepeatingElement(response, '<li>', 4)
+            # With spaces.
+            response = HttpResponse(
+                """
+                <ul>
+                <li><p>Test</p></li> <br>
+                <li><p>Test</p></li> <br>
+                <li><p>Test</p></li> <br>
+                <li><p>Test</p></li>
+                </ul>
+                """
+            )
+            self.assertRepeatingElement(response, 'li', 4)
+            self.assertRepeatingElement(response, '<li>', 4)
+
+    def test__assertRepeatingElement__success__void_elements(self):
+        """
+        Tests assertPageContent() function, in cases when it should succeed on "void" elements.
+        Aka, elements that do not have closing tags.
+        """
+        with self.subTest('Response with one item, when one item is expected'):
+            response = HttpResponse('<hr>')
+            self.assertRepeatingElement(response, '<hr>', 1)
+
+        with self.subTest('Response with two items, when two items are expected'):
+            # No spaces.
+            response = HttpResponse('<hr><hr>')
+            self.assertRepeatingElement(response, '<hr>', 2)
+            # With spaces.
+            response = HttpResponse('<hr> <hr>')
+            self.assertRepeatingElement(response, '<hr>', 2)
+
+        with self.subTest('Response with three items, when three items are expected'):
+            # No spaces.
+            response = HttpResponse('<hr><hr><hr>')
+            self.assertRepeatingElement(response, '<hr>', 3)
+            # With spaces.
+            response = HttpResponse('<hr> <hr> <hr>')
+            self.assertRepeatingElement(response, '<hr>', 3)
+
+        with self.subTest('Response with four items, when four items are expected'):
+            # No spaces.
+            response = HttpResponse('<hr><hr><hr><hr>')
+            self.assertRepeatingElement(response, '<hr>', 4)
+            # With spaces.
+            response = HttpResponse('<hr> <hr> <hr> <hr>')
+            self.assertRepeatingElement(response, '<hr>', 4)
+
+    def test__assertRepeatingElement__fail__incorrect_count(self):
+        exception_msg = 'Expected {0} element opening tags. Found {1}.'
+
+        with self.subTest('Providing an expected of less than 1'):
+            with self.assertRaises(ValueError) as err:
+                response = HttpResponse('')
+                self.assertRepeatingElement(response, '<li>', 0)
+            self.assertEqual(
+                str(err.exception),
+                'The assertRepeatingElement() function requires an element occurs one or more times.',
+            )
+
+        # Empty response tests.
+        with self.subTest('Empty response, when one item is expected'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('')
+                self.assertRepeatingElement(response, '<li>', 1)
+            self.assertEqual(str(err.exception), exception_msg.format(1, 0))
+
+        with self.subTest('Empty response, when two items are expected'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('')
+                self.assertRepeatingElement(response, '<li>', 2)
+            self.assertEqual(str(err.exception), exception_msg.format(2, 0))
+
+        with self.subTest('Empty response, when three items are expected'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('')
+                self.assertRepeatingElement(response, '<li>', 3)
+            self.assertEqual(str(err.exception), exception_msg.format(3, 0))
+
+        with self.subTest('Empty response, when four items are expected'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('')
+                self.assertRepeatingElement(response, '<li>', 4)
+            self.assertEqual(str(err.exception), exception_msg.format(4, 0))
+
+        # Single item response tests.
+        with self.subTest('Response with one item, when two items are expected'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li>')
+                self.assertRepeatingElement(response, '<li>', 2)
+            self.assertEqual(str(err.exception), exception_msg.format(2, 1))
+
+        with self.subTest('Response with one item, when three items are expected'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li>')
+                self.assertRepeatingElement(response, '<li>', 3)
+            self.assertEqual(str(err.exception), exception_msg.format(3, 1))
+
+        with self.subTest('Response with one item, when four items are expected'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li>')
+                self.assertRepeatingElement(response, '<li>', 4)
+            self.assertEqual(str(err.exception), exception_msg.format(4, 1))
+
+        # Two item response tests.
+        with self.subTest('Response with two items, when one item is expected'):
+            # No spaces.
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li><li></li>')
+                self.assertRepeatingElement(response, '<li>', 1)
+            self.assertEqual(str(err.exception), exception_msg.format(1, 2))
+            # With spaces
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li> <li></li>')
+                self.assertRepeatingElement(response, '<li>', 1)
+            self.assertEqual(str(err.exception), exception_msg.format(1, 2))
+
+        with self.subTest('Response with two items, when three items are expected'):
+            # No spaces.
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li><li></li>')
+                self.assertRepeatingElement(response, '<li>', 3)
+            self.assertEqual(str(err.exception), exception_msg.format(3, 2))
+            # With spaces.
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li> <li></li>')
+                self.assertRepeatingElement(response, '<li>', 3)
+            self.assertEqual(str(err.exception), exception_msg.format(3, 2))
+
+        with self.subTest('Response with two items, when four items are expected'):
+            # No spaces.
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li><li></li>')
+                self.assertRepeatingElement(response, '<li>', 4)
+            self.assertEqual(str(err.exception), exception_msg.format(4, 2))
+            # With spaces.
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li> <li></li>')
+                self.assertRepeatingElement(response, '<li>', 4)
+            self.assertEqual(str(err.exception), exception_msg.format(4, 2))
+
+        # Three item response tests.
+        with self.subTest('Response with three items, when one item is expected'):
+            # No spaces.
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li><li></li><li></li>')
+                self.assertRepeatingElement(response, '<li>', 1)
+            self.assertEqual(str(err.exception), exception_msg.format(1, 3))
+            # With spaces.
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li> <li></li> <li></li>')
+                self.assertRepeatingElement(response, '<li>', 1)
+            self.assertEqual(str(err.exception), exception_msg.format(1, 3))
+
+        with self.subTest('Response with three items, when two items are expected'):
+            # No spaces.
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li><li></li><li></li>')
+                self.assertRepeatingElement(response, '<li>', 2)
+            self.assertEqual(str(err.exception), exception_msg.format(2, 3))
+            # With spaces.
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li> <li></li> <li></li>')
+                self.assertRepeatingElement(response, '<li>', 2)
+            self.assertEqual(str(err.exception), exception_msg.format(2, 3))
+
+        with self.subTest('Response with three items, when four items are expected'):
+            # No spaces.
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li><li></li><li></li>')
+                self.assertRepeatingElement(response, '<li>', 4)
+            self.assertEqual(str(err.exception), exception_msg.format(4, 3))
+            # With spaces.
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li> <li></li> <li></li>')
+                self.assertRepeatingElement(response, '<li>', 4)
+            self.assertEqual(str(err.exception), exception_msg.format(4, 3))
+
+        # Four item response tests.
+        with self.subTest('Response with four items, when one item is expected'):
+            # No spaces.
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li><li></li><li></li><li></li>')
+                self.assertRepeatingElement(response, '<li>', 1)
+            self.assertEqual(str(err.exception), exception_msg.format(1, 4))
+            # With spaces.
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li> <li></li> <li></li> <li></li>')
+                self.assertRepeatingElement(response, '<li>', 1)
+            self.assertEqual(str(err.exception), exception_msg.format(1, 4))
+
+        with self.subTest('Response with four items, when two items are expected'):
+            # No spaces.
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li><li></li><li></li><li></li>')
+                self.assertRepeatingElement(response, '<li>', 2)
+            self.assertEqual(str(err.exception), exception_msg.format(2, 4))
+            # With spaces.
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li> <li></li> <li></li> <li></li>')
+                self.assertRepeatingElement(response, '<li>', 2)
+            self.assertEqual(str(err.exception), exception_msg.format(2, 4))
+
+        with self.subTest('Response with four items, when three items are expected'):
+            # No spaces.
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li><li></li><li></li><li></li>')
+                self.assertRepeatingElement(response, '<li>', 3)
+            self.assertEqual(str(err.exception), exception_msg.format(3, 4))
+            # With spaces.
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li> <li></li> <li></li> <li></li>')
+                self.assertRepeatingElement(response, '<li>', 3)
+            self.assertEqual(str(err.exception), exception_msg.format(3, 4))
+
+    def test__assertRepeatingElement__fail__incomplete_items(self):
+        open_exception_msg = 'Expected {0} element opening tags. Found {1}.'
+        close_exception_msg = 'Expected {0} element closing tags. Found {1}.'
+
+        with self.subTest('Response with one plus partial items, when one item is expected'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li> <li>')
+                self.assertRepeatingElement(response, '<li>', 1)
+            self.assertEqual(str(err.exception), open_exception_msg.format(1, 2))
+
+        with self.subTest('Response with one plus partial items, when two items are expected'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li> <li>')
+                self.assertRepeatingElement(response, '<li>', 2)
+            self.assertEqual(str(err.exception), close_exception_msg.format(2, 1))
+
+        with self.subTest('Response with two plus partial items, when one item is expected'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li> <li></li> <li>')
+                self.assertRepeatingElement(response, '<li>', 1)
+            self.assertEqual(str(err.exception), open_exception_msg.format(1, 3))
+
+        with self.subTest('Response with two plus partial items, when two items are expected'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li> <li></li> <li>')
+                self.assertRepeatingElement(response, '<li>', 2)
+            self.assertEqual(str(err.exception), open_exception_msg.format(2, 3))
+
+        with self.subTest('Response with two plus partial items, when three items are expected'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li> <li></li> <li>')
+                self.assertRepeatingElement(response, '<li>', 3)
+            self.assertEqual(str(err.exception), close_exception_msg.format(3, 2))
+
+        with self.subTest('Response with three plus partial items, when two items are expected'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li> <li></li> <li></li> <li>')
+                self.assertRepeatingElement(response, '<li>', 2)
+            self.assertEqual(str(err.exception), open_exception_msg.format(2, 4))
+
+        with self.subTest('Response with three plus partial items, when three items are expected'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li> <li></li> <li></li> <li>')
+                self.assertRepeatingElement(response, '<li>', 3)
+            self.assertEqual(str(err.exception), open_exception_msg.format(3, 4))
+
+        with self.subTest('Response with three plus partial items, when four items are expected'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li> <li></li> <li></li> <li>')
+                self.assertRepeatingElement(response, '<li>', 4)
+            self.assertEqual(str(err.exception), close_exception_msg.format(4, 3))
+
+        with self.subTest('Response with four plus partial items, when three items are expected'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li> <li></li> <li></li> <li></li> <li>')
+                self.assertRepeatingElement(response, '<li>', 3)
+            self.assertEqual(str(err.exception), open_exception_msg.format(3, 5))
+
+        with self.subTest('Response with four plus partial items, when four items are expected'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li> <li></li> <li></li> <li></li> <li>')
+                self.assertRepeatingElement(response, '<li>', 4)
+            self.assertEqual(str(err.exception), open_exception_msg.format(4, 5))
+
+        with self.subTest('Response with four plus partial items, when five items are expected'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<li></li> <li></li> <li></li> <li></li> <li>')
+                self.assertRepeatingElement(response, '<li>', 5)
+            self.assertEqual(str(err.exception), close_exception_msg.format(5, 4))
+
     # endregion Element Assertion Tests
 
     # endregion Assertion Tests

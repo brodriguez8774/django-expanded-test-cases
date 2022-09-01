@@ -12,7 +12,7 @@ from django.urls.exceptions import NoReverseMatch
 
 # User Imports.
 from .base_test_case import BaseTestCase
-from django_expanded_test_cases.constants import ETC_ALLOW_MESSAGE_PARTIALS
+from django_expanded_test_cases.constants import ETC_ALLOW_MESSAGE_PARTIALS, VOID_ELEMENT_LIST
 from django_expanded_test_cases.mixins import ResponseTestCaseMixin
 
 
@@ -426,15 +426,12 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         ignore_ordering=False, content_starts_after=None, content_ends_before=None, debug_output=True,
     ):
         """Verifies the page content html, similar to the built-in assertContains() function.
-
         The main difference is that Django templating may create large amounts of whitespace in response html,
         often in places where we wouldn't intuitively expect it, when running tests.
-
         Technically, the built-in assertHTMLEqual() and assertInHTML() functions exist, and probably could accomplish
         the same assertions. But we still need to parse and format full response object, to display for test failure
         debugging. So I'm not sure if it's helpful at that point to use those or use separate assertions like here.
         Perhaps examine more closely at a later date.
-
         :param response: Response object to check against.
         :param expected_content: Expected full string (or set of strings) of HTML content.
         :param ignore_ordering: Bool indicating if ordering should be verified. Defaults to checking ordering.
@@ -449,82 +446,53 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             # Print out actual response content, for debug output.
             self.show_debug_content(response)
 
-        # Sanitize and format actual response content.
-        actual_content_search_set = self.get_minimized_response_content(response, strip_newlines=True)
-
         main_err_msg = 'Could not find expected content value in response. Provided value was:\n{0}'
         ordering_err_msg = 'Expected content value was found, but ordering of values do not match. Problem value:\n{0}'
-        strip_err_msg = 'Could not find "{0}" value in content response. Provided value was:\n{1}'
 
-        # Rename variables for internal readability.
-        strip_actual_start = content_starts_after
-        strip_actual_end = content_ends_before
-
-        # Extra setup logic if content_starts_after/content_ends_before variables are defined.
-        orig_actual_content = actual_content_search_set
-        if strip_actual_start:
-            # Value passed that expected_content should occur AFTER.
-            # Find first instance (from top of HTML output) of where this value occurs,
-            # and then strip this and all above output.
-
-            # First check that value actually exists in provided response.
-            # Because we can't strip if this initial value is not present.
-            stripped_start = self.get_minimized_response_content(strip_actual_start, strip_newlines=True)
-            if stripped_start not in actual_content_search_set:
-                display_start = self.get_minimized_response_content(strip_actual_start, strip_newlines=False)
-                self.fail(strip_err_msg.format('content_starts_after', display_start))
-            # If we made it this far, then value was found. Remove.
-            actual_content_search_set = stripped_start.join(actual_content_search_set.split(stripped_start)[1:])
-
-        if strip_actual_end:
-            # Value passed that expected_content should occur BEFORE.
-            # Find first instance (from bottom of HTML output) of where this value occurs,
-            # and then strip this and all below output.
-
-            # First check that value actually exists in provided response.
-            # Because we can't strip if this initial value is not present.
-            stripped_end = self.get_minimized_response_content(strip_actual_end, strip_newlines=True)
-            if stripped_end not in actual_content_search_set:
-                display_end = self.get_minimized_response_content(strip_actual_end, strip_newlines=False)
-                self.fail(strip_err_msg.format('content_ends_before', display_end))
-            # If we made it this far, then value was found. Remove.
-            actual_content_search_set = stripped_end.join(actual_content_search_set.split(stripped_end)[:1])
+        # Extra setup logic, to sanitize and handle if content_starts_after/content_ends_before variables are defined.
+        content_dict = self._trim_response_content(
+            response,
+            content_starts_after=content_starts_after,
+            content_ends_before=content_ends_before,
+        )
+        sanitized_original_content = content_dict['minimized_content']
+        trimmed_original_content = content_dict['truncated_content']
 
         # Handle possible types.
         if expected_content is None:
             expected_content = ''
         if isinstance(expected_content, list) or isinstance(expected_content, tuple):
             # The expected_content param is an array of items. Verify they all exist on page.
-            trimmed_orig_actual = actual_content_search_set
+            trimmed_content = trimmed_original_content
             for expected in expected_content:
                 stripped_expected = self.get_minimized_response_content(expected, strip_newlines=True)
                 if ignore_ordering:
                     # Ignoring ordering. Check as-is.
-                    if stripped_expected not in actual_content_search_set:
+                    if stripped_expected not in trimmed_original_content:
                         # Not found. Raise message based on content_starts_after/content_ends_before variables.
                         display_expected = self.get_minimized_response_content(expected, strip_newlines=False)
                         self._assertPageContent(
-                            orig_actual_content,
+                            sanitized_original_content,
                             stripped_expected,
                             display_expected,
-                            strip_actual_start,
-                            strip_actual_end,
+                            content_starts_after,
+                            content_ends_before,
                             main_err_msg,
                         )
                 else:
                     # Verifying ordering.
                     # Attempt initial assertion in provided subsection.
-                    if stripped_expected not in actual_content_search_set:
+                    if stripped_expected not in trimmed_content:
                         # Failed to find content in subsection. Check full content set.
-                        if stripped_expected not in trimmed_orig_actual:
+                        if stripped_expected not in trimmed_original_content:
                             # Not found. Raise message based on content_starts_after/content_ends_before variables.
                             display_expected = self.get_minimized_response_content(expected, strip_newlines=False)
                             self._assertPageContent(
-                                orig_actual_content,
+                                sanitized_original_content,
                                 stripped_expected,
                                 display_expected,
-                                strip_actual_start,
-                                strip_actual_end,
+                                content_starts_after,
+                                content_ends_before,
                                 main_err_msg,
                             )
 
@@ -535,27 +503,27 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                 # If we made it this far, then value was found. Handle for ordering.
                 if not ignore_ordering:
                     # Ordering is being checked. Strip off first section of matching.
-                    actual_content_search_set = stripped_expected.join(
-                        actual_content_search_set.split(stripped_expected)[1:],
+                    trimmed_content = stripped_expected.join(
+                        trimmed_content.split(stripped_expected)[1:],
                     )
 
         else:
             # Not an array of items. Assume is a single str value.
             stripped_expected = self.get_minimized_response_content(expected_content, strip_newlines=True)
-            if stripped_expected not in actual_content_search_set:
+            if stripped_expected not in trimmed_original_content:
                 # Not found. Raise message based on content_starts_after/content_ends_before variables.
                 display_expected = self.get_minimized_response_content(expected_content, strip_newlines=False)
                 self._assertPageContent(
-                    orig_actual_content,
+                    sanitized_original_content,
                     stripped_expected,
                     display_expected,
-                    strip_actual_start,
-                    strip_actual_end,
+                    content_starts_after,
+                    content_ends_before,
                     main_err_msg,
                 )
 
         # Return page content in case user wants to run additional logic on it.
-        return actual_content_search_set
+        return trimmed_original_content
 
     def _assertPageContent(self, actual_content, minimized_expected, display_expected, strip_actual_start, strip_actual_end, err_msg):
         """Internal sub-assertion for assertPageContent() function."""
@@ -581,6 +549,78 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         else:
             # Content value was physically not present at all. Raise "main" message.
             self.fail(err_msg.format(display_expected))
+
+    def assertRepeatingElement(
+        self,
+        response, expected_repeating_element, repeat_count,
+        content_starts_after=None, content_ends_before=None, debug_output=True,
+    ):
+        """Verifies that a given HTMl element repeats, within a given section of content.
+
+        Note: This expects a full HTML element, including both opening and closing tags.
+
+        :param response: Response object to check against.
+        :param expected_repeating_element: The expected HTML element. Ex: <li>, <p>, etc.
+        :param repeat_count: Integer indicating how many times the HTML element should repeat.
+        :param content_starts_after: The HTML that the element should occur after. This HTML and everything
+                                     preceding is stripped out of the "search space" for the expected_content value.
+        :param content_ends_before: The HTML that the element should occur before. This HTML and everything
+                                    following is stripped out of the "search space" for the expected_content value.
+        :param debug_output: Bool indicating if debug output should be shown or not. Used for debugging test failures.
+        :return: Parsed out and formatted content string.
+        """
+        # Standardize provided repeating value.
+        expected_repeating_element = self.standardize_characters(expected_repeating_element)
+
+        # Sanitize initial content element.
+        repeat_count = int(repeat_count)
+        if repeat_count < 1:
+            raise ValueError('The assertRepeatingElement() function requires an element occurs one or more times.')
+        expected_repeating_element = str(expected_repeating_element).strip().lstrip('<').rstrip('>').rstrip('/').strip()
+        expected_repeating_element = expected_repeating_element.lower()
+        is_void_element = False
+        if expected_repeating_element in VOID_ELEMENT_LIST:
+            is_void_element = True
+
+        # Generate expected content set.
+        # This is what we pass from this wrapper function to the actual assertion function.
+        expected_content = []
+        for index in range(repeat_count):
+            expected_content.append('<{0}>'.format(expected_repeating_element))
+
+            # Add closing tag if not a void element.
+            if not is_void_element:
+                expected_content.append('</{0}>'.format(expected_repeating_element))
+
+        # Pass our sanitized values into assertPageContent().
+        content_dict = self._trim_response_content(
+            response,
+            content_starts_after=content_starts_after,
+            content_ends_before=content_ends_before,
+        )
+        truncated_content = content_dict['truncated_content']
+
+        # Check element counts within desired section.
+        open_tag_err_msg = 'Expected {0} element{1} tags. Found {2}.'
+        close_tag_err_msg = 'Expected {0} element closing tags. Found {1}.'
+        open_tag_count = truncated_content.count('<{0}>'.format(expected_repeating_element))
+
+        # Check count of element opening tags.
+        try:
+            self.assertEqual(open_tag_count, repeat_count)
+        except AssertionError:
+            self.fail(open_tag_err_msg.format(repeat_count, '' if is_void_element else ' opening', open_tag_count))
+
+        # Check count of element closing tags.
+        if not is_void_element:
+            close_tag_count = truncated_content.count('</{0}>'.format(expected_repeating_element))
+            try:
+                self.assertEqual(close_tag_count, repeat_count)
+            except AssertionError:
+                self.fail(close_tag_err_msg.format(repeat_count, close_tag_count))
+
+        # Run full assertPageContent() to make sure we're thorough (unsure of if this part is needed?).
+        return self.assertPageContent(truncated_content, expected_content, debug_output=debug_output)
 
     # endregion Custom Assertions
 
@@ -836,6 +876,58 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Return found messages.
         return found_messages
+
+    def _trim_response_content(self, response, content_starts_after=None, content_ends_before=None):
+        """Trims response content, by trimming values at start or end of page content.
+
+        :param response:
+        :param content_starts_after:
+        :param content_ends_before:
+        :return: Dictionary of [sanitized content, trimmed/truncated content].
+        """
+        strip_err_msg = 'Could not find "{0}" value in content response. Provided value was:\n{1}'
+
+        # Sanitize and format response content.
+        minimized_content = self.get_minimized_response_content(response, strip_newlines=True)
+        truncated_content = minimized_content
+
+        # Rename variables for internal readability.
+        strip_actual_start = content_starts_after
+        strip_actual_end = content_ends_before
+
+        if strip_actual_start:
+            # Value passed that expected_content should occur AFTER.
+            # Find first instance (from top of HTML output) of where this value occurs,
+            # and then strip this and all above output.
+
+            # First check that value actually exists in provided response.
+            # Because we can't strip if this initial value is not present.
+            stripped_start = self.get_minimized_response_content(strip_actual_start, strip_newlines=True)
+            if stripped_start not in truncated_content:
+                display_start = self.get_minimized_response_content(strip_actual_start, strip_newlines=False)
+                self.fail(strip_err_msg.format('content_starts_after', display_start))
+            # If we made it this far, then value was found. Remove.
+            truncated_content = stripped_start.join(truncated_content.split(stripped_start)[1:])
+
+        if strip_actual_end:
+            # Value passed that expected_content should occur BEFORE.
+            # Find first instance (from bottom of HTML output) of where this value occurs,
+            # and then strip this and all below output.
+
+            # First check that value actually exists in provided response.
+            # Because we can't strip if this initial value is not present.
+            stripped_end = self.get_minimized_response_content(strip_actual_end, strip_newlines=True)
+            if stripped_end not in truncated_content:
+                display_end = self.get_minimized_response_content(strip_actual_end, strip_newlines=False)
+                self.fail(strip_err_msg.format('content_ends_before', display_end))
+            # If we made it this far, then value was found. Remove.
+            truncated_content = stripped_end.join(truncated_content.split(stripped_end)[:1])
+
+        # Return both sanitized original content, and the stripped equivalent.
+        return {
+            'minimized_content': minimized_content,
+            'truncated_content': truncated_content,
+        }
 
     # endregion Helper Functions
 
