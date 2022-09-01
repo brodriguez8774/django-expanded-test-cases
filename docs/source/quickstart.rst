@@ -101,7 +101,7 @@ apply to your project:
     pytest-xdist          # Additional Pytest features, such as multithreading and looping.
 
 
-Next, define a `pytest.ini` file at project root. A minimal, default
+Next, define a ``pytest.ini`` file at project root. A minimal, default
 configuration is provided below. Otherwise see
 https://docs.pytest.org/en/stable/reference/customize.html for official Pytest
 customization documentation.

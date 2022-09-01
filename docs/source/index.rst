@@ -4,8 +4,8 @@
    contain the root `toctree` directive.
 
 
-Django-Expanded-Test-Cases Package
-==================================
+Django-Expanded-Test-Cases
+==========================
 
 The **Django-Expanded-Test-Cases** package is a set of TestCase
 classes that expand upon Django's default
