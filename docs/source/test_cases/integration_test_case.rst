@@ -303,7 +303,7 @@ that ordering is important.
 :param response: Response object to check against.
 :param expected_content: Expected content that response should contain.
 :param ignore_ordering: Bool indicating if content ordering matters. Defaults
-                       to assuming ordering should be obeyed.
+                        to assuming ordering should be obeyed.
 :param content_starts_after: Optional content value to strip out of search
                              space. This value and anything above will be
                              removed. If multiple instances exist on page, then
@@ -316,8 +316,34 @@ that ordering is important.
                             selected.
 
 :return: The found response content, in case tests need to run additional
-        logic on it.
+         logic on it.
 
+
+assertRepeatingElement
+----------------------
+
+.. code::
+
+    assertRepeatingElement()
+
+:param response: Response object to check against.
+:param expected_repeating_element: The expected repeating HTML element.
+                                   Ex: <li>, <p>, etc.
+:param repeat_count: Integer indicating how many times the HTML element should
+                     repeat.
+:param content_starts_after: Optional content value to strip out of search
+                             space. This value and anything above will be
+                             removed. If multiple instances exist on page, then
+                             the first found instance (from top of HTML output)
+                             is selected.
+:param content_ends_before: Optional content value to strip out of search space.
+                            This value and anything below will be removed. If
+                            multiple instances exist on page, then the first
+                            found instance (from bottom of HTML output) is
+                            selected.
+
+:return: The found response content, in case tests need to run additional
+         logic on it.
 
 ----
 

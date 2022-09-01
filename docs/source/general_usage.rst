@@ -41,7 +41,7 @@ In standard Python code, this may look roughly like:
     class TestProjectViews(TestCase):
 
         def test_response_header():
-            user = get_user_model().objects.get(username='john')
+            user = get_user_model().objects.get(username='john1234')
             self.client.force_login(user)
             url = reverse('my-url-reverse-string', args=(url_args,))
             response = self.client.get(url, follow=True)
@@ -64,7 +64,7 @@ Alternatively, using the **Django-Expanded-Test-Cases** package, we can use the
     class TestProjectViews(IntegrationTestCase):
 
         def test_response_header():
-            self.client.force_login(self.get_user('john'))
+            self.client.force_login(self.get_user('john1234'))
             url = reverse('my-url-reverse-string', args=(url_args,))
             response = self.client.get(url, follow=True)
             self.assertPageHeader(response, 'Expected H1 Value')
@@ -82,7 +82,7 @@ then use the ``assertResponse()`` check to simplify this even further:
     class TestProjectViews(IntegrationTestCase):
 
         def test_response_header():
-            self.test_user = self.get_user('john')
+            self.test_user = self.get_user('john1234')
             self.assertResponse('my-url-reverse-string', url_args, expected_header='Expected H1 Value')
 
 
@@ -110,9 +110,11 @@ This is a more complicated example than above. Here, we:
 * Log in with a specific testing user.
 * Generate the reverse of a given url string.
 * Fetch a response at the url.
-* Check the response for a set of page content, expected to be in a specific order.
+* Check the response for a set of page content, expected to be in a specific
+  order.
 
-For formatting and readability purposes, this is a single assertion that's broken into multiple lines.
+For formatting and readability purposes, this is a single assertion that's
+broken into multiple lines.
 
 
 .. code:: python
@@ -126,7 +128,7 @@ For formatting and readability purposes, this is a single assertion that's broke
 
         def test_page_contents():
             self.assertGetResponse(
-                'my-url-reverse-string',
+                'my_project:todo-list',
                 expected_content=[
                     'TODO List',
                     '<ul>',
@@ -137,18 +139,20 @@ For formatting and readability purposes, this is a single assertion that's broke
                     '<li><p>Have dinner</p></li>',
                     '</ul>',
                 ],
-                user='john',
+                user='john1234',
             )
 
 
 Functionality Example #3 - Form Submission Check
 ================================================
 
-We can also test POST responses, to check that a page handles data submission as expected. In this example, we:
+We can also test POST responses, to check that a page handles data submission as
+expected. In this example, we:
 
 * Log in with a specific testing user.
 * Generate the reverse of a given url string.
-* Fetch a response at the url, after providing mock form data as part of a POST request.
+* Fetch a response at the url, after providing mock form data as part of a POST
+  request.
 * Check the rendered page response for:
 
     * A page title, to ensure we're at the page we expect.
@@ -156,7 +160,8 @@ We can also test POST responses, to check that a page handles data submission as
     * Context page messages that we expect to return on form submission success.
     * A few content strings we expect to see on the page.
 
-For formatting and readability purposes, this is a single assertion that's broken into multiple lines.
+For formatting and readability purposes, this is a single assertion that's
+broken into multiple lines.
 
 
 .. code:: python
@@ -170,7 +175,7 @@ For formatting and readability purposes, this is a single assertion that's broke
 
         def test_form_submission():
             self.assertPostResponse(
-                'my-url-reverse-string',
+                'my_project:survey',
                 data={'favorite_color': 1, 'additional_comments': 'I like stuff'}
                 expected_title='Home | My Site',
                 expected_header='Welcome to my Project Home',
@@ -182,8 +187,65 @@ For formatting and readability purposes, this is a single assertion that's broke
                     'Welcome to our site!',
                     'Please try our products',
                 ],
-                user='john',
+                user='john1234',
             )
+
+
+Functionality Example #4 - Repeating HTML Element Check
+=======================================================
+
+In cases where we expect an html element to repeat a number of times, we can
+call the ``assertRepeatingElement()`` function. In this example, we:
+
+* Call the ``assertGetResponse()`` function to initially generate a response.
+
+    * Within this assertion, we only check the page title and header, to verify
+    we're loading the page we expect.
+    * We save the return value (aka the page content) to a variable.
+
+* Call the ``assertRepeatingElement()`` function, to actually do the work we
+want. In this case, we check for a total of 10 <li> elements, within a specific
+subsection of page content.
+
+
+For formatting and readability purposes, this is two separate assertions, with
+each one broken into multiple lines.
+
+
+.. code:: python
+
+    """
+    Using the assertRepeatingElement() function to check that multiple instances
+    of a given element exist.
+    """
+
+    from django_expanded_test_cases import IntegrationTestCase
+
+
+    class TestProjectViews(IntegrationTestCase):
+
+        def test_response_header():
+            page_content = self.assertGetResponse(
+                'my_project:lists-page',
+                expected_title='My Lists | My Site',
+                expected_header='Header for Lists Page',
+                user='john1234',
+            )
+            assertRepeatingElement(
+                page_content,
+                '<li>',
+                10,
+                content_starts_after="<h3>John's List</h3>",
+                content_ends_before='<footer>',
+            )
+
+
+.. note::
+    There are many ways to call/generate the initial response content. We don't
+    necessarily have to call any of ETC's ``assertResponse()`` functions here.
+    We only do so out of convenience, as it's a quick and easy way to get
+    response content output for any given page in our project.
+
 
 Debug Output Overview
 =====================
@@ -193,7 +255,7 @@ Debug Output Overview
     While this project can function with ``manage.py test``, the debug output
     functionality will send content to the console on every test, regardless of
     pass or fail, leading to an overwhelming amount of output. Instead, we
-    **strongly** recommend that you consider using PyTest to run tests as
+    **strongly** recommend that you consider using PyTest to run tests, as
     it tends to handle this debug output better.
 
     For an explanation of why this is, see our note on

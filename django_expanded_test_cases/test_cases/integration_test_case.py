@@ -560,7 +560,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         Note: This expects a full HTML element, including both opening and closing tags.
 
         :param response: Response object to check against.
-        :param expected_repeating_element: The expected HTML element. Ex: <li>, <p>, etc.
+        :param expected_repeating_element: The expected repeating HTML element. Ex: <li>, <p>, etc.
         :param repeat_count: Integer indicating how many times the HTML element should repeat.
         :param content_starts_after: The HTML that the element should occur after. This HTML and everything
                                      preceding is stripped out of the "search space" for the expected_content value.
