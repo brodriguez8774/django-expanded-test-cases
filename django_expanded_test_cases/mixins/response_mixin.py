@@ -4,6 +4,7 @@ Core testing logic that pertains to handling Response objects.
 
 # System Imports.
 import re
+from bs4 import BeautifulSoup
 from colorama import Fore, Style
 from django.contrib.auth import get_user_model
 from django.http.response import HttpResponseBase
@@ -251,6 +252,162 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
 
         return response_content
 
+    # region Html Search Functions
+
+    def find_elements_by_tag(self, content, element):
+        """Finds all HTML elements that match the provided element tag.
+
+        :param content: Content to search through.
+        :param element: Html element to search for.
+        """
+        soup = BeautifulSoup(content, 'html.parser')
+        elements = soup.find_all(name=element)
+        element_list = [element.prettify() for element in elements]
+        self.assertGreater(len(element_list), 0, msg=f"Unable to find element {element} in {content}")
+        return element_list
+
+    def find_element_by_tag(self, content, element):
+        """Finds first HTML element that matches the provided element tag.
+
+        :param content: Content to search through.
+        :param element: Html element to search for.
+        """
+        element_list = self.find_elements_by_tag(content, element)
+        return element_list[0]
+
+    def find_elements_by_id(self, content, element_id):
+        """Finds all HTML elements that match the provided id.
+
+        :param content: Content to search through.
+        :param element_id: Element id to search for.
+        """
+        soup = BeautifulSoup(content, 'html.parser')
+        elements = soup.find_all(id=element_id)
+        element_list = [element.prettify() for element in elements]
+        self.assertGreater(len(element_list), 0, msg=f"Unable to find id {element_id} in {content}")
+        return element_list
+
+    def find_element_by_id(self, content, element_id):
+        """Finds first HTML element that matches the provided id.
+
+        :param content: Content to search through.
+        :param element_id: Element id to search for.
+        """
+        element_list = self.find_elements_by_id(content, element_id)
+        return element_list[0]
+
+    def find_elements_by_class(self, content, css_class):
+        """Finds all HTML elements that match the provided css class.
+
+        :param content: Content to search through.
+        :param css_class: Css class to search for.
+        """
+        soup = BeautifulSoup(content, 'html.parser')
+        elements = soup.find_all(class_=css_class)
+        element_list = [element.prettify() for element in elements]
+        self.assertGreater(len(element_list), 0, msg=f"Unable to find class {css_class} in {content}")
+        return element_list
+
+    def find_element_by_class(self, content, css_class):
+        """Finds first HTML element that matches the provided css class.
+
+        :param content: Content to search through.
+        :param css_class: Css class to search for.
+        """
+        element_list = self.find_elements_by_class(content, css_class)
+        return element_list[0]
+
+    def find_elements_by_css_selector(self, content, css_selector):
+        """Finds all HTML elements that match the provided css selector.
+
+        :param content: Content to search through.
+        :param css_selector: Css selector to search for.
+        """
+        soup = BeautifulSoup(markup=content, features='html.parser')
+        elements = soup.select(css_selector)
+        element_list = [element.prettify() for element in elements]
+        self.assertGreater(len(element_list), 0, msg=f"Unable to find css_selector {css_selector} in {content}")
+        return element_list
+
+    def find_element_by_css_selector(self, content, css_selector):
+        """Finds first HTML element that matches the provided css selector.
+
+        :param content: Content to search through.
+        :param css_selector: Css selector to search for.
+        """
+        element_list = self.find_elements_by_css_selector(content, css_selector)
+        return element_list[0]
+
+    def find_elements_by_data_attribute(self, content, data_attribute, data_value):
+        """Finds all HTML elements that match the provided data attribute and data value.
+
+        :param content: Content to search through.
+        :param data_attribute: The key of the data attribute to search for.
+        :param data_value: The value of the data attribute to search for.
+        """
+        soup = BeautifulSoup(content, 'html.parser')
+        attr_dict = {data_attribute: data_value}
+        elements = soup.find_all(attr=attr_dict)
+        element_list = [element.prettify() for element in elements]
+        self.assertGreater(
+            len(element_list),
+            0,
+            msg=f"Unable to find data attribute {data_attribute} with value {data_value} in {content}"
+        )
+        return element_list
+
+    def find_element_by_data_attribute(self, content, data_attribute, data_value):
+        """Finds first HTML element that matches the provided data attribute and data value.
+
+        :param content: Content to search through.
+        :param data_attribute: The key of the data attribute to search for.
+        :param data_value: The value of the data attribute to search for.
+        """
+        element_list = self.find_elements_by_data_attribute(content, data_attribute, data_value)
+        return element_list[0]
+
+    def find_elements_by_name(self, content, element_name):
+        """Finds all HTML elements that match the provided name attribute.
+
+        :param content: Content to search through.
+        :param element_name: Element name to search for.
+        """
+        soup = BeautifulSoup(content, 'html.parser')
+        attr_dict = {'name': element_name}
+        elements = soup.find_all(attrs=attr_dict)
+        element_list = [element.prettify() for element in elements]
+        self.assertGreater(len(element_list), 0, msg=f"Unable to find name {element_name} in {content}")
+        return element_list
+
+    def find_element_by_name(self, content, element_name):
+        """Finds first HTML element that matches the provided name attribute.
+
+        :param content: Content to search through.
+        :param element_name: Element name to search for.
+        """
+        element_list = self.find_elements_by_name(content, element_name)
+        return element_list[0]
+
+    def find_elements_by_link_text(self, content, link_text):
+        """Finds all HTML elements that match the provided link text.
+
+        :param content: Content to search through.
+        :param link_text: Link text to search for.
+        """
+        soup = BeautifulSoup(content, 'html.parser')
+        elements = soup.find_all(href=link_text)
+        return [element.prettify() for element in elements]
+
+    def find_element_by_link_text(self, content, link_text):
+        """Finds first HTML element that matches the provided link text.
+
+        :param content: Content to search through.
+        :param link_text: Link text to search for.
+        """
+        element_list = self.find_elements_by_link_text(content, link_text)
+        return element_list[0]
+
+    # endregion Html Search Functions
 
 # Define acceptable imports on file.
 __all__ = [
