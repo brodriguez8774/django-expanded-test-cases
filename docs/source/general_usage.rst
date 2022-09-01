@@ -8,15 +8,15 @@ class and
 `UnitTesting <https://docs.python.org/3/library/unittest.html>`_
 logic with some extra functionality.
 
-Below are examples of what this actually means:
+Below are examples using this in practice:
 
 
-Functionality Example #1
-========================
+Functionality Example #1 - Minimal Test
+=======================================
 
 In any given web framework, the most common use case is to generate some page
 response from a url. So if you wanted a basic test to check that a given
-`url reverse <https://docs.djangoproject.com/en/4.0/ref/urlresolvers/#reverse>`_,
+`url reverse <https://docs.djangoproject.com/en/4.0/ref/urlresolvers/#reverse>`_
 renders the expected page, you might need to:
 
 * Log in with a specific testing user, if the url is behind a login wall.
@@ -43,7 +43,7 @@ In standard Python code, this may look roughly like:
         def test_response_header():
             user = get_user_model().objects.get(username='john')
             self.client.force_login(user)
-            url = reverse('my-url-string', args=(url_args,))
+            url = reverse('my-url-reverse-string', args=(url_args,))
             response = self.client.get(url, follow=True)
             content = response.content.decode('utf-8')
             response_header = re.search(r'<h1>([\S\s]+)</h1>', response)
@@ -65,7 +65,7 @@ Alternatively, using the **Django-Expanded-Test-Cases** package, we can use the
 
         def test_response_header():
             self.client.force_login(self.get_user('john'))
-            url = reverse('my-url-string', args=(url_args,))
+            url = reverse('my-url-reverse-string', args=(url_args,))
             response = self.client.get(url, follow=True)
             self.assertPageHeader(response, 'Expected H1 Value')
 
@@ -83,7 +83,7 @@ then use the ``assertResponse()`` check to simplify this even further:
 
         def test_response_header():
             self.test_user = self.get_user('john')
-            self.assertResponse('my-url-string', url_args, expected_header='Expected H1 Value')
+            self.assertResponse('my-url-reverse-string', url_args, expected_header='Expected H1 Value')
 
 
 .. note::
@@ -101,6 +101,89 @@ Writing tests in such a way will also generally reduce the amount of visual
 clutter in a test, resulting in project tests that are generally more
 immediately obvious as to exactly what is being tested.
 
+
+Functionality Example #2 - Ordered Content Check
+================================================
+
+This is a more complicated example than above. Here, we:
+
+* Log in with a specific testing user.
+* Generate the reverse of a given url string.
+* Fetch a response at the url.
+* Check the response for a set of page content, expected to be in a specific order.
+
+For formatting and readability purposes, this is a single assertion that's broken into multiple lines.
+
+
+.. code:: python
+
+    """Ordered page content test, using provided assertGetResponse() function."""
+
+    from django_expanded_test_cases import IntegrationTestCase
+
+
+    class TestProjectViews(IntegrationTestCase):
+
+        def test_page_contents():
+            self.assertGetResponse(
+                'my-url-reverse-string',
+                expected_content=[
+                    'TODO List',
+                    '<ul>',
+                    '<li><p>Wake up</p></li>',
+                    '<li><p>Have breakfast</p></li>',
+                    '<li><p>Go to work</p></li>',
+                    '<li><p>Fix my Django tests</p></li>',
+                    '<li><p>Have dinner</p></li>',
+                    '</ul>',
+                ],
+                user='john',
+            )
+
+
+Functionality Example #3 - Form Submission Check
+================================================
+
+We can also test POST responses, to check that a page handles data submission as expected. In this example, we:
+
+* Log in with a specific testing user.
+* Generate the reverse of a given url string.
+* Fetch a response at the url, after providing mock form data as part of a POST request.
+* Check the rendered page response for:
+
+    * A page title, to ensure we're at the page we expect.
+    * A page header, to further ensure we're at the page we expect.
+    * Context page messages that we expect to return on form submission success.
+    * A few content strings we expect to see on the page.
+
+For formatting and readability purposes, this is a single assertion that's broken into multiple lines.
+
+
+.. code:: python
+
+    """Form submission test, using provided assertPostResponse() function."""
+
+    from django_expanded_test_cases import IntegrationTestCase
+
+
+    class TestProjectViews(IntegrationTestCase):
+
+        def test_form_submission():
+            self.assertPostResponse(
+                'my-url-reverse-string',
+                data={'favorite_color': 1, 'additional_comments': 'I like stuff'}
+                expected_title='Home | My Site',
+                expected_header='Welcome to my Project Home',
+                expected_messages=[
+                    'Form submitted!',
+                    'We thank you for taking our survey.',
+                ],
+                expected_content=[
+                    'Welcome to our site!',
+                    'Please try our products',
+                ],
+                user='john',
+            )
 
 Debug Output Overview
 =====================
