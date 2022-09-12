@@ -3,7 +3,7 @@ Core testing logic that pertains to handling Response objects.
 """
 
 # System Imports.
-import re
+import logging, re
 from bs4 import BeautifulSoup
 from colorama import Fore, Style
 from django.contrib.auth import get_user_model
@@ -12,6 +12,10 @@ from django.http.response import HttpResponseBase
 # User Imports.
 from . import CoreTestCaseMixin
 from django_expanded_test_cases.constants import UNDERLINE
+
+
+# Initialize logging.
+logger = logging.getLogger(__name__)
 
 
 class ResponseTestCaseMixin(CoreTestCaseMixin):
@@ -260,10 +264,23 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         :param content: Content to search through.
         :param element: Html element to search for.
         """
+        # Ensure response content is in expected minimized format.
+        content = self.get_minimized_response_content(content)
+
+        # Sanitize provided element value. We don't care how the user was provided the syntax.
+        element = self.get_minimized_response_content(element)
+        element = element.lstrip('<').rstrip('>').strip('/').strip()
+
+        # Search for all matching elements.
         soup = BeautifulSoup(content, 'html.parser')
         elements = soup.find_all(name=element)
-        element_list = [element.prettify() for element in elements]
-        self.assertGreater(len(element_list), 0, msg=f"Unable to find element {element} in {content}")
+        element_list = [self.get_minimized_response_content(element.prettify()) for element in elements]
+
+        # Validate parsed value.
+        if not len(element_list) > 0:
+            self.fail(f'Unable to find element "<{element}>" in content. Provided content was:\n{content}')
+
+        # Return found list.
         return element_list
 
     def find_element_by_tag(self, content, element):
@@ -272,7 +289,24 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         :param content: Content to search through.
         :param element: Html element to search for.
         """
+        # Ensure response content is in expected minimized format.
+        content = self.get_minimized_response_content(content)
+
+        # Sanitize provided element value. We don't care how the user was provided the syntax.
+        element = self.get_minimized_response_content(element)
+        element = element.lstrip('<').rstrip('>').strip('/').strip()
+
+        # Call parent function logic.
         element_list = self.find_elements_by_tag(content, element)
+
+        # Verify only one value was found.
+        if len(element_list) > 1:
+            self.fail(
+                f'Found multiple instances of "<{element}>" element. Expected only one instance. '
+                f'Content was:\n{content}'
+             )
+
+        # Return found item.
         return element_list[0]
 
     def find_elements_by_id(self, content, element_id):
@@ -281,10 +315,27 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         :param content: Content to search through.
         :param element_id: Element id to search for.
         """
+        # Ensure response content is in expected minimized format.
+        content = self.get_minimized_response_content(content)
+
+        # Search for all matching elements.
         soup = BeautifulSoup(content, 'html.parser')
         elements = soup.find_all(id=element_id)
-        element_list = [element.prettify() for element in elements]
-        self.assertGreater(len(element_list), 0, msg=f"Unable to find id {element_id} in {content}")
+        element_list = [self.get_minimized_response_content(element.prettify()) for element in elements]
+
+        # Verify one or more values were found.
+        if not len(element_list) > 0:
+            self.fail(f'Unable to find id "{element_id}" in content. Provided content was:\n{content}')
+
+        # Provide warning if two or more values were found.
+        if len(element_list) > 1:
+            logger.warning(
+                'It\'s considered bad practice to have multiple matching id tags in one html response. '
+                'Consider refactoring elements to keep each id unique.\n'
+                'Found {0} total elements with id of "{1}".'.format(len(element_list), element_id)
+            )
+
+        # Return found values.
         return element_list
 
     def find_element_by_id(self, content, element_id):
@@ -293,7 +344,20 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         :param content: Content to search through.
         :param element_id: Element id to search for.
         """
+        # Ensure response content is in expected minimized format.
+        content = self.get_minimized_response_content(content)
+
+        # Call parent function logic.
         element_list = self.find_elements_by_id(content, element_id)
+
+        # Verify only one value was found.
+        if len(element_list) > 1:
+            self.fail(
+                f'Found multiple instances of "{element_id}" id. Expected only one instance. '
+                f'Content was:\n{content}'
+            )
+
+        # Return found item.
         return element_list[0]
 
     def find_elements_by_class(self, content, css_class):
@@ -302,10 +366,19 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         :param content: Content to search through.
         :param css_class: Css class to search for.
         """
+        # Ensure response content is in expected minimized format.
+        content = self.get_minimized_response_content(content)
+
+        # Search for all matching elements.
         soup = BeautifulSoup(content, 'html.parser')
         elements = soup.find_all(class_=css_class)
-        element_list = [element.prettify() for element in elements]
-        self.assertGreater(len(element_list), 0, msg=f"Unable to find class {css_class} in {content}")
+        element_list = [self.get_minimized_response_content(element.prettify()) for element in elements]
+
+        # Verify one or more values were found.
+        if not len(element_list) > 0:
+            self.fail(f'Unable to find class "{css_class}" in content. Provided content was:\n{content}')
+
+        # Return found values.
         return element_list
 
     def find_element_by_class(self, content, css_class):
@@ -314,7 +387,20 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         :param content: Content to search through.
         :param css_class: Css class to search for.
         """
+        # Ensure response content is in expected minimized format.
+        content = self.get_minimized_response_content(content)
+
+        # Call parent function logic.
         element_list = self.find_elements_by_class(content, css_class)
+
+        # Verify only one value was found.
+        if len(element_list) > 1:
+            self.fail(
+                f'Found multiple instances of "{css_class}" class. Expected only one instance. '
+                f'Content was:\n{content}'
+            )
+
+        # Return found item.
         return element_list[0]
 
     def find_elements_by_css_selector(self, content, css_selector):
@@ -323,10 +409,19 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         :param content: Content to search through.
         :param css_selector: Css selector to search for.
         """
-        soup = BeautifulSoup(markup=content, features='html.parser')
+        # Ensure response content is in expected minimized format.
+        content = self.get_minimized_response_content(content)
+
+        # Search for all matching elements.
+        soup = BeautifulSoup(content, 'html.parser')
         elements = soup.select(css_selector)
-        element_list = [element.prettify() for element in elements]
-        self.assertGreater(len(element_list), 0, msg=f"Unable to find css_selector {css_selector} in {content}")
+        element_list = [self.get_minimized_response_content(element.prettify()) for element in elements]
+
+        # Verify one or more values were found.
+        if not len(element_list) > 0:
+            self.fail(f'Unable to find css selector "{css_selector}" in content. Provided content was:\n{content}')
+
+        # Return found values.
         return element_list
 
     def find_element_by_css_selector(self, content, css_selector):
@@ -335,7 +430,20 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         :param content: Content to search through.
         :param css_selector: Css selector to search for.
         """
+        # Ensure response content is in expected minimized format.
+        content = self.get_minimized_response_content(content)
+
+        # Call parent function logic.
         element_list = self.find_elements_by_css_selector(content, css_selector)
+
+        # Verify only one value was found.
+        if len(element_list) > 1:
+            self.fail(
+                f'Found multiple instances of "{css_selector}" css selector. Expected only one instance. '
+                f'Content was:\n{content}'
+            )
+
+        # Return found item.
         return element_list[0]
 
     def find_elements_by_data_attribute(self, content, data_attribute, data_value):
@@ -345,15 +453,23 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         :param data_attribute: The key of the data attribute to search for.
         :param data_value: The value of the data attribute to search for.
         """
+        # Ensure response content is in expected minimized format.
+        content = self.get_minimized_response_content(content)
+
+        # Search for all matching elements.
         soup = BeautifulSoup(content, 'html.parser')
         attr_dict = {data_attribute: data_value}
-        elements = soup.find_all(attr=attr_dict)
-        element_list = [element.prettify() for element in elements]
-        self.assertGreater(
-            len(element_list),
-            0,
-            msg=f"Unable to find data attribute {data_attribute} with value {data_value} in {content}"
-        )
+        elements = soup.find_all(attrs=attr_dict)
+        element_list = [self.get_minimized_response_content(element.prettify()) for element in elements]
+
+        # Verify one or more values were found.
+        if not len(element_list) > 0:
+            self.fail(
+                f'Unable to find data attribute "{data_attribute}" with value "{data_value}" in content. Provided '
+                f'content was:\n{content}'
+            )
+
+        # Return found values.
         return element_list
 
     def find_element_by_data_attribute(self, content, data_attribute, data_value):
@@ -363,7 +479,20 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         :param data_attribute: The key of the data attribute to search for.
         :param data_value: The value of the data attribute to search for.
         """
+        # Ensure response content is in expected minimized format.
+        content = self.get_minimized_response_content(content)
+
+        # Call parent function logic.
         element_list = self.find_elements_by_data_attribute(content, data_attribute, data_value)
+
+        # Verify only one value was found.
+        if len(element_list) > 1:
+            self.fail(
+                f'Found multiple instances of "{data_attribute}" data attribute with value "{data_value}". '
+                f'Expected only one instance. Content was:\n{content}'
+            )
+
+        # Return found item.
         return element_list[0]
 
     def find_elements_by_name(self, content, element_name):
@@ -372,11 +501,20 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         :param content: Content to search through.
         :param element_name: Element name to search for.
         """
+        # Ensure response content is in expected minimized format.
+        content = self.get_minimized_response_content(content)
+
+        # Search for all matching elements.
         soup = BeautifulSoup(content, 'html.parser')
         attr_dict = {'name': element_name}
         elements = soup.find_all(attrs=attr_dict)
-        element_list = [element.prettify() for element in elements]
-        self.assertGreater(len(element_list), 0, msg=f"Unable to find name {element_name} in {content}")
+        element_list = [self.get_minimized_response_content(element.prettify()) for element in elements]
+
+        # Verify one or more values were found.
+        if not len(element_list) > 0:
+            self.fail(f'Unable to find name "{element_name}" in content. Provided content was:\n{content}')
+
+        # Return found values.
         return element_list
 
     def find_element_by_name(self, content, element_name):
@@ -385,7 +523,20 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         :param content: Content to search through.
         :param element_name: Element name to search for.
         """
+        # Ensure response content is in expected minimized format.
+        content = self.get_minimized_response_content(content)
+
+        # Call parent function logic.
         element_list = self.find_elements_by_name(content, element_name)
+
+        # Verify only one value was found.
+        if len(element_list) > 1:
+            self.fail(
+                f'Found multiple instances of "{element_name}" name. Expected only one instance. '
+                f'Content was:\n{content}'
+            )
+
+        # Return found item.
         return element_list[0]
 
     def find_elements_by_link_text(self, content, link_text):
@@ -394,9 +545,20 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         :param content: Content to search through.
         :param link_text: Link text to search for.
         """
+        # Ensure response content is in expected minimized format.
+        content = self.get_minimized_response_content(content)
+
+        # Search for all matching elements.
         soup = BeautifulSoup(content, 'html.parser')
         elements = soup.find_all(href=link_text)
-        return [element.prettify() for element in elements]
+        element_list = [self.get_minimized_response_content(element.prettify()) for element in elements]
+
+        # Verify one or more values were found.
+        if not len(element_list) > 0:
+            self.fail(f'Unable to find link text "{link_text}" in content. Provided content was:\n{content}')
+
+        # Return found values.
+        return element_list
 
     def find_element_by_link_text(self, content, link_text):
         """Finds first HTML element that matches the provided link text.
@@ -404,10 +566,24 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         :param content: Content to search through.
         :param link_text: Link text to search for.
         """
+        # Ensure response content is in expected minimized format.
+        content = self.get_minimized_response_content(content)
+
+        # Call parent function logic.
         element_list = self.find_elements_by_link_text(content, link_text)
+
+        # Verify only one value was found.
+        if len(element_list) > 1:
+            self.fail(
+                f'Found multiple instances of "{link_text}" link text. Expected only one instance. '
+                f'Content was:\n{content}'
+            )
+
+        # Return found item.
         return element_list[0]
 
     # endregion Html Search Functions
+
 
 # Define acceptable imports on file.
 __all__ = [
