@@ -4,7 +4,7 @@ Core testing logic, universal to all test cases.
 
 # System Imports.
 import re
-from colorama import Fore, Style
+from colorama import Back, Fore, Style
 from django.contrib.auth import get_user_model
 from django.utils.http import urlencode
 from functools import wraps
@@ -142,20 +142,113 @@ class CoreTestCaseMixin:
             self.assertEqual(actual_text, expected_text)
         except AssertionError as err:
             # Assertion failed. Provide debug output.
-            self._debug_print('')
-            self._debug_print('')
-            self._debug_print('')
-            self._debug_print('')
-            self._debug_print('')
-            self._debug_print('ACTUAL:', fore=Fore.RED)
-            self._debug_print(actual_text, fore=Fore.RED)
+            actual_error_style = '{0}{1}{2}'.format(Fore.BLACK, Back.RED, Style.NORMAL)
+            actual_match_style = '{0}{1}{2}'.format(Fore.RED, Back.RESET, Style.NORMAL)
+            expected_error_style = '{0}{1}{2}'.format(Fore.BLACK, Back.GREEN, Style.NORMAL)
+            expected_match_style = '{0}{1}{2}'.format(Fore.GREEN, Back.RESET, Style.NORMAL)
+
+            # Loop through to calculate color output differences.
+            # First split on newlines.
+            split_actual = actual_text.split('\\n')
+            split_expected = expected_text.split('\\n')
+
+            # Determine which one is longer.
+            if len(split_actual) > len(split_expected):
+                max_lines = len(split_actual)
+            else:
+                max_lines = len(split_expected)
+
+            formatted_actual_output = ''
+            formatted_expected_output = ''
+            actual_color = '{0}'.format(Fore.RED)
+            expected_color = '{0}'.format(Style.NORMAL)
+            for line_index in range(max_lines):
+                try:
+                    expected_line = split_expected[line_index]
+                except IndexError:
+                    expected_line = None
+                try:
+                    actual_line = split_actual[line_index]
+                except IndexError:
+                    actual_line = None
+
+                if expected_line == actual_line:
+                    # Line is full match and correct.
+                    actual_line = '{0}{1}{2}'.format(Fore.RED, actual_line, Style.RESET_ALL)
+                    expected_line = '{0}{1}{2}'.format(Fore.GREEN, expected_line, Style.RESET_ALL)
+                elif expected_line is None:
+                    # "Actual" output is longer than "expected" output.
+                    # Impossible to match current line.
+                    actual_line = '{0}{1}{2}'.format(actual_error_style, actual_line, actual_match_style)
+                elif actual_line is None:
+                    # "Expected" output is longer than "actual" output.
+                    # Impossible to match current line.
+                    expected_line = '{0}{1}{2}'.format(expected_error_style, expected_line, expected_match_style)
+                else:
+                    # Both lines are populated but do not match.
+                    # Determine which one is longer.
+                    if len(actual_line) > len(expected_line):
+                        max_chars = len(actual_line)
+                    else:
+                        max_chars = len(expected_line)
+
+                # Check each character and determine where non-match happens.
+                actual_str = '{0}'.format(actual_color)
+                expected_str = '{0}'.format(expected_color)
+                for char_index in range(max_chars):
+                    # Grab current character.
+                    try:
+                        expected_char = expected_line[char_index]
+                    except IndexError:
+                        expected_char = ''
+                    try:
+                        actual_char = actual_line[char_index]
+                    except IndexError:
+                        actual_char = ''
+
+                    # Format based on match.
+                    if expected_char == actual_char:
+                        # Match.
+                        if actual_color != actual_match_style:
+                            actual_color = actual_match_style
+                            actual_str += actual_color
+                        actual_str += '{0}'.format(actual_char)
+                        if expected_color != expected_match_style:
+                            expected_color = expected_match_style
+                            expected_str += expected_color
+                        expected_str += '{0}'.format(expected_char)
+                    else:
+                        # Non-match.
+                        if actual_color != actual_error_style:
+                            actual_color = actual_error_style
+                            actual_str += actual_color
+                        actual_str += '{0}'.format(actual_char)
+                        if expected_color != expected_error_style:
+                            expected_color = expected_error_style
+                            expected_str += expected_color
+                        expected_str += '{0}'.format(expected_char)
+
+                # Reset values if not already.
+                if actual_color != actual_match_style:
+                    actual_color = actual_match_style
+                    actual_str += actual_color
+                if expected_color != expected_match_style:
+                    expected_color = expected_match_style
+                    expected_str += expected_color
+
+                # Update output strings.
+                formatted_actual_output += actual_str
+                formatted_expected_output += expected_str
+
+            # Finally print actual debug output.
             self._debug_print('')
             self._debug_print('')
             self._debug_print('EXPECTED:', fore=Fore.GREEN)
-            self._debug_print(expected_text, fore=Fore.GREEN)
+            self._debug_print(formatted_expected_output, fore=Fore.GREEN)
             self._debug_print('')
             self._debug_print('')
-            self._debug_print('')
+            self._debug_print('ACTUAL:', fore=Fore.RED)
+            self._debug_print(formatted_actual_output)
             self._debug_print('')
             self._debug_print('')
 
