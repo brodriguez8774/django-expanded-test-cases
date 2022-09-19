@@ -101,3 +101,10 @@ else:
 # SELENIUM_TEST_BROWSER = 'chrome'
 # SELENIUM_TEST_BROWSER = 'chromium'
 # SELENIUM_TEST_BROWSER = 'firefox'
+
+# Support for changing console color output.
+# from colorama import Back, Fore, Style
+# DJANGO_EXPANDED_TESTCASES_OUTPUT_EXPECTED_MATCH = '{0}{1}{2}'.format(Fore.CYAN, Back.RESET, Style.NORMAL)
+# DJANGO_EXPANDED_TESTCASES_OUTPUT_EXPECTED_ERROR = '{0}{1}{2}'.format(Fore.BLACK, Back.CYAN, Style.NORMAL)
+# DJANGO_EXPANDED_TESTCASES_OUTPUT_ACTUALS_MATCH = '{0}{1}{2}'.format(Fore.MAGENTA, Back.RESET, Style.NORMAL)
+# DJANGO_EXPANDED_TESTCASES_OUTPUT_ACTUALS_ERROR = '{0}{1}{2}'.format(Fore.BLACK, Back.MAGENTA, Style.NORMAL)

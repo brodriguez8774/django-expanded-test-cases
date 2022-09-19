@@ -4,14 +4,20 @@ Core testing logic, universal to all test cases.
 
 # System Imports.
 import re
-from colorama import Back, Fore, Style
+from colorama import Fore, Style
 from django.contrib.auth import get_user_model
 from django.utils.http import urlencode
 from functools import wraps
 from types import FunctionType
 
 # User Imports.
-from django_expanded_test_cases.constants import ETC_DEBUG_PRINT
+from django_expanded_test_cases.constants import (
+    ETC_DEBUG_PRINT,
+    OUTPUT_ACTUALS_ERROR,
+    OUTPUT_ACTUALS_MATCH,
+    OUTPUT_EXPECTED_ERROR,
+    OUTPUT_EXPECTED_MATCH,
+)
 
 
 # region Debug Print Wrapper Logic
@@ -142,10 +148,10 @@ class CoreTestCaseMixin:
             self.assertEqual(actual_text, expected_text)
         except AssertionError as err:
             # Assertion failed. Provide debug output.
-            actual_error_style = '{0}{1}{2}'.format(Fore.BLACK, Back.RED, Style.NORMAL)
-            actual_match_style = '{0}{1}{2}'.format(Fore.RED, Back.RESET, Style.NORMAL)
-            expected_error_style = '{0}{1}{2}'.format(Fore.BLACK, Back.GREEN, Style.NORMAL)
-            expected_match_style = '{0}{1}{2}'.format(Fore.GREEN, Back.RESET, Style.NORMAL)
+            expected_match_style = OUTPUT_EXPECTED_MATCH
+            expected_error_style = OUTPUT_EXPECTED_ERROR
+            actual_match_style = OUTPUT_ACTUALS_MATCH
+            actual_error_style = OUTPUT_ACTUALS_ERROR
 
             # Loop through to calculate color output differences.
             # First split on newlines.
@@ -160,8 +166,8 @@ class CoreTestCaseMixin:
 
             formatted_actual_output = ''
             formatted_expected_output = ''
-            actual_color = '{0}'.format(Fore.RED)
-            expected_color = '{0}'.format(Style.NORMAL)
+            actual_color = actual_match_style
+            expected_color = expected_match_style
             for line_index in range(max_lines):
                 try:
                     expected_line = split_expected[line_index]
@@ -174,16 +180,24 @@ class CoreTestCaseMixin:
 
                 if expected_line == actual_line:
                     # Line is full match and correct.
-                    actual_line = '{0}{1}{2}'.format(Fore.RED, actual_line, Style.RESET_ALL)
-                    expected_line = '{0}{1}{2}'.format(Fore.GREEN, expected_line, Style.RESET_ALL)
+                    actual_line = '{0}{1}{2}'.format(actual_match_style, actual_line, Style.RESET_ALL)
+                    expected_line = '{0}{1}{2}'.format(expected_match_style, expected_line, Style.RESET_ALL)
                 elif expected_line is None:
                     # "Actual" output is longer than "expected" output.
                     # Impossible to match current line.
-                    actual_line = '{0}{1}{2}'.format(actual_error_style, actual_line, actual_match_style)
+                    actual_line = '{0}{1}{2}'.format(
+                        actual_error_style,
+                        actual_line,
+                        Style.RESET_ALL,
+                    )
                 elif actual_line is None:
                     # "Expected" output is longer than "actual" output.
                     # Impossible to match current line.
-                    expected_line = '{0}{1}{2}'.format(expected_error_style, expected_line, expected_match_style)
+                    expected_line = '{0}{1}{2}'.format(
+                        expected_error_style,
+                        expected_line,
+                        Style.RESET_ALL,
+                    )
                 else:
                     # Both lines are populated but do not match.
                     # Determine which one is longer.
@@ -243,11 +257,11 @@ class CoreTestCaseMixin:
             # Finally print actual debug output.
             self._debug_print('')
             self._debug_print('')
-            self._debug_print('EXPECTED:', fore=Fore.GREEN)
-            self._debug_print(formatted_expected_output, fore=Fore.GREEN)
+            self._debug_print('EXPECTED:', fore=expected_match_style)
+            self._debug_print(formatted_expected_output)
             self._debug_print('')
             self._debug_print('')
-            self._debug_print('ACTUAL:', fore=Fore.RED)
+            self._debug_print('ACTUAL:', fore=actual_match_style)
             self._debug_print(formatted_actual_output)
             self._debug_print('')
             self._debug_print('')
