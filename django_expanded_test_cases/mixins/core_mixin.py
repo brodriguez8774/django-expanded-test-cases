@@ -4,7 +4,6 @@ Core testing logic, universal to all test cases.
 
 # System Imports.
 import re
-from colorama import Fore, Style
 from django.contrib.auth import get_user_model
 from django.utils.http import urlencode
 from functools import wraps
@@ -15,8 +14,10 @@ from django_expanded_test_cases.constants import (
     ETC_DEBUG_PRINT,
     OUTPUT_ACTUALS_ERROR,
     OUTPUT_ACTUALS_MATCH,
+    OUTPUT_ERROR,
     OUTPUT_EXPECTED_ERROR,
     OUTPUT_EXPECTED_MATCH,
+    OUTPUT_RESET,
 )
 
 
@@ -31,7 +32,7 @@ def wrapper(method):
         except AssertionError as err:
             if ETC_DEBUG_PRINT:
                 print('\n')
-                print('{0}{1}{2}'.format(Fore.RED, err, Style.RESET_ALL))
+                print('{0}{1}{2}'.format(OUTPUT_ERROR, err, OUTPUT_RESET))
                 print('')
             raise err
     return wrapped
@@ -117,11 +118,11 @@ class CoreTestCaseMixin:
         Mostly used for internal testcase logic.
         """
         if self._debug_print_bool:
-            print(fore, end="")
-            print(back, end="")
-            print(style, end="")
-            print(*args, **kwargs, end="")
-            print(Style.RESET_ALL)
+            print(fore, end='')
+            print(back, end='')
+            print(style, end='')
+            print(*args, **kwargs, end='')
+            print(OUTPUT_RESET)
 
     # region Custom Assertions
 
@@ -180,15 +181,15 @@ class CoreTestCaseMixin:
 
                 if expected_line == actual_line:
                     # Line is full match and correct.
-                    actual_line = '{0}{1}{2}'.format(actual_match_style, actual_line, Style.RESET_ALL)
-                    expected_line = '{0}{1}{2}'.format(expected_match_style, expected_line, Style.RESET_ALL)
+                    actual_line = '{0}{1}{2}'.format(actual_match_style, actual_line, OUTPUT_RESET)
+                    expected_line = '{0}{1}{2}'.format(expected_match_style, expected_line, OUTPUT_RESET)
                 elif expected_line is None:
                     # "Actual" output is longer than "expected" output.
                     # Impossible to match current line.
                     actual_line = '{0}{1}{2}'.format(
                         actual_error_style,
                         actual_line,
-                        Style.RESET_ALL,
+                        OUTPUT_RESET,
                     )
                 elif actual_line is None:
                     # "Expected" output is longer than "actual" output.
@@ -196,7 +197,7 @@ class CoreTestCaseMixin:
                     expected_line = '{0}{1}{2}'.format(
                         expected_error_style,
                         expected_line,
-                        Style.RESET_ALL,
+                        OUTPUT_RESET,
                     )
                 else:
                     # Both lines are populated but do not match.

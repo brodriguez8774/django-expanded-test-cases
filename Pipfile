@@ -20,7 +20,6 @@ python_version = "3.9"
  ##
 [packages]
 # General Django dependencies.
-colorama = "*"                  # Console coloring package.
 django = "*"                    # Core Django package.
 
 
@@ -66,4 +65,5 @@ twine = "*"                     # For pushing/publishing packages.
 [optional-packages]
 # Selenium dependencies.
 channels = "*"                  # Django websocket/background-task dependencies.
+colorama = "*"                  # Console coloring package.
 webdriver-manager = "*"         # Auto-magically installs/fetches the correct web driver versions to run tests.

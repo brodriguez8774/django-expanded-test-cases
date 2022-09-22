@@ -4,7 +4,6 @@ Testing logic for views and other multi-part components.
 
 # System Imports.
 import re
-from colorama import Fore, Style
 from django.conf import settings
 from django.http.response import HttpResponseBase
 from django.urls import reverse
@@ -12,13 +11,17 @@ from django.urls.exceptions import NoReverseMatch
 
 # User Imports.
 from .base_test_case import BaseTestCase
-from django_expanded_test_cases.constants import ETC_ALLOW_MESSAGE_PARTIALS, VOID_ELEMENT_LIST
+from django_expanded_test_cases.constants import (
+    ETC_ALLOW_MESSAGE_PARTIALS,
+    RESPONSE_DEBUG_URL,
+    OUTPUT_EMPHASIS,
+    VOID_ELEMENT_LIST,
+)
 from django_expanded_test_cases.mixins import ResponseTestCaseMixin
 
 
 class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
     """Testing functionality for views and other multi-part components."""
-
     @classmethod
     def setUpClass(cls, *args, debug_print=None, **kwargs):
         # Run parent setup logic.
@@ -704,9 +707,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             current_site = '127.0.0.1{0}'.format(url)
         message = 'Attempting to access url "{0}"'.format(current_site)
         self._debug_print('\n\n')
-        self._debug_print('{0}'.format('-' * len(message)), fore=Fore.YELLOW, style=Style.BRIGHT)
-        self._debug_print(message, fore=Fore.YELLOW, style=Style.BRIGHT)
-        self._debug_print('{0}'.format('-' * len(message)), fore=Fore.YELLOW, style=Style.BRIGHT)
+        self._debug_print('{0}'.format('-' * len(message)), fore=RESPONSE_DEBUG_URL, style=OUTPUT_EMPHASIS)
+        self._debug_print(message, fore=RESPONSE_DEBUG_URL, style=OUTPUT_EMPHASIS)
+        self._debug_print('{0}'.format('-' * len(message)), fore=RESPONSE_DEBUG_URL, style=OUTPUT_EMPHASIS)
 
         # Get response object.
         if bool(get):

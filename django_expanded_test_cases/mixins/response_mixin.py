@@ -5,13 +5,19 @@ Core testing logic that pertains to handling Response objects.
 # System Imports.
 import logging, re
 from bs4 import BeautifulSoup
-from colorama import Fore, Style
 from django.contrib.auth import get_user_model
 from django.http.response import HttpResponseBase
 
 # User Imports.
 from . import CoreTestCaseMixin
-from django_expanded_test_cases.constants import UNDERLINE
+from django_expanded_test_cases.constants import (
+    OUTPUT_ERROR,
+    RESPONSE_DEBUG_CONTENT,
+    RESPONSE_DEBUG_MESSAGES,
+    RESPONSE_DEBUG_SESSION,
+    RESPONSE_DEBUG_USER_INFO,
+    OUTPUT_EMPHASIS,
+)
 
 
 # Initialize logging.
@@ -53,8 +59,8 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         self._debug_print()
         self._debug_print(
             '{0} {1} {0}'.format('=' * 10, 'response.content'),
-            fore=Fore.WHITE,
-            style=f"{Style.BRIGHT}{UNDERLINE}",
+            fore=RESPONSE_DEBUG_CONTENT,
+            style=OUTPUT_EMPHASIS,
         )
 
         # Print out data, if present.
@@ -80,8 +86,8 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         self._debug_print()
         self._debug_print(
             '{0} {1} {0}'.format('=' * 10, 'response.headers'),
-            fore=Fore.WHITE,
-            style=f"{Style.BRIGHT}{UNDERLINE}",
+            fore=RESPONSE_DEBUG_CONTENT,
+            style=OUTPUT_EMPHASIS,
         )
 
         # Print out data, if present.
@@ -106,15 +112,15 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         self._debug_print()
         self._debug_print(
             '{0} {1} {0}'.format('=' * 10, 'client.session'),
-            fore=Fore.MAGENTA,
-            style=f"{Style.BRIGHT}{UNDERLINE}",
+            fore=RESPONSE_DEBUG_SESSION,
+            style=OUTPUT_EMPHASIS,
         )
 
         if client is not None and len(client.session.items()) > 0:
             for key, value in client.session.items():
-                self._debug_print('    * {0}: {1}'.format(key, value), fore=Fore.MAGENTA)
+                self._debug_print('    * {0}: {1}'.format(key, value), fore=RESPONSE_DEBUG_SESSION)
         else:
-            self._debug_print('    No session data found.', fore=Fore.MAGENTA)
+            self._debug_print('    No session data found.', fore=RESPONSE_DEBUG_SESSION)
         self._debug_print('')
 
     def show_debug_form_data(self, response_context):
@@ -131,8 +137,8 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         self._debug_print()
         self._debug_print(
             '{0} {1} {0}'.format('=' * 10, 'response.context["messages"]'),
-            fore=Fore.BLUE,
-            style=f"{Style.BRIGHT}{UNDERLINE}",
+            fore=RESPONSE_DEBUG_MESSAGES,
+            style=OUTPUT_EMPHASIS,
         )
 
         # Print out data, if present.
@@ -140,11 +146,11 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             messages = response_context['messages']
             if len(messages) > 0:
                 for message in messages:
-                    self._debug_print('    * "{0}"'.format(message), fore=Fore.BLUE)
+                    self._debug_print('    * "{0}"'.format(message), fore=RESPONSE_DEBUG_MESSAGES)
             else:
-                self._debug_print('    No context messages found.', fore=Fore.BLUE)
+                self._debug_print('    No context messages found.', fore=RESPONSE_DEBUG_MESSAGES)
         else:
-            self._debug_print('    No context messages found.', fore=Fore.BLUE)
+            self._debug_print('    No context messages found.', fore=RESPONSE_DEBUG_MESSAGES)
         self._debug_print()
 
     def show_debug_user_info(self, user):
@@ -153,27 +159,33 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         self._debug_print()
         self._debug_print(
             '{0} {1} {0}'.format('=' * 10, 'User Info'),
-            fore=Fore.CYAN,
-            style=f"{Style.BRIGHT}{UNDERLINE}",
+            fore=RESPONSE_DEBUG_USER_INFO,
+            style=OUTPUT_EMPHASIS,
         )
 
         # Only proceed if we got a proper user model.
         if isinstance(user, get_user_model()):
 
             # General user information.
-            self._debug_print('    * Username: "{0}"'.format(user.username), fore=Fore.CYAN)
-            self._debug_print('    * First: "{0}"'.format(user.first_name), fore=Fore.CYAN)
-            self._debug_print('    * Last: "{0}"'.format(user.last_name), fore=Fore.CYAN)
-            self._debug_print('    * Email: "{0}"'.format(user.email), fore=Fore.CYAN)
+            self._debug_print('    * Username: "{0}"'.format(user.username), fore=RESPONSE_DEBUG_USER_INFO)
+            self._debug_print('    * First: "{0}"'.format(user.first_name), fore=RESPONSE_DEBUG_USER_INFO)
+            self._debug_print('    * Last: "{0}"'.format(user.last_name), fore=RESPONSE_DEBUG_USER_INFO)
+            self._debug_print('    * Email: "{0}"'.format(user.email), fore=RESPONSE_DEBUG_USER_INFO)
 
             # User auth data.
-            self._debug_print('    * is_authenticated: {0}'.format(user.is_authenticated), fore=Fore.CYAN)
+            self._debug_print(
+                '    * is_authenticated: {0}'.format(user.is_authenticated),
+                fore=RESPONSE_DEBUG_USER_INFO,
+            )
 
             # User groups.
-            self._debug_print('    * User Groups: {0}'.format(user.groups.all()), fore=Fore.CYAN)
+            self._debug_print('    * User Groups: {0}'.format(user.groups.all()), fore=RESPONSE_DEBUG_USER_INFO)
 
             # User permissions.
-            self._debug_print('    * User Permissions: {0}'.format(user.user_permissions.all()), fore=Fore.CYAN)
+            self._debug_print(
+                '    * User Permissions: {0}'.format(user.user_permissions.all()),
+                fore=RESPONSE_DEBUG_USER_INFO,
+            )
 
             self._debug_print()
 
@@ -182,7 +194,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                 user,
                 type(user),
                 type(get_user_model()),
-            ), fore=Fore.RED)
+            ), fore=OUTPUT_ERROR)
         self._debug_print()
 
     # endregion Debug Output Functions.

@@ -1,33 +1,84 @@
 """Constants for ExpandedTestCases package."""
 
 # Third-Party Imports.
-from colorama import Back, Fore, Style
 from django.conf import settings
+
+
+# Imports that may not be accessible, depending on local python environment setup.
+try:
+    from colorama import Back, Fore, Style
+    COLORAMA_PRESENT = True
+except ImportError:
+    COLORAMA_PRESENT = False
 
 
 # Underline style definition for debug printing.
 UNDERLINE = '\u001b[4m'
+UNDERLINE_RESET = '\u001b[0m'
 
 
+# General output format settings.
+OUTPUT_ERROR = str(getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_OUTPUT_ERROR_HEADER',
+    '{0}{1}{2}'.format(Fore.RED, Back.RESET, Style.NORMAL) if COLORAMA_PRESENT else '',
+))
 OUTPUT_EXPECTED_MATCH = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_OUTPUT_EXPECTED_MATCH',
-    '{0}{1}{2}'.format(Fore.GREEN, Back.RESET, Style.NORMAL),
+    '{0}{1}{2}'.format(Fore.GREEN, Back.RESET, Style.NORMAL) if COLORAMA_PRESENT else '',
 ))
 OUTPUT_EXPECTED_ERROR = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_OUTPUT_EXPECTED_ERROR',
-    '{0}{1}{2}'.format(Fore.BLACK, Back.GREEN, Style.NORMAL),
+    '{0}{1}{2}'.format(Fore.BLACK, Back.GREEN, Style.NORMAL) if COLORAMA_PRESENT else '',
 ))
 OUTPUT_ACTUALS_MATCH = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_OUTPUT_ACTUALS_MATCH',
-    '{0}{1}{2}'.format(Fore.RED, Back.RESET, Style.NORMAL),
+    '{0}{1}{2}'.format(Fore.RED, Back.RESET, Style.NORMAL) if COLORAMA_PRESENT else '',
 ))
 OUTPUT_ACTUALS_ERROR = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_OUTPUT_ACTUALS_ERROR',
-    '{0}{1}{2}'.format(Fore.BLACK, Back.RED, Style.NORMAL),
+    '{0}{1}{2}'.format(Fore.BLACK, Back.RED, Style.NORMAL) if COLORAMA_PRESENT else '',
+))
+OUTPUT_EMPHASIS = str(getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_OUTPUT_EMPHASIS',
+    (Style.BRIGHT if COLORAMA_PRESENT else '') + UNDERLINE,
+))
+OUTPUT_RESET = str(getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_OUTPUT_RESET',
+    Style.RESET_ALL if COLORAMA_PRESENT else UNDERLINE_RESET,
+))
+
+# Output formatting for response sections.
+RESPONSE_DEBUG_URL = str(getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_RESPONSE_OUTPUT_URL',
+    Fore.YELLOW if COLORAMA_PRESENT else '',
+))
+RESPONSE_DEBUG_CONTENT = str(getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_RESPONSE_OUTPUT_CONTENT',
+    Fore.WHITE if COLORAMA_PRESENT else '',
+))
+RESPONSE_DEBUG_SESSION = str(getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_RESPONSE_OUTPUT_SESSION',
+    Fore.MAGENTA if COLORAMA_PRESENT else '',
+))
+RESPONSE_DEBUG_MESSAGES = str(getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_RESPONSE_OUTPUT_MESSAGES',
+    Fore.BLUE if COLORAMA_PRESENT else '',
+))
+RESPONSE_DEBUG_USER_INFO = str(getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_RESPONSE_OUTPUT_USER_INFO',
+    Fore.CYAN if COLORAMA_PRESENT else '',
 ))
 
 

@@ -3,11 +3,10 @@ Testing class for generalized logic.
 """
 
 # System Imports.
-from colorama import Fore, Style
 from django.test import TestCase
 
 # User Imports.
-from django_expanded_test_cases.constants import UNDERLINE
+from django_expanded_test_cases.constants import OUTPUT_EMPHASIS, OUTPUT_ERROR
 from django_expanded_test_cases.mixins import CoreTestCaseMixin
 
 
@@ -54,8 +53,8 @@ class BaseTestCase(TestCase, CoreTestCaseMixin):
                     self.__class__.__name__,
                     type(err).__name__,
                 ),
-                fore=Fore.RED,
-                style=f"{Style.BRIGHT}{UNDERLINE}"
+                fore=OUTPUT_ERROR,
+                style=OUTPUT_EMPHASIS,
             )
             self._debug_print('{0}\n\n'.format(str(err)))
 
