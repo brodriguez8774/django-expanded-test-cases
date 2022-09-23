@@ -5,7 +5,7 @@ Tests for test_cases/live_server_test_case.py.
 # System Imports.
 import unittest
 
-# User Imports.
+# Internal Imports.
 from django_expanded_test_cases import LiveServerTestCase
 
 

@@ -4,12 +4,14 @@ Core testing logic, universal to all test cases.
 
 # System Imports.
 import re
-from django.contrib.auth import get_user_model
-from django.utils.http import urlencode
 from functools import wraps
 from types import FunctionType
 
-# User Imports.
+# Third-Party Imports.
+from django.contrib.auth import get_user_model
+from django.utils.http import urlencode
+
+# Internal Imports.
 from django_expanded_test_cases.constants import (
     ETC_DEBUG_PRINT,
     OUTPUT_ACTUALS_ERROR,

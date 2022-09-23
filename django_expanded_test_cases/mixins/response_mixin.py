@@ -4,11 +4,13 @@ Core testing logic that pertains to handling Response objects.
 
 # System Imports.
 import logging, re
+
+# Third-Party Imports.
 from bs4 import BeautifulSoup
 from django.contrib.auth import get_user_model
 from django.http.response import HttpResponseBase
 
-# User Imports.
+# Internal Imports.
 from . import CoreTestCaseMixin
 from django_expanded_test_cases.constants import (
     OUTPUT_ERROR,

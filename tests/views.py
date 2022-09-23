@@ -2,7 +2,7 @@
 Testing views for django-expanded-test-cases project.
 """
 
-# System Imports.
+# Third-Party Imports.
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.http import JsonResponse

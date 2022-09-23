@@ -7,13 +7,15 @@ Tends to take longer to test. So consider using IntegrationTestCase instead, whe
 
 # System Imports.
 import time
+
+# Third-Party Imports.
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.firefox.service import Service as FireFoxService
 from channels.testing import ChannelsLiveServerTestCase
 from django.conf import settings
 
-# User Imports.
+# Internal Imports.
 from django_expanded_test_cases.mixins.response_mixin import ResponseTestCaseMixin
 
 

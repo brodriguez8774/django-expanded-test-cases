@@ -4,7 +4,7 @@ Testing URL configuration for django-expanded-test-cases project.
 Mocks being the "project settings root" urls.py file.
 """
 
-# System Imports.
+# Third-Party Imports.
 from django.urls import include, path
 
 

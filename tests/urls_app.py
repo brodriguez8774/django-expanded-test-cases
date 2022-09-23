@@ -4,10 +4,10 @@ Testing URL configuration for django-expanded-test-cases project.
 Mocks being an "app" urls.py file.
 """
 
-# System Imports.
+# Third-Party Imports.
 from django.urls import path
 
-# User Imports.
+# Internal Imports.
 from . import views
 
 

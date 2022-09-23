@@ -1,15 +1,17 @@
 """
 Tests for test_cases/integration_test_case.py.
 """
-import logging
+
 # System Imports.
+import logging
 from unittest.mock import patch
 
+# Third-Party Imports.
 from django.contrib.auth.models import AnonymousUser, Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponse
 
-# User Imports.
+# Internal Imports.
 from django_expanded_test_cases import IntegrationTestCase
 
 

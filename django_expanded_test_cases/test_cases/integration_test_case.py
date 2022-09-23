@@ -4,12 +4,14 @@ Testing logic for views and other multi-part components.
 
 # System Imports.
 import re
+
+# Third-Party Imports.
 from django.conf import settings
 from django.http.response import HttpResponseBase
 from django.urls import reverse
 from django.urls.exceptions import NoReverseMatch
 
-# User Imports.
+# Internal Imports.
 from .base_test_case import BaseTestCase
 from django_expanded_test_cases.constants import (
     ETC_ALLOW_MESSAGE_PARTIALS,

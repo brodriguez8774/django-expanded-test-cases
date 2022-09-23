@@ -2,7 +2,7 @@
 Testing app definition for django-expanded-test-cases project.
 """
 
-# System Imports.
+# Third-Party Imports.
 from django.apps import AppConfig
 
 

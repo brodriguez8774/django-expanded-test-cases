@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Run Pytest Tests"""
 
+# Third-Party Imports.
 from colorama import Fore, Back, Style
 
 
@@ -12,6 +13,7 @@ def color_print(*args, fore='', back='', style='', **kwargs):
     print(style, end="")
     print(*args, **kwargs, end="")
     print(Style.RESET_ALL)
+
 
 def show_colors():
     """Show Colors"""
@@ -145,6 +147,7 @@ def show_colors():
     color_print('Dim MAGENTA', fore=Fore.WHITE, back=Back.MAGENTA, style=Style.DIM)
     color_print('Dim CYAN', fore=Fore.WHITE, back=Back.CYAN, style=Style.DIM)
     color_print('Dim WHITE', fore=Fore.WHITE, back=Back.WHITE, style=Style.DIM)
+
 
 if __name__ == '__main__':
     show_colors()

@@ -2,10 +2,10 @@
 Testing class for generalized logic.
 """
 
-# System Imports.
+# Third-Party Imports.
 from django.test import TestCase
 
-# User Imports.
+# Internal Imports.
 from django_expanded_test_cases.constants import OUTPUT_EMPHASIS, OUTPUT_ERROR
 from django_expanded_test_cases.mixins import CoreTestCaseMixin
 

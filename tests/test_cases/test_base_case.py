@@ -2,11 +2,11 @@
 Tests for test_cases/base_test_case.py.
 """
 
-# System Imports.
+# Third-Party Imports.
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 
-# User Imports.
+# Internal Imports.
 from django_expanded_test_cases import BaseTestCase
 
 
