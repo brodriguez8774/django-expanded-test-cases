@@ -26,22 +26,22 @@ OUTPUT_ERROR = str(getattr(
 OUTPUT_EXPECTED_MATCH = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_OUTPUT_EXPECTED_MATCH',
-    '{0}{1}{2}'.format(Fore.GREEN, Back.RESET, Style.NORMAL) if COLORAMA_PRESENT else '',
+    '{0}{1}{2}'.format(Fore.CYAN, Back.RESET, Style.NORMAL) if COLORAMA_PRESENT else '',
 ))
 OUTPUT_EXPECTED_ERROR = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_OUTPUT_EXPECTED_ERROR',
-    '{0}{1}{2}'.format(Fore.BLACK, Back.GREEN, Style.NORMAL) if COLORAMA_PRESENT else '',
+    '{0}{1}{2}'.format(Fore.BLACK, Back.CYAN, Style.NORMAL) if COLORAMA_PRESENT else '',
 ))
 OUTPUT_ACTUALS_MATCH = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_OUTPUT_ACTUALS_MATCH',
-    '{0}{1}{2}'.format(Fore.RED, Back.RESET, Style.NORMAL) if COLORAMA_PRESENT else '',
+    '{0}{1}{2}'.format(Fore.MAGENTA, Back.RESET, Style.NORMAL) if COLORAMA_PRESENT else '',
 ))
 OUTPUT_ACTUALS_ERROR = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_OUTPUT_ACTUALS_ERROR',
-    '{0}{1}{2}'.format(Fore.BLACK, Back.RED, Style.NORMAL) if COLORAMA_PRESENT else '',
+    '{0}{1}{2}'.format(Fore.BLACK, Back.MAGENTA, Style.NORMAL) if COLORAMA_PRESENT else '',
 ))
 OUTPUT_EMPHASIS = str(getattr(
     settings,
