@@ -151,15 +151,18 @@ class CoreTestCaseMixin:
             self.assertEqual(actual_text, expected_text)
         except AssertionError as err:
             # Assertion failed. Provide debug output.
-            expected_match_style = OUTPUT_EXPECTED_MATCH
-            expected_error_style = OUTPUT_EXPECTED_ERROR
-            actual_match_style = OUTPUT_ACTUALS_MATCH
-            actual_error_style = OUTPUT_ACTUALS_ERROR
 
             # Loop through to calculate color output differences.
             # First split on newlines.
-            split_actual = actual_text.split('\\n')
-            split_expected = expected_text.split('\\n')
+            split_expected = expected_text.split('\n')
+            split_actual = actual_text.split('\n')
+            append_newline = False
+
+            # Handle if either is empty.
+            if len(split_expected) == 1 and split_expected[0].strip() == '':
+                split_expected = []
+            if len(split_actual) == 1 and split_actual[0].strip() == '':
+                split_actual = []
 
             # Determine which one is longer.
             if len(split_actual) > len(split_expected):
@@ -169,102 +172,104 @@ class CoreTestCaseMixin:
 
             formatted_actual_output = ''
             formatted_expected_output = ''
-            actual_color = actual_match_style
-            expected_color = expected_match_style
             for line_index in range(max_lines):
                 try:
-                    expected_line = split_expected[line_index]
+                    curr_expected_line = split_expected[line_index]
+                    if append_newline:
+                        curr_expected_line = '\n{0}'.format(curr_expected_line)
                 except IndexError:
-                    expected_line = None
+                    curr_expected_line = None
                 try:
-                    actual_line = split_actual[line_index]
+                    curr_actual_line = split_actual[line_index]
+                    if append_newline:
+                        curr_actual_line = '\n{0}'.format(curr_actual_line)
                 except IndexError:
-                    actual_line = None
+                    curr_actual_line = None
+                append_newline = False
 
-                if expected_line == actual_line:
+                if curr_expected_line == curr_actual_line:
                     # Line is full match and correct.
-                    actual_line = '{0}{1}{2}'.format(actual_match_style, actual_line, OUTPUT_RESET)
-                    expected_line = '{0}{1}{2}'.format(expected_match_style, expected_line, OUTPUT_RESET)
-                elif expected_line is None:
-                    # "Actual" output is longer than "expected" output.
-                    # Impossible to match current line.
-                    actual_line = '{0}{1}{2}'.format(
-                        actual_error_style,
-                        actual_line,
+                    curr_actual_line = '{0}{1}{2}\n'.format(OUTPUT_ACTUALS_MATCH, curr_actual_line, OUTPUT_RESET)
+                    curr_expected_line = '{0}{1}{2}\n'.format(OUTPUT_EXPECTED_MATCH, curr_expected_line, OUTPUT_RESET)
+                elif curr_expected_line is None:
+                    # "Actual" output is longer than "expected" output. Impossible to match current line.
+                    curr_expected_line = ''
+                    curr_actual_line = '{0}{1}{2}\n'.format(
+                        OUTPUT_ACTUALS_ERROR,
+                        curr_actual_line,
                         OUTPUT_RESET,
                     )
-                elif actual_line is None:
-                    # "Expected" output is longer than "actual" output.
-                    # Impossible to match current line.
-                    expected_line = '{0}{1}{2}'.format(
-                        expected_error_style,
-                        expected_line,
+                elif curr_actual_line is None:
+                    # "Expected" output is longer than "actual" output. Impossible to match current line.
+                    curr_expected_line = '{0}{1}{2}\n'.format(
+                        OUTPUT_EXPECTED_ERROR,
+                        curr_expected_line,
                         OUTPUT_RESET,
                     )
+                    curr_actual_line = ''
                 else:
                     # Both lines are populated but do not match.
                     # Determine which one is longer.
-                    if len(actual_line) > len(expected_line):
-                        max_chars = len(actual_line)
+                    if len(curr_actual_line) > len(curr_expected_line):
+                        max_chars = len(curr_actual_line)
                     else:
-                        max_chars = len(expected_line)
+                        max_chars = len(curr_expected_line)
 
-                # Check each character and determine where non-match happens.
-                actual_str = '{0}'.format(actual_color)
-                expected_str = '{0}'.format(expected_color)
-                for char_index in range(max_chars):
-                    # Grab current character.
-                    try:
-                        expected_char = expected_line[char_index]
-                    except IndexError:
-                        expected_char = ''
-                    try:
-                        actual_char = actual_line[char_index]
-                    except IndexError:
-                        actual_char = ''
+                    # Check each character and determine where non-match happens.
+                    curr_actual_color = OUTPUT_RESET
+                    curr_expected_color = OUTPUT_RESET
+                    curr_actual_char_line = ''
+                    curr_expected_char_line = ''
+                    for char_index in range(max_chars):
+                        # Grab current character.
+                        try:
+                            expected_char = curr_expected_line[char_index]
+                        except IndexError:
+                            expected_char = ''
+                        try:
+                            actual_char = curr_actual_line[char_index]
+                        except IndexError:
+                            actual_char = ''
 
-                    # Format based on match.
-                    if expected_char == actual_char:
-                        # Match.
-                        if actual_color != actual_match_style:
-                            actual_color = actual_match_style
-                            actual_str += actual_color
-                        actual_str += '{0}'.format(actual_char)
-                        if expected_color != expected_match_style:
-                            expected_color = expected_match_style
-                            expected_str += expected_color
-                        expected_str += '{0}'.format(expected_char)
-                    else:
-                        # Non-match.
-                        if actual_color != actual_error_style:
-                            actual_color = actual_error_style
-                            actual_str += actual_color
-                        actual_str += '{0}'.format(actual_char)
-                        if expected_color != expected_error_style:
-                            expected_color = expected_error_style
-                            expected_str += expected_color
-                        expected_str += '{0}'.format(expected_char)
+                        # Format based on match.
+                        if expected_char == actual_char:
+                            # Match.
+                            if curr_actual_color != OUTPUT_ACTUALS_MATCH:
+                                curr_actual_color = OUTPUT_ACTUALS_MATCH
+                                curr_actual_char_line += curr_actual_color
+                            if curr_expected_color != OUTPUT_EXPECTED_MATCH:
+                                curr_expected_color = OUTPUT_EXPECTED_MATCH
+                                curr_expected_char_line += curr_expected_color
+                        else:
+                            # Non-match.
+                            if curr_actual_color != OUTPUT_ACTUALS_ERROR:
+                                curr_actual_color = OUTPUT_ACTUALS_ERROR
+                                curr_actual_char_line += curr_actual_color
+                            if curr_expected_color != OUTPUT_EXPECTED_ERROR:
+                                curr_expected_color = OUTPUT_EXPECTED_ERROR
+                                curr_expected_char_line += curr_expected_color
 
-                # Reset values if not already.
-                if actual_color != actual_match_style:
-                    actual_color = actual_match_style
-                    actual_str += actual_color
-                if expected_color != expected_match_style:
-                    expected_color = expected_match_style
-                    expected_str += expected_color
+                        curr_actual_char_line += '{0}'.format(actual_char)
+                        curr_expected_char_line += '{0}'.format(expected_char)
+
+                    # Update output strings.
+                    append_newline = True
+                    formatted_expected_output += curr_expected_char_line
+                    formatted_actual_output += curr_actual_char_line
+                    continue
 
                 # Update output strings.
-                formatted_actual_output += actual_str
-                formatted_expected_output += expected_str
+                formatted_expected_output += curr_expected_line
+                formatted_actual_output += curr_actual_line
 
             # Finally print actual debug output.
             self._debug_print('')
             self._debug_print('')
-            self._debug_print('EXPECTED:', fore=expected_match_style)
+            self._debug_print('EXPECTED:', fore=OUTPUT_EXPECTED_MATCH)
             self._debug_print(formatted_expected_output)
             self._debug_print('')
             self._debug_print('')
-            self._debug_print('ACTUAL:', fore=actual_match_style)
+            self._debug_print('ACTUAL:', fore=OUTPUT_ACTUALS_MATCH)
             self._debug_print(formatted_actual_output)
             self._debug_print('')
             self._debug_print('')

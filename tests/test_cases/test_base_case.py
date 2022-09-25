@@ -2,12 +2,23 @@
 Tests for test_cases/base_test_case.py.
 """
 
+# System Imports.
+from contextlib import redirect_stdout
+from io import StringIO
+
 # Third-Party Imports.
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 
 # Internal Imports.
 from django_expanded_test_cases import BaseTestCase
+from django_expanded_test_cases.constants import (
+    OUTPUT_ACTUALS_MATCH,
+    OUTPUT_ACTUALS_ERROR,
+    OUTPUT_EXPECTED_MATCH,
+    OUTPUT_EXPECTED_ERROR,
+    OUTPUT_RESET,
+)
 
 
 lorem_str = """
@@ -53,6 +64,10 @@ libero.
 
 class BaseClassTest(BaseTestCase):
     """Tests for BaseTestCase class."""
+
+    def get_logging_output(self, log_capture, record_num):
+        """Helper function to read captured logging output."""
+        return str(log_capture.records[record_num].message).strip()
 
     # region Assertion Tests
 
@@ -183,6 +198,730 @@ class BaseClassTest(BaseTestCase):
                 modified_str = lorem_str[:(half_lorem_len - 1)] + lorem_str[(half_lorem_len + 1):]
                 self.assertText(lorem_str, modified_str)
             # self.assertEqual(str(err.exception), exception_msg)
+
+    def test__assertText_coloring__missing_lines(self):
+        """Tests assertText() function color output, when assertion fails due to incorrect line counts.
+
+        When lines are present, character counts and character values should fully match.
+        """
+        with self.subTest('With expected as empty'):
+            std_out = StringIO()
+            with redirect_stdout(std_out):
+                with self.assertRaises(AssertionError):
+                    self.assertText('Actuals has values here. Expected does not.', '')
+            std_out_lines = std_out.getvalue().split('\n')[5:]
+
+            # Test all line values.
+            self.assertEqual(std_out_lines[0], '')
+            self.assertEqual(std_out_lines[1], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[2], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[3], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(std_out_lines[5], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[6], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[7], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[9],
+                '{0}Actuals has values here. Expected does not.{1}'.format(OUTPUT_ACTUALS_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[10], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[11], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[12], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[13], '')
+
+        with self.subTest('With actuals as empty'):
+            std_out = StringIO()
+            with redirect_stdout(std_out):
+                with self.assertRaises(AssertionError):
+                    self.assertText('', 'Expected has values here. Actuals does not.')
+            std_out_lines = std_out.getvalue().split('\n')[3:]
+
+            # Test all line values.
+            self.assertEqual(std_out_lines[0], '')
+            self.assertEqual(std_out_lines[1], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[2], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[3], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[5],
+                '{0}Expected has values here. Actuals does not.{1}'.format(OUTPUT_EXPECTED_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[6], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[7], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[8], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[9], '{0}ACTUAL:{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(std_out_lines[10], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[11], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[12], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[13], '')
+
+        with self.subTest('With expected as empty and actuals as multi-line'):
+            std_out = StringIO()
+            with redirect_stdout(std_out):
+                with self.assertRaises(AssertionError):
+                    self.assertText('Actuals has values here.\nExpected does not.', '')
+            std_out_lines = std_out.getvalue().split('\n')[4:]
+
+            # Test all line values.
+            self.assertEqual(std_out_lines[0], '')
+            self.assertEqual(std_out_lines[1], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[2], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[3], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(std_out_lines[5], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[6], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[7], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[9],
+                '{0}Actuals has values here.{1}'.format(OUTPUT_ACTUALS_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[10], '{0}Expected does not.{1}'.format(OUTPUT_ACTUALS_ERROR, OUTPUT_RESET))
+            self.assertEqual(std_out_lines[11], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[12], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[13], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[14], '')
+
+        with self.subTest('With actuals as empty and expected as multi-line'):
+            std_out = StringIO()
+            with redirect_stdout(std_out):
+                with self.assertRaises(AssertionError):
+                    self.assertText('', 'Expected has values here.\nActuals does not.')
+            std_out_lines = std_out.getvalue().split('\n')[4:]
+
+            # Test all line values.
+            self.assertEqual(std_out_lines[0], '')
+            self.assertEqual(std_out_lines[1], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[2], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[3], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[5],
+                '{0}Expected has values here.{1}'.format(OUTPUT_EXPECTED_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[6], '{0}Actuals does not.{1}'.format(OUTPUT_EXPECTED_ERROR, OUTPUT_RESET))
+            self.assertEqual(std_out_lines[7], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[8], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[9], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[10], '{0}ACTUAL:{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(std_out_lines[11], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[12], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[13], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[14], '')
+
+        with self.subTest('With expected as one line less - At end'):
+            std_out = StringIO()
+            with redirect_stdout(std_out):
+                with self.assertRaises(AssertionError):
+                    self.assertText('One line.\nTwo line.', 'One line.')
+            std_out_lines = std_out.getvalue().split('\n')[5:]
+
+            # Test all line values.
+            self.assertEqual(std_out_lines[0], '')
+            self.assertEqual(std_out_lines[1], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[2], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[3], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(std_out_lines[5], '{0}One line.{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(std_out_lines[6], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[7], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[8], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[9], '{0}ACTUAL:{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(std_out_lines[10], '{0}One line.{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(std_out_lines[11], '{0}Two line.{1}'.format(OUTPUT_ACTUALS_ERROR, OUTPUT_RESET))
+            self.assertEqual(std_out_lines[12], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[13], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[14], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[15], '')
+
+        with self.subTest('With actuals as one line less - At end'):
+            std_out = StringIO()
+            with redirect_stdout(std_out):
+                with self.assertRaises(AssertionError):
+                    self.assertText('One line.', 'One line.\nTwo line.')
+            std_out_lines = std_out.getvalue().split('\n')[6:]
+
+            # Test all line values.
+            self.assertEqual(std_out_lines[0], '')
+            self.assertEqual(std_out_lines[1], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[2], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[3], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(std_out_lines[5], '{0}One line.{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(std_out_lines[6], '{0}Two line.{1}'.format(OUTPUT_EXPECTED_ERROR, OUTPUT_RESET))
+            self.assertEqual(std_out_lines[7], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[8], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[9], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[10], '{0}ACTUAL:{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(std_out_lines[11], '{0}One line.{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(std_out_lines[12], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[13], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[14], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[15], '')
+
+    def test__assertText_coloring__missing_characters(self):
+        """Tests assertText() function color output, when assertion fails due to inccorect character counts.
+
+        All tests here should have equal line counts, but char counts per-line won't match.
+        For lines that have equal char counts, the characters should fully match.
+        """
+        with self.subTest('With expected as one char missing - At start'):
+            std_out = StringIO()
+            with redirect_stdout(std_out):
+                with self.assertRaises(AssertionError):
+                    self.assertText('Testing.', 'esting.')
+            std_out_lines = std_out.getvalue().split('\n')[6:]
+
+            # Test all line values.
+            self.assertEqual(std_out_lines[0], '')
+            self.assertEqual(std_out_lines[1], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[2], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[3], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[5],
+                '{0}esting.{1}'.format(OUTPUT_EXPECTED_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[6], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[7], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[9],
+                '{0}Testing.{1}'.format(OUTPUT_ACTUALS_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[10], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[11], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[12], '')
+
+        with self.subTest('With actuals as one char missing - At start'):
+            std_out = StringIO()
+            with redirect_stdout(std_out):
+                with self.assertRaises(AssertionError):
+                    self.assertText('esting.', 'Testing.')
+            std_out_lines = std_out.getvalue().split('\n')[6:]
+
+            # Test all line values.
+            self.assertEqual(std_out_lines[0], '')
+            self.assertEqual(std_out_lines[1], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[2], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[3], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[5],
+                '{0}Testing.{1}'.format(OUTPUT_EXPECTED_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[6], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[7], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[9],
+                '{0}esting.{1}'.format(OUTPUT_ACTUALS_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[10], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[11], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[12], '')
+
+        with self.subTest('With expected as multiple characters missing - At start'):
+            std_out = StringIO()
+            with redirect_stdout(std_out):
+                with self.assertRaises(AssertionError):
+                    self.assertText('Testing.', 'sting.')
+            std_out_lines = std_out.getvalue().split('\n')[6:]
+
+            # Test all line values.
+            self.assertEqual(std_out_lines[0], '')
+            self.assertEqual(std_out_lines[1], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[2], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[3], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[5],
+                '{0}sting.{1}'.format(OUTPUT_EXPECTED_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[6], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[7], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[9],
+                '{0}Testing.{1}'.format(OUTPUT_ACTUALS_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[10], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[11], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[12], '')
+
+        with self.subTest('With actuals as multiple characters missing - At start'):
+            std_out = StringIO()
+            with redirect_stdout(std_out):
+                with self.assertRaises(AssertionError):
+                    self.assertText('sting.', 'Testing.')
+            std_out_lines = std_out.getvalue().split('\n')[6:]
+
+            # Test all line values.
+            self.assertEqual(std_out_lines[0], '')
+            self.assertEqual(std_out_lines[1], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[2], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[3], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[5],
+                '{0}Testing.{1}'.format(OUTPUT_EXPECTED_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[6], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[7], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[9],
+                '{0}sting.{1}'.format(OUTPUT_ACTUALS_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[10], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[11], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[12], '')
+
+        with self.subTest('With expected as one char missing - At middle'):
+            std_out = StringIO()
+            with redirect_stdout(std_out):
+                with self.assertRaises(AssertionError):
+                    self.assertText('Testing.', 'Tesing.')
+            std_out_lines = std_out.getvalue().split('\n')[6:]
+
+            # Test all line values.
+            self.assertEqual(std_out_lines[0], '')
+            self.assertEqual(std_out_lines[1], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[2], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[3], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[5],
+                '{0}Tes{1}ing.{2}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_EXPECTED_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[6], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[7], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[9],
+                '{0}Tes{1}ting.{2}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_ACTUALS_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[10], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[11], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[12], '')
+
+        with self.subTest('With actuals as one char missing - At middle'):
+            std_out = StringIO()
+            with redirect_stdout(std_out):
+                with self.assertRaises(AssertionError):
+                    self.assertText('Tesing.', 'Testing.')
+            std_out_lines = std_out.getvalue().split('\n')[6:]
+
+            # Test all line values.
+            self.assertEqual(std_out_lines[0], '')
+            self.assertEqual(std_out_lines[1], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[2], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[3], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[5],
+                '{0}Tes{1}ting.{2}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_EXPECTED_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[6], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[7], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[9],
+                '{0}Tes{1}ing.{2}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_ACTUALS_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[10], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[11], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[12], '')
+
+        with self.subTest('With expected as multiple characters missing - At middle'):
+            std_out = StringIO()
+            with redirect_stdout(std_out):
+                with self.assertRaises(AssertionError):
+                    self.assertText('Testing.', 'Teng.')
+            std_out_lines = std_out.getvalue().split('\n')[6:]
+
+            # Test all line values.
+            self.assertEqual(std_out_lines[0], '')
+            self.assertEqual(std_out_lines[1], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[2], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[3], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[5],
+                '{0}Te{1}ng.{2}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_EXPECTED_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[6], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[7], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[9],
+                '{0}Te{1}sting.{2}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_ACTUALS_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[10], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[11], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[12], '')
+
+        with self.subTest('With actuals as multiple characters missing - At middle'):
+            std_out = StringIO()
+            with redirect_stdout(std_out):
+                with self.assertRaises(AssertionError):
+                    self.assertText('Teng.', 'Testing.')
+            std_out_lines = std_out.getvalue().split('\n')[6:]
+
+            # Test all line values.
+            self.assertEqual(std_out_lines[0], '')
+            self.assertEqual(std_out_lines[1], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[2], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[3], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[5],
+                '{0}Te{1}sting.{2}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_EXPECTED_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[6], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[7], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[9],
+                '{0}Te{1}ng.{2}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_ACTUALS_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[10], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[11], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[12], '')
+
+        with self.subTest('With expected as one char missing - At end'):
+            std_out = StringIO()
+            with redirect_stdout(std_out):
+                with self.assertRaises(AssertionError):
+                    self.assertText('Testing.', 'Testing')
+            std_out_lines = std_out.getvalue().split('\n')[6:]
+
+            # Test all line values.
+            self.assertEqual(std_out_lines[0], '')
+            self.assertEqual(std_out_lines[1], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[2], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[3], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[5],
+                '{0}Testing{1}{2}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_EXPECTED_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[6], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[7], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[9],
+                '{0}Testing{1}.{2}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_ACTUALS_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[10], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[11], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[12], '')
+
+        with self.subTest('With actuals as one char missing - At end'):
+            std_out = StringIO()
+            with redirect_stdout(std_out):
+                with self.assertRaises(AssertionError):
+                    self.assertText('Testing', 'Testing.')
+            std_out_lines = std_out.getvalue().split('\n')[6:]
+
+            # Test all line values.
+            self.assertEqual(std_out_lines[0], '')
+            self.assertEqual(std_out_lines[1], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[2], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[3], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[5],
+                '{0}Testing{1}.{2}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_EXPECTED_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[6], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[7], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[9],
+                '{0}Testing{1}{2}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_ACTUALS_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[10], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[11], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[12], '')
+
+        with self.subTest('With expected as multiple characters missing - At end'):
+            std_out = StringIO()
+            with redirect_stdout(std_out):
+                with self.assertRaises(AssertionError):
+                    self.assertText('Testing.', 'Test')
+            std_out_lines = std_out.getvalue().split('\n')[5:]
+
+            # Test all line values.
+            self.assertEqual(std_out_lines[0], '')
+            self.assertEqual(std_out_lines[1], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[2], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[3], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[5],
+                '{0}Test{1}{2}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_EXPECTED_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[6], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[7], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[9],
+                '{0}Test{1}ing.{2}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_ACTUALS_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[10], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[11], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[12], '')
+
+        with self.subTest('With actuals as multiple characters missing - At end'):
+            std_out = StringIO()
+            with redirect_stdout(std_out):
+                with self.assertRaises(AssertionError):
+                    self.assertText('Test', 'Testing.')
+            std_out_lines = std_out.getvalue().split('\n')[5:]
+
+            # Test all line values.
+            self.assertEqual(std_out_lines[0], '')
+            self.assertEqual(std_out_lines[1], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[2], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[3], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[5],
+                '{0}Test{1}ing.{2}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_EXPECTED_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[6], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[7], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[9],
+                '{0}Test{1}{2}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_ACTUALS_ERROR, OUTPUT_RESET),
+            )
+            self.assertEqual(std_out_lines[10], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[11], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[12], '')
+
+    def test__assertText_coloring__wrong_characters(self):
+        """Tests assertText() function color output, when assertion fails due incorrect characters.
+
+        All tests here should have equal line counts and char counts per-line.
+        """
+        with self.subTest('With wrong character at start - Small str'):
+            std_out = StringIO()
+            with redirect_stdout(std_out):
+                with self.assertRaises(AssertionError):
+                    self.assertText('ABC', 'aBC')
+            std_out_lines = std_out.getvalue().split('\n')[7:]
+
+            # Test all line values.
+            self.assertEqual(std_out_lines[0], '')
+            self.assertEqual(std_out_lines[1], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[2], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[3], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[5],
+                '{0}a{1}BC{2}'.format(
+                    OUTPUT_EXPECTED_ERROR,
+                    OUTPUT_EXPECTED_MATCH,
+                    OUTPUT_RESET,
+                ),
+            )
+            self.assertEqual(std_out_lines[6], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[7], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[9],
+                '{0}A{1}BC{2}'.format(
+                    OUTPUT_ACTUALS_ERROR,
+                    OUTPUT_ACTUALS_MATCH,
+                    OUTPUT_RESET,
+                ),
+            )
+            self.assertEqual(std_out_lines[10], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[11], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[12], '')
+
+        with self.subTest('With wrong characters at start - Larger str'):
+            std_out = StringIO()
+            with redirect_stdout(std_out):
+                with self.assertRaises(AssertionError):
+                    self.assertText('This is a test value.', 'tHIS is a test value.')
+            std_out_lines = std_out.getvalue().split('\n')[7:]
+
+            # Test all line values.
+            self.assertEqual(std_out_lines[0], '')
+            self.assertEqual(std_out_lines[1], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[2], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[3], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[5],
+                '{0}tHIS{1} is a test value.{2}'.format(
+                    OUTPUT_EXPECTED_ERROR,
+                    OUTPUT_EXPECTED_MATCH,
+                    OUTPUT_RESET,
+                ),
+            )
+            self.assertEqual(std_out_lines[6], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[7], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[9],
+                '{0}This{1} is a test value.{2}'.format(
+                    OUTPUT_ACTUALS_ERROR,
+                    OUTPUT_ACTUALS_MATCH,
+                    OUTPUT_RESET,
+                ),
+            )
+            self.assertEqual(std_out_lines[10], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[11], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[12], '')
+
+        with self.subTest('With wrong character at middle - Small str'):
+            std_out = StringIO()
+            with redirect_stdout(std_out):
+                with self.assertRaises(AssertionError):
+                    self.assertText('ABC', 'AbC')
+            std_out_lines = std_out.getvalue().split('\n')[7:]
+
+            # Test all line values.
+            self.assertEqual(std_out_lines[0], '')
+            self.assertEqual(std_out_lines[1], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[2], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[3], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[5],
+                '{0}A{1}b{0}C{2}'.format(
+                    OUTPUT_EXPECTED_MATCH,
+                    OUTPUT_EXPECTED_ERROR,
+                    OUTPUT_RESET,
+                ),
+            )
+            self.assertEqual(std_out_lines[6], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[7], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[9],
+                '{0}A{1}B{0}C{2}'.format(
+                    OUTPUT_ACTUALS_MATCH,
+                    OUTPUT_ACTUALS_ERROR,
+                    OUTPUT_RESET,
+                ),
+            )
+            self.assertEqual(std_out_lines[10], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[11], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[12], '')
+
+        with self.subTest('With wrong character at middle - Larger str'):
+            std_out = StringIO()
+            with redirect_stdout(std_out):
+                with self.assertRaises(AssertionError):
+                    self.assertText('This is a test value.', 'This IS A TEST value.')
+            std_out_lines = std_out.getvalue().split('\n')[5:]
+
+            # Test all line values.
+            self.assertEqual(std_out_lines[0], '')
+            self.assertEqual(std_out_lines[1], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[2], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[3], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[5],
+                '{0}This {1}IS{0} {1}A{0} {1}TEST{0} value.{2}'.format(
+                    OUTPUT_EXPECTED_MATCH,
+                    OUTPUT_EXPECTED_ERROR,
+                    OUTPUT_RESET,
+                ),
+            )
+            self.assertEqual(std_out_lines[6], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[7], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[9],
+                '{0}This {1}is{0} {1}a{0} {1}test{0} value.{2}'.format(
+                    OUTPUT_ACTUALS_MATCH,
+                    OUTPUT_ACTUALS_ERROR,
+                    OUTPUT_RESET,
+                ),
+            )
+            self.assertEqual(std_out_lines[10], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[11], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[12], '')
+
+        with self.subTest('With wrong character at end - Small str'):
+            std_out = StringIO()
+            with redirect_stdout(std_out):
+                with self.assertRaises(AssertionError):
+                    self.assertText('ABC', 'ABc')
+            std_out_lines = std_out.getvalue().split('\n')[7:]
+
+            # Test all line values.
+            self.assertEqual(std_out_lines[0], '')
+            self.assertEqual(std_out_lines[1], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[2], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[3], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[5],
+                '{0}AB{1}c{2}'.format(
+                    OUTPUT_EXPECTED_MATCH,
+                    OUTPUT_EXPECTED_ERROR,
+                    OUTPUT_RESET,
+                ),
+            )
+            self.assertEqual(std_out_lines[6], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[7], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[9],
+                '{0}AB{1}C{2}'.format(
+                    OUTPUT_ACTUALS_MATCH,
+                    OUTPUT_ACTUALS_ERROR,
+                    OUTPUT_RESET,
+                ),
+            )
+            self.assertEqual(std_out_lines[10], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[11], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[12], '')
+
+        with self.subTest('With wrong characters at end - Larger str'):
+            std_out = StringIO()
+            with redirect_stdout(std_out):
+                with self.assertRaises(AssertionError):
+                    self.assertText('This is a test value.', 'This is a test VALUE!')
+            std_out_lines = std_out.getvalue().split('\n')[5:]
+
+            # Test all line values.
+            self.assertEqual(std_out_lines[0], '')
+            self.assertEqual(std_out_lines[1], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[2], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[3], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(OUTPUT_EXPECTED_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[5],
+                '{0}This is a test {1}VALUE!{2}'.format(
+                    OUTPUT_EXPECTED_MATCH,
+                    OUTPUT_EXPECTED_ERROR,
+                    OUTPUT_RESET,
+                ),
+            )
+            self.assertEqual(std_out_lines[6], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[7], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(OUTPUT_ACTUALS_MATCH, OUTPUT_RESET))
+            self.assertEqual(
+                std_out_lines[9],
+                '{0}This is a test {1}value.{2}'.format(
+                    OUTPUT_ACTUALS_MATCH,
+                    OUTPUT_ACTUALS_ERROR,
+                    OUTPUT_RESET,
+                ),
+            )
+            self.assertEqual(std_out_lines[10], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[11], OUTPUT_RESET)
+            self.assertEqual(std_out_lines[12], '')
 
     # endregion Assertion Tests
 
