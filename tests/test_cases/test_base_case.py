@@ -208,8 +208,8 @@ class BaseClassTest(BaseTestCase):
             std_out = StringIO()
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
-                    self.assertText('Actuals has values here. Expected does not.', '')
-            std_out_lines = std_out.getvalue().split('\n')[5:]
+                    self.assertText('', 'Actuals has values here. Expected does not.')
+            std_out_lines = std_out.getvalue().split('\n')[3:]
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
@@ -234,8 +234,8 @@ class BaseClassTest(BaseTestCase):
             std_out = StringIO()
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
-                    self.assertText('', 'Expected has values here. Actuals does not.')
-            std_out_lines = std_out.getvalue().split('\n')[3:]
+                    self.assertText('Expected has values here. Actuals does not.', '')
+            std_out_lines = std_out.getvalue().split('\n')[5:]
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
@@ -260,7 +260,7 @@ class BaseClassTest(BaseTestCase):
             std_out = StringIO()
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
-                    self.assertText('Actuals has values here.\nExpected does not.', '')
+                    self.assertText('', 'Actuals has values here.\nExpected does not.')
             std_out_lines = std_out.getvalue().split('\n')[4:]
 
             # Test all line values.
@@ -287,7 +287,7 @@ class BaseClassTest(BaseTestCase):
             std_out = StringIO()
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
-                    self.assertText('', 'Expected has values here.\nActuals does not.')
+                    self.assertText('Expected has values here.\nActuals does not.', '')
             std_out_lines = std_out.getvalue().split('\n')[4:]
 
             # Test all line values.
@@ -314,8 +314,10 @@ class BaseClassTest(BaseTestCase):
             std_out = StringIO()
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
-                    self.assertText('One line.\nTwo line.', 'One line.')
-            std_out_lines = std_out.getvalue().split('\n')[5:]
+                    self.assertText('One line.', 'One line.\nTwo line.')
+            print('std_out.getvalue():')
+            print(std_out.getvalue())
+            std_out_lines = std_out.getvalue().split('\n')[6:]
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
@@ -339,8 +341,8 @@ class BaseClassTest(BaseTestCase):
             std_out = StringIO()
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
-                    self.assertText('One line.', 'One line.\nTwo line.')
-            std_out_lines = std_out.getvalue().split('\n')[6:]
+                    self.assertText('One line.\nTwo line.', 'One line.')
+            std_out_lines = std_out.getvalue().split('\n')[5:]
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
@@ -370,7 +372,7 @@ class BaseClassTest(BaseTestCase):
             std_out = StringIO()
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
-                    self.assertText('Testing.', 'esting.')
+                    self.assertText('esting.', 'Testing.')
             std_out_lines = std_out.getvalue().split('\n')[6:]
 
             # Test all line values.
@@ -398,7 +400,7 @@ class BaseClassTest(BaseTestCase):
             std_out = StringIO()
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
-                    self.assertText('esting.', 'Testing.')
+                    self.assertText('Testing.', 'esting.')
             std_out_lines = std_out.getvalue().split('\n')[6:]
 
             # Test all line values.
@@ -426,7 +428,7 @@ class BaseClassTest(BaseTestCase):
             std_out = StringIO()
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
-                    self.assertText('Testing.', 'sting.')
+                    self.assertText('sting.', 'Testing.')
             std_out_lines = std_out.getvalue().split('\n')[6:]
 
             # Test all line values.
@@ -454,7 +456,7 @@ class BaseClassTest(BaseTestCase):
             std_out = StringIO()
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
-                    self.assertText('sting.', 'Testing.')
+                    self.assertText('Testing.', 'sting.')
             std_out_lines = std_out.getvalue().split('\n')[6:]
 
             # Test all line values.
@@ -482,7 +484,7 @@ class BaseClassTest(BaseTestCase):
             std_out = StringIO()
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
-                    self.assertText('Testing.', 'Tesing.')
+                    self.assertText('Tesing.', 'Testing.')
             std_out_lines = std_out.getvalue().split('\n')[6:]
 
             # Test all line values.
@@ -510,7 +512,7 @@ class BaseClassTest(BaseTestCase):
             std_out = StringIO()
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
-                    self.assertText('Tesing.', 'Testing.')
+                    self.assertText('Testing.', 'Tesing.')
             std_out_lines = std_out.getvalue().split('\n')[6:]
 
             # Test all line values.
@@ -538,7 +540,7 @@ class BaseClassTest(BaseTestCase):
             std_out = StringIO()
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
-                    self.assertText('Testing.', 'Teng.')
+                    self.assertText('Teng.', 'Testing.')
             std_out_lines = std_out.getvalue().split('\n')[6:]
 
             # Test all line values.
@@ -566,7 +568,7 @@ class BaseClassTest(BaseTestCase):
             std_out = StringIO()
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
-                    self.assertText('Teng.', 'Testing.')
+                    self.assertText('Testing.', 'Teng.')
             std_out_lines = std_out.getvalue().split('\n')[6:]
 
             # Test all line values.
@@ -594,7 +596,7 @@ class BaseClassTest(BaseTestCase):
             std_out = StringIO()
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
-                    self.assertText('Testing.', 'Testing')
+                    self.assertText('Testing', 'Testing.')
             std_out_lines = std_out.getvalue().split('\n')[6:]
 
             # Test all line values.
@@ -622,7 +624,7 @@ class BaseClassTest(BaseTestCase):
             std_out = StringIO()
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
-                    self.assertText('Testing', 'Testing.')
+                    self.assertText('Testing.', 'Testing')
             std_out_lines = std_out.getvalue().split('\n')[6:]
 
             # Test all line values.
@@ -650,7 +652,7 @@ class BaseClassTest(BaseTestCase):
             std_out = StringIO()
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
-                    self.assertText('Testing.', 'Test')
+                    self.assertText('Test', 'Testing.')
             std_out_lines = std_out.getvalue().split('\n')[5:]
 
             # Test all line values.
@@ -678,7 +680,7 @@ class BaseClassTest(BaseTestCase):
             std_out = StringIO()
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
-                    self.assertText('Test', 'Testing.')
+                    self.assertText('Testing.', 'Test')
             std_out_lines = std_out.getvalue().split('\n')[5:]
 
             # Test all line values.
@@ -711,7 +713,7 @@ class BaseClassTest(BaseTestCase):
             std_out = StringIO()
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
-                    self.assertText('ABC', 'aBC')
+                    self.assertText('aBC', 'ABC')
             std_out_lines = std_out.getvalue().split('\n')[7:]
 
             # Test all line values.
@@ -747,7 +749,7 @@ class BaseClassTest(BaseTestCase):
             std_out = StringIO()
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
-                    self.assertText('This is a test value.', 'tHIS is a test value.')
+                    self.assertText('tHIS is a test value.', 'This is a test value.')
             std_out_lines = std_out.getvalue().split('\n')[7:]
 
             # Test all line values.
@@ -783,7 +785,7 @@ class BaseClassTest(BaseTestCase):
             std_out = StringIO()
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
-                    self.assertText('ABC', 'AbC')
+                    self.assertText('AbC', 'ABC')
             std_out_lines = std_out.getvalue().split('\n')[7:]
 
             # Test all line values.
@@ -819,7 +821,7 @@ class BaseClassTest(BaseTestCase):
             std_out = StringIO()
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
-                    self.assertText('This is a test value.', 'This IS A TEST value.')
+                    self.assertText('This IS A TEST value.', 'This is a test value.')
             std_out_lines = std_out.getvalue().split('\n')[5:]
 
             # Test all line values.
@@ -855,7 +857,7 @@ class BaseClassTest(BaseTestCase):
             std_out = StringIO()
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
-                    self.assertText('ABC', 'ABc')
+                    self.assertText('ABc', 'ABC')
             std_out_lines = std_out.getvalue().split('\n')[7:]
 
             # Test all line values.
@@ -891,7 +893,7 @@ class BaseClassTest(BaseTestCase):
             std_out = StringIO()
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
-                    self.assertText('This is a test value.', 'This is a test VALUE!')
+                    self.assertText('This is a test VALUE!', 'This is a test value.')
             std_out_lines = std_out.getvalue().split('\n')[5:]
 
             # Test all line values.
