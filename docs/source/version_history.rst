@@ -2,6 +2,19 @@ Version History
 ***************
 
 
+0.2.2 - Preliminary Setup/Upgrades for Improved Test Output + LiveServer Testing
+===============================================================================
+
+* Initial implementation of improved test output text coloring.
+
+  * Slightly buggy, and definitely needs work. But its still more helpful than nothing.
+
+* Start of LiveServer/Selenium testing classes.
+
+  * Definitely in a "pre-release" state and not yet viable for use.
+  * For now, continue to use the default Django/Selenium LiveServer testing classes.
+
+
 0.2.1 - Bugfixes and Improved Output Display
 ============================================
 
