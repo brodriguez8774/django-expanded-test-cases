@@ -14,6 +14,11 @@ from django.utils.http import urlencode
 # Internal Imports.
 from django_expanded_test_cases.constants import (
     ETC_DEBUG_PRINT,
+    ETC_USER_MODEL_IDENTIFIER,
+    ETC_DEFAULT_SUPER_USER_IDENTIFIER,
+    ETC_DEFAULT_ADMIN_USER_IDENTIFIER,
+    ETC_DEFAULT_STANDARD_USER_IDENTIFIER,
+    ETC_DEFAULT_INACTIVE_USER_IDENTIFIER,
     OUTPUT_ACTUALS_ERROR,
     OUTPUT_ACTUALS_MATCH,
     OUTPUT_ERROR,
@@ -21,6 +26,49 @@ from django_expanded_test_cases.constants import (
     OUTPUT_EXPECTED_MATCH,
     OUTPUT_RESET,
 )
+
+
+# region User Identifiers
+
+# Set default identifier value, based on either provided value or common user identifier types.
+default_superuser_identifier = None
+default_admin_identifier = None
+default_inactive_identifier = None
+default_user_identifier = None
+
+if ETC_USER_MODEL_IDENTIFIER == 'username':
+    # Set default identifiers in username format.
+    if ETC_DEFAULT_SUPER_USER_IDENTIFIER is None:
+        default_superuser_identifier = 'test_superuser'
+    if ETC_DEFAULT_ADMIN_USER_IDENTIFIER is None:
+        default_admin_identifier = 'test_admin'
+    if ETC_DEFAULT_INACTIVE_USER_IDENTIFIER is None:
+        default_inactive_identifier = 'test_inactive'
+    if ETC_DEFAULT_STANDARD_USER_IDENTIFIER is None:
+        default_user_identifier = 'test_user'
+
+elif ETC_USER_MODEL_IDENTIFIER == 'email':
+    # Set default identifiers in email format.
+    if ETC_DEFAULT_SUPER_USER_IDENTIFIER is None:
+        default_superuser_identifier = 'test_superuser@example.com'
+    if ETC_DEFAULT_ADMIN_USER_IDENTIFIER is None:
+        default_admin_identifier = 'test_admin@example.com'
+    if ETC_DEFAULT_INACTIVE_USER_IDENTIFIER is None:
+        default_inactive_identifier = 'test_inactive@example.com'
+    if ETC_DEFAULT_STANDARD_USER_IDENTIFIER is None:
+        default_user_identifier = 'test_user@example.com'
+
+# Handle any identifiers that have not yet been set by this point.
+if default_superuser_identifier is None:
+    default_superuser_identifier = str(ETC_DEFAULT_SUPER_USER_IDENTIFIER)
+if default_admin_identifier is None:
+    default_admin_identifier = str(ETC_DEFAULT_ADMIN_USER_IDENTIFIER)
+if default_inactive_identifier is None:
+    default_inactive_identifier = str(ETC_DEFAULT_INACTIVE_USER_IDENTIFIER)
+if default_user_identifier is None:
+    default_user_identifier = str(ETC_DEFAULT_STANDARD_USER_IDENTIFIER)
+
+# endregion User Identifiers
 
 
 # region Debug Print Wrapper Logic
@@ -68,7 +116,7 @@ class CoreTestCaseMixin:
     # region Class Functions
 
     @classmethod
-    def set_up_class(cls, debug_print=None):
+    def set_up_class(cls, debug_print=None, extra_usergen_kwargs=None):
         """
         Acts as the equivalent of the UnitTesting "setUpClass()" function.
 
@@ -77,24 +125,41 @@ class CoreTestCaseMixin:
 
         :param debug_print: Optional bool that indicates if debug output should print to console.
                             Param overrides setting value if both param and setting are set.
+        :param extra_usergen_kwargs: Optional extra kwargs to pass into the get_user_model().objects.create_user()
+                                     function.
         """
+        if extra_usergen_kwargs is None:
+            extra_usergen_kwargs = {}
+        elif not isinstance(extra_usergen_kwargs, dict):
+            raise ValueError(
+                'The extra_usergen_kwargs value must be a dictionary of additional args used in the '
+                'get_user_model().objects.create_user() function.'
+            )
+
         # Generate "special case" test user instances.
         # Guarantees that there will always be at least some default User models when tests are run.
         cls.test_superuser = get_user_model().objects.create_user(
-            username='test_superuser',
+            **{ETC_USER_MODEL_IDENTIFIER: default_superuser_identifier},
             password='password',
             is_superuser=True,
+            **extra_usergen_kwargs,
         )
         cls.test_admin = get_user_model().objects.create_user(
-            username='test_admin',
+            **{ETC_USER_MODEL_IDENTIFIER: default_admin_identifier},
             password='password',
             is_staff=True,
+            **extra_usergen_kwargs,
         )
-        cls.test_user = get_user_model().objects.create_user(username='test_user', password='password')
         cls.test_inactive_user = get_user_model().objects.create_user(
-            username='test_inactive',
+            **{ETC_USER_MODEL_IDENTIFIER: default_inactive_identifier},
             password='password',
             is_active=False,
+            **extra_usergen_kwargs,
+        )
+        cls.test_user = get_user_model().objects.create_user(
+            **{ETC_USER_MODEL_IDENTIFIER: default_user_identifier},
+            password='password',
+            **extra_usergen_kwargs,
         )
 
         # Check user debug_print option.
@@ -279,11 +344,13 @@ class CoreTestCaseMixin:
 
     # region User Management Functions
 
-    def get_user(self, user, password='password'):
+    def get_user(self, user, password='password', extra_usergen_kwargs=None):
         """Returns user matching provided value.
 
-        :param user: User model, or corresponding username, to use.
+        :param user: User model, or corresponding user identifier, to use.
         :param password: Password str to assign to user.
+        :param extra_usergen_kwargs: Optional extra kwargs to pass into the get_user_model().objects.create_user()
+                                     function.
         :return: User object
         """
         # Check if instance is User model.
@@ -292,21 +359,37 @@ class CoreTestCaseMixin:
             pass
 
         # Handle all "special cases" for testing logic.
-        elif user == 'test_superuser':
+        elif user == default_superuser_identifier:
             user = self.test_superuser
-        elif user == 'test_admin':
+        elif user == default_admin_identifier:
             user = self.test_admin
-        elif user == 'test_user':
+        elif user == default_user_identifier:
             user = self.test_user
-        elif user == 'test_inactive':
+        elif user == default_inactive_identifier:
             user = self.test_inactive_user
 
         else:
             # Is not User model. Get or create.
+
+            # First validate optional extra kwargs.
+            if extra_usergen_kwargs is None:
+                extra_usergen_kwargs = {}
+            elif not isinstance(extra_usergen_kwargs, dict):
+                raise ValueError(
+                    'The extra_usergen_kwargs value must be a dictionary of additional args used in the '
+                    'get_user_model().objects.create_user() function.'
+                )
+
             try:
-                user = get_user_model().objects.get(username=str(user))
+                user = get_user_model().objects.get(
+                    **{ETC_USER_MODEL_IDENTIFIER: str(user)},
+                    **extra_usergen_kwargs,
+                )
             except get_user_model().DoesNotExist:
-                user = get_user_model().objects.create(username=str(user))
+                user = get_user_model().objects.create(
+                    **{ETC_USER_MODEL_IDENTIFIER: str(user)},
+                    **extra_usergen_kwargs,
+                )
 
         # Handle passwords.
         password = str(password).strip()

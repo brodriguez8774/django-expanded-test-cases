@@ -124,3 +124,32 @@ ETC_MATCH_ALL_CONTEXT_MESSAGES = bool(getattr(
     'DJANGO_EXPANDED_TESTCASES_MATCH_ALL_CONTEXT_MESSAGES',
     False,
 ))
+
+
+# Allows incorporating package with non-standard user identifiers.
+# Such as the common case of using a user email as an identifier, instead of a username.
+ETC_USER_MODEL_IDENTIFIER = getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_USER_MODEL_IDENTIFIER',
+    'username',
+)
+ETC_DEFAULT_SUPER_USER_IDENTIFIER = getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_DEFAULT_SUPER_USER_IDENTIFIER',
+    None,
+)
+ETC_DEFAULT_ADMIN_USER_IDENTIFIER = getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_DEFAULT_ADMIN_USER_IDENTIFIER',
+    None,
+)
+ETC_DEFAULT_STANDARD_USER_IDENTIFIER = getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_DEFAULT_STANDARD_USER_IDENTIFIER',
+    None,
+)
+ETC_DEFAULT_INACTIVE_USER_IDENTIFIER = getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_DEFAULT_INACTIVE_USER_IDENTIFIER',
+    None,
+)
