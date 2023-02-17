@@ -110,6 +110,20 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             self.show_debug_messages(response)
             self.show_debug_user_info(self.get_user(user))
 
+        # Optional hook for running custom pre-builtin-test logic.
+        self._assertResponse__pre_builtin_tests(
+            url, *args,
+            response=response,
+            get=get, data=data,
+            expected_redirect_url=expected_redirect_url, expected_status=expected_status,
+            expected_title=expected_title, expected_header=expected_header, expected_messages=expected_messages,
+            expected_content=expected_content,
+            auto_login=auto_login, user=user, user_permissions=user_permissions, user_groups=user_groups,
+            ignore_content_ordering=ignore_content_ordering, content_starts_after=content_starts_after,
+            content_ends_before=content_ends_before,
+            **kwargs,
+        )
+
         # Verify page redirect.
         if expected_redirect_url is not None:
             self.assertRedirects(response, expected_redirect_url)
@@ -139,6 +153,20 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                 content_ends_before=content_ends_before,
                 debug_output=False,
             )
+
+        # Optional hook for running custom post-builtin-test logic.
+        self._assertResponse__post_builtin_tests(
+            url, *args,
+            response=response,
+            get=get, data=data,
+            expected_redirect_url=expected_redirect_url, expected_status=expected_status,
+            expected_title=expected_title, expected_header=expected_header, expected_messages=expected_messages,
+            expected_content=expected_content,
+            auto_login=auto_login, user=user, user_permissions=user_permissions, user_groups=user_groups,
+            ignore_content_ordering=ignore_content_ordering, content_starts_after=content_starts_after,
+            content_ends_before=content_ends_before,
+            **kwargs,
+        )
 
         # All assertions passed so far. Return response in case user wants to do further checks.
         return response
@@ -664,7 +692,17 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Handle for logging in a user.
         if auto_login:
-            user = self._get_login_user(user, auto_login=auto_login, user_permissions=user_permissions, user_groups=user_groups)
+            user = self._get_login_user(
+                user,
+                *args,
+                url=url,
+                get=get,
+                data=data,
+                auto_login=auto_login,
+                user_permissions=user_permissions,
+                user_groups=user_groups,
+                **kwargs,
+            )
         else:
             user = AnonymousUser()
 
@@ -727,7 +765,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Return generated response.
         return response
 
-    def _get_login_user(self, user, auto_login=True, user_permissions=None, user_groups=None):
+    def _get_login_user(self, user, *args, auto_login=True, user_permissions=None, user_groups=None, **kwargs):
         """Handles simulating user login with corresponding permissions/groups/etc.
 
         :param user: User to manipulate.
@@ -773,12 +811,24 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         for group in user_groups:
             user = self.add_user_group(group, user=user)
 
-        # Optional hook to run additional authentication logic/setup on User.
-        # For example, if project has 2-Factor setup that needs to be run.
-        user = self._extra_user_auth_setup(user)
-
         # Ensure by this point that we have a proper instance of the User object.
         # If no Permissions or Groups were set, we might still have a Str or something.
+        user = self.get_user(user)
+
+        # Optional hook to run additional authentication logic/setup on User.
+        # For example, if project has 2-Factor setup that needs to be run.
+        user = self._get_login_user__extra_user_auth_setup(
+            user,
+            *args,
+            auto_login=True,
+            user_permissions=None,
+            user_groups=None,
+            **kwargs,
+        )
+
+        # Ensure by this point that we have a proper instance of the User object.
+        # If no Permissions or Groups were set, OR if wonky logic was used in extra_auth_setup,
+        # we might still have a Str or something.
         user = self.get_user(user)
 
         # Handle logging in with user.
@@ -939,12 +989,61 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
     # region Hook Functions
 
-    def _extra_user_auth_setup(self, user):
-        """Empty hook function, to allow running extra authentication setup logic on User object.
+    def _assertResponse__pre_builtin_tests(
+        self,
+        url, *args,
+        get=True, data=None,
+        expected_redirect_url=None, expected_status=200,
+        expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
+        auto_login=True, user='test_user', user_permissions=None, user_groups=None,
+        ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
+        **kwargs,
+    ):
+        """Hook function to allow injecting code prior to running any of the built-in assertResponse() tests.
+
+        For maximum usability, this function receives all args/kwargs provided to the default assertResponse()
+        function.
+
+        This hook does nothing by default, and is exclusively provided for custom extension logic.
+        """
+        pass
+
+    def _assertResponse__post_builtin_tests(
+        self,
+        url, *args,
+        get=True, data=None,
+        expected_redirect_url=None, expected_status=200,
+        expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
+        auto_login=True, user='test_user', user_permissions=None, user_groups=None,
+        ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
+        **kwargs,
+    ):
+        """Hook function to allow injecting code after running all of the built-in assertResponse() tests.
+
+        For maximum usability, this function receives all args/kwargs provided to the default assertResponse()
+        function.
+
+        This hook does nothing by default, and is exclusively provided for custom extension logic.
+        """
+        pass
+
+    def _get_login_user__extra_user_auth_setup(
+        self,
+        user,
+        *args,
+        user_permissions=None, user_groups=None,
+        **kwargs,
+    ):
+        """Hook functio, to allow running extra authentication setup logic on User object.
 
         Useful such as for running things like 2-Factor setup logic for User.
-        :param user: User model to run extra auth setup logic on.
-        :return: Updated User object.
+
+        For maximum usability, this function receives all args/kwargs provided to the default _get_login_user()
+        function.
+
+        This hook does nothing by default, and is exclusively provided for custom extension logic.
+        :return: Must return a User object. Either the original one as provided, or an updated version based on
+                 custom logic.
         """
         return user
 
