@@ -153,3 +153,51 @@ ETC_DEFAULT_INACTIVE_USER_IDENTIFIER = getattr(
     'DJANGO_EXPANDED_TESTCASES_DEFAULT_INACTIVE_USER_IDENTIFIER',
     None,
 )
+
+
+# region User Identifiers
+
+# Set default identifier value, based on either provided value or common user identifier types.
+default_superuser_identifier = None
+default_admin_identifier = None
+default_inactive_identifier = None
+default_user_identifier = None
+
+if ETC_USER_MODEL_IDENTIFIER == 'username':
+    # Set default identifiers in username format.
+    if ETC_DEFAULT_SUPER_USER_IDENTIFIER is None:
+        default_superuser_identifier = 'test_superuser'
+    if ETC_DEFAULT_ADMIN_USER_IDENTIFIER is None:
+        default_admin_identifier = 'test_admin'
+    if ETC_DEFAULT_INACTIVE_USER_IDENTIFIER is None:
+        default_inactive_identifier = 'test_inactive'
+    if ETC_DEFAULT_STANDARD_USER_IDENTIFIER is None:
+        default_user_identifier = 'test_user'
+
+elif ETC_USER_MODEL_IDENTIFIER == 'email':
+    # Set default identifiers in email format.
+    if ETC_DEFAULT_SUPER_USER_IDENTIFIER is None:
+        default_superuser_identifier = 'test_superuser@example.com'
+    if ETC_DEFAULT_ADMIN_USER_IDENTIFIER is None:
+        default_admin_identifier = 'test_admin@example.com'
+    if ETC_DEFAULT_INACTIVE_USER_IDENTIFIER is None:
+        default_inactive_identifier = 'test_inactive@example.com'
+    if ETC_DEFAULT_STANDARD_USER_IDENTIFIER is None:
+        default_user_identifier = 'test_user@example.com'
+
+# Handle any identifiers that have not yet been set by this point.
+if default_superuser_identifier is None:
+    default_superuser_identifier = str(ETC_DEFAULT_SUPER_USER_IDENTIFIER)
+if default_admin_identifier is None:
+    default_admin_identifier = str(ETC_DEFAULT_ADMIN_USER_IDENTIFIER)
+if default_inactive_identifier is None:
+    default_inactive_identifier = str(ETC_DEFAULT_INACTIVE_USER_IDENTIFIER)
+if default_user_identifier is None:
+    default_user_identifier = str(ETC_DEFAULT_STANDARD_USER_IDENTIFIER)
+
+ETC_DEFAULT_SUPER_USER_IDENTIFIER = default_superuser_identifier
+ETC_DEFAULT_ADMIN_USER_IDENTIFIER = default_admin_identifier
+ETC_DEFAULT_INACTIVE_USER_IDENTIFIER = default_inactive_identifier
+ETC_DEFAULT_STANDARD_USER_IDENTIFIER = default_user_identifier
+
+# endregion User Identifiers

@@ -15,6 +15,7 @@ from django.urls.exceptions import NoReverseMatch
 from .base_test_case import BaseTestCase
 from django_expanded_test_cases.constants import (
     ETC_ALLOW_MESSAGE_PARTIALS,
+    ETC_DEFAULT_STANDARD_USER_IDENTIFIER,
     RESPONSE_DEBUG_URL,
     OUTPUT_EMPHASIS,
     VOID_ELEMENT_LIST,
@@ -45,7 +46,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         get=True, data=None,
         expected_redirect_url=None, expected_status=200,
         expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
-        auto_login=True, user='test_user', user_permissions=None, user_groups=None,
+        auto_login=True, user=ETC_DEFAULT_STANDARD_USER_IDENTIFIER, user_permissions=None, user_groups=None,
         ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
         **kwargs,
     ):
@@ -148,7 +149,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         data=None,
         expected_redirect_url=None, expected_status=200,
         expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
-        auto_login=True, user='test_user', user_permissions=None, user_groups=None,
+        auto_login=True, user=ETC_DEFAULT_STANDARD_USER_IDENTIFIER, user_permissions=None, user_groups=None,
         ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
         **kwargs,
     ):
@@ -182,7 +183,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         data=None,
         expected_redirect_url=None, expected_status=200,
         expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
-        auto_login=True, user='test_user', user_permissions=None, user_groups=None,
+        auto_login=True, user=ETC_DEFAULT_STANDARD_USER_IDENTIFIER, user_permissions=None, user_groups=None,
         ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
         **kwargs,
     ):
@@ -636,7 +637,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         url,
         *args,
         get=True, data=None,
-        auto_login=True, user='test_user', user_permissions=None, user_groups=None,
+        auto_login=True, user=ETC_DEFAULT_STANDARD_USER_IDENTIFIER, user_permissions=None, user_groups=None,
         **kwargs,
     ):
         """Helper function for assertResponse().
