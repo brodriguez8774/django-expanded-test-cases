@@ -95,29 +95,69 @@ class CoreTestCaseMixin:
 
         # Generate "special case" test user instances.
         # Guarantees that there will always be at least some default User models when tests are run.
+
+        # Superuser model. Can access/see everything, regardless of permissions.
         cls.test_superuser = get_user_model().objects.create_user(
             **{ETC_USER_MODEL_IDENTIFIER: ETC_DEFAULT_SUPER_USER_IDENTIFIER},
             password='password',
             is_superuser=True,
             **extra_usergen_kwargs,
         )
+        # Attempt to set fields and then save. If fields exist, then they will populate. Else are ignored.
+        cls.test_superuser.first_name = 'SuperUserFirst'
+        cls.test_superuser.last_name = 'SuperUserLast'
+        cls.test_superuser.name = 'SuperUserName'
+        if ETC_USER_MODEL_IDENTIFIER.lower() != 'email':
+            cls.test_superuser.email = 'super_user@example.com'
+        cls.test_superuser.save()
+        cls.test_superuser = cls.get_user(cls, 'test_superuser')
+
+        # Admin user model. Can access Django admin.
         cls.test_admin = get_user_model().objects.create_user(
             **{ETC_USER_MODEL_IDENTIFIER: ETC_DEFAULT_ADMIN_USER_IDENTIFIER},
             password='password',
             is_staff=True,
             **extra_usergen_kwargs,
         )
+        # Attempt to set fields and then save. If fields exist, then they will populate. Else are ignored.
+        cls.test_admin.first_name = 'AdminUserFirst'
+        cls.test_admin.last_name = 'AdminUserLast'
+        cls.test_admin.name = 'AdminUserName'
+        if ETC_USER_MODEL_IDENTIFIER.lower() != 'email':
+            cls.test_admin.email = 'admin_user@example.com'
+        cls.test_admin.save()
+        cls.test_admin = cls.get_user(cls, 'test_admin')
+
+        # Inactive user model. Has "is_active" set to false, and cannot login.
         cls.test_inactive_user = get_user_model().objects.create_user(
             **{ETC_USER_MODEL_IDENTIFIER: ETC_DEFAULT_INACTIVE_USER_IDENTIFIER},
             password='password',
             is_active=False,
             **extra_usergen_kwargs,
         )
+        # Attempt to set fields and then save. If fields exist, then they will populate. Else are ignored.
+        cls.test_inactive_user.first_name = 'InactiveUserFirst'
+        cls.test_inactive_user.last_name = 'InactiveUserLast'
+        cls.test_inactive_user.name = 'InactiveUserName'
+        if ETC_USER_MODEL_IDENTIFIER.lower() != 'email':
+            cls.test_inactive_user.email = 'inactive_user@example.com'
+        cls.test_inactive_user.save()
+        cls.test_inactive_user = cls.get_user(cls, 'test_inactive')
+
+        # Standard user model.
         cls.test_user = get_user_model().objects.create_user(
             **{ETC_USER_MODEL_IDENTIFIER: ETC_DEFAULT_STANDARD_USER_IDENTIFIER},
             password='password',
             **extra_usergen_kwargs,
         )
+        # Attempt to set fields and then save. If fields exist, then they will populate. Else are ignored.
+        cls.test_user.first_name = 'UserFirst'
+        cls.test_user.last_name = 'UserLast'
+        cls.test_user.name = 'StandardUserName'
+        if ETC_USER_MODEL_IDENTIFIER.lower() != 'email':
+            cls.test_user.email = 'user@example.com'
+        cls.test_user.save()
+        cls.test_user = cls.get_user(cls, 'test_user')
 
         # Check user debug_print option.
         if debug_print is not None:

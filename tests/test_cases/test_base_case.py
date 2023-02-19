@@ -940,8 +940,12 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(test_superuser.username, 'test_superuser')
             self.assertTrue(test_superuser.check_password('password'))
             self.assertEqual(test_superuser.unhashed_password, 'password')
+            self.assertEqual(test_superuser.first_name, 'SuperUserFirst')
+            self.assertEqual(test_superuser.last_name, 'SuperUserLast')
+            self.assertEqual(test_superuser.email, 'super_user@example.com')
             self.assertEqual(test_superuser.is_superuser, True)
             self.assertEqual(test_superuser.is_staff, False)
+            self.assertEqual(test_superuser.is_active, True)
 
         with self.subTest('Test "test_admin" user - Default password'):
             test_admin = self.get_user('test_admin')
@@ -950,8 +954,26 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(test_admin.username, 'test_admin')
             self.assertTrue(test_admin.check_password('password'))
             self.assertEqual(test_admin.unhashed_password, 'password')
+            self.assertEqual(test_admin.first_name, 'AdminUserFirst')
+            self.assertEqual(test_admin.last_name, 'AdminUserLast')
+            self.assertEqual(test_admin.email, 'admin_user@example.com')
             self.assertEqual(test_admin.is_superuser, False)
             self.assertEqual(test_admin.is_staff, True)
+            self.assertEqual(test_admin.is_active, True)
+
+        with self.subTest('Test "test_inactive" user - Default password'):
+            test_inactive = self.get_user('test_inactive')
+
+            self.assertEqual(test_inactive, self.test_inactive_user)
+            self.assertEqual(test_inactive.username, 'test_inactive')
+            self.assertTrue(test_inactive.check_password('password'))
+            self.assertEqual(test_inactive.unhashed_password, 'password')
+            self.assertEqual(test_inactive.first_name, 'InactiveUserFirst')
+            self.assertEqual(test_inactive.last_name, 'InactiveUserLast')
+            self.assertEqual(test_inactive.email, 'inactive_user@example.com')
+            self.assertEqual(test_inactive.is_superuser, False)
+            self.assertEqual(test_inactive.is_staff, False)
+            self.assertEqual(test_inactive.is_active, False)
 
         with self.subTest('Test "test_user" user - Default password'):
             test_user = self.get_user('test_user')
@@ -960,8 +982,12 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(test_user.username, 'test_user')
             self.assertTrue(test_user.check_password('password'))
             self.assertEqual(test_user.unhashed_password, 'password')
+            self.assertEqual(test_user.first_name, 'UserFirst')
+            self.assertEqual(test_user.last_name, 'UserLast')
+            self.assertEqual(test_user.email, 'user@example.com')
             self.assertEqual(test_user.is_superuser, False)
             self.assertEqual(test_user.is_staff, False)
+            self.assertEqual(test_user.is_active, True)
 
     def test__add_user_permission(self):
         """
