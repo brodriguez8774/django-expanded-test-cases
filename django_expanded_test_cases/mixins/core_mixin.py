@@ -19,6 +19,7 @@ from django_expanded_test_cases.constants import (
     ETC_DEFAULT_ADMIN_USER_IDENTIFIER,
     ETC_DEFAULT_STANDARD_USER_IDENTIFIER,
     ETC_DEFAULT_INACTIVE_USER_IDENTIFIER,
+    ETC_DEFAULT_USER_PASSWORD,
     OUTPUT_ACTUALS_ERROR,
     OUTPUT_ACTUALS_MATCH,
     OUTPUT_ERROR,
@@ -99,7 +100,7 @@ class CoreTestCaseMixin:
         # Superuser model. Can access/see everything, regardless of permissions.
         cls.test_superuser = get_user_model().objects.create_user(
             **{ETC_USER_MODEL_IDENTIFIER: ETC_DEFAULT_SUPER_USER_IDENTIFIER},
-            password='password',
+            password=ETC_DEFAULT_USER_PASSWORD,
             is_superuser=True,
             **extra_usergen_kwargs,
         )
@@ -115,7 +116,7 @@ class CoreTestCaseMixin:
         # Admin user model. Can access Django admin.
         cls.test_admin = get_user_model().objects.create_user(
             **{ETC_USER_MODEL_IDENTIFIER: ETC_DEFAULT_ADMIN_USER_IDENTIFIER},
-            password='password',
+            password=ETC_DEFAULT_USER_PASSWORD,
             is_staff=True,
             **extra_usergen_kwargs,
         )
@@ -131,7 +132,7 @@ class CoreTestCaseMixin:
         # Inactive user model. Has "is_active" set to false, and cannot login.
         cls.test_inactive_user = get_user_model().objects.create_user(
             **{ETC_USER_MODEL_IDENTIFIER: ETC_DEFAULT_INACTIVE_USER_IDENTIFIER},
-            password='password',
+            password=ETC_DEFAULT_USER_PASSWORD,
             is_active=False,
             **extra_usergen_kwargs,
         )
@@ -147,7 +148,7 @@ class CoreTestCaseMixin:
         # Standard user model.
         cls.test_user = get_user_model().objects.create_user(
             **{ETC_USER_MODEL_IDENTIFIER: ETC_DEFAULT_STANDARD_USER_IDENTIFIER},
-            password='password',
+            password=ETC_DEFAULT_USER_PASSWORD,
             **extra_usergen_kwargs,
         )
         # Attempt to set fields and then save. If fields exist, then they will populate. Else are ignored.
@@ -341,7 +342,7 @@ class CoreTestCaseMixin:
 
     # region User Management Functions
 
-    def get_user(self, user, password='password', extra_usergen_kwargs=None):
+    def get_user(self, user, password=ETC_DEFAULT_USER_PASSWORD, extra_usergen_kwargs=None):
         """Returns user matching provided value.
 
         :param user: User model, or corresponding user identifier, to use.
@@ -391,8 +392,8 @@ class CoreTestCaseMixin:
         # Handle passwords.
         password = str(password).strip()
         if len(password) == 0:
-            # Empty password. Reset back to default.
-            password = 'password'
+            # Empty password. Reset back to default settings value.
+            password = ETC_DEFAULT_USER_PASSWORD
         user.set_password(password)
         user.unhashed_password = password
         user.save()
