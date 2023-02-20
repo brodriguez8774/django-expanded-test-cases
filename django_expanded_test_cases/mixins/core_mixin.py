@@ -74,7 +74,7 @@ class CoreTestCaseMixin:
     # region Class Functions
 
     @classmethod
-    def set_up_class(cls, debug_print=None, extra_usergen_kwargs=None):
+    def set_up_class(cls, debug_print=None):
         """
         Acts as the equivalent of the UnitTesting "setUpClass()" function.
 
@@ -83,6 +83,21 @@ class CoreTestCaseMixin:
 
         :param debug_print: Optional bool that indicates if debug output should print to console.
                             Param overrides setting value if both param and setting are set.
+        """
+        # Check user debug_print option.
+        if debug_print is not None:
+            cls._debug_print_bool = bool(debug_print)
+        else:
+            cls._debug_print_bool = ETC_DEBUG_PRINT
+
+    @classmethod
+    def set_up_test_data(cls, extra_usergen_kwargs=None):
+        """
+        Acts as the equivalent of the UnitTesting "setUpTestData()" function.
+
+        However, since this is not inheriting from a given TestCase, calling the literal function
+        here would override instead.
+
         :param extra_usergen_kwargs: Optional extra kwargs to pass into the get_user_model().objects.create_user()
                                      function.
         """
@@ -111,7 +126,7 @@ class CoreTestCaseMixin:
         if ETC_USER_MODEL_IDENTIFIER.lower() != 'email':
             cls.test_superuser.email = 'super_user@example.com'
         cls.test_superuser.save()
-        cls.test_superuser = cls.get_user(cls, 'test_superuser')
+        cls.test_superuser = cls.get_user(cls, ETC_DEFAULT_SUPER_USER_IDENTIFIER)
 
         # Admin user model. Can access Django admin.
         cls.test_admin = get_user_model().objects.create_user(
@@ -127,7 +142,7 @@ class CoreTestCaseMixin:
         if ETC_USER_MODEL_IDENTIFIER.lower() != 'email':
             cls.test_admin.email = 'admin_user@example.com'
         cls.test_admin.save()
-        cls.test_admin = cls.get_user(cls, 'test_admin')
+        cls.test_admin = cls.get_user(cls, ETC_DEFAULT_ADMIN_USER_IDENTIFIER)
 
         # Inactive user model. Has "is_active" set to false, and cannot login.
         cls.test_inactive_user = get_user_model().objects.create_user(
@@ -143,7 +158,7 @@ class CoreTestCaseMixin:
         if ETC_USER_MODEL_IDENTIFIER.lower() != 'email':
             cls.test_inactive_user.email = 'inactive_user@example.com'
         cls.test_inactive_user.save()
-        cls.test_inactive_user = cls.get_user(cls, 'test_inactive')
+        cls.test_inactive_user = cls.get_user(cls, ETC_DEFAULT_INACTIVE_USER_IDENTIFIER)
 
         # Standard user model.
         cls.test_user = get_user_model().objects.create_user(
@@ -158,13 +173,7 @@ class CoreTestCaseMixin:
         if ETC_USER_MODEL_IDENTIFIER.lower() != 'email':
             cls.test_user.email = 'user@example.com'
         cls.test_user.save()
-        cls.test_user = cls.get_user(cls, 'test_user')
-
-        # Check user debug_print option.
-        if debug_print is not None:
-            cls._debug_print_bool = bool(debug_print)
-        else:
-            cls._debug_print_bool = ETC_DEBUG_PRINT
+        cls.test_user = cls.get_user(cls, ETC_DEFAULT_STANDARD_USER_IDENTIFIER)
 
     def sub_test(self):
         """
@@ -361,11 +370,10 @@ class CoreTestCaseMixin:
             user = self.test_superuser
         elif user == ETC_DEFAULT_ADMIN_USER_IDENTIFIER:
             user = self.test_admin
-        elif user == ETC_DEFAULT_STANDARD_USER_IDENTIFIER:
-            user = self.test_user
         elif user == ETC_DEFAULT_INACTIVE_USER_IDENTIFIER:
             user = self.test_inactive_user
-
+        elif user == ETC_DEFAULT_STANDARD_USER_IDENTIFIER:
+            user = self.test_user
         else:
             # Is not User model. Get or create.
 

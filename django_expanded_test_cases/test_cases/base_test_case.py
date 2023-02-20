@@ -21,6 +21,12 @@ class BaseTestCase(TestCase, CoreTestCaseMixin):
         # Also call CoreMixin setup logic.
         cls.set_up_class(debug_print=debug_print)
 
+    @classmethod
+    def setUpTestData(cls):
+        """"""
+        # Initialize default data models.
+        cls.set_up_test_data()
+
     def setUp(self):
         # Run parent setup logic.
         super().setUp()
