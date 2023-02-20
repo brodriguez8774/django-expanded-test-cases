@@ -158,6 +158,11 @@ ETC_DEFAULT_USER_PASSWORD = getattr(
     'DJANGO_EXPANDED_TESTCASES_DEFAULT_PASSWORD',
     'password',
 )
+ETC_GENERATE_USERS_WITH_REAL_NAMES = bool(getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_GENERATE_USERS_WITH_REAL_NAMES',
+    False,
+))
 
 
 # region User Identifiers

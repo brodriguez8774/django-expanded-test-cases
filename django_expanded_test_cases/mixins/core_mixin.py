@@ -20,6 +20,7 @@ from django_expanded_test_cases.constants import (
     ETC_DEFAULT_STANDARD_USER_IDENTIFIER,
     ETC_DEFAULT_INACTIVE_USER_IDENTIFIER,
     ETC_DEFAULT_USER_PASSWORD,
+    ETC_GENERATE_USERS_WITH_REAL_NAMES,
     OUTPUT_ACTUALS_ERROR,
     OUTPUT_ACTUALS_MATCH,
     OUTPUT_ERROR,
@@ -120,9 +121,14 @@ class CoreTestCaseMixin:
             **extra_usergen_kwargs,
         )
         # Attempt to set fields and then save. If fields exist, then they will populate. Else are ignored.
-        cls.test_superuser.first_name = 'SuperUserFirst'
-        cls.test_superuser.last_name = 'SuperUserLast'
-        cls.test_superuser.name = 'SuperUserName'
+        if ETC_GENERATE_USERS_WITH_REAL_NAMES:
+            cls.test_superuser.first_name = 'John'
+            cls.test_superuser.last_name = 'Doe'
+            cls.test_superuser.name = 'John'
+        else:
+            cls.test_superuser.first_name = 'SuperUserFirst'
+            cls.test_superuser.last_name = 'SuperUserLast'
+            cls.test_superuser.name = 'SuperUserName'
         if ETC_USER_MODEL_IDENTIFIER.lower() != 'email':
             cls.test_superuser.email = 'super_user@example.com'
         cls.test_superuser.save()
@@ -136,9 +142,14 @@ class CoreTestCaseMixin:
             **extra_usergen_kwargs,
         )
         # Attempt to set fields and then save. If fields exist, then they will populate. Else are ignored.
-        cls.test_admin.first_name = 'AdminUserFirst'
-        cls.test_admin.last_name = 'AdminUserLast'
-        cls.test_admin.name = 'AdminUserName'
+        if ETC_GENERATE_USERS_WITH_REAL_NAMES:
+            cls.test_admin.first_name = 'Jenny'
+            cls.test_admin.last_name = 'Johnson'
+            cls.test_admin.name = 'Jenny'
+        else:
+            cls.test_admin.first_name = 'AdminUserFirst'
+            cls.test_admin.last_name = 'AdminUserLast'
+            cls.test_admin.name = 'AdminUserName'
         if ETC_USER_MODEL_IDENTIFIER.lower() != 'email':
             cls.test_admin.email = 'admin_user@example.com'
         cls.test_admin.save()
@@ -152,9 +163,14 @@ class CoreTestCaseMixin:
             **extra_usergen_kwargs,
         )
         # Attempt to set fields and then save. If fields exist, then they will populate. Else are ignored.
-        cls.test_inactive_user.first_name = 'InactiveUserFirst'
-        cls.test_inactive_user.last_name = 'InactiveUserLast'
-        cls.test_inactive_user.name = 'InactiveUserName'
+        if ETC_GENERATE_USERS_WITH_REAL_NAMES:
+            cls.test_inactive_user.first_name = 'Clang'
+            cls.test_inactive_user.last_name = 'Zythor'
+            cls.test_inactive_user.name = 'Clang'
+        else:
+            cls.test_inactive_user.first_name = 'InactiveUserFirst'
+            cls.test_inactive_user.last_name = 'InactiveUserLast'
+            cls.test_inactive_user.name = 'InactiveUserName'
         if ETC_USER_MODEL_IDENTIFIER.lower() != 'email':
             cls.test_inactive_user.email = 'inactive_user@example.com'
         cls.test_inactive_user.save()
@@ -167,9 +183,14 @@ class CoreTestCaseMixin:
             **extra_usergen_kwargs,
         )
         # Attempt to set fields and then save. If fields exist, then they will populate. Else are ignored.
-        cls.test_user.first_name = 'UserFirst'
-        cls.test_user.last_name = 'UserLast'
-        cls.test_user.name = 'StandardUserName'
+        if ETC_GENERATE_USERS_WITH_REAL_NAMES:
+            cls.test_user.first_name = 'Sammy'
+            cls.test_user.last_name = 'Smith'
+            cls.test_user.name = 'Sammy'
+        else:
+            cls.test_user.first_name = 'UserFirst'
+            cls.test_user.last_name = 'UserLast'
+            cls.test_user.name = 'StandardUserName'
         if ETC_USER_MODEL_IDENTIFIER.lower() != 'email':
             cls.test_user.email = 'user@example.com'
         cls.test_user.save()
