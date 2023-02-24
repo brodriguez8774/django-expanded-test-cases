@@ -1,5 +1,5 @@
-Configuration
-*************
+General Setting Configuration
+*****************************
 
 The following
 `Django settings <https://docs.djangoproject.com/en/dev/topics/settings/>`_
@@ -64,7 +64,7 @@ Example::
 
 SELENIUM_TEST_BROWSER
 =====================
-When using the :doc:`test_cases/live_server_test_case` class for
+When using the :doc:`../test_cases/live_server_test_case` class for
 `Selenium <https://www.selenium.dev/>`_ tests, this setting specify which browser
 type you wish to use.
 

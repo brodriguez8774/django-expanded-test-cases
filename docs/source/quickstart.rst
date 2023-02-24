@@ -133,7 +133,7 @@ the following commands:
     pytest -n auto          # Run PyTest parallel, if pytest-xdist is installed.
 
 For additional details about configuration and setup, see the
-:doc:`configuration` page.
+:doc:`configuration/general` page.
 
 For information on how to use this package, see the :doc:`general_usage` page.
 
@@ -167,6 +167,7 @@ To do so, add the following line to your ``settings.py`` file:
 
     DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT = False
 
-For more details about available settings, see the :doc:`configuration` page.
+For more details about available settings, see the :doc:`configuration/general`
+page.
 
 For information on how to use this package, see the :doc:`general_usage` page.

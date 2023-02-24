@@ -34,8 +34,9 @@ Each one provides separate sets of additional functionality.
    :caption: Contents:
 
    quickstart
+   package_overview
    general_usage
-   configuration
+   managing_test_users
 
 
 .. toctree::
@@ -46,6 +47,14 @@ Each one provides separate sets of additional functionality.
    test_cases/base_test_case
    test_cases/integration_test_case
    test_cases/live_server_test_case
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Package Setting Configuration:
+
+   configuration/general
+   configuration/user
 
 
 .. toctree::

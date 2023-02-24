@@ -11,51 +11,6 @@ This classes main focus is to add some basic users that can be used in testing,
 as well as some helper functions to work with those users.
 
 
-Test Users
-==========
-
-Provided User Instances
------------------------
-
-Out of the box, the **BaseTestCase** provides four separate users to all tests.
-These users help to ensure that tests are using a non-empty database.
-They have usernames follows:
-
-* ``test_user`` - The default user, used in all corresponding functionality.
-* ``test_admin`` - A provided "is_staff" user, who can see the Django admin.
-* ``test_superuser`` - A provided "is_superuser" user, who can see all.
-* ``test_inactive`` - A provided "disabled" user.
-
-By itself, the BaseTestCase class does not manipulate these users further.
-And the ``test_user`` object is used as the default for most function calls.
-
-Feel free to change (or ignore) these users as needed to best serve project
-tests.
-
-
-Test User Logic
----------------
-
-For most logic in this class, it defaults to manipulating a User object with
-the username of ``test_user``. This behavior can be changed by providing a
-different User into the optional kwarg value of each function call.
-
-Alternatively, if a majority of the project tests check against a single user,
-consider setting the attributes of the provided ``test_user`` model according
-to project needs.
-
-For example, the below snippet will change the first and last name of this
-"default" testing user, such that all following UnitTesting logic will see this
-updated first and last name, unless a separate user is explicitly provided.
-
-.. code:: python
-
-   my_default_user = self.get_user('test_user')
-   my_default_user.first_name = 'UpdatedFirstName'
-   my_default_user.last_name = 'VeryImportantLastName'
-   my_default_user.save()
-
-
 Custom Assertions
 =================
 

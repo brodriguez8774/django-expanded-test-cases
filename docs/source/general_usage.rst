@@ -266,7 +266,7 @@ Any testing responses that were generated via the **Django-Expanded-Test-Cases**
 assertions and classes can automatically output response debug information, in
 an attempt to make it faster to troubleshoot failing tests (This functionality
 can be toggled via the ``DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT`` setting. See
-:doc:`configuration` for details.)
+:doc:`configuration/general` for details.)
 
 
 As result, helpful information is immediately visible in the console, after any
