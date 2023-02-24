@@ -1034,7 +1034,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         user_permissions=None, user_groups=None,
         **kwargs,
     ):
-        """Hook functio, to allow running extra authentication setup logic on User object.
+        """Hook function, to allow running extra authentication setup logic on User object.
 
         Useful such as for running things like 2-Factor setup logic for User.
 
