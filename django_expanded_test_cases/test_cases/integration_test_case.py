@@ -854,23 +854,43 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             response = response.decode('utf-8')
 
         # Find title element.
-        response_title = re.search(r'<title>([\S\s]+)</title>', response)
+        response_title = re.findall(r'<title(?:>| )([\S\s]+?)(?:</|</ |< /)title>', response)
 
         # Check that some value was found.
         # Certain response types may have no title, such as file download responses.
         if response_title is None:
-            # No value found. Convert to empty string.
+            # No tags found. Convert to empty string.
             response_title = ''
 
         elif response_title is not None:
-            # Value was found. Pull from capture group.
-            response_title = response_title.group(1)
+            # Tag was found.
 
-            # Strip any newlines, if present.
-            response_title = re.sub(r'(\n|\r)+', '', response_title)
+            # Check how many title tags were found.
+            if len(response_title) > 1:
+                # Multiple headers were found. Raise error and direct user to helper h1 documentation.
+                raise AssertionError(textwrap.dedent(
+                    """
+                    Found multiple titles ({0} total). There should only be one <title> tag per page.
+                    For further reference on <title> tags, consider consulting:
+                        * https://www.w3schools.com/tags/tag_title.asp
+                        * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title
+                    """.format(len(response_title))
+                ).strip())
 
-            # Remove any repeating whitespace, plus any outer whitespace.
-            response_title = re.sub(r'(\s)+', ' ', response_title).strip()
+            elif len(response_title) == 0:
+                # No title text was found. Return empty string.
+                response_title = ''
+
+            elif len(response_title) == 1:
+
+                # Pull from capture group.
+                response_title = response_title[0]
+
+                # Strip any newlines, if present.
+                response_title = re.sub(r'(\n|\r)+', '', response_title)
+
+                # Remove any repeating whitespace, plus any outer whitespace.
+                response_title = re.sub(r'(\s)+', ' ', response_title).strip()
 
         # Return formatted title value.
         return response_title
@@ -894,11 +914,11 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Handles if response did not have the H1 header element defined for some reason.
         # For example, likely to occur in responses that provide file downloads.
         if response_header is None:
-            # No value found. Convert to empty string.
+            # No tags found. Convert to empty string.
             response_header = ''
 
         elif response_header is not None:
-            # Value was found.
+            # Tag was found.
 
             # Check how many header tags were found.
             if len(response_header) > 1:
@@ -913,7 +933,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                 ).strip())
 
             elif len(response_header) == 0:
-                # No headers were found. Return empty string.
+                # No headers text was found. Return empty string.
                 response_header = ''
 
             elif len(response_header) == 1:

@@ -820,6 +820,85 @@ class IntegrationClassTest(IntegrationTestCase):
                 self.assertPageTitle(response, 'Test Title and More')
             self.assertEqual(str(err.exception), exception_msg.format('Test Title and More', 'Test Title'))
 
+        with self.subTest('Multiple Titles - Two and no spaces'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<title>Title 1</title><title>Title 2</title>')
+                self.assertPageTitle(response, '')
+            self.assertEqual(
+                str(err.exception),
+                (
+                    'Found multiple titles (2 total). There should only be one <title> tag per page.\n'
+                    'For further reference on <title> tags, consider consulting:\n'
+                    '    * https://www.w3schools.com/tags/tag_title.asp\n'
+                    '    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title'
+                )
+            )
+
+        with self.subTest('Multiple Titles - Two with spaces'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<title > Title 1 < /title><title > Title 2 < /title>')
+                self.assertPageTitle(response, '')
+            self.assertEqual(
+                str(err.exception),
+                (
+                    'Found multiple titles (2 total). There should only be one <title> tag per page.\n'
+                    'For further reference on <title> tags, consider consulting:\n'
+                    '    * https://www.w3schools.com/tags/tag_title.asp\n'
+                    '    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title'
+                )
+            )
+
+        with self.subTest('Multiple Titles - Two with line breaks'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<title>Title 1</title>\n<br>\n<title>Title 2</title>')
+                self.assertPageTitle(response, '')
+            self.assertEqual(
+                str(err.exception),
+                (
+                    'Found multiple titles (2 total). There should only be one <title> tag per page.\n'
+                    'For further reference on <title> tags, consider consulting:\n'
+                    '    * https://www.w3schools.com/tags/tag_title.asp\n'
+                    '    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title'
+                )
+            )
+
+        with self.subTest('Multiple Titles - Three'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<title>Title 1</title><title>Title 2</title><title>Title 3</title>')
+                self.assertPageTitle(response, '')
+            self.assertEqual(
+                str(err.exception),
+                (
+                    'Found multiple titles (3 total). There should only be one <title> tag per page.\n'
+                    'For further reference on <title> tags, consider consulting:\n'
+                    '    * https://www.w3schools.com/tags/tag_title.asp\n'
+                    '    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title'
+                )
+            )
+
+        with self.subTest('Multiple Titles - Many, assorted'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse(
+                    """
+                    <title>Testing</title
+                    <title>Title 1< /title><title>Title 2</ title>
+
+                    <br>
+
+                    <title>Title 3</title><p>This is a test p tag.</p></title><title > Title 4 < /title><title>Title 5</title>
+                    """
+                )
+                self.assertPageTitle(response, '')
+            self.assertEqual(
+                str(err.exception),
+                (
+                    'Found multiple titles (5 total). There should only be one <title> tag per page.\n'
+                    'For further reference on <title> tags, consider consulting:\n'
+                    '    * https://www.w3schools.com/tags/tag_title.asp\n'
+                    '    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title'
+                )
+            )
+
     def test__assertPageHeader__success(self):
         """
         Tests assertPageHeader() function, in cases when it should succeed.
