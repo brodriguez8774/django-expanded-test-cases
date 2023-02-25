@@ -4,6 +4,7 @@ Testing logic for views and other multi-part components.
 
 # System Imports.
 import re
+import textwrap
 
 # Third-Party Imports.
 from django.conf import settings
@@ -887,7 +888,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             response = response.decode('utf-8')
 
         # Find header element.
-        response_header = re.search(r'<h1>([\S\s]+)</h1>', response)
+        response_header = re.findall(r'<h1(?:>| )([\S\s]+?)(?:</|</ |< /)h1>', response)
 
         # Check that some value was found.
         # Handles if response did not have the H1 header element defined for some reason.
@@ -897,17 +898,37 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             response_header = ''
 
         elif response_header is not None:
-            # Value was found. Pull from capture group.
-            response_header = response_header.group(1)
+            # Value was found.
 
-            # Strip any newlines, if present.
-            response_header = re.sub(r'(\n|\r)+', '', response_header)
+            # Check how many header tags were found.
+            if len(response_header) > 1:
+                # Multiple headers were found. Raise error and direct user to helper h1 documentation.
+                raise AssertionError(textwrap.dedent(
+                    """
+                    Found multiple headers ({0} total). There should only be one <h1> tag per page.
+                    For further reference on <h1> tags, consider consulting:
+                        * https://www.w3schools.com/tags/tag_hn.asp
+                        * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
+                    """.format(len(response_header))
+                ).strip())
 
-            # Remove any repeating whitespace, plus any outer whitespace.
-            response_header = re.sub(r'(\s)+', ' ', response_header).strip()
+            elif len(response_header) == 0:
+                # No headers were found. Return empty string.
+                response_header = ''
 
-        # Return formatted header value.
-        return response_header
+            elif len(response_header) == 1:
+
+                # Pull from capture group.
+                response_header = response_header[0]
+
+                # Strip any newlines, if present.
+                response_header = re.sub(r'(\n|\r)+', '', response_header)
+
+                # Remove any repeating whitespace, plus any outer whitespace.
+                response_header = re.sub(r'(\s)+', ' ', response_header).strip()
+
+            # Return formatted header value.
+            return response_header
 
     def get_context_messages(self, response):
         """Parses out context messages from provided response.

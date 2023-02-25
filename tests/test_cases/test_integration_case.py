@@ -886,6 +886,85 @@ class IntegrationClassTest(IntegrationTestCase):
                 self.assertPageHeader(response, 'Test Header plus Extra')
             self.assertEqual(str(err.exception), exception_msg.format('Test Header plus Extra', 'Test Header'))
 
+        with self.subTest('Multiple Headers - Two and no spaces'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>Header 1</h1><h1>Header 2</h1>')
+                self.assertPageHeader(response, '')
+            self.assertEqual(
+                str(err.exception),
+                (
+                    'Found multiple headers (2 total). There should only be one <h1> tag per page.\n'
+                    'For further reference on <h1> tags, consider consulting:\n'
+                    '    * https://www.w3schools.com/tags/tag_hn.asp\n'
+                    '    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements'
+                )
+            )
+
+        with self.subTest('Multiple Headers - Two with spaces'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1 > Header 1 < /h1><h1 > Header 2 < /h1>')
+                self.assertPageHeader(response, '')
+            self.assertEqual(
+                str(err.exception),
+                (
+                    'Found multiple headers (2 total). There should only be one <h1> tag per page.\n'
+                    'For further reference on <h1> tags, consider consulting:\n'
+                    '    * https://www.w3schools.com/tags/tag_hn.asp\n'
+                    '    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements'
+                )
+            )
+
+        with self.subTest('Multiple Headers - Two with line breaks'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>Header 1</h1>\n<br>\n<h1>Header 2</h1>')
+                self.assertPageHeader(response, '')
+            self.assertEqual(
+                str(err.exception),
+                (
+                    'Found multiple headers (2 total). There should only be one <h1> tag per page.\n'
+                    'For further reference on <h1> tags, consider consulting:\n'
+                    '    * https://www.w3schools.com/tags/tag_hn.asp\n'
+                    '    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements'
+                )
+            )
+
+        with self.subTest('Multiple Headers - Three'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>Header 1</h1><h1>Header 2</h1><h1>Header 3</h1>')
+                self.assertPageHeader(response, '')
+            self.assertEqual(
+                str(err.exception),
+                (
+                    'Found multiple headers (3 total). There should only be one <h1> tag per page.\n'
+                    'For further reference on <h1> tags, consider consulting:\n'
+                    '    * https://www.w3schools.com/tags/tag_hn.asp\n'
+                    '    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements'
+                )
+            )
+
+        with self.subTest('Multiple Headers - Many, assorted'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse(
+                    """
+                    <h1>Testing</h1
+                    <h1>Header 1< /h1><h1>Header 2</ h1>
+
+                    <br>
+
+                    <h1>Header 3</h1><p>This is a test p tag.</p></h1><h1 > Header 4 < /h1><h1>Header 5</h1>
+                    """
+                )
+                self.assertPageHeader(response, '')
+            self.assertEqual(
+                str(err.exception),
+                (
+                    'Found multiple headers (5 total). There should only be one <h1> tag per page.\n'
+                    'For further reference on <h1> tags, consider consulting:\n'
+                    '    * https://www.w3schools.com/tags/tag_hn.asp\n'
+                    '    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements'
+                )
+            )
+
     @patch('django_expanded_test_cases.test_cases.integration_test_case.ETC_ALLOW_MESSAGE_PARTIALS', True)
     def test__assertContextMessages__success__allow_partials(self):
         """
