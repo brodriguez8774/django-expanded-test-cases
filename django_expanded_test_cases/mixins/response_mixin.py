@@ -147,6 +147,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         # NOTE: Response context object is strange, in that it's basically a dictionary,
         # and it allows .keys() but not .values(). Thus, iterate on keys only and pull respective value.
         if response_context is not None and len(response_context.keys()) > 0:
+            # pass
             for key in response_context.keys():
                 context_value = str(response_context.get(key))
                 # Truncate display if very long.
