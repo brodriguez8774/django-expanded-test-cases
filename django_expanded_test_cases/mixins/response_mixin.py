@@ -1,20 +1,22 @@
 """
 Core testing logic that pertains to handling Response objects.
 """
-
+import _pickle
 # System Imports.
-import logging, re
+import copy, logging, re
 
 # Third-Party Imports.
 from bs4 import BeautifulSoup
 from django.contrib.auth import get_user_model
 from django.http.response import HttpResponseBase
+from django.template.context import RequestContext
 
 # Internal Imports.
 from . import CoreTestCaseMixin
 from django_expanded_test_cases.constants import (
     OUTPUT_ERROR,
     RESPONSE_DEBUG_CONTENT,
+    RESPONSE_DEBUG_CONTEXT,
     RESPONSE_DEBUG_MESSAGES,
     RESPONSE_DEBUG_SESSION,
     RESPONSE_DEBUG_USER_INFO,
@@ -102,7 +104,58 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
 
     def show_debug_context(self, response_context):
         """Prints debug response context data."""
-        raise NotImplementedError()
+        # print('\n\n\n\n')
+
+        # Handle for potential param types.
+        if isinstance(response_context, HttpResponseBase):
+            response_context = response_context.context or {}
+
+        # print('type: {0}'.format(type(response_context)))
+
+        # print('\n')
+        # print(dir(response_context))
+        # print('\n')
+
+        if response_context is not None:
+            # Attempt to access key object. If fails, attempt to generate dict of values.
+            try:
+                response_context.keys()
+            except AttributeError:
+                # Handling for:
+                #     * django.template.context.RequestContext
+                #     * django.template.context.Context
+                # No guarantee this will work for other aribtrary types.
+                # Handle as they come up.
+                temp_dict = {}
+                for context in response_context:
+                    # print(context)
+                    temp_dict = {**temp_dict, **context}
+                response_context = temp_dict
+
+        # print('\n')
+        # print(type(response_context))
+        # print(dir(response_context))
+        # print('\n')
+
+        self._debug_print()
+        self._debug_print(
+            '{0} {1} {0}'.format('=' * 10, 'response.context'),
+            fore=RESPONSE_DEBUG_CONTEXT,
+            style=OUTPUT_EMPHASIS,
+        )
+
+        # NOTE: Response context object is strange, in that it's basically a dictionary,
+        # and it allows .keys() but not .values(). Thus, iterate on keys only and pull respective value.
+        if response_context is not None and len(response_context.keys()) > 0:
+            for key in response_context.keys():
+                context_value = str(response_context.get(key))
+                # Truncate display if very long.
+                if len(context_value) > 80:
+                    context_value = '"{0}"..."{1}"'.format(context_value[:40], context_value[-40:])
+                self._debug_print('    * {0}: {1}'.format(key, context_value), fore=RESPONSE_DEBUG_CONTEXT)
+        else:
+            self._debug_print('    No context data found.', fore=RESPONSE_DEBUG_CONTEXT)
+        self._debug_print('')
 
     def show_debug_session_data(self, client):
         """Prints debug response session data."""
