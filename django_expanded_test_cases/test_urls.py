@@ -8,10 +8,10 @@ Mocks being an "app" urls.py file.
 from django.urls import path
 
 # Internal Imports.
-from . import views
+from tests import views
 
 
-app_name = 'expanded_test_cases'
+app_name = 'django_expanded_test_cases'
 urlpatterns = [
     # Simple test views.
     path('login/', views.login, name='login'),

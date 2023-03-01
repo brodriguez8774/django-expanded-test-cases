@@ -22,7 +22,7 @@ except ModuleNotFoundError:
 
 
 INSTALLED_APPS = (
-    'tests.apps.DjangoExpandedTestCasesConfig',
+    'django_expanded_test_cases',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -58,8 +58,8 @@ MIDDLEWARE = [
 ]
 
 
-ROOT_URLCONF = 'tests.urls_root'
-LOGIN_URL = 'expanded_test_cases:login'
+ROOT_URLCONF = 'tests.urls'
+LOGIN_URL = 'django_expanded_test_cases:login'
 STATIC_URL = '/static/'
 USE_TZ = True
 

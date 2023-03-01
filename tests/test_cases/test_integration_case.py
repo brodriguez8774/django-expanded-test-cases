@@ -33,7 +33,7 @@ class IntegrationClassTest(IntegrationTestCase):
         """Verifies that expected user is logged in during assertGetResponse."""
 
         with self.subTest('Check login using default user'):
-            response = self.assertGetResponse('expanded_test_cases:index')
+            response = self.assertGetResponse('django_expanded_test_cases:index')
 
             # print('\n\n\n\n')
             # print('session values prior to touching anything:')
@@ -77,7 +77,7 @@ class IntegrationClassTest(IntegrationTestCase):
             # self.assertEqual(self.test_user, context_user)
 
         with self.subTest('Check login using super user'):
-            response = self.assertGetResponse('expanded_test_cases:index', user='test_superuser')
+            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_superuser')
 
             # # Get response's lazy user object.
             # uwsgi_user = response.wsgi_request.user
@@ -92,7 +92,7 @@ class IntegrationClassTest(IntegrationTestCase):
             # self.assertEqual(self.test_superuser, uwsgi_user)
 
         with self.subTest('Check login using admin user'):
-            response = self.assertGetResponse('expanded_test_cases:index', user='test_admin')
+            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_admin')
 
             # # Get response's lazy user object.
             # uwsgi_user = response.wsgi_request.user
@@ -107,7 +107,7 @@ class IntegrationClassTest(IntegrationTestCase):
             # self.assertEqual(self.test_admin, uwsgi_user)
 
         with self.subTest('Check login using standard user'):
-            response = self.assertGetResponse('expanded_test_cases:index', user='test_user')
+            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_user')
 
             # # Get response's lazy user object.
             # uwsgi_user = response.wsgi_request.user
@@ -123,7 +123,7 @@ class IntegrationClassTest(IntegrationTestCase):
 
         with self.subTest('Check login using custom new user'):
             new_user = self.get_user('new_user')
-            response = self.assertGetResponse('expanded_test_cases:index', user=new_user)
+            response = self.assertGetResponse('django_expanded_test_cases:index', user=new_user)
 
             # # Get response's lazy user object.
             # uwsgi_user = response.wsgi_request.user
@@ -208,54 +208,54 @@ class IntegrationClassTest(IntegrationTestCase):
 
         with self.subTest('With no site_root_url value defined - Via reverse()'):
             # Test "index" page url.
-            response = self.assertResponse('expanded_test_cases:index')
+            response = self.assertResponse('django_expanded_test_cases:index')
             self.assertEqual(response.url, '127.0.0.1/')
 
             # Test "login" page url.
-            response = self.assertResponse('expanded_test_cases:login')
+            response = self.assertResponse('django_expanded_test_cases:login')
             self.assertEqual(response.url, '127.0.0.1/login/')
 
             # Test "one message" page url.
-            response = self.assertResponse('expanded_test_cases:one-message')
+            response = self.assertResponse('django_expanded_test_cases:one-message')
             self.assertEqual(response.url, '127.0.0.1/one-message/')
 
             # Test "two messages" page url.
-            response = self.assertResponse('expanded_test_cases:two-messages')
+            response = self.assertResponse('django_expanded_test_cases:two-messages')
             self.assertEqual(response.url, '127.0.0.1/two-messages/')
 
             # Test "user detail" page url via args.
-            response = self.assertResponse('expanded_test_cases:user-detail', args=(1,))
+            response = self.assertResponse('django_expanded_test_cases:user-detail', args=(1,))
             self.assertEqual(response.url, '127.0.0.1/user/detail/1/')
 
             # Test "user detail" page url via kwargs.
-            response = self.assertResponse('expanded_test_cases:user-detail', kwargs={'pk': 2})
+            response = self.assertResponse('django_expanded_test_cases:user-detail', kwargs={'pk': 2})
             self.assertEqual(response.url, '127.0.0.1/user/detail/2/')
 
         with self.subTest('With custom site_root_url value defined'):
             self.site_root_url = 'https://my_really_cool_site.com/'
 
             # Test "index" page url.
-            response = self.assertResponse('expanded_test_cases:index')
+            response = self.assertResponse('django_expanded_test_cases:index')
             self.assertEqual(response.url, 'https://my_really_cool_site.com/')
 
             # Test "login" page url.
-            response = self.assertResponse('expanded_test_cases:login')
+            response = self.assertResponse('django_expanded_test_cases:login')
             self.assertEqual(response.url, 'https://my_really_cool_site.com/login/')
 
             # Test "one message" page url.
-            response = self.assertResponse('expanded_test_cases:one-message')
+            response = self.assertResponse('django_expanded_test_cases:one-message')
             self.assertEqual(response.url, 'https://my_really_cool_site.com/one-message/')
 
             # Test "two messages" page url.
-            response = self.assertResponse('expanded_test_cases:two-messages')
+            response = self.assertResponse('django_expanded_test_cases:two-messages')
             self.assertEqual(response.url, 'https://my_really_cool_site.com/two-messages/')
 
             # Test "user detail" page url via args.
-            response = self.assertResponse('expanded_test_cases:user-detail', args=(1,))
+            response = self.assertResponse('django_expanded_test_cases:user-detail', args=(1,))
             self.assertEqual(response.url, 'https://my_really_cool_site.com/user/detail/1/')
 
             # Test "user detail" page url via kwargs.
-            response = self.assertResponse('expanded_test_cases:user-detail', kwargs={'pk': 2})
+            response = self.assertResponse('django_expanded_test_cases:user-detail', kwargs={'pk': 2})
             self.assertEqual(response.url, 'https://my_really_cool_site.com/user/detail/2/')
 
     def test__assertResponse__url_redirect(self):
@@ -268,14 +268,14 @@ class IntegrationClassTest(IntegrationTestCase):
             # Using direct url.
             self.assertResponse('redirect/index/')
             self.assertResponse('redirect/index/', expected_redirect_url='/')
-            self.assertResponse('redirect/index/', expected_redirect_url='expanded_test_cases:index')
+            self.assertResponse('redirect/index/', expected_redirect_url='django_expanded_test_cases:index')
 
             # Using reverse.
-            self.assertResponse('expanded_test_cases:redirect-to-index')
-            self.assertResponse('expanded_test_cases:redirect-to-index', expected_redirect_url='/')
+            self.assertResponse('django_expanded_test_cases:redirect-to-index')
+            self.assertResponse('django_expanded_test_cases:redirect-to-index', expected_redirect_url='/')
             self.assertResponse(
-                'expanded_test_cases:redirect-to-index',
-                expected_redirect_url='expanded_test_cases:index',
+                'django_expanded_test_cases:redirect-to-index',
+                expected_redirect_url='django_expanded_test_cases:index',
             )
 
         with self.subTest('With view that does not redirect'):
@@ -285,22 +285,22 @@ class IntegrationClassTest(IntegrationTestCase):
                 self.assertResponse('', expected_redirect_url='/')
             self.assertEqual(str(err.exception), exception_msg)
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('', expected_redirect_url='expanded_test_cases:index')
+                self.assertResponse('', expected_redirect_url='django_expanded_test_cases:index')
             self.assertEqual(str(err.exception), exception_msg)
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('login/', expected_redirect_url='expanded_test_cases:index')
+                self.assertResponse('login/', expected_redirect_url='django_expanded_test_cases:index')
             self.assertEqual(str(err.exception), exception_msg)
 
             # Using reverse.
-            self.assertResponse('expanded_test_cases:index')
+            self.assertResponse('django_expanded_test_cases:index')
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('expanded_test_cases:index', expected_redirect_url='/')
+                self.assertResponse('django_expanded_test_cases:index', expected_redirect_url='/')
             self.assertEqual(str(err.exception), exception_msg)
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('expanded_test_cases:index', expected_redirect_url='expanded_test_cases:index')
+                self.assertResponse('django_expanded_test_cases:index', expected_redirect_url='django_expanded_test_cases:index')
             self.assertEqual(str(err.exception), exception_msg)
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('expanded_test_cases:login', expected_redirect_url='expanded_test_cases:index')
+                self.assertResponse('django_expanded_test_cases:login', expected_redirect_url='django_expanded_test_cases:index')
             self.assertEqual(str(err.exception), exception_msg)
 
     def test__assertResponse__user(self):
@@ -376,12 +376,12 @@ class IntegrationClassTest(IntegrationTestCase):
             self.assertEqual(response.status_code, 200)
 
             # Test 200 in reverse() url.
-            response = self.assertResponse('expanded_test_cases:index')
+            response = self.assertResponse('django_expanded_test_cases:index')
             self.assertEqual(response.status_code, 200)
 
             # With non-200 code provided.
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('expanded_test_cases:index', expected_status=400)
+                self.assertResponse('django_expanded_test_cases:index', expected_status=400)
             self.assertEqual(str(err.exception), exception_msg.format(200, 400))
 
         with self.subTest('With status_code=200 - View with params'):
@@ -390,11 +390,11 @@ class IntegrationClassTest(IntegrationTestCase):
             self.assertEqual(response.status_code, 200)
 
             # Test 200 in reverse() url, via args.
-            response = self.assertResponse('expanded_test_cases:user-detail', args=(2,))
+            response = self.assertResponse('django_expanded_test_cases:user-detail', args=(2,))
             self.assertEqual(response.status_code, 200)
 
             # Test 200 in reverse() url, via kwargs.
-            response = self.assertResponse('expanded_test_cases:user-detail', kwargs={'pk': 3})
+            response = self.assertResponse('django_expanded_test_cases:user-detail', kwargs={'pk': 3})
             self.assertEqual(response.status_code, 200)
 
             # With non-200 code provided.
@@ -408,11 +408,11 @@ class IntegrationClassTest(IntegrationTestCase):
             self.assertEqual(response.status_code, 404)
 
             # Test 404 in reverse() url, via args.
-            response = self.assertResponse('expanded_test_cases:user-detail', args=(234,), expected_status=404)
+            response = self.assertResponse('django_expanded_test_cases:user-detail', args=(234,), expected_status=404)
             self.assertEqual(response.status_code, 404)
 
             # Test 404 in reverse() url, via kwargs.
-            response = self.assertResponse('expanded_test_cases:user-detail', kwargs={'pk': 345}, expected_status=404)
+            response = self.assertResponse('django_expanded_test_cases:user-detail', kwargs={'pk': 345}, expected_status=404)
             self.assertEqual(response.status_code, 404)
 
             # With non-404 code provided.
@@ -430,11 +430,11 @@ class IntegrationClassTest(IntegrationTestCase):
         )
 
         with self.subTest('Title match'):
-            self.assertResponse('expanded_test_cases:index', expected_title='Home Page | Test Views')
+            self.assertResponse('django_expanded_test_cases:index', expected_title='Home Page | Test Views')
 
         with self.subTest('Title mismatch'):
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('expanded_test_cases:index', expected_title='Wrong Title')
+                self.assertResponse('django_expanded_test_cases:index', expected_title='Wrong Title')
             self.assertEqual(str(err.exception), exception_msg)
 
     def test__assertResponse__expected_header(self):
@@ -444,11 +444,11 @@ class IntegrationClassTest(IntegrationTestCase):
         exception_msg = 'Expected H1 header HTML contents of "Wrong Header". Actual value was "Home Page Header".'
 
         with self.subTest('Header match'):
-            self.assertResponse('expanded_test_cases:index', expected_header='Home Page Header')
+            self.assertResponse('django_expanded_test_cases:index', expected_header='Home Page Header')
 
         with self.subTest('Header mismatch'):
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('expanded_test_cases:index', expected_header='Wrong Header')
+                self.assertResponse('django_expanded_test_cases:index', expected_header='Wrong Header')
             self.assertEqual(str(err.exception), exception_msg)
 
     def test__assertResponse__expected_messages(self):
@@ -458,36 +458,36 @@ class IntegrationClassTest(IntegrationTestCase):
         exception_msg = 'Failed to find message "{0}" in context (Partial matching {1} allowed).'
 
         with self.subTest('No messages on page - match'):
-            self.assertResponse('expanded_test_cases:index', expected_messages='')
-            self.assertResponse('expanded_test_cases:index', expected_messages=[''])
+            self.assertResponse('django_expanded_test_cases:index', expected_messages='')
+            self.assertResponse('django_expanded_test_cases:index', expected_messages=[''])
 
         with self.subTest('No messages on page - mismatch'):
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('expanded_test_cases:index', expected_messages='Wrong message.')
+                self.assertResponse('django_expanded_test_cases:index', expected_messages='Wrong message.')
             self.assertEqual(str(err.exception), exception_msg.format('Wrong message.', 'is'))
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('expanded_test_cases:index', expected_messages=['Wrong message.'])
+                self.assertResponse('django_expanded_test_cases:index', expected_messages=['Wrong message.'])
             self.assertEqual(str(err.exception), exception_msg.format('Wrong message.', 'is'))
 
         with self.subTest('Multiple messages on page - match'):
-            self.assertResponse('expanded_test_cases:three-messages', expected_messages='Test info message.')
-            self.assertResponse('expanded_test_cases:three-messages', expected_messages=['Test warning message.'])
+            self.assertResponse('django_expanded_test_cases:three-messages', expected_messages='Test info message.')
+            self.assertResponse('django_expanded_test_cases:three-messages', expected_messages=['Test warning message.'])
             self.assertResponse(
-                'expanded_test_cases:three-messages',
+                'django_expanded_test_cases:three-messages',
                 expected_messages=['Test info message.', 'Test warning message.'],
             )
             self.assertResponse(
-                'expanded_test_cases:three-messages',
+                'django_expanded_test_cases:three-messages',
                 expected_messages=['Test info message.', 'Test warning message.', 'Test error message.'],
             )
 
         with self.subTest('Multiple messages on page - mismatch'):
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('expanded_test_cases:three-messages', expected_messages='Wrong message.')
+                self.assertResponse('django_expanded_test_cases:three-messages', expected_messages='Wrong message.')
             self.assertEqual(str(err.exception), exception_msg.format('Wrong message.', 'is'))
             with self.assertRaises(AssertionError) as err:
                 self.assertResponse(
-                    'expanded_test_cases:three-messages',
+                    'django_expanded_test_cases:three-messages',
                     expected_messages=['Test info message.', 'Wrong message.'],
                 )
             self.assertEqual(str(err.exception), exception_msg.format('Wrong message.', 'is'))
@@ -501,7 +501,7 @@ class IntegrationClassTest(IntegrationTestCase):
         with self.subTest('Content match - With tags'):
             # With non-repeating values.
             self.assertResponse(
-                'expanded_test_cases:index',
+                'django_expanded_test_cases:index',
                 expected_content=[
                     '<title>Home Page | Test Views</title>',
                     '<h1>Home Page Header</h1>',
@@ -512,7 +512,7 @@ class IntegrationClassTest(IntegrationTestCase):
 
             # With repeated values.
             self.assertResponse(
-                'expanded_test_cases:index',
+                'django_expanded_test_cases:index',
                 expected_content=[
                     '<title>Home Page | Test Views</title>',
                     '<h1>Home Page Header</h1>',
@@ -526,7 +526,7 @@ class IntegrationClassTest(IntegrationTestCase):
         with self.subTest('Content match - Without tags'):
             # With non-repeating values.
             self.assertResponse(
-                'expanded_test_cases:index',
+                'django_expanded_test_cases:index',
                 expected_content=[
                     'Home Page | Test Views',
                     'Home Page Header',
@@ -537,7 +537,7 @@ class IntegrationClassTest(IntegrationTestCase):
 
             # With repeated values.
             self.assertResponse(
-                'expanded_test_cases:index',
+                'django_expanded_test_cases:index',
                 expected_content=[
                     'Home Page | Test Views',
                     'Home Page Header',
@@ -550,11 +550,11 @@ class IntegrationClassTest(IntegrationTestCase):
 
         with self.subTest('Content mismatch'):
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('expanded_test_cases:index', expected_content='Wrong value')
+                self.assertResponse('django_expanded_test_cases:index', expected_content='Wrong value')
             self.assertEqual(str(err.exception), exception_msg.format('Wrong value'))
             with self.assertRaises(AssertionError) as err:
                 self.assertResponse(
-                    'expanded_test_cases:index',
+                    'django_expanded_test_cases:index',
                     expected_content=[
                         'Home Page Header',
                         'Pretend this is',
@@ -566,19 +566,19 @@ class IntegrationClassTest(IntegrationTestCase):
         with self.subTest('With search subsections'):
             # Strip start.
             self.assertResponse(
-                'expanded_test_cases:index',
+                'django_expanded_test_cases:index',
                 expected_content='<p>Pretend this is the project landing page.</p>',
                 content_starts_after='<h1>Home Page Header</h1>',
             )
             # Strip end.
             self.assertResponse(
-                'expanded_test_cases:index',
+                'django_expanded_test_cases:index',
                 expected_content='<title>Home Page | Test Views</title>',
                 content_ends_before='<h1>Home Page Header</h1>',
             )
             # Strip both.
             self.assertResponse(
-                'expanded_test_cases:index',
+                'django_expanded_test_cases:index',
                 expected_content='<h1>Home Page Header</h1>',
                 content_starts_after='<title>Home Page | Test Views</title>',
                 content_ends_before='<p>Pretend this is the project landing page.</p>',
@@ -587,7 +587,7 @@ class IntegrationClassTest(IntegrationTestCase):
         with self.subTest('With content blocks'):
             # Entire page as one block.
             self.assertResponse(
-                'expanded_test_cases:index',
+                'django_expanded_test_cases:index',
                 expected_content="""
                 <head>
                     <meta charset="utf-8">
@@ -601,7 +601,7 @@ class IntegrationClassTest(IntegrationTestCase):
             )
             # Header and body each a block.
             self.assertResponse(
-                'expanded_test_cases:index',
+                'django_expanded_test_cases:index',
                 expected_content=[
                     """
                     <head>
@@ -619,7 +619,7 @@ class IntegrationClassTest(IntegrationTestCase):
             )
             # With start stripped.
             self.assertResponse(
-                'expanded_test_cases:index',
+                'django_expanded_test_cases:index',
                 expected_content=[
                     """
                     <body>
@@ -632,7 +632,7 @@ class IntegrationClassTest(IntegrationTestCase):
             )
             # With end stripped.
             self.assertResponse(
-                'expanded_test_cases:index',
+                'django_expanded_test_cases:index',
                 expected_content=[
                     """
                     <head>
@@ -645,7 +645,7 @@ class IntegrationClassTest(IntegrationTestCase):
             )
             # With both stripped.
             self.assertResponse(
-                'expanded_test_cases:index',
+                'django_expanded_test_cases:index',
                 expected_content=[
                     """
                     <title>Home Page | Test Views</title>
@@ -664,7 +664,7 @@ class IntegrationClassTest(IntegrationTestCase):
         Note: Most logic in here passes into the assertResponse() function.
             Thus we just do basic checks here and do most of the heavy-testing in assertResponse().
         """
-        response = self.assertGetResponse('expanded_test_cases:index')
+        response = self.assertGetResponse('django_expanded_test_cases:index')
 
         self.assertEqual(response.url, '127.0.0.1/')
         self.assertEqual(response.status_code, 200)
@@ -675,7 +675,7 @@ class IntegrationClassTest(IntegrationTestCase):
         Note: Most logic in here passes into the assertResponse() function.
             Thus we just do basic checks here and do most of the heavy-testing in assertResponse().
         """
-        response = self.assertPostResponse('expanded_test_cases:index')
+        response = self.assertPostResponse('django_expanded_test_cases:index')
 
         self.assertEqual(response.url, '127.0.0.1/')
         self.assertEqual(response.status_code, 200)
@@ -691,13 +691,13 @@ class IntegrationClassTest(IntegrationTestCase):
         with self.subTest('With view that redirects'):
             # Using direct url.
             self.assertRedirects('redirect/index/', expected_redirect_url='/')
-            self.assertRedirects('redirect/index/', expected_redirect_url='expanded_test_cases:index')
+            self.assertRedirects('redirect/index/', expected_redirect_url='django_expanded_test_cases:index')
 
             # Using reverse.
-            self.assertRedirects('expanded_test_cases:redirect-to-index', expected_redirect_url='/')
+            self.assertRedirects('django_expanded_test_cases:redirect-to-index', expected_redirect_url='/')
             self.assertRedirects(
-                'expanded_test_cases:redirect-to-index',
-                expected_redirect_url='expanded_test_cases:index',
+                'django_expanded_test_cases:redirect-to-index',
+                expected_redirect_url='django_expanded_test_cases:index',
             )
 
     def test__assertResponseRedirects__failure(self):
@@ -712,7 +712,7 @@ class IntegrationClassTest(IntegrationTestCase):
                 self.assertRedirects(request, expected_redirect_url='/')
             self.assertEqual(str(err.exception), exception_msg.format(request.status_code))
             with self.assertRaises(AssertionError) as err:
-                self.assertRedirects(request, expected_redirect_url='expanded_test_cases:invalid')
+                self.assertRedirects(request, expected_redirect_url='django_expanded_test_cases:invalid')
             self.assertEqual(str(err.exception), exception_msg.format(request.status_code))
 
         with self.subTest('With view that does not redirect - Index page'):
@@ -721,7 +721,7 @@ class IntegrationClassTest(IntegrationTestCase):
                 self.assertRedirects(request, expected_redirect_url='/')
             self.assertEqual(str(err.exception), exception_msg.format(request.status_code))
             with self.assertRaises(AssertionError) as err:
-                self.assertRedirects(request, expected_redirect_url='expanded_test_cases:index')
+                self.assertRedirects(request, expected_redirect_url='django_expanded_test_cases:index')
             self.assertEqual(str(err.exception), exception_msg.format(request.status_code))
 
         with self.subTest('With view that does not redirect - Non-index page'):
@@ -730,7 +730,7 @@ class IntegrationClassTest(IntegrationTestCase):
                 self.assertRedirects(request, expected_redirect_url='/')
             self.assertEqual(str(err.exception), exception_msg.format(request.status_code))
             with self.assertRaises(AssertionError) as err:
-                self.assertRedirects(request, expected_redirect_url='expanded_test_cases:login')
+                self.assertRedirects(request, expected_redirect_url='django_expanded_test_cases:login')
             self.assertEqual(str(err.exception), exception_msg.format(request.status_code))
 
     def test__assertStatusCode__success(self):
@@ -1165,13 +1165,13 @@ class IntegrationClassTest(IntegrationTestCase):
         We assume a majority of testing will occur in the "disallow_partials" set.
         """
         with self.subTest('Check for single message partial, single message exists'):
-            response = self._get_page_response('expanded_test_cases:one-message')
+            response = self._get_page_response('django_expanded_test_cases:one-message')
             self.assertContextMessages(response, 'This is a test message.')
             self.assertContextMessages(response, 'is a test message')
             self.assertContextMessages(response, 'test')
 
         with self.subTest('Check for three message partials, three messages exists'):
-            response = self._get_page_response('expanded_test_cases:three-messages')
+            response = self._get_page_response('django_expanded_test_cases:three-messages')
             self.assertContextMessages(response, ['info', 'warning message', 'Test error'])
 
     @patch('django_expanded_test_cases.test_cases.integration_test_case.ETC_ALLOW_MESSAGE_PARTIALS', False)
@@ -1182,32 +1182,32 @@ class IntegrationClassTest(IntegrationTestCase):
         The majority of tests for this function exist here.
         """
         with self.subTest('Check for single message, single message exists'):
-            response = self._get_page_response('expanded_test_cases:one-message')
+            response = self._get_page_response('django_expanded_test_cases:one-message')
             self.assertContextMessages(response, 'This is a test message.')
 
         with self.subTest('Check for single message, two messages exists'):
-            response = self._get_page_response('expanded_test_cases:two-messages')
+            response = self._get_page_response('django_expanded_test_cases:two-messages')
             self.assertContextMessages(response, 'Test message #1.')
             self.assertContextMessages(response, 'Test message #2.')
 
         with self.subTest('Check for single message, three messages exists'):
-            response = self._get_page_response('expanded_test_cases:three-messages')
+            response = self._get_page_response('django_expanded_test_cases:three-messages')
             self.assertContextMessages(response, 'Test info message.')
             self.assertContextMessages(response, 'Test warning message.')
             self.assertContextMessages(response, 'Test error message.')
 
         with self.subTest('Check for two messages, two messages exists'):
-            response = self._get_page_response('expanded_test_cases:two-messages')
+            response = self._get_page_response('django_expanded_test_cases:two-messages')
             self.assertContextMessages(response, ['Test message #1.', 'Test message #2.'])
 
         with self.subTest('Check for two messages, three messages exists'):
-            response = self._get_page_response('expanded_test_cases:three-messages')
+            response = self._get_page_response('django_expanded_test_cases:three-messages')
             self.assertContextMessages(response, ['Test info message.', 'Test warning message.'])
             self.assertContextMessages(response, ['Test info message.', 'Test error message.'])
             self.assertContextMessages(response, ['Test warning message.', 'Test error message.'])
 
         with self.subTest('Check for three messages, three messages exists'):
-            response = self._get_page_response('expanded_test_cases:three-messages')
+            response = self._get_page_response('django_expanded_test_cases:three-messages')
             self.assertContextMessages(response, ['Test info message.', 'Test warning message.', 'Test error message.'])
 
     @patch('django_expanded_test_cases.test_cases.integration_test_case.ETC_ALLOW_MESSAGE_PARTIALS', False)
@@ -1219,18 +1219,18 @@ class IntegrationClassTest(IntegrationTestCase):
 
         with self.subTest('Checking for single message, none exist'):
             with self.assertRaises(AssertionError) as err:
-                response = self._get_page_response('expanded_test_cases:index')
+                response = self._get_page_response('django_expanded_test_cases:index')
                 self.assertContextMessages(response, 'This is a test message.')
             self.assertEqual(str(err.exception), exception_msg.format('This is a test message.', 'is NOT'))
 
         with self.subTest('Checking for single message, one exists but doesn\'t match'):
             with self.assertRaises(AssertionError) as err:
-                response = self._get_page_response('expanded_test_cases:one-message')
+                response = self._get_page_response('django_expanded_test_cases:one-message')
                 self.assertContextMessages(response, 'Testing!')
             self.assertEqual(str(err.exception), exception_msg.format('Testing!', 'is NOT'))
 
         with self.subTest('Checking for single message, but it\'s only a partial match'):
-            response = self._get_page_response('expanded_test_cases:one-message')
+            response = self._get_page_response('django_expanded_test_cases:one-message')
             with self.assertRaises(AssertionError) as err:
                 self.assertContextMessages(response, 'This is a test message')
             self.assertEqual(str(err.exception), exception_msg.format('This is a test message', 'is NOT'))
@@ -1243,24 +1243,24 @@ class IntegrationClassTest(IntegrationTestCase):
 
         with self.subTest('Checking for single message, multiple exist but don\'t match'):
             with self.assertRaises(AssertionError) as err:
-                response = self._get_page_response('expanded_test_cases:three-messages')
+                response = self._get_page_response('django_expanded_test_cases:three-messages')
                 self.assertContextMessages(response, 'Testing!')
             self.assertEqual(str(err.exception), exception_msg.format('Testing!', 'is NOT'))
 
         with self.subTest('Checking for two messages, none exist'):
             with self.assertRaises(AssertionError) as err:
-                response = self._get_page_response('expanded_test_cases:index')
+                response = self._get_page_response('django_expanded_test_cases:index')
                 self.assertContextMessages(response, ['This is a test message.', 'Another message.'])
             self.assertEqual(str(err.exception), exception_msg.format('This is a test message.', 'is NOT'))
 
         with self.subTest('Checking for two messages, but only one exists'):
             with self.assertRaises(AssertionError) as err:
-                response = self._get_page_response('expanded_test_cases:one-message')
+                response = self._get_page_response('django_expanded_test_cases:one-message')
                 self.assertContextMessages(response, ['This is a test message.', 'Another message.'])
             self.assertEqual(str(err.exception), exception_msg.format('Another message.', 'is NOT'))
 
         with self.subTest('Checking for two messages, multiple exist but one doesn\'t match'):
-            response = self._get_page_response('expanded_test_cases:three-messages')
+            response = self._get_page_response('django_expanded_test_cases:three-messages')
             with self.assertRaises(AssertionError) as err:
                 self.assertContextMessages(response, ['Test info message.', 'Another message.'])
             self.assertEqual(str(err.exception), exception_msg.format('Another message.', 'is NOT'))
@@ -1270,7 +1270,7 @@ class IntegrationClassTest(IntegrationTestCase):
 
         with self.subTest('Checking for two messages, multiple exist but none match'):
             with self.assertRaises(AssertionError) as err:
-                response = self._get_page_response('expanded_test_cases:three-messages')
+                response = self._get_page_response('django_expanded_test_cases:three-messages')
                 self.assertContextMessages(response, ['Testing!', 'Testing again!'])
             self.assertEqual(str(err.exception), exception_msg.format('Testing!', 'is NOT'))
 
@@ -1307,28 +1307,28 @@ class IntegrationClassTest(IntegrationTestCase):
             self.assertPageContent(response, '<h1>Test Title</h1>')
 
         with self.subTest('Standard Response, no value passed'):
-            response = self._get_page_response('expanded_test_cases:login')
+            response = self._get_page_response('django_expanded_test_cases:login')
             self.assertPageContent(response, '')
 
         with self.subTest('Standard Response - Login Page'):
-            response = self._get_page_response('expanded_test_cases:login')
+            response = self._get_page_response('django_expanded_test_cases:login')
             self.assertPageContent(response, '<h1>Login Page Header</h1><p>Pretend this is a login page.</p>')
 
         with self.subTest('Standard Response, missing part of value'):
-            response = self._get_page_response('expanded_test_cases:login')
+            response = self._get_page_response('django_expanded_test_cases:login')
             self.assertPageContent(response, '<h1>Login Page Header</h1>')
             self.assertPageContent(response, '<p>Pretend this is a login page.</p>')
 
         with self.subTest('Standard Response - Render() Home Page'):
-            response = self._get_page_response('expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:index')
             self.assertPageContent(response, '<h1>Home Page Header</h1><p>Pretend this is the project landing page.</p>')
 
         with self.subTest('Standard Response - TemplateResponse Home Page'):
-            response = self._get_page_response('expanded_test_cases:template-response-index')
+            response = self._get_page_response('django_expanded_test_cases:template-response-index')
             self.assertPageContent(response, '<h1>Home Page Header</h1><p>Pretend this is the project landing page.</p>')
 
         with self.subTest('Standard Response - One Message Page'):
-            response = self._get_page_response('expanded_test_cases:one-message')
+            response = self._get_page_response('django_expanded_test_cases:one-message')
             self.assertPageContent(
                 response,
                 (
@@ -1339,7 +1339,7 @@ class IntegrationClassTest(IntegrationTestCase):
             )
 
         with self.subTest('Standard Response - Set of items on index page'):
-            response = self._get_page_response('expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:index')
             # Test as list.
             self.assertPageContent(
                 response,
@@ -1364,7 +1364,7 @@ class IntegrationClassTest(IntegrationTestCase):
             )
 
         with self.subTest('Standard Response - Set of items on user page - As list'):
-            response = self._get_page_response('expanded_test_cases:user-detail', args=(1,))
+            response = self._get_page_response('django_expanded_test_cases:user-detail', args=(1,))
 
             # Standard, ordered page match.
             self.assertPageContent(
@@ -1414,7 +1414,7 @@ class IntegrationClassTest(IntegrationTestCase):
             )
 
         with self.subTest('Standard Response - Set of items on user page - As Tuple'):
-            response = self._get_page_response('expanded_test_cases:user-detail', args=(1,))
+            response = self._get_page_response('django_expanded_test_cases:user-detail', args=(1,))
 
             # Standard, ordered page match.
             self.assertPageContent(
@@ -1472,7 +1472,7 @@ class IntegrationClassTest(IntegrationTestCase):
             This is important for repeated checks against similar/identical values, where the test is maybe testing
             more for value ordering and instance count, rather than just that the value exists at all.
             """
-            response = self._get_page_response('expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:index')
             self.assertPageContent(
                 response,
                 [
@@ -1494,7 +1494,7 @@ class IntegrationClassTest(IntegrationTestCase):
 
     def test__assertPageContent__success_with_limited_search_space(self):
         with self.subTest('Standard Response - With "content_starts_after" defined'):
-            response = self._get_page_response('expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:index')
 
             # Expected as single value.
             self.assertPageContent(
@@ -1516,7 +1516,7 @@ class IntegrationClassTest(IntegrationTestCase):
         with self.subTest('Standard Response - With multi-lined "content_starts_after" defined'):
             # Can be useful in cases such as where there is no directly-unique element in desired section.
             # But there are groupings of elements together that make a unique desired section to limit by.
-            response = self._get_page_response('expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:index')
 
             # Expected as single value.
             self.assertPageContent(
@@ -1545,7 +1545,7 @@ class IntegrationClassTest(IntegrationTestCase):
             )
 
         with self.subTest('Standard Response - With "content_ends_before" defined'):
-            response = self._get_page_response('expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:index')
 
             # Expected as single value.
             self.assertPageContent(
@@ -1570,7 +1570,7 @@ class IntegrationClassTest(IntegrationTestCase):
         with self.subTest('Standard Response - With multi-lined "content_ends_before" defined'):
             # Can be useful in cases such as where there is no directly-unique element in desired section.
             # But there are groupings of elements together that make a unique desired section to limit by.
-            response = self._get_page_response('expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:index')
 
             # Expected as single value.
             self.assertPageContent(
@@ -1599,7 +1599,7 @@ class IntegrationClassTest(IntegrationTestCase):
             )
 
         with self.subTest('Standard Response - With both content containers defined'):
-            response = self._get_page_response('expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:index')
 
             # Expected as single value.
             self.assertPageContent(
@@ -1644,7 +1644,7 @@ class IntegrationClassTest(IntegrationTestCase):
 
         with self.subTest('Standard Response - Wrong value passed'):
             with self.assertRaises(AssertionError) as err:
-                response = self._get_page_response('expanded_test_cases:login')
+                response = self._get_page_response('django_expanded_test_cases:login')
                 self.assertPageContent(response, '<h1>Testing Header</h1><p>Pretend this is a page.</p>')
             self.assertEqual(
                 str(err.exception),
@@ -1652,7 +1652,7 @@ class IntegrationClassTest(IntegrationTestCase):
             )
 
         with self.subTest('Standard Response - Set of items with wrong values'):
-            response = self._get_page_response('expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:index')
 
             # Test as list.
             with self.assertRaises(AssertionError) as err:
@@ -1694,7 +1694,7 @@ class IntegrationClassTest(IntegrationTestCase):
             self.assertEqual(str(err.exception), exception_msg_not_found.format('<h1>Wrong Header</h1>'))
 
         with self.subTest('Standard Response - Wrong ordering'):
-            response = self._get_page_response('expanded_test_cases:user-detail', args=(1,))
+            response = self._get_page_response('django_expanded_test_cases:user-detail', args=(1,))
 
             with self.assertRaises(AssertionError) as err:
                 # Test "first name" string at top.
@@ -1794,7 +1794,7 @@ class IntegrationClassTest(IntegrationTestCase):
 
     def test__assertPageContent__failure__with_bad_search_space(self):
         exception_msg = 'Could not find "{0}" value in content response. Provided value was:\n{1}'
-        response = self._get_page_response('expanded_test_cases:index')
+        response = self._get_page_response('django_expanded_test_cases:index')
 
         # Bad content_starts_after values.
         with self.subTest('With content_starts_after not found'):
@@ -1856,7 +1856,7 @@ class IntegrationClassTest(IntegrationTestCase):
 
     def test__assertPageContent__fail__with_limited_search_space(self):
         exception_msg = 'Expected content value was found, but occurred in "{0}" section. Expected was:\n{1}'
-        response = self._get_page_response('expanded_test_cases:index')
+        response = self._get_page_response('django_expanded_test_cases:index')
 
         with self.subTest('Standard Response - With content_starts_after defined'):
             # Expected as single value.
@@ -1955,7 +1955,7 @@ class IntegrationClassTest(IntegrationTestCase):
             )
 
         with self.subTest('Standard Response - With content_ends_before defined'):
-            response = self._get_page_response('expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:index')
 
             # Expected as single value - Exact match.
             with self.assertRaises(AssertionError) as err:
@@ -2048,7 +2048,7 @@ class IntegrationClassTest(IntegrationTestCase):
             self.assertEqual(str(err.exception), exception_msg.format('content_ends_before', '</body>'))
 
         with self.subTest('Standard Response - With both content containers defined'):
-            response = self._get_page_response('expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:index')
 
             # Expected as single value - above search area.
             with self.assertRaises(AssertionError) as err:
@@ -2928,25 +2928,25 @@ class IntegrationClassTest(IntegrationTestCase):
         Tests get_context_messages() function.
         """
         with self.subTest('No messages'):
-            response = self._get_page_response('expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:index')
             messages = self.get_context_messages(response)
             self.assertEqual(len(messages), 0)
 
         with self.subTest('Single message'):
-            response = self._get_page_response('expanded_test_cases:one-message')
+            response = self._get_page_response('django_expanded_test_cases:one-message')
             messages = self.get_context_messages(response)
             self.assertEqual(len(messages), 1)
             self.assertIn('This is a test message.', messages)
 
         with self.subTest('Two messages'):
-            response = self._get_page_response('expanded_test_cases:two-messages')
+            response = self._get_page_response('django_expanded_test_cases:two-messages')
             messages = self.get_context_messages(response)
             self.assertEqual(len(messages), 2)
             self.assertIn('Test message #1.', messages)
             self.assertIn('Test message #2.', messages)
 
         with self.subTest('Three messages'):
-            response = self._get_page_response('expanded_test_cases:three-messages')
+            response = self._get_page_response('django_expanded_test_cases:three-messages')
             messages = self.get_context_messages(response)
             self.assertEqual(len(messages), 3)
             self.assertIn('Test info message.', messages)
@@ -2954,7 +2954,7 @@ class IntegrationClassTest(IntegrationTestCase):
             self.assertIn('Test error message.', messages)
 
         with self.subTest('TemplateResponse check'):
-            response = self._get_page_response('expanded_test_cases:template-response-messages')
+            response = self._get_page_response('django_expanded_test_cases:template-response-messages')
             messages = self.get_context_messages(response)
             self.assertEqual(len(messages), 3)
             self.assertIn('Test info message.', messages)
@@ -2991,7 +2991,7 @@ class IntegrationClassTest(IntegrationTestCase):
             self.assertEqual(response, '<h1>Test Title</h1>')
 
         with self.subTest('Standard Response - Login Page'):
-            response = self._get_page_response('expanded_test_cases:login')
+            response = self._get_page_response('django_expanded_test_cases:login')
             response = self.get_minimized_response_content(response, strip_newlines=True)
             self.assertEqual(
                 response,
@@ -3004,7 +3004,7 @@ class IntegrationClassTest(IntegrationTestCase):
             )
 
         with self.subTest('Standard Response - Render() Home Page'):
-            response = self._get_page_response('expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:index')
             response = self.get_minimized_response_content(response, strip_newlines=True)
             self.assertEqual(
                 response,
@@ -3017,7 +3017,7 @@ class IntegrationClassTest(IntegrationTestCase):
             )
 
         with self.subTest('Standard Response - TemplateResponse Home Page'):
-            response = self._get_page_response('expanded_test_cases:template-response-index')
+            response = self._get_page_response('django_expanded_test_cases:template-response-index')
             response = self.get_minimized_response_content(response, strip_newlines=True)
             self.assertEqual(
                 response,
@@ -3030,7 +3030,7 @@ class IntegrationClassTest(IntegrationTestCase):
             )
 
         with self.subTest('Standard Response - One Message Page'):
-            response = self._get_page_response('expanded_test_cases:one-message')
+            response = self._get_page_response('django_expanded_test_cases:one-message')
             response = self.get_minimized_response_content(response, strip_newlines=True)
             self.assertEqual(
                 response,
@@ -3069,7 +3069,7 @@ class IntegrationClassTest(IntegrationTestCase):
             self.assertEqual(response, '<h1>Test \n Title</h1>')
 
         with self.subTest('Standard Response - Login Page'):
-            response = self._get_page_response('expanded_test_cases:login')
+            response = self._get_page_response('django_expanded_test_cases:login')
             response = self.get_minimized_response_content(response, strip_newlines=False)
             self.assertEqual(
                 response,
@@ -3082,7 +3082,7 @@ class IntegrationClassTest(IntegrationTestCase):
             )
 
         with self.subTest('Standard Response - Render() Home Page'):
-            response = self._get_page_response('expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:index')
             response = self.get_minimized_response_content(response, strip_newlines=False)
             self.assertEqual(
                 response,
@@ -3095,7 +3095,7 @@ class IntegrationClassTest(IntegrationTestCase):
             )
 
         with self.subTest('Standard Response - TemplateResponse Home Page'):
-            response = self._get_page_response('expanded_test_cases:template-response-index')
+            response = self._get_page_response('django_expanded_test_cases:template-response-index')
             response = self.get_minimized_response_content(response, strip_newlines=False)
             self.assertEqual(
                 response,
@@ -3108,7 +3108,7 @@ class IntegrationClassTest(IntegrationTestCase):
             )
 
         with self.subTest('Standard Response - One Message Page'):
-            response = self._get_page_response('expanded_test_cases:one-message')
+            response = self._get_page_response('django_expanded_test_cases:one-message')
             response = self.get_minimized_response_content(response, strip_newlines=False)
             self.assertEqual(
                 response,

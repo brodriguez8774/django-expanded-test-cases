@@ -116,4 +116,4 @@ def user_detail(request, pk):
 
 def redirect_to_index(request):
     """Page that simulates a redirect."""
-    return redirect('expanded_test_cases:index')
+    return redirect('django_expanded_test_cases:index')

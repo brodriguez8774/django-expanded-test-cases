@@ -1,2 +1,3 @@
 include LICENSE
 include readme.md
+recursive-include django_expanded_test_cases/templates *

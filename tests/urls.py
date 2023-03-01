@@ -8,7 +8,6 @@ Mocks being the "project settings root" urls.py file.
 from django.urls import include, path
 
 
-app_name = 'expanded_test_cases'
 urlpatterns = [
-    path('', (include('tests.urls_app', namespace='expanded_test_cases'))),
+    path('', (include('django_expanded_test_cases.test_urls', namespace='django_expanded_test_cases'))),
 ]
