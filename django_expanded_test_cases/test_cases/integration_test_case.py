@@ -104,10 +104,11 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Optionally output all debug info for found response.
         if self._debug_print_bool:
             self.show_debug_content(response)
-            # self.show_debug_context(response)
+            self.show_debug_headers(response)
+            self.show_debug_context(response)
             self.show_debug_session_data(response)
-            # self.show_debug_form_data(response)
             self.show_debug_messages(response)
+            self.show_debug_form_data(response)
             self.show_debug_user_info(self.get_user(user))
 
         # Optional hook for running custom pre-builtin-test logic.
