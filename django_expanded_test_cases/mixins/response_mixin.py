@@ -1,15 +1,14 @@
 """
 Core testing logic that pertains to handling Response objects.
 """
-import _pickle
+
 # System Imports.
-import copy, logging, re
+import logging, re
 
 # Third-Party Imports.
 from bs4 import BeautifulSoup
 from django.contrib.auth import get_user_model
-from django.http.response import HttpResponseBase
-from django.template.context import RequestContext
+from django.http.response import HttpResponseBase, HttpResponseNotFound, HttpResponseNotAllowed
 
 # Internal Imports.
 from . import CoreTestCaseMixin
@@ -104,17 +103,10 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
 
     def show_debug_context(self, response_context):
         """Prints debug response context data."""
-        # print('\n\n\n\n')
 
         # Handle for potential param types.
         if isinstance(response_context, HttpResponseBase):
             response_context = response_context.context or {}
-
-        # print('type: {0}'.format(type(response_context)))
-
-        # print('\n')
-        # print(dir(response_context))
-        # print('\n')
 
         if response_context is not None:
             # Attempt to access key object. If fails, attempt to generate dict of values.
@@ -128,14 +120,8 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                 # Handle as they come up.
                 temp_dict = {}
                 for context in response_context:
-                    # print(context)
                     temp_dict = {**temp_dict, **context}
                 response_context = temp_dict
-
-        # print('\n')
-        # print(type(response_context))
-        # print(dir(response_context))
-        # print('\n')
 
         self._debug_print()
         self._debug_print(

@@ -3,8 +3,7 @@ Testing logic for views and other multi-part components.
 """
 
 # System Imports.
-import re
-import textwrap
+import logging, re, textwrap
 
 # Third-Party Imports.
 from django.conf import settings
@@ -704,7 +703,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                 user_groups=user_groups,
                 **kwargs,
             )
-        else:
+        if not auto_login or not hasattr(user, 'is_active') or not user.is_active:
             user = AnonymousUser()
 
         # Preprocess all potential url values.
@@ -730,17 +729,39 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Attempt to get reverse of provided url.
         try:
             url = reverse(url, args=url_args, kwargs=url_kwargs)
+
+            # Provide warning based on APPEND_SLASH setting.
+            # See https://stackoverflow.com/a/42213107 for discussion on why this setting exists
+            # as well as how Django generally handles url composition.
+            if settings.APPEND_SLASH:
+                if len(url) > 0 and url[-1] != '/':
+                    warn_msg = (
+                        'Django setting APPEND_SLASH is set to True, '
+                        'but url did not resolve with trailing slash. '
+                        'This may cause UnitTests with ETC to fail. Url was: {0}'
+                    ).format(url)
+                    logging.warning(warn_msg)
+            else:
+                if len(url) > 0 and url[-1] == '/':
+                    warn_msg = (
+                        'Django setting APPEND_SLASH is set to False, '
+                        'but url resolved with trailing slash. '
+                        'This may cause UnitTests with ETC to fail. Url was: {0}'
+                    ).format(url)
+                    logging.warning(warn_msg)
         except NoReverseMatch:
             # Could not find as reverse. Assume is literal url.
-            if len(url) > 0 and url[-1] != '/':
-                url += '/'
+            pass
 
         # Make sure exactly one slash is prepended to the url value.
         url = url.lstrip('/').rstrip('/')
         if len(url) == 0:
             url = '/'
         else:
-            url = '/{0}/'.format(url)
+            if settings.APPEND_SLASH:
+                url = '/{0}/'.format(url)
+            else:
+                url = '/{0}'.format(url)
 
         # Log url we're attempting to access.
         if self.site_root_url is not None:
@@ -839,7 +860,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             self.client.force_login(user)
 
         # Return modified user instance.
-        return self.get_user(user)
+        return user
 
     def get_page_title(self, response):
         """Parses out title HTML element from provided response.

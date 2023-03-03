@@ -419,13 +419,14 @@ class CoreTestCaseMixin:
                 )
 
         # Handle passwords.
-        password = str(password).strip()
-        if len(password) == 0:
-            # Empty password. Reset back to default settings value.
-            password = ETC_DEFAULT_USER_PASSWORD
-        user.set_password(password)
-        user.unhashed_password = password
-        user.save()
+        if not hasattr(user, 'unhashed_password') or user.unhashed_password != password:
+            password = str(password).strip()
+            if len(password) == 0:
+                # Empty password. Reset back to default settings value.
+                password = ETC_DEFAULT_USER_PASSWORD
+            user.set_password(password)
+            user.unhashed_password = password
+            user.save()
 
         return user
 
