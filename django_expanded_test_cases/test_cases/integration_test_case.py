@@ -483,6 +483,13 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         main_err_msg = 'Could not find expected content value in response. Provided value was:\n{0}'
         ordering_err_msg = 'Expected content value was found, but ordering of values do not match. Problem value:\n{0}'
+        casing_err_msg = (
+            'Expected content value was found, but letter capitalization did not match. Expected was:\n'
+            '{0}\n'
+            '\n'
+            'Found was:\n'
+            '... {1} ...'
+        )
 
         # Extra setup logic, to sanitize and handle if content_starts_after/content_ends_before variables are defined.
         content_dict = self._trim_response_content(
@@ -504,24 +511,27 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                 if ignore_ordering:
                     # Ignoring ordering. Check as-is.
                     if stripped_expected not in trimmed_original_content:
-                        # Not found. Raise message based on content_starts_after/content_ends_before variables.
+                        # Expected value not found in provided content section.
                         display_expected = self.get_minimized_response_content(expected, strip_newlines=False)
-                        self._assertPageContent(
-                            sanitized_original_content,
-                            stripped_expected,
-                            display_expected,
-                            content_starts_after,
-                            content_ends_before,
-                            main_err_msg,
-                        )
-                else:
-                    # Verifying ordering.
-                    # Attempt initial assertion in provided subsection.
-                    if stripped_expected not in trimmed_content:
-                        # Failed to find content in subsection. Check full content set.
-                        if stripped_expected not in trimmed_original_content:
-                            # Not found. Raise message based on content_starts_after/content_ends_before variables.
-                            display_expected = self.get_minimized_response_content(expected, strip_newlines=False)
+
+                        # Check if due to casing mismatch.
+                        if stripped_expected.casefold() in trimmed_original_content.casefold():
+                            # Match found when ignoring casing.
+
+                            # Get regex match of actual value, plus 20 characters on each side.
+                            search_val = r'((?:[\S\s]{0,20})' + re.escape(stripped_expected) + r'(?:[\S\s]{0,20}))'
+                            trimmed_actual = re.search(
+                                search_val,
+                                trimmed_original_content,
+                                flags=re.IGNORECASE,
+                            )
+
+                            # Display corresponding error message.
+                            self.fail(casing_err_msg.format(display_expected, trimmed_actual.group(0)))
+
+                        else:
+                            # Value doesn't exist even after ignoring casing.
+                            # Raise message based on content_starts_after/content_ends_before variables.
                             self._assertPageContent(
                                 sanitized_original_content,
                                 stripped_expected,
@@ -530,6 +540,41 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                                 content_ends_before,
                                 main_err_msg,
                             )
+                else:
+                    # Verifying ordering.
+                    # Attempt initial assertion in provided subsection.
+                    if stripped_expected not in trimmed_content:
+                        # Failed to find content in subsection. Check full content set.
+                        if stripped_expected not in trimmed_original_content:
+                            # Expected value not found in provided content section.
+                            display_expected = self.get_minimized_response_content(expected, strip_newlines=False)
+
+                            # Check if due to casing mismatch.
+                            if stripped_expected.casefold() in trimmed_original_content.casefold():
+                                # Match found when ignoring casing.
+
+                                # Get regex match of actual value, plus 20 characters on each side.
+                                search_val = r'((?:[\S\s]{0,20})' + re.escape(stripped_expected) + r'(?:[\S\s]{0,20}))'
+                                trimmed_actual = re.search(
+                                    search_val,
+                                    trimmed_original_content,
+                                    flags=re.IGNORECASE,
+                                )
+
+                                # Display corresponding error message.
+                                self.fail(casing_err_msg.format(display_expected, trimmed_actual.group(0)))
+
+                            else:
+                                # Value doesn't exist even after ignoring casing.
+                                # Raise message based on content_starts_after/content_ends_before variables.
+                                self._assertPageContent(
+                                    sanitized_original_content,
+                                    stripped_expected,
+                                    display_expected,
+                                    content_starts_after,
+                                    content_ends_before,
+                                    main_err_msg,
+                                )
 
                         # If we made it this far, then item was found in full content, but came after a previous
                         # expected value. Raise error.
@@ -546,16 +591,35 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             # Not an array of items. Assume is a single str value.
             stripped_expected = self.get_minimized_response_content(expected_content, strip_newlines=True)
             if stripped_expected not in trimmed_original_content:
-                # Not found. Raise message based on content_starts_after/content_ends_before variables.
+                # Expected value not found in provided content section.
                 display_expected = self.get_minimized_response_content(expected_content, strip_newlines=False)
-                self._assertPageContent(
-                    sanitized_original_content,
-                    stripped_expected,
-                    display_expected,
-                    content_starts_after,
-                    content_ends_before,
-                    main_err_msg,
-                )
+
+                # Check if due to casing mismatch.
+                if stripped_expected.casefold() in trimmed_original_content.casefold():
+                    # Match found when ignoring casing.
+
+                    # Get regex match of actual value, plus 20 characters on each side.
+                    search_val = r'((?:[\S\s]{0,20})' + re.escape(stripped_expected) + r'(?:[\S\s]{0,20}))'
+                    trimmed_actual = re.search(
+                        search_val,
+                        trimmed_original_content,
+                        flags=re.IGNORECASE,
+                    )
+
+                    # Display corresponding error message.
+                    self.fail(casing_err_msg.format(display_expected, trimmed_actual.group(0)))
+
+                else:
+                    # Value doesn't exist even after ignoring casing.
+                    # Raise message based on content_starts_after/content_ends_before variables.
+                    self._assertPageContent(
+                        sanitized_original_content,
+                        stripped_expected,
+                        display_expected,
+                        content_starts_after,
+                        content_ends_before,
+                        main_err_msg,
+                    )
 
         # Return page content in case user wants to run additional logic on it.
         return trimmed_original_content

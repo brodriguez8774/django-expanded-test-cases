@@ -2258,6 +2258,456 @@ class IntegrationClassTest(IntegrationTestCase):
                 )
             self.assertEqual(str(err.exception), exception_msg.format('content_ends_before', '</body>'))
 
+    def test__assertPageContent__fail__with_content_casing_mismatch__exact_match(self):
+        exception_msg = (
+            'Expected content value was found, but letter capitalization did not match. Expected was:\n'
+            '{0}\n'
+            '\n'
+            'Found was:\n'
+            '{1}'
+        )
+
+        with self.subTest('Minimal Response - Exact Match - With response mixed and check upper'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>Test Title</h1>')
+                self.assertPageContent(response, '<H1>TEST TITLE</H1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<H1>TEST TITLE</H1>', '... <h1>Test Title</h1> ...'),
+            )
+
+        with self.subTest('Minimal Response - Exact Match - With response mixed and check lower'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>Test Title</h1>')
+                self.assertPageContent(response, '<h1>test title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>test title</h1>', '... <h1>Test Title</h1> ...'),
+            )
+
+        with self.subTest('Minimal Response - Exact Match - With response upper and check mixed'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<H1>TEST TITLE</H1>')
+                self.assertPageContent(response, '<h1>Test Title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>Test Title</h1>', '... <H1>TEST TITLE</H1> ...'),
+            )
+
+        with self.subTest('Minimal Response - Exact Match - With response upper and check lower'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<H1>TEST TITLE</H1>')
+                self.assertPageContent(response, '<h1>test title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>test title</h1>', '... <H1>TEST TITLE</H1> ...'),
+            )
+
+        with self.subTest('Minimal Response - Exact Match - With response lower and check mixed'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>test title</h1>')
+                self.assertPageContent(response, '<h1>Test Title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>Test Title</h1>', '... <h1>test title</h1> ...'),
+            )
+
+        with self.subTest('Minimal Response - Exact Match - With response lower and check upper'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>test title</h1>')
+                self.assertPageContent(response, '<H1>TEST TITLE</H1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<H1>TEST TITLE</H1>', '... <h1>test title</h1> ...'),
+            )
+
+    def test__assertPageContent__fail__with_content_casing_mismatch__extra_characters_before(self):
+        exception_msg = (
+            'Expected content value was found, but letter capitalization did not match. Expected was:\n'
+            '{0}\n'
+            '\n'
+            'Found was:\n'
+            '{1}'
+        )
+
+        with self.subTest('Minimal Response - Exact Match - With response mixed and check upper'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<div>123456789</div><h1>Test Title</h1>')
+                self.assertPageContent(response, '<H1>TEST TITLE</H1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<H1>TEST TITLE</H1>', '... <div>123456789</div><h1>Test Title</h1> ...'),
+            )
+
+        with self.subTest('Minimal Response - Extra Match - With response mixed and check upper'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<div><p>This is a test p tag.</p></div><h1>Test Title</h1>')
+                self.assertPageContent(response, '<H1>TEST TITLE</H1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<H1>TEST TITLE</H1>', '... est p tag.</p></div><h1>Test Title</h1> ...'),
+            )
+
+        with self.subTest('Minimal Response - Lesser Match - With response mixed and check upper'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<p>Testing</p><h1>Test Title</h1>')
+                self.assertPageContent(response, '<H1>TEST TITLE</H1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<H1>TEST TITLE</H1>', '... <p>Testing</p><h1>Test Title</h1> ...'),
+            )
+
+        with self.subTest('Minimal Response - Exact Match - With response mixed and check lower'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<div>123456789</div><h1>Test Title</h1>')
+                self.assertPageContent(response, '<h1>test title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>test title</h1>', '... <div>123456789</div><h1>Test Title</h1> ...'),
+            )
+
+        with self.subTest('Minimal Response - Extra Match - With response mixed and check lower'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<div><p>This is a test p tag.</p></div><h1>Test Title</h1>')
+                self.assertPageContent(response, '<h1>test title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>test title</h1>', '... est p tag.</p></div><h1>Test Title</h1> ...'),
+            )
+
+        with self.subTest('Minimal Response - Lesser Match - With response mixed and check lower'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<p>Testing</p><h1>Test Title</h1>')
+                self.assertPageContent(response, '<h1>test title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>test title</h1>', '... <p>Testing</p><h1>Test Title</h1> ...'),
+            )
+
+        with self.subTest('Minimal Response - Exact Match - With response upper and check mixed'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<DIV>123456789</DIV><H1>TEST TITLE</H1>')
+                self.assertPageContent(response, '<h1>Test Title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>Test Title</h1>', '... <DIV>123456789</DIV><H1>TEST TITLE</H1> ...'),
+            )
+
+        with self.subTest('Minimal Response - Extra Match - With response upper and check mixed'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<DIV><P>THIS IS A TEST P TAG.</P></DIV><H1>TEST TITLE</H1>')
+                self.assertPageContent(response, '<h1>Test Title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>Test Title</h1>', '... EST P TAG.</P></DIV><H1>TEST TITLE</H1> ...'),
+            )
+
+        with self.subTest('Minimal Response - Lesser Match - With response upper and check mixed'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<P>TESTING</P><H1>TEST TITLE</H1>')
+                self.assertPageContent(response, '<h1>Test Title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>Test Title</h1>', '... <P>TESTING</P><H1>TEST TITLE</H1> ...'),
+            )
+
+        with self.subTest('Minimal Response - Exact Match - With response upper and check lower'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<DIV>123456789</DIV><H1>TEST TITLE</H1>')
+                self.assertPageContent(response, '<h1>test title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>test title</h1>', '... <DIV>123456789</DIV><H1>TEST TITLE</H1> ...'),
+            )
+
+        with self.subTest('Minimal Response - Extra Match - With response upper and check lower'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<DIV><P>THIS IS A TEST P TAG.</P></DIV><H1>TEST TITLE</H1>')
+                self.assertPageContent(response, '<h1>test title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>test title</h1>', '... EST P TAG.</P></DIV><H1>TEST TITLE</H1> ...'),
+            )
+
+        with self.subTest('Minimal Response - Lesser Match - With response upper and check lower'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<P>TESTING</P><H1>TEST TITLE</H1>')
+                self.assertPageContent(response, '<h1>test title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>test title</h1>', '... <P>TESTING</P><H1>TEST TITLE</H1> ...'),
+            )
+
+        with self.subTest('Minimal Response - Exact Match - With response lower and check mixed'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<div>123456789</div><h1>test title</h1>')
+                self.assertPageContent(response, '<h1>Test Title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>Test Title</h1>', '... <div>123456789</div><h1>test title</h1> ...'),
+            )
+
+        with self.subTest('Minimal Response - Extra Match - With response lower and check mixed'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<div><p>this is a test p tag.</p></div><h1>test title</h1>')
+                self.assertPageContent(response, '<h1>Test Title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>Test Title</h1>', '... est p tag.</p></div><h1>test title</h1> ...'),
+            )
+
+        with self.subTest('Minimal Response - Lesser Match - With response lower and check mixed'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<p>testing</p><h1>test title</h1>')
+                self.assertPageContent(response, '<h1>Test Title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>Test Title</h1>', '... <p>testing</p><h1>test title</h1> ...'),
+            )
+
+        with self.subTest('Minimal Response - Exact Match - With response lower and check upper'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<div>123456789</div><h1>test title</h1>')
+                self.assertPageContent(response, '<H1>TEST TITLE</H1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<H1>TEST TITLE</H1>', '... <div>123456789</div><h1>test title</h1> ...'),
+            )
+
+        with self.subTest('Minimal Response - Extra Match - With response lower and check upper'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<div><p>this is a test p tag.</p></div><h1>test title</h1>')
+                self.assertPageContent(response, '<H1>TEST TITLE</H1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<H1>TEST TITLE</H1>', '... est p tag.</p></div><h1>test title</h1> ...'),
+            )
+
+        with self.subTest('Minimal Response - Lesser Match - With response lower and check upper'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<p>testing</p><h1>test title</h1>')
+                self.assertPageContent(response, '<H1>TEST TITLE</H1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<H1>TEST TITLE</H1>', '... <p>testing</p><h1>test title</h1> ...'),
+            )
+
+    def test__assertPageContent__fail__with_content_casing_mismatch__extra_characters_after(self):
+        exception_msg = (
+            'Expected content value was found, but letter capitalization did not match. Expected was:\n'
+            '{0}\n'
+            '\n'
+            'Found was:\n'
+            '{1}'
+        )
+
+        with self.subTest('Minimal Response - Exact Match - With response mixed and check upper'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>Test Title</h1><div>123456789</div>')
+                self.assertPageContent(response, '<H1>TEST TITLE</H1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<H1>TEST TITLE</H1>', '... <h1>Test Title</h1><div>123456789</div> ...'),
+            )
+
+        with self.subTest('Minimal Response - Extra Match - With response mixed and check upper'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>Test Title</h1><div><p>This is a test p tag.</p></div>')
+                self.assertPageContent(response, '<H1>TEST TITLE</H1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<H1>TEST TITLE</H1>', '... <h1>Test Title</h1><div><p>This is a te ...'),
+            )
+
+        with self.subTest('Minimal Response - Lesser Match - With response mixed and check upper'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>Test Title</h1><p>Testing</p>')
+                self.assertPageContent(response, '<H1>TEST TITLE</H1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<H1>TEST TITLE</H1>', '... <h1>Test Title</h1><p>Testing</p> ...'),
+            )
+
+        with self.subTest('Minimal Response - Exact Match - With response mixed and check lower'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>Test Title</h1><div>123456789</div>')
+                self.assertPageContent(response, '<h1>test title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>test title</h1>', '... <h1>Test Title</h1><div>123456789</div> ...'),
+            )
+
+        with self.subTest('Minimal Response - Extra Match - With response mixed and check lower'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>Test Title</h1><div><p>This is a test p tag.</p></div>')
+                self.assertPageContent(response, '<h1>test title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>test title</h1>', '... <h1>Test Title</h1><div><p>This is a te ...'),
+            )
+
+        with self.subTest('Minimal Response - Lesser Match - With response mixed and check lower'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>Test Title</h1><p>Testing</p>')
+                self.assertPageContent(response, '<h1>test title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>test title</h1>', '... <h1>Test Title</h1><p>Testing</p> ...'),
+            )
+
+        with self.subTest('Minimal Response - Exact Match - With response upper and check mixed'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<H1>TEST TITLE</H1><DIV>123456789</DIV>')
+                self.assertPageContent(response, '<h1>Test Title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>Test Title</h1>', '... <H1>TEST TITLE</H1><DIV>123456789</DIV> ...'),
+            )
+
+        with self.subTest('Minimal Response - Extra Match - With response upper and check mixed'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<H1>TEST TITLE</H1><DIV><P>THIS IS A TEST P TAG.</P></DIV>')
+                self.assertPageContent(response, '<h1>Test Title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>Test Title</h1>', '... <H1>TEST TITLE</H1><DIV><P>THIS IS A TE ...'),
+            )
+
+        with self.subTest('Minimal Response - Lesser Match - With response upper and check mixed'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<H1>TEST TITLE</H1><P>TESTING</P>')
+                self.assertPageContent(response, '<h1>Test Title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>Test Title</h1>', '... <H1>TEST TITLE</H1><P>TESTING</P> ...'),
+            )
+
+        with self.subTest('Minimal Response - Exact Match - With response upper and check lower'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<H1>TEST TITLE</H1><DIV>123456789</DIV>')
+                self.assertPageContent(response, '<h1>test title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>test title</h1>', '... <H1>TEST TITLE</H1><DIV>123456789</DIV> ...'),
+            )
+
+        with self.subTest('Minimal Response - Extra Match - With response upper and check lower'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<H1>TEST TITLE</H1><DIV><P>THIS IS A TEST P TAG.</P></DIV>')
+                self.assertPageContent(response, '<h1>test title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>test title</h1>', '... <H1>TEST TITLE</H1><DIV><P>THIS IS A TE ...'),
+            )
+
+        with self.subTest('Minimal Response - Lesser Match - With response upper and check lower'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<H1>TEST TITLE</H1><P>TESTING</P>')
+                self.assertPageContent(response, '<h1>test title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>test title</h1>', '... <H1>TEST TITLE</H1><P>TESTING</P> ...'),
+            )
+
+        with self.subTest('Minimal Response - Exact Match - With response lower and check mixed'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>test title</h1><div>123456789</div>')
+                self.assertPageContent(response, '<h1>Test Title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>Test Title</h1>', '... <h1>test title</h1><div>123456789</div> ...'),
+            )
+
+        with self.subTest('Minimal Response - Extra Match - With response lower and check mixed'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>test title</h1><div><p>this is a test p tag.</p></div>')
+                self.assertPageContent(response, '<h1>Test Title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>Test Title</h1>', '... <h1>test title</h1><div><p>this is a te ...'),
+            )
+
+        with self.subTest('Minimal Response - Lesser Match - With response lower and check mixed'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>test title</h1><p>testing/p>')
+                self.assertPageContent(response, '<h1>Test Title</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<h1>Test Title</h1>', '... <h1>test title</h1><p>testing/p> ...'),
+            )
+
+        with self.subTest('Minimal Response - Exact Match - With response lower and check upper'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>test title</h1><div>123456789</div>')
+                self.assertPageContent(response, '<H1>TEST TITLE</H1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<H1>TEST TITLE</H1>', '... <h1>test title</h1><div>123456789</div> ...'),
+            )
+
+        with self.subTest('Minimal Response - Extra Match - With response lower and check upper'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>test title</h1><div><p>this is a test p tag.</p></div>')
+                self.assertPageContent(response, '<H1>TEST TITLE</H1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<H1>TEST TITLE</H1>', '... <h1>test title</h1><div><p>this is a te ...'),
+            )
+
+        with self.subTest('Minimal Response - Lesser Match - With response lower and check upper'):
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>test title</h1><p>testing/p>')
+                self.assertPageContent(response, '<H1>TEST TITLE</H1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format('<H1>TEST TITLE</H1>', '... <h1>test title</h1><p>testing/p> ...'),
+            )
+
+    def test__assertPageContent__fail__with_content_casing_mismatch__actual_response_object(self):
+        exception_msg = (
+            'Expected content value was found, but letter capitalization did not match. Expected was:\n'
+            '{0}\n'
+            '\n'
+            'Found was:\n'
+            '{1}'
+        )
+
+        with self.subTest('Standard Response - With response mixed and check upper'):
+            with self.assertRaises(AssertionError) as err:
+                response = self._get_page_response('django_expanded_test_cases:index')
+                self.assertPageContent(response, '<H1>HOME PAGE HEADER</H1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format(
+                    '<H1>HOME PAGE HEADER</H1>',
+                    '... /title></head><body><h1>Home Page Header</h1><p>Pretend this is t ...'
+                ),
+            )
+
+        with self.subTest('Standard Response - With response mixed and check lower'):
+            with self.assertRaises(AssertionError) as err:
+                response = self._get_page_response('django_expanded_test_cases:index')
+                self.assertPageContent(response, '<h1>home page header</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format(
+                    '<h1>home page header</h1>',
+                    '... /title></head><body><h1>Home Page Header</h1><p>Pretend this is t ...'
+                ),
+            )
+
+        with self.subTest('Standard Response - With response mixed and check mixed'):
+            with self.assertRaises(AssertionError) as err:
+                response = self._get_page_response('django_expanded_test_cases:index')
+                self.assertPageContent(response, '<h1>home Page header</h1>')
+            self.assertEqual(
+                str(err.exception),
+                exception_msg.format(
+                    '<h1>home Page header</h1>',
+                    '... /title></head><body><h1>Home Page Header</h1><p>Pretend this is t ...'
+                ),
+            )
+
     def test__assertRepeatingElement__success__standard_elements__basic(self):
         """
         Tests assertPageContent() function, in cases when it should succeed on "standard" (non-void) elements.
