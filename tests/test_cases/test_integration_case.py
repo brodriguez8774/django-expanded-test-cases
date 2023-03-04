@@ -7,6 +7,7 @@ import logging
 from unittest.mock import patch
 
 # Third-Party Imports.
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser, Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponse
@@ -35,107 +36,169 @@ class IntegrationClassTest(IntegrationTestCase):
         with self.subTest('Check login using default user'):
             response = self.assertGetResponse('django_expanded_test_cases:index')
 
-            # print('\n\n\n\n')
-            # print('session values prior to touching anything:')
-            # for key in self.client.session.keys():
-            #     print('    {0}: {1}'.format(key, self.client.session[key]))
-            # print('\n')
-            # print('Again, to make sure accessing didn\'t change them:')
-            # for key in self.client.session.keys():
-            #     print('    {0}: {1}'.format(key, self.client.session[key]))
-            # print('\n')
-            #
-            # # Get response's lazy user objects.
-            # uwsgi_user = response.wsgi_request.user
-            # if hasattr(uwsgi_user, '_wrapped') and hasattr(uwsgi_user, '_setup'):
-            #     if uwsgi_user._wrapped.__class__ == object:
-            #         uwsgi_user._setup()
-            #     uwsgi_user = uwsgi_user._wrapped
-            #
-            # print('\n')
-            # print('session values after wsgi_request.user:')
-            # for key in self.client.session.keys():
-            #     print('    {0}: {1}'.format(key, self.client.session[key]))
-            # print('\n')
-            #
-            # context_user = response.context['user']
-            # if hasattr(context_user, '_wrapped') and hasattr(context_user, '_setup'):
-            #     if context_user._wrapped.__class__ == object:
-            #         context_user._setup()
-            #     context_user = context_user._wrapped
-            #
-            # print('\n')
-            # print('session values after touching both:')
-            # for key in self.client.session.keys():
-            #     print('    {0}: {1}'.format(key, self.client.session[key]))
-            # print('\n\n\n\n')
-
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_user.pk, int(self.client.session['_auth_user_id']))
+            self.assertEqual(self.test_user, response.wsgi_request.user)
+            self.assertEqual(self.test_user, response.context['user'])
             self.assertEqual(self.test_user, response.user)
-            # self.assertEqual(self.test_user, uwsgi_user)
-            # self.assertEqual(self.test_user, context_user)
 
-        with self.subTest('Check login using super user'):
+        with self.subTest('Check login using super user - Provided as arg'):
             response = self.assertGetResponse('django_expanded_test_cases:index', user='test_superuser')
-
-            # # Get response's lazy user object.
-            # uwsgi_user = response.wsgi_request.user
-            # if hasattr(uwsgi_user, '_wrapped') and hasattr(uwsgi_user, '_setup'):
-            #     if uwsgi_user._wrapped.__class__ == object:
-            #         uwsgi_user._setup()
-            #     uwsgi_user = uwsgi_user._wrapped
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_superuser.pk, int(self.client.session['_auth_user_id']))
+            self.assertEqual(self.test_superuser, response.wsgi_request.user)
+            self.assertEqual(self.test_superuser, response.context['user'])
             self.assertEqual(self.test_superuser, response.user)
-            # self.assertEqual(self.test_superuser, uwsgi_user)
 
-        with self.subTest('Check login using admin user'):
+        with self.subTest('Check login using admin user - Provided as arg'):
             response = self.assertGetResponse('django_expanded_test_cases:index', user='test_admin')
-
-            # # Get response's lazy user object.
-            # uwsgi_user = response.wsgi_request.user
-            # if hasattr(uwsgi_user, '_wrapped') and hasattr(uwsgi_user, '_setup'):
-            #     if uwsgi_user._wrapped.__class__ == object:
-            #         uwsgi_user._setup()
-            #     uwsgi_user = uwsgi_user._wrapped
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_admin.pk, int(self.client.session['_auth_user_id']))
+            self.assertEqual(self.test_admin, response.wsgi_request.user)
+            self.assertEqual(self.test_admin, response.context['user'])
             self.assertEqual(self.test_admin, response.user)
-            # self.assertEqual(self.test_admin, uwsgi_user)
 
-        with self.subTest('Check login using standard user'):
+        with self.subTest('Check login using inactive user - Provided as arg'):
+
+            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_inactive')
+
+            # Various checks, of different ways to ensure expected user is logged in.
+            self.assertEqual(self.test_inactive_user.pk, int(self.client.session['_auth_user_id']))
+            self.assertTrue(isinstance(response.wsgi_request.user, AnonymousUser))
+            self.assertFalse(isinstance(response.wsgi_request.user, get_user_model()))
+            self.assertNotEqual(self.test_inactive_user, response.wsgi_request.user)
+            self.assertTrue(isinstance(response.user, AnonymousUser))
+            self.assertFalse(isinstance(response.user, get_user_model()))
+
+        with self.subTest('Check login using standard user - Provided as arg'):
             response = self.assertGetResponse('django_expanded_test_cases:index', user='test_user')
-
-            # # Get response's lazy user object.
-            # uwsgi_user = response.wsgi_request.user
-            # if hasattr(uwsgi_user, '_wrapped') and hasattr(uwsgi_user, '_setup'):
-            #     if uwsgi_user._wrapped.__class__ == object:
-            #         uwsgi_user._setup()
-            #     uwsgi_user = uwsgi_user._wrapped
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_user.pk, int(self.client.session['_auth_user_id']))
+            self.assertEqual(self.test_user, response.wsgi_request.user)
+            self.assertEqual(self.test_user, response.context['user'])
             self.assertEqual(self.test_user, response.user)
-            # self.assertEqual(self.test_user, uwsgi_user)
 
-        with self.subTest('Check login using custom new user'):
+        with self.subTest('Check login using custom new user - Provided as arg'):
             new_user = self.get_user('new_user')
             response = self.assertGetResponse('django_expanded_test_cases:index', user=new_user)
 
-            # # Get response's lazy user object.
-            # uwsgi_user = response.wsgi_request.user
-            # if hasattr(uwsgi_user, '_wrapped') and hasattr(uwsgi_user, '_setup'):
-            #     if uwsgi_user._wrapped.__class__ == object:
-            #         uwsgi_user._setup()
-            #     uwsgi_user = uwsgi_user._wrapped
+            # Various checks, of different ways to ensure expected user is logged in.
+            self.assertEqual(new_user.pk, int(self.client.session['_auth_user_id']))
+            self.assertEqual(new_user, response.wsgi_request.user)
+            self.assertEqual(new_user, response.context['user'])
+            self.assertEqual(new_user, response.user)
+
+        with self.subTest('Check login using super user - Provided as class variable'):
+            self.user = self.get_user('test_superuser')
+            response = self.assertGetResponse('django_expanded_test_cases:index')
+
+            # Various checks, of different ways to ensure expected user is logged in.
+            self.assertEqual(self.test_superuser.pk, int(self.client.session['_auth_user_id']))
+            self.assertEqual(self.test_superuser, response.wsgi_request.user)
+            self.assertEqual(self.test_superuser, response.context['user'])
+            self.assertEqual(self.test_superuser, response.user)
+
+        with self.subTest('Check login using admin user - Provided as class variable'):
+            self.user = self.get_user('test_admin')
+            response = self.assertGetResponse('django_expanded_test_cases:index')
+
+            # Various checks, of different ways to ensure expected user is logged in.
+            self.assertEqual(self.test_admin.pk, int(self.client.session['_auth_user_id']))
+            self.assertEqual(self.test_admin, response.wsgi_request.user)
+            self.assertEqual(self.test_admin, response.context['user'])
+            self.assertEqual(self.test_admin, response.user)
+
+        with self.subTest('Check login using inactive user - Provided as class variable'):
+            self.user = self.get_user('test_inactive')
+            response = self.assertGetResponse('django_expanded_test_cases:index')
+
+            # Various checks, of different ways to ensure expected user is logged in.
+            self.assertEqual(self.test_inactive_user.pk, int(self.client.session['_auth_user_id']))
+            self.assertTrue(isinstance(response.wsgi_request.user, AnonymousUser))
+            self.assertFalse(isinstance(response.wsgi_request.user, get_user_model()))
+            self.assertNotEqual(self.test_inactive_user, response.wsgi_request.user)
+            self.assertTrue(isinstance(response.user, AnonymousUser))
+            self.assertFalse(isinstance(response.user, get_user_model()))
+
+        with self.subTest('Check login using standard user - Provided as class variable'):
+            self.user = self.get_user('test_user')
+            response = self.assertGetResponse('django_expanded_test_cases:index')
+
+            # Various checks, of different ways to ensure expected user is logged in.
+            self.assertEqual(self.test_user.pk, int(self.client.session['_auth_user_id']))
+            self.assertEqual(self.test_user, response.wsgi_request.user)
+            self.assertEqual(self.test_user, response.context['user'])
+            self.assertEqual(self.test_user, response.user)
+
+        with self.subTest('Check login using custom new user - Provided as class variable'):
+            self.user = self.get_user('new_user')
+            response = self.assertGetResponse('django_expanded_test_cases:index')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(new_user.pk, int(self.client.session['_auth_user_id']))
+            self.assertEqual(new_user, response.wsgi_request.user)
+            self.assertEqual(new_user, response.context['user'])
             self.assertEqual(new_user, response.user)
-            # self.assertEqual(new_user, uwsgi_user)
+
+        with self.subTest('Check login using super user - Provided with conflicting values (function value should win)'):
+            self.user = self.get_user('new_user')
+            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_superuser')
+
+            # Various checks, of different ways to ensure expected user is logged in.
+            self.assertEqual(self.test_superuser.pk, int(self.client.session['_auth_user_id']))
+            self.assertEqual(self.test_superuser, response.wsgi_request.user)
+            self.assertEqual(self.test_superuser, response.context['user'])
+            self.assertEqual(self.test_superuser, response.user)
+
+        with self.subTest('Check login using admin user - Provided with conflicting values (function value should win)'):
+            self.user = self.get_user('test_superuser')
+            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_admin')
+
+            # Various checks, of different ways to ensure expected user is logged in.
+            self.assertEqual(self.test_admin.pk, int(self.client.session['_auth_user_id']))
+            self.assertEqual(self.test_admin, response.wsgi_request.user)
+            self.assertEqual(self.test_admin, response.context['user'])
+            self.assertEqual(self.test_admin, response.user)
+
+        with self.subTest('Check login using inactive user - Provided with conflicting values (function value should win)'):
+            self.user = self.get_user('test_admin')
+            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_inactive')
+
+            # Various checks, of different ways to ensure expected user is logged in.
+            self.assertEqual(self.test_inactive_user.pk, int(self.client.session['_auth_user_id']))
+            self.assertTrue(isinstance(response.wsgi_request.user, AnonymousUser))
+            self.assertFalse(isinstance(response.wsgi_request.user, get_user_model()))
+            self.assertNotEqual(self.test_inactive_user, response.wsgi_request.user)
+            self.assertTrue(isinstance(response.user, AnonymousUser))
+            self.assertFalse(isinstance(response.user, get_user_model()))
+
+        with self.subTest('Check login using standard user - Provided with conflicting values (class value should win)'):
+            # This is the exception, because "test_user" technically IS the "default" user.
+            # Thus, providing this for the function value when a class value is also provided will result
+            # in the class value being used instead.
+            self.user = self.get_user('test_inactive')
+            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_user')
+
+            # Various checks, of different ways to ensure expected user is logged in.
+            self.assertEqual(self.test_inactive_user.pk, int(self.client.session['_auth_user_id']))
+            self.assertTrue(isinstance(response.wsgi_request.user, AnonymousUser))
+            self.assertFalse(isinstance(response.wsgi_request.user, get_user_model()))
+            self.assertNotEqual(self.test_inactive_user, response.wsgi_request.user)
+            self.assertTrue(isinstance(response.user, AnonymousUser))
+            self.assertFalse(isinstance(response.user, get_user_model()))
+
+        with self.subTest('Check login using custom new user - Provided with conflicting values (function value should win)'):
+            self.user = self.get_user('test_user')
+            response = self.assertGetResponse('django_expanded_test_cases:index', user='new_user')
+
+            # Various checks, of different ways to ensure expected user is logged in.
+            self.assertEqual(new_user.pk, int(self.client.session['_auth_user_id']))
+            self.assertEqual(new_user, response.wsgi_request.user)
+            self.assertEqual(new_user, response.context['user'])
+            self.assertEqual(new_user, response.user)
 
     # endregion Response Tests
 
