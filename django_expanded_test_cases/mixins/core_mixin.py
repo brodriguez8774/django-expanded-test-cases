@@ -196,6 +196,9 @@ class CoreTestCaseMixin:
         cls.test_user.save()
         cls.test_user = cls.get_user(cls, ETC_DEFAULT_STANDARD_USER_IDENTIFIER)
 
+        # Default user to run tests with is above "test_user".
+        cls.user = cls.test_user
+
     def sub_test(self):
         """
         Acts as the equivalent of the UnitTesting "subtTest()" function.

@@ -693,8 +693,20 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Handle for logging in a user.
         if auto_login:
+            # Determine which user to pass in.
+            # We first prioritize a direct value passed into this function (if not the default).
+            # Then we prioritize a user saved to the class "self.user" variable (if not the default).
+            # Finally, if neither is set, then we fall back to the default. Note that the default
+            # should be the same for both those values. So there should never be a case where defaults conflict.
+            chosen_user = self.user
+            if user != ETC_DEFAULT_STANDARD_USER_IDENTIFIER:
+                # Provided function user is non-default. Use this for login.
+                chosen_user = user
+            elif self.user.username != ETC_DEFAULT_STANDARD_USER_IDENTIFIER:
+                # Provided class variable user is non-default. Use this for login.
+                chosen_user = self.user
             user = self._get_login_user(
-                user,
+                chosen_user,
                 *args,
                 url=url,
                 get=get,
