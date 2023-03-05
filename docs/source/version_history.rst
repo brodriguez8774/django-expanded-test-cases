@@ -1,6 +1,12 @@
 Version History
 ***************
 
+0.2.3 - Various Bugfixes and Improvements to Testing Reliability
+================================================================
+
+* Fixed multiple various bugs and potential inconsistencies with test handling.
+* Updated Integration content check to indicate when a value matches all except for text capitalization.
+
 
 0.2.2 - Preliminary Setup/Upgrades for Improved Test Output + LiveServer Testing
 ===============================================================================
