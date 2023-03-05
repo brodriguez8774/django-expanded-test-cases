@@ -109,7 +109,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             self.show_debug_session_data(response)
             self.show_debug_messages(response)
             self.show_debug_form_data(response)
-            self.show_debug_user_info(self.get_user(user))
+            self.show_debug_user_info(response.user)
 
         # Optional hook for running custom pre-builtin-test logic.
         self._assertResponse__pre_builtin_tests(
