@@ -8,7 +8,7 @@ import logging, re
 # Third-Party Imports.
 from bs4 import BeautifulSoup
 from django.contrib.auth import get_user_model
-from django.http.response import HttpResponseBase, HttpResponseNotFound, HttpResponseNotAllowed
+from django.http.response import HttpResponseBase
 
 # Internal Imports.
 from . import CoreTestCaseMixin
@@ -265,6 +265,9 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
     def show_debug_user_info(self, user):
         """Prints debug user data."""
 
+        # Imported here to prevent potential "Apps aren't loaded yet" error.
+        from django.contrib.auth.models import AnonymousUser
+
         self._debug_print(
             '{0} {1} {0}'.format('=' * 10, 'User Info'),
             fore=RESPONSE_DEBUG_USER_INFO,
@@ -294,6 +297,10 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                 '    * User Permissions: {0}'.format(user.user_permissions.all()),
                 fore=RESPONSE_DEBUG_USER_INFO,
             )
+
+        elif isinstance(user, AnonymousUser):
+
+            self._debug_print('    Anonymous user. No user is logged in.', fore=RESPONSE_DEBUG_USER_INFO)
 
         else:
             self._debug_print('    * Invalid user "{0}" of type "{1}". Expected "{2}".'.format(
