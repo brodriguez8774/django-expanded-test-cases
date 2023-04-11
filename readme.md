@@ -16,17 +16,25 @@ Expands the existing [Django](https://docs.djangoproject.com/en/dev/)
 Different TestCase classes are provided, each providing separate sets of functionality.
 
 
+For full documentation, see [ReadTheDocs](https://django-expanded-test-cases.readthedocs.io/en/latest/).
+
+
+## Example ETC Debug Output on UnitTest Error
+A main functionality that **ExpandedTestCases** provids is verbose response debug info on UnitTest errors.<br>
+Below is an example of such output, when a test fails while checking the `<h1>` tag for a very simple page.
+
+![Screenshot from 2023-04-11 18-26-54](https://user-images.githubusercontent.com/14208531/231304818-fb0dbe31-ead9-4de8-8efe-a3fc858cbddd.png)
+
+
 ## Installation
 
 Install with
 
     pip install django-expanded-test-cases
 
+For full color output, also install
 
-## Documentation
-
-For full documentation, see [ReadTheDocs](https://django-expanded-test-cases.readthedocs.io/en/latest/).
-
+    pip install colorama
 
 ## Package Development & Running Project Tests
 
