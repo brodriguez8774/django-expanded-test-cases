@@ -33,6 +33,13 @@ definition:
     )
 
 
+Finally, for colorized debug output, also install the ``colorama`` package.
+
+.. code:: python
+
+    pip install colorama
+
+
 Testing Environments
 ====================
 
@@ -78,7 +85,7 @@ Refer to the `Manage.py Test QuickStart`_ section for setting up
     as neatly as in PyTest. Ex: ``manage.py test --buffer``
 
     If you would like further explanation of "manage.py vs pytest", as well as
-    why we DON'T try change this manage.py behavior in our project, see
+    why we DON'T try to change this manage.py behavior in our project, see
     `<https://adamj.eu/tech/2020/09/05/what-happens-when-you-run-manage.py-test/#no-composition>`_.
 
 
