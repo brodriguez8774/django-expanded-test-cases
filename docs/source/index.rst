@@ -29,9 +29,14 @@ They are :doc:`test_cases/base_test_case`,
 Each one provides separate sets of additional functionality.
 
 
+Below is an example of **ETC**'s debug output when a UnitTest fails for a basic view, while checking the ``<h1>`` tag.
+
+.. image:: https://user-images.githubusercontent.com/14208531/231304818-fb0dbe31-ead9-4de8-8efe-a3fc858cbddd.png
+
+
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Table of Contents:
 
    quickstart
    package_overview
@@ -41,7 +46,7 @@ Each one provides separate sets of additional functionality.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Provided Test Cases:
+   :caption: Provided Test Case Classes:
 
    test_cases/overview
    test_cases/base_test_case
