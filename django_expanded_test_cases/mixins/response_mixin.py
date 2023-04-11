@@ -268,6 +268,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         # Imported here to prevent potential "Apps aren't loaded yet" error.
         from django.contrib.auth.models import AnonymousUser
 
+        self._debug_print()
         self._debug_print(
             '{0} {1} {0}'.format('=' * 10, 'User Info'),
             fore=RESPONSE_DEBUG_USER_INFO,
@@ -308,6 +309,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                 type(user),
                 type(get_user_model()),
             ), fore=OUTPUT_ERROR)
+        self._debug_print()
         self._debug_print()
 
     # endregion Debug Output Functions.
