@@ -1,6 +1,13 @@
 Version History
 ***************
 
+
+0.2.4 - Minor Updates
+================================================================
+
+* Minor updates for docs and Python3.11.
+
+
 0.2.3 - Various Bugfixes and Improvements to Testing Reliability
 ================================================================
 
