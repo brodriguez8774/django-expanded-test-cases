@@ -14,6 +14,8 @@ from django.utils.http import urlencode
 # Internal Imports.
 from django_expanded_test_cases.constants import (
     ETC_DEBUG_PRINT,
+    ETC_AUTO_GENERATE_USERS,
+    ETC_REQUEST_USER_STRICTNESS,
     ETC_USER_MODEL_IDENTIFIER,
     ETC_DEFAULT_SUPER_USER_IDENTIFIER,
     ETC_DEFAULT_ADMIN_USER_IDENTIFIER,
@@ -102,6 +104,27 @@ class CoreTestCaseMixin:
         :param extra_usergen_kwargs: Optional extra kwargs to pass into the get_user_model().objects.create_user()
                                      function.
         """
+        if ETC_AUTO_GENERATE_USERS:
+            # Run logic to auto-generate test users. Setting is on by default.
+            if extra_usergen_kwargs is None:
+                extra_usergen_kwargs = {}
+            elif not isinstance(extra_usergen_kwargs, dict):
+                raise ValueError(
+                    'The extra_usergen_kwargs value must be a dictionary of additional args used in the '
+                    'get_user_model().objects.create_user() function.'
+                )
+
+            cls._auto_generate_test_users(extra_usergen_kwargs=extra_usergen_kwargs)
+
+    @classmethod
+    def _auto_generate_test_users(cls, extra_usergen_kwargs=None):
+        """Logic to automatically generate test users.
+
+        Only run if DJANGO_EXPANDED_TESTCASES_AUTO_GENERATE_USERS setting is true.
+        """
+        # Django imports here to avoid situational "Apps aren't loaded yet" error.
+        from django.contrib.auth.models import AnonymousUser
+
         if extra_usergen_kwargs is None:
             extra_usergen_kwargs = {}
         elif not isinstance(extra_usergen_kwargs, dict):
@@ -196,8 +219,24 @@ class CoreTestCaseMixin:
         cls.test_user.save()
         cls.test_user = cls.get_user(cls, ETC_DEFAULT_STANDARD_USER_IDENTIFIER)
 
-        # Default user to run tests with is above "test_user".
-        cls.user = cls.test_user
+        # Set actual default "class user" for tests based on settings.
+        if ETC_REQUEST_USER_STRICTNESS == 'anonymous':
+            # Default user to run tests with an anonymous user.
+            cls.user = AnonymousUser()
+
+        elif ETC_REQUEST_USER_STRICTNESS == 'relaxed':
+            # Default user to run tests with above "test_user".
+            cls.user = cls.test_user
+
+        elif ETC_REQUEST_USER_STRICTNESS == 'strict':
+            # No default user to run tests with.
+            cls.user = None
+
+        else:
+            raise ValueError(
+                'Invalid value provided for EXPANDED_TEST_CASES_REQUEST_USER_STRICTNESS setting. '
+                'Must be one of: ["anonymous", "relaxed", "strict"].'
+            )
 
     def sub_test(self):
         """

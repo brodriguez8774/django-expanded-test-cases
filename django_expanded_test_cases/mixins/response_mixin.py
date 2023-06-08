@@ -279,6 +279,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         if isinstance(user, get_user_model()):
 
             # General user information.
+            self._debug_print('    * pk: "{0}"'.format(user.pk), fore=RESPONSE_DEBUG_USER_INFO)
             self._debug_print('    * Username: "{0}"'.format(user.username), fore=RESPONSE_DEBUG_USER_INFO)
             self._debug_print('    * First: "{0}"'.format(user.first_name), fore=RESPONSE_DEBUG_USER_INFO)
             self._debug_print('    * Last: "{0}"'.format(user.last_name), fore=RESPONSE_DEBUG_USER_INFO)

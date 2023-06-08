@@ -7,6 +7,7 @@ import logging, re, textwrap
 
 # Third-Party Imports.
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.http.response import HttpResponseBase
 from django.urls import reverse
 from django.urls.exceptions import NoReverseMatch
@@ -15,6 +16,7 @@ from django.urls.exceptions import NoReverseMatch
 from .base_test_case import BaseTestCase
 from django_expanded_test_cases.constants import (
     ETC_ALLOW_MESSAGE_PARTIALS,
+    ETC_REQUEST_USER_STRICTNESS,
     ETC_DEFAULT_STANDARD_USER_IDENTIFIER,
     RESPONSE_DEBUG_URL,
     OUTPUT_EMPHASIS,
@@ -46,7 +48,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         get=True, data=None,
         expected_redirect_url=None, expected_status=200,
         expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
-        auto_login=True, user=ETC_DEFAULT_STANDARD_USER_IDENTIFIER, user_permissions=None, user_groups=None,
+        auto_login=True, user=None, user_permissions=None, user_groups=None,
         ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
         **kwargs,
     ):
@@ -84,9 +86,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Reset client "user login" state for new response generation.
         self.client.logout()
 
-        # Handle if auto login is set to False.
-        if auto_login is False:
-            user = AnonymousUser()
+        # Handle getting user.
+        user = self._get_default_request_user(user, auto_login)
 
         # Run logic to get corresponding response object.
         response = self._get_page_response(
@@ -178,7 +179,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         data=None,
         expected_redirect_url=None, expected_status=200,
         expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
-        auto_login=True, user=ETC_DEFAULT_STANDARD_USER_IDENTIFIER, user_permissions=None, user_groups=None,
+        auto_login=True, user=None, user_permissions=None, user_groups=None,
         ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
         **kwargs,
     ):
@@ -212,7 +213,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         data=None,
         expected_redirect_url=None, expected_status=200,
         expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
-        auto_login=True, user=ETC_DEFAULT_STANDARD_USER_IDENTIFIER, user_permissions=None, user_groups=None,
+        auto_login=True, user=None, user_permissions=None, user_groups=None,
         ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
         **kwargs,
     ):
@@ -725,12 +726,75 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
     # region Helper Functions
 
+    def _get_default_request_user(self, user, auto_login):
+        """
+        # We first prioritize a direct value passed into this function (if not the default).
+        # Then we prioritize a user saved to the class "self.user" variable (if not the default).
+        :param user:
+        :param auto_login:
+        :return:
+        """
+        # Django imports here to avoid situational "Apps aren't loaded yet" error.
+        from django.contrib.auth.models import AnonymousUser
+
+        print('\n\n\n\n')
+        print('User: {0}'.format(user))
+
+        # If user is None, attempt to fallback to class-user.
+        if user is None:
+            class_user = getattr(self, 'user', None)
+            if class_user != AnonymousUser and class_user != AnonymousUser():
+                user = class_user
+
+        print('User: {0}'.format(user))
+
+        # Proceed if user still None.
+        if user is None:
+            # Handle if default mode is "anonymous" and no user provided.
+            if ETC_REQUEST_USER_STRICTNESS == 'anonymous':
+                print('Strictness: Anonymous')
+                user = AnonymousUser()
+
+            # Handle if default mode is "relaxed" and no user provided.
+            elif ETC_REQUEST_USER_STRICTNESS == 'relaxed':
+                print('Strictness: Relaxed')
+                user = ETC_DEFAULT_STANDARD_USER_IDENTIFIER
+
+            # Handle if default mode is "strict" and no user provided.
+            elif ETC_REQUEST_USER_STRICTNESS == 'strict':
+                # Handle for logging in a user.
+                print('Strictness: Strict')
+                if auto_login:
+                    raise ValidationError(
+                        'ETC_REQUEST_USER_STRICTNESS is set to "strict" but auto_login is True and no user was provided. '
+                        'Please either set auto_login to False OR explicitly provide a user to authenticate with.'
+                    )
+
+            else:
+                raise ValueError(
+                    'Invalid value provided for EXPANDED_TEST_CASES_REQUEST_USER_STRICTNESS setting. '
+                    'Must be one of: ["anonymous", "relaxed", "strict"].'
+                )
+
+        print('User: {0}'.format(user))
+
+        # Use anonymous user if not set to auto-login.
+        if not auto_login:
+            user = AnonymousUser()
+
+        print('User: {0}'.format(user))
+
+        print('\n\n\n\n')
+
+        # Return calculated user.
+        return user
+
     def _get_page_response(
         self,
         url,
         *args,
         get=True, data=None,
-        auto_login=True, user=ETC_DEFAULT_STANDARD_USER_IDENTIFIER, user_permissions=None, user_groups=None,
+        auto_login=True, user=None, user_permissions=None, user_groups=None,
         **kwargs,
     ):
         """Helper function for assertResponse().
@@ -745,9 +809,6 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param user_groups: Set of Django PermissionGroups to give to test user before accessing page.
         :return: Django response object for provided url.
         """
-        # Django imports here to avoid situational "Apps aren't loaded yet" error.
-        from django.contrib.auth.models import AnonymousUser
-
         # Handle mutable data defaults.
         data = data or {}
 
@@ -755,33 +816,20 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         if not isinstance(data, dict):
             raise TypeError('Provided "data" arg must be a dict, for passing into POST requests.')
 
-        # Handle for logging in a user.
-        if auto_login:
-            # Determine which user to pass in.
-            # We first prioritize a direct value passed into this function (if not the default).
-            # Then we prioritize a user saved to the class "self.user" variable (if not the default).
-            # Finally, if neither is set, then we fall back to the default. Note that the default
-            # should be the same for both those values. So there should never be a case where defaults conflict.
-            chosen_user = self.user
-            if user != ETC_DEFAULT_STANDARD_USER_IDENTIFIER:
-                # Provided function user is non-default. Use this for login.
-                chosen_user = user
-            elif self.user.username != ETC_DEFAULT_STANDARD_USER_IDENTIFIER:
-                # Provided class variable user is non-default. Use this for login.
-                chosen_user = self.user
-            user = self._get_login_user(
-                chosen_user,
-                *args,
-                url=url,
-                get=get,
-                data=data,
-                auto_login=auto_login,
-                user_permissions=user_permissions,
-                user_groups=user_groups,
-                **kwargs,
-            )
-        if not auto_login or not hasattr(user, 'is_active') or not user.is_active:
-            user = AnonymousUser()
+        # Handle getting user.
+        user = self._get_default_request_user(user, auto_login)
+
+        user = self._get_login_user(
+            user,
+            *args,
+            url=url,
+            get=get,
+            data=data,
+            auto_login=auto_login,
+            user_permissions=user_permissions,
+            user_groups=user_groups,
+            **kwargs,
+        )
 
         # Preprocess all potential url values.
         url = str(url).strip()
@@ -874,7 +922,19 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :return: Updated User object.
         """
         # Django imports here to avoid situational "Apps aren't loaded yet" error.
-        from django.contrib.auth.models import Group, Permission
+        from django.contrib.auth.models import AnonymousUser, Group, Permission
+
+        # If not an anonymous user, attempt to get corresponding actual user object.
+        if not isinstance(user, AnonymousUser):
+            user = self.get_user(user)
+
+        # Use anonymous user if either not set to auto-login, or provided user is inactive.
+        if not auto_login or not hasattr(user, 'is_active') or not user.is_active:
+            user = AnonymousUser()
+
+        # If user is provided and is anonymous user object, then skip attempting any other login logic.
+        if isinstance(user, AnonymousUser):
+            return user
 
         # Handle mutable data defaults.
         user_permissions = user_permissions or []
@@ -910,10 +970,6 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         for group in user_groups:
             user = self.add_user_group(group, user=user)
 
-        # Ensure by this point that we have a proper instance of the User object.
-        # If no Permissions or Groups were set, we might still have a Str or something.
-        user = self.get_user(user)
-
         # Optional hook to run additional authentication logic/setup on User.
         # For example, if project has 2-Factor setup that needs to be run.
         user = self._get_login_user__extra_user_auth_setup(
@@ -926,8 +982,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         )
 
         # Ensure by this point that we have a proper instance of the User object.
-        # If no Permissions or Groups were set, OR if wonky logic was used in extra_auth_setup,
-        # we might still have a Str or something.
+        # Accounts for if wonky logic was used in extra_auth_setup, which is defined by the project importing
+        # this package, so we have no control over.
         user = self.get_user(user)
 
         # Handle logging in with user.
@@ -1134,7 +1190,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         get=True, data=None,
         expected_redirect_url=None, expected_status=200,
         expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
-        auto_login=True, user='test_user', user_permissions=None, user_groups=None,
+        auto_login=True, user=None, user_permissions=None, user_groups=None,
         ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
         **kwargs,
     ):
@@ -1153,7 +1209,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         get=True, data=None,
         expected_redirect_url=None, expected_status=200,
         expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
-        auto_login=True, user='test_user', user_permissions=None, user_groups=None,
+        auto_login=True, user=None, user_permissions=None, user_groups=None,
         ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
         **kwargs,
     ):

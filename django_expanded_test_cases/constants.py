@@ -141,38 +141,56 @@ ETC_MATCH_ALL_CONTEXT_MESSAGES = bool(getattr(
 ))
 
 
+# Controls if test-users should be automatically generated or not.
+ETC_AUTO_GENERATE_USERS = bool(getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_AUTO_GENERATE_USERS',
+    True,
+))
+# Controls what level of strictness UnitTest requests have for users.
+ETC_REQUEST_USER_STRICTNESS = str(getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_REQUEST_USER_STRICTNESS',
+    'anonymous',
+)).strip().lower()
 # Allows incorporating package with non-standard user identifiers.
 # Such as the common case of using a user email as an identifier, instead of a username.
-ETC_USER_MODEL_IDENTIFIER = getattr(
+ETC_USER_MODEL_IDENTIFIER = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_USER_MODEL_IDENTIFIER',
     'username',
-)
+))
+# The identifier used for the auto-generated "superuser" user.
 ETC_DEFAULT_SUPER_USER_IDENTIFIER = getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_DEFAULT_SUPER_USER_IDENTIFIER',
     None,
 )
+# The identifier used for the auto-generated "admin" user.
 ETC_DEFAULT_ADMIN_USER_IDENTIFIER = getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_DEFAULT_ADMIN_USER_IDENTIFIER',
     None,
 )
+# The identifier used for the auto-generated "standard" user.
 ETC_DEFAULT_STANDARD_USER_IDENTIFIER = getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_DEFAULT_STANDARD_USER_IDENTIFIER',
     None,
 )
+# The identifier used for the auto-generated "inactive" user.
 ETC_DEFAULT_INACTIVE_USER_IDENTIFIER = getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_DEFAULT_INACTIVE_USER_IDENTIFIER',
     None,
 )
-ETC_DEFAULT_USER_PASSWORD = getattr(
+# The default password used for auto-generated users.
+ETC_DEFAULT_USER_PASSWORD = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_DEFAULT_PASSWORD',
     'password',
-)
+))
+# Indicates if auto-generated users should get pretend "real" first/last name values.
 ETC_GENERATE_USERS_WITH_REAL_NAMES = bool(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_GENERATE_USERS_WITH_REAL_NAMES',
@@ -181,6 +199,16 @@ ETC_GENERATE_USERS_WITH_REAL_NAMES = bool(getattr(
 
 
 # region User Identifiers
+
+# Validate ETC_REQUEST_USER_STRICTNESS setting.
+if ETC_REQUEST_USER_STRICTNESS not in ['anonymous', 'relaxed', 'strict']:
+    raise ValueError(
+        'Invalid value provided for EXPANDED_TEST_CASES_REQUEST_USER_STRICTNESS setting. '
+        'Must be one of: ["anonymous", "relaxed", "strict"].'
+    )
+# Validate combination of ETC_REQUEST_USER_STRICTNESS and ETC_AUTO_GENERATE_USERS settings.
+elif ETC_REQUEST_USER_STRICTNESS == 'relaxed' and not ETC_AUTO_GENERATE_USERS:
+    raise ValueError('When ETC_REQUEST_USER_STRICTNESS is set to "relaxed", ETC_AUTO_GENERATE_USERS must be True.')
 
 # Set default identifier value, based on either provided value or common user identifier types.
 default_superuser_identifier = None
