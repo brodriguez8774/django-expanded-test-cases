@@ -59,7 +59,7 @@ Below is an example of **ETC**'s debug output when a UnitTest fails for a basic 
    :caption: Package Setting Configuration:
 
    configuration/general
-   configuration/user
+   configuration/users
 
 
 .. toctree::

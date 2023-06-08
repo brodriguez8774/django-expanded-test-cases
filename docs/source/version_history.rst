@@ -2,8 +2,20 @@ Version History
 ***************
 
 
+0.3.0 - Default Test User Customization
+=======================================
+
+* Includes customization of how test-users are handled, when running any given
+  Integration/Response test.
+
+  * For more details, see :ref:`configuration/users:Configuring Test Users`.
+  * As part of this change, the default way of handling users has changed.
+    Original default handling was equivalent to ``relaxed``, but now is
+    equivalent to ``anonymous`` to better match with Django's default behavior.
+
+
 0.2.4 - Minor Updates
-================================================================
+=====================
 
 * Minor updates for docs and Python3.11.
 
@@ -12,20 +24,23 @@ Version History
 ================================================================
 
 * Fixed multiple various bugs and potential inconsistencies with test handling.
-* Updated Integration content check to indicate when a value matches all except for text capitalization.
+* Updated Integration content check to indicate when a value matches all except
+  for text capitalization.
 
 
 0.2.2 - Preliminary Setup/Upgrades for Improved Test Output + LiveServer Testing
-===============================================================================
+================================================================================
 
 * Initial implementation of improved test output text coloring.
 
-  * Slightly buggy, and definitely needs work. But its still more helpful than nothing.
+  * Slightly buggy, and definitely needs work. But its still more helpful than
+    nothing.
 
 * Start of LiveServer/Selenium testing classes.
 
   * Definitely in a "pre-release" state and not yet viable for use.
-  * For now, continue to use the default Django/Selenium LiveServer testing classes.
+  * For now, continue to use the default Django/Selenium LiveServer testing
+    classes.
 
 
 0.2.1 - Bugfixes and Improved Output Display

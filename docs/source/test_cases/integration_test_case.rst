@@ -31,8 +31,8 @@ The **Response Assertions** are utility functions that can generate a page
 response according to provided URL parameters, and then check for one or more
 properties upon the generated response object.
 
-See the below :ref:`custom element assertions`_ section for further documentation
-of the possible individual property assertions.
+See the below :ref:`test_cases/integration_test_case:custom element assertions` section for further
+documentation of the possible individual property assertions.
 
 
 .. note::
@@ -69,8 +69,8 @@ of ``status_code``, which will assume a default of ``200`` if not provided.
 
     This assertion is the base for two others assertions that are much
     more explicit.
-    :ref:`assertGetResponse() <assertGetResponse>`_ and
-    :ref:`assertPostResponse() <assertPostResponse>`_.
+    :ref:`test_cases/integration_test_case:assertGetResponse` and
+    :ref:`test_cases/integration_test_case:assertPostResponse`.
     It is recommended that you use these more explicit versions so that your
     test expresses clarity as to what the expected request type should be.
 

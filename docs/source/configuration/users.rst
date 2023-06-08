@@ -9,7 +9,8 @@ settings.
 All of these settings are optional, and will fall back to a default value if
 not defined.
 
-Note::
+
+.. Note::
     By default, **ExpandedTestCases** will always generate 4 default users. One
     super user, one admin user, one deactivated User, and one standard user.
 
@@ -18,6 +19,67 @@ Note::
 
     Some of these settings also change general user handling during test
     runtime.
+
+
+Configuring Test Users
+======================
+
+DJANGO_EXPANDED_TESTCASES_AUTO_GENERATE_USERS
+---------------------------------------------
+
+By default, **ExpandedTestCases** will provide default testing users. If this
+is not desired, this setting can be set to False to disable said functionality.
+If false, then all of the below settings on this page are disabled and
+don't affect tests.
+
+:Type: ``bool``
+:Default: ``False``
+
+Example::
+
+    DJANGO_EXPANDED_TESTCASES_AUTO_GENERATE_USERS = False
+
+
+DJANGO_EXPANDED_TESTCASES_REQUEST_USER_STRICTNESS
+-------------------------------------------------
+
+To match with Django's default behavior, any response tests (see
+:doc:`../test_cases/integration_test_case`) will default to using an
+`Anonymous
+User <https://docs.djangoproject.com/en/dev/ref/contrib/auth/#anonymoususer-object>`_
+in any page requests, unless a different user instance is explicitly
+provided.
+
+Alternatively, this setting can be set to ``relaxed`` or ``strict`` to change
+this behavior.
+
+The ``relaxed`` mode will auto-provide the "standard user" if a user
+instance is not explicitly provided.
+
+Meanwhile, the ``strict`` mode requires that any response test either have the
+``auto_login`` arg set to False, or that a user instance be provided. If one
+of these two criteria are not met, then the test will raise a ValidationError.
+
+
+.. note::
+    When the above description mentions "providing a user instance", the ETC
+    package can accept this in one of two ways.
+
+    First, each IntegrationTest assertion has a ``user`` arg. This is the most
+    direct way to pass in a user, on a per-assertion basis.
+
+    Alternatively, if you find yourself having multiple response assertions
+    in a row that all use the same user, you can set ``self.user`` to your
+    desired user instance. All tests that follow afterwards will fall back
+    to this ``self.user`` variable, if no user is provided as an arg.
+
+:Type: ``string``
+:Default: ``anonymous``
+:Options: [``anonymous``, ``relaxed``, ``strict``]
+
+Example::
+
+    DJANGO_EXPANDED_TESTCASES_REQUEST_USER_STRICTNESS = 'strict'
 
 
 Configuring Test User Identifiers

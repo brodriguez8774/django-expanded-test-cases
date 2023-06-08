@@ -1,7 +1,7 @@
 Managing Test Users
 *******************
 
-See also :doc:`configuration/user`, for details on all project settings
+See also :doc:`configuration/users`, for details on all project settings
 to manipulate/change these provided user models.
 
 
@@ -13,6 +13,17 @@ to all tests.
 These users help to ensure that tests are using a non-empty database. Feel free
 to change (or ignore) these users as needed to best serve project
 tests.
+
+To outright disable these auto-generated users, see
+:ref:`configuration/users:DJANGO_EXPANDED_TESTCASES_AUTO_GENERATE_USERS`
+
+
+Testing Response Default User Behavior
+--------------------------------------
+
+To outright disable these auto-generated users, see
+:ref:`configuration/users:DJANGO_EXPANDED_TESTCASES_REQUEST_USER_STRICTNESS`
+
 
 User Identifiers
 ----------------
@@ -37,7 +48,7 @@ then each user can be configured with a
 ``DJANGO_EXPANDED_TESTCASES_DEFAULT_<user>_IDENTIFIER`` setting.
 
 For more information about customizing test user identifiers, see
-:ref:`configuration/user:Configuring Test User Identifiers`
+:ref:`configuration/users:Configuring Test User Identifiers`
 
 
 Expanding User Authentication Logic
