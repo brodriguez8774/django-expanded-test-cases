@@ -13,15 +13,15 @@ from django.http.response import HttpResponseBase
 # Internal Imports.
 from . import CoreTestCaseMixin
 from django_expanded_test_cases.constants import (
-    ETC_OUTPUT_ERROR,
+    ETC_OUTPUT_ERROR_COLOR,
     ETC_RESPONSE_DEBUG_CONTENT_COLOR,
-    ETC_RESPONSE_DEBUG_HEADERS_COLOR,
+    ETC_RESPONSE_DEBUG_HEADER_COLOR,
     ETC_RESPONSE_DEBUG_CONTEXT_COLOR,
     ETC_RESPONSE_DEBUG_MESSAGE_COLOR,
     ETC_RESPONSE_DEBUG_SESSION_COLOR,
     ETC_RESPONSE_DEBUG_FORM_COLOR,
     ETC_RESPONSE_DEBUG_USER_INFO_COLOR,
-    ETC_OUTPUT_EMPHASIS,
+    ETC_OUTPUT_EMPHASIS_COLOR,
 )
 
 
@@ -65,7 +65,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         self._debug_print(
             '{0} {1} {0}'.format('=' * 10, 'response.content'),
             fore=ETC_RESPONSE_DEBUG_CONTENT_COLOR,
-            style=ETC_OUTPUT_EMPHASIS,
+            style=ETC_OUTPUT_EMPHASIS_COLOR,
         )
 
         # Print out data, if present.
@@ -91,14 +91,14 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         self._debug_print()
         self._debug_print(
             '{0} {1} {0}'.format('=' * 10, 'response.headers'),
-            fore=ETC_RESPONSE_DEBUG_HEADERS_COLOR,
-            style=ETC_OUTPUT_EMPHASIS,
+            fore=ETC_RESPONSE_DEBUG_HEADER_COLOR,
+            style=ETC_OUTPUT_EMPHASIS_COLOR,
         )
 
         # Print out data, if present.
         if response_headers is not None and len(response_headers) > 0:
             for key, value in response_headers.items():
-                self._debug_print('    * "{0}": "{1}"'.format(key, value), fore=ETC_RESPONSE_DEBUG_HEADERS_COLOR)
+                self._debug_print('    * "{0}": "{1}"'.format(key, value), fore=ETC_RESPONSE_DEBUG_HEADER_COLOR)
         else:
             self._debug_print('    No response headers found.')
         self._debug_print()
@@ -129,7 +129,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         self._debug_print(
             '{0} {1} {0}'.format('=' * 10, 'response.context'),
             fore=ETC_RESPONSE_DEBUG_CONTEXT_COLOR,
-            style=ETC_OUTPUT_EMPHASIS,
+            style=ETC_OUTPUT_EMPHASIS_COLOR,
         )
 
         # NOTE: Response context object is strange, in that it's basically a dictionary,
@@ -157,7 +157,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         self._debug_print(
             '{0} {1} {0}'.format('=' * 10, 'client.session'),
             fore=ETC_RESPONSE_DEBUG_SESSION_COLOR,
-            style=ETC_OUTPUT_EMPHASIS,
+            style=ETC_OUTPUT_EMPHASIS_COLOR,
         )
 
         if client is not None and len(client.session.items()) > 0:
@@ -178,7 +178,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         self._debug_print(
             '{0} {1} {0}'.format('=' * 10, 'response.context["messages"]'),
             fore=ETC_RESPONSE_DEBUG_MESSAGE_COLOR,
-            style=ETC_OUTPUT_EMPHASIS,
+            style=ETC_OUTPUT_EMPHASIS_COLOR,
         )
 
         # Print out data, if present.
@@ -204,7 +204,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         self._debug_print(
             '{0} {1} {0}'.format('=' * 10, 'Form Data'),
             fore=ETC_RESPONSE_DEBUG_FORM_COLOR,
-            style=ETC_OUTPUT_EMPHASIS,
+            style=ETC_OUTPUT_EMPHASIS_COLOR,
         )
 
         # Check if form or formset data is actually present.
@@ -272,7 +272,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         self._debug_print(
             '{0} {1} {0}'.format('=' * 10, 'User Info'),
             fore=ETC_RESPONSE_DEBUG_USER_INFO_COLOR,
-            style=ETC_OUTPUT_EMPHASIS,
+            style=ETC_OUTPUT_EMPHASIS_COLOR,
         )
 
         # Only proceed if we got a proper user model.
@@ -309,7 +309,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                 user,
                 type(user),
                 type(get_user_model()),
-            ), fore=ETC_OUTPUT_ERROR)
+            ), fore=ETC_OUTPUT_ERROR_COLOR)
         self._debug_print()
         self._debug_print()
 

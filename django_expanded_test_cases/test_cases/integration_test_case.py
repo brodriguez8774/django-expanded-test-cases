@@ -18,7 +18,7 @@ from django_expanded_test_cases.constants import (
     ETC_INCLUDE_RESPONSE_DEBUG_CONTENT,
     ETC_INCLUDE_RESPONSE_DEBUG_CONTEXT,
     ETC_INCLUDE_RESPONSE_DEBUG_FORMS,
-    ETC_INCLUDE_RESPONSE_DEBUG_HEADERS,
+    ETC_INCLUDE_RESPONSE_DEBUG_HEADER,
     ETC_INCLUDE_RESPONSE_DEBUG_MESSAGES,
     ETC_INCLUDE_RESPONSE_DEBUG_SESSION,
     ETC_INCLUDE_RESPONSE_DEBUG_URL,
@@ -27,7 +27,7 @@ from django_expanded_test_cases.constants import (
     ETC_REQUEST_USER_STRICTNESS,
     ETC_DEFAULT_STANDARD_USER_IDENTIFIER,
     ETC_RESPONSE_DEBUG_URL_COLOR,
-    ETC_OUTPUT_EMPHASIS,
+    ETC_OUTPUT_EMPHASIS_COLOR,
     VOID_ELEMENT_LIST,
 )
 from django_expanded_test_cases.mixins import ResponseTestCaseMixin
@@ -114,7 +114,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         if self._debug_print_bool:
             if ETC_INCLUDE_RESPONSE_DEBUG_CONTENT:
                 self.show_debug_content(response)
-            if ETC_INCLUDE_RESPONSE_DEBUG_HEADERS:
+            if ETC_INCLUDE_RESPONSE_DEBUG_HEADER:
                 self.show_debug_headers(response)
             if ETC_INCLUDE_RESPONSE_DEBUG_CONTEXT:
                 self.show_debug_context(response)
@@ -898,9 +898,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         self._debug_print('\n\n')
         if ETC_INCLUDE_RESPONSE_DEBUG_URL:
-            self._debug_print('{0}'.format('-' * len(message)), fore=ETC_RESPONSE_DEBUG_URL_COLOR, style=ETC_OUTPUT_EMPHASIS)
-            self._debug_print(message, fore=ETC_RESPONSE_DEBUG_URL_COLOR, style=ETC_OUTPUT_EMPHASIS)
-            self._debug_print('{0}'.format('-' * len(message)), fore=ETC_RESPONSE_DEBUG_URL_COLOR, style=ETC_OUTPUT_EMPHASIS)
+            self._debug_print('{0}'.format('-' * len(message)), fore=ETC_RESPONSE_DEBUG_URL_COLOR, style=ETC_OUTPUT_EMPHASIS_COLOR)
+            self._debug_print(message, fore=ETC_RESPONSE_DEBUG_URL_COLOR, style=ETC_OUTPUT_EMPHASIS_COLOR)
+            self._debug_print('{0}'.format('-' * len(message)), fore=ETC_RESPONSE_DEBUG_URL_COLOR, style=ETC_OUTPUT_EMPHASIS_COLOR)
 
         # Get response object.
         if bool(get):

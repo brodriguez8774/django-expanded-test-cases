@@ -6,7 +6,7 @@ Testing class for generalized logic.
 from django.test import TestCase
 
 # Internal Imports.
-from django_expanded_test_cases.constants import ETC_OUTPUT_EMPHASIS, ETC_OUTPUT_ERROR
+from django_expanded_test_cases.constants import ETC_OUTPUT_EMPHASIS_COLOR, ETC_OUTPUT_ERROR_COLOR
 from django_expanded_test_cases.mixins import CoreTestCaseMixin
 
 
@@ -59,8 +59,8 @@ class BaseTestCase(TestCase, CoreTestCaseMixin):
                     self.__class__.__name__,
                     type(err).__name__,
                 ),
-                fore=ETC_OUTPUT_ERROR,
-                style=ETC_OUTPUT_EMPHASIS,
+                fore=ETC_OUTPUT_ERROR_COLOR,
+                style=ETC_OUTPUT_EMPHASIS_COLOR,
             )
             self._debug_print('{0}\n\n'.format(str(err)))
 

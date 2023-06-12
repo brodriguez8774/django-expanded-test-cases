@@ -15,11 +15,11 @@ from django.test import override_settings
 # Internal Imports.
 from django_expanded_test_cases import BaseTestCase
 from django_expanded_test_cases.constants import (
-    ETC_OUTPUT_ACTUALS_MATCH,
-    ETC_OUTPUT_ACTUALS_ERROR,
-    ETC_OUTPUT_EXPECTED_MATCH,
-    ETC_OUTPUT_EXPECTED_ERROR,
-    ETC_OUTPUT_RESET,
+    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+    ETC_OUTPUT_ACTUALS_ERROR_COLOR,
+    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+    ETC_OUTPUT_EXPECTED_ERROR_COLOR,
+    ETC_OUTPUT_RESET_COLOR,
 )
 
 
@@ -215,21 +215,21 @@ class BaseClassTest(BaseTestCase):
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
-            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
-            self.assertEqual(std_out_lines[5], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(std_out_lines[5], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[9],
-                '{0}Actuals has values here. Expected does not.{1}'.format(ETC_OUTPUT_ACTUALS_ERROR, ETC_OUTPUT_RESET),
+                '{0}Actuals has values here. Expected does not.{1}'.format(ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[12], ETC_OUTPUT_RESET)
+            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[12], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[13], '')
 
         with self.subTest('With actuals as empty'):
@@ -241,21 +241,21 @@ class BaseClassTest(BaseTestCase):
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
-            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[5],
-                '{0}Expected has values here. Actuals does not.{1}'.format(ETC_OUTPUT_EXPECTED_ERROR, ETC_OUTPUT_RESET),
+                '{0}Expected has values here. Actuals does not.{1}'.format(ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[8], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[9], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
-            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[12], ETC_OUTPUT_RESET)
+            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[8], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[9], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[12], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[13], '')
 
         with self.subTest('With expected as empty and actuals as multi-line'):
@@ -267,22 +267,22 @@ class BaseClassTest(BaseTestCase):
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
-            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
-            self.assertEqual(std_out_lines[5], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(std_out_lines[5], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[9],
-                '{0}Actuals has values here.{1}'.format(ETC_OUTPUT_ACTUALS_ERROR, ETC_OUTPUT_RESET),
+                '{0}Actuals has values here.{1}'.format(ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[10], '{0}Expected does not.{1}'.format(ETC_OUTPUT_ACTUALS_ERROR, ETC_OUTPUT_RESET))
-            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[12], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[13], ETC_OUTPUT_RESET)
+            self.assertEqual(std_out_lines[10], '{0}Expected does not.{1}'.format(ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[12], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[13], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[14], '')
 
         with self.subTest('With actuals as empty and expected as multi-line'):
@@ -294,22 +294,22 @@ class BaseClassTest(BaseTestCase):
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
-            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[5],
-                '{0}Expected has values here.{1}'.format(ETC_OUTPUT_EXPECTED_ERROR, ETC_OUTPUT_RESET),
+                '{0}Expected has values here.{1}'.format(ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[6], '{0}Actuals does not.{1}'.format(ETC_OUTPUT_EXPECTED_ERROR, ETC_OUTPUT_RESET))
-            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[8], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[9], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[10], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
-            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[12], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[13], ETC_OUTPUT_RESET)
+            self.assertEqual(std_out_lines[6], '{0}Actuals does not.{1}'.format(ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[8], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[9], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[10], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[12], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[13], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[14], '')
 
         with self.subTest('With expected as one line less - At end'):
@@ -323,20 +323,20 @@ class BaseClassTest(BaseTestCase):
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
-            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
-            self.assertEqual(std_out_lines[5], '{0}One line.{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
-            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[8], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[9], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
-            self.assertEqual(std_out_lines[10], '{0}One line.{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
-            self.assertEqual(std_out_lines[11], '{0}Two line.{1}'.format(ETC_OUTPUT_ACTUALS_ERROR, ETC_OUTPUT_RESET))
-            self.assertEqual(std_out_lines[12], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[13], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[14], ETC_OUTPUT_RESET)
+            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(std_out_lines[5], '{0}One line.{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[8], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[9], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(std_out_lines[10], '{0}One line.{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(std_out_lines[11], '{0}Two line.{1}'.format(ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(std_out_lines[12], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[13], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[14], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[15], '')
 
         with self.subTest('With actuals as one line less - At end'):
@@ -348,20 +348,20 @@ class BaseClassTest(BaseTestCase):
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
-            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
-            self.assertEqual(std_out_lines[5], '{0}One line.{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
-            self.assertEqual(std_out_lines[6], '{0}Two line.{1}'.format(ETC_OUTPUT_EXPECTED_ERROR, ETC_OUTPUT_RESET))
-            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[8], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[9], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[10], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
-            self.assertEqual(std_out_lines[11], '{0}One line.{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
-            self.assertEqual(std_out_lines[12], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[13], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[14], ETC_OUTPUT_RESET)
+            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(std_out_lines[5], '{0}One line.{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(std_out_lines[6], '{0}Two line.{1}'.format(ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[8], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[9], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[10], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(std_out_lines[11], '{0}One line.{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(std_out_lines[12], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[13], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[14], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[15], '')
 
     def test__assertText_coloring__missing_characters(self):
@@ -379,23 +379,23 @@ class BaseClassTest(BaseTestCase):
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
-            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[5],
-                '{0}esting.{1}'.format(ETC_OUTPUT_EXPECTED_ERROR, ETC_OUTPUT_RESET),
+                '{0}esting.{1}'.format(ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[9],
-                '{0}Testing.{1}'.format(ETC_OUTPUT_ACTUALS_ERROR, ETC_OUTPUT_RESET),
+                '{0}Testing.{1}'.format(ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET)
+            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[12], '')
 
         with self.subTest('With actuals as one char missing - At start'):
@@ -407,23 +407,23 @@ class BaseClassTest(BaseTestCase):
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
-            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[5],
-                '{0}Testing.{1}'.format(ETC_OUTPUT_EXPECTED_ERROR, ETC_OUTPUT_RESET),
+                '{0}Testing.{1}'.format(ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[9],
-                '{0}esting.{1}'.format(ETC_OUTPUT_ACTUALS_ERROR, ETC_OUTPUT_RESET),
+                '{0}esting.{1}'.format(ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET)
+            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[12], '')
 
         with self.subTest('With expected as multiple characters missing - At start'):
@@ -435,23 +435,23 @@ class BaseClassTest(BaseTestCase):
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
-            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[5],
-                '{0}sting.{1}'.format(ETC_OUTPUT_EXPECTED_ERROR, ETC_OUTPUT_RESET),
+                '{0}sting.{1}'.format(ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[9],
-                '{0}Testing.{1}'.format(ETC_OUTPUT_ACTUALS_ERROR, ETC_OUTPUT_RESET),
+                '{0}Testing.{1}'.format(ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET)
+            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[12], '')
 
         with self.subTest('With actuals as multiple characters missing - At start'):
@@ -463,23 +463,23 @@ class BaseClassTest(BaseTestCase):
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
-            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[5],
-                '{0}Testing.{1}'.format(ETC_OUTPUT_EXPECTED_ERROR, ETC_OUTPUT_RESET),
+                '{0}Testing.{1}'.format(ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[9],
-                '{0}sting.{1}'.format(ETC_OUTPUT_ACTUALS_ERROR, ETC_OUTPUT_RESET),
+                '{0}sting.{1}'.format(ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET)
+            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[12], '')
 
         with self.subTest('With expected as one char missing - At middle'):
@@ -491,23 +491,23 @@ class BaseClassTest(BaseTestCase):
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
-            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[5],
-                '{0}Tes{1}ing.{2}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_EXPECTED_ERROR, ETC_OUTPUT_RESET),
+                '{0}Tes{1}ing.{2}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[9],
-                '{0}Tes{1}ting.{2}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_ACTUALS_ERROR, ETC_OUTPUT_RESET),
+                '{0}Tes{1}ting.{2}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET)
+            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[12], '')
 
         with self.subTest('With actuals as one char missing - At middle'):
@@ -519,23 +519,23 @@ class BaseClassTest(BaseTestCase):
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
-            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[5],
-                '{0}Tes{1}ting.{2}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_EXPECTED_ERROR, ETC_OUTPUT_RESET),
+                '{0}Tes{1}ting.{2}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[9],
-                '{0}Tes{1}ing.{2}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_ACTUALS_ERROR, ETC_OUTPUT_RESET),
+                '{0}Tes{1}ing.{2}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET)
+            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[12], '')
 
         with self.subTest('With expected as multiple characters missing - At middle'):
@@ -547,23 +547,23 @@ class BaseClassTest(BaseTestCase):
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
-            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[5],
-                '{0}Te{1}ng.{2}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_EXPECTED_ERROR, ETC_OUTPUT_RESET),
+                '{0}Te{1}ng.{2}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[9],
-                '{0}Te{1}sting.{2}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_ACTUALS_ERROR, ETC_OUTPUT_RESET),
+                '{0}Te{1}sting.{2}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET)
+            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[12], '')
 
         with self.subTest('With actuals as multiple characters missing - At middle'):
@@ -575,23 +575,23 @@ class BaseClassTest(BaseTestCase):
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
-            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[5],
-                '{0}Te{1}sting.{2}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_EXPECTED_ERROR, ETC_OUTPUT_RESET),
+                '{0}Te{1}sting.{2}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[9],
-                '{0}Te{1}ng.{2}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_ACTUALS_ERROR, ETC_OUTPUT_RESET),
+                '{0}Te{1}ng.{2}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET)
+            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[12], '')
 
         with self.subTest('With expected as one char missing - At end'):
@@ -603,23 +603,23 @@ class BaseClassTest(BaseTestCase):
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
-            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[5],
-                '{0}Testing{1}{2}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_EXPECTED_ERROR, ETC_OUTPUT_RESET),
+                '{0}Testing{1}{2}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[9],
-                '{0}Testing{1}.{2}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_ACTUALS_ERROR, ETC_OUTPUT_RESET),
+                '{0}Testing{1}.{2}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET)
+            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[12], '')
 
         with self.subTest('With actuals as one char missing - At end'):
@@ -631,23 +631,23 @@ class BaseClassTest(BaseTestCase):
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
-            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[5],
-                '{0}Testing{1}.{2}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_EXPECTED_ERROR, ETC_OUTPUT_RESET),
+                '{0}Testing{1}.{2}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[9],
-                '{0}Testing{1}{2}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_ACTUALS_ERROR, ETC_OUTPUT_RESET),
+                '{0}Testing{1}{2}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET)
+            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[12], '')
 
         with self.subTest('With expected as multiple characters missing - At end'):
@@ -659,23 +659,23 @@ class BaseClassTest(BaseTestCase):
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
-            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[5],
-                '{0}Test{1}{2}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_EXPECTED_ERROR, ETC_OUTPUT_RESET),
+                '{0}Test{1}{2}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[9],
-                '{0}Test{1}ing.{2}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_ACTUALS_ERROR, ETC_OUTPUT_RESET),
+                '{0}Test{1}ing.{2}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET)
+            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[12], '')
 
         with self.subTest('With actuals as multiple characters missing - At end'):
@@ -687,23 +687,23 @@ class BaseClassTest(BaseTestCase):
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
-            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[5],
-                '{0}Test{1}ing.{2}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_EXPECTED_ERROR, ETC_OUTPUT_RESET),
+                '{0}Test{1}ing.{2}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[9],
-                '{0}Test{1}{2}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_ACTUALS_ERROR, ETC_OUTPUT_RESET),
+                '{0}Test{1}{2}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
             )
-            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET)
+            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[12], '')
 
     def test__assertText_coloring__wrong_characters(self):
@@ -720,31 +720,31 @@ class BaseClassTest(BaseTestCase):
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
-            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[5],
                 '{0}a{1}BC{2}'.format(
-                    ETC_OUTPUT_EXPECTED_ERROR,
-                    ETC_OUTPUT_EXPECTED_MATCH,
-                    ETC_OUTPUT_RESET,
+                    ETC_OUTPUT_EXPECTED_ERROR_COLOR,
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
                 ),
             )
-            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[9],
                 '{0}A{1}BC{2}'.format(
-                    ETC_OUTPUT_ACTUALS_ERROR,
-                    ETC_OUTPUT_ACTUALS_MATCH,
-                    ETC_OUTPUT_RESET,
+                    ETC_OUTPUT_ACTUALS_ERROR_COLOR,
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
                 ),
             )
-            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET)
+            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[12], '')
 
         with self.subTest('With wrong characters at start - Larger str'):
@@ -756,31 +756,31 @@ class BaseClassTest(BaseTestCase):
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
-            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[5],
                 '{0}tHIS{1} is a test value.{2}'.format(
-                    ETC_OUTPUT_EXPECTED_ERROR,
-                    ETC_OUTPUT_EXPECTED_MATCH,
-                    ETC_OUTPUT_RESET,
+                    ETC_OUTPUT_EXPECTED_ERROR_COLOR,
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
                 ),
             )
-            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[9],
                 '{0}This{1} is a test value.{2}'.format(
-                    ETC_OUTPUT_ACTUALS_ERROR,
-                    ETC_OUTPUT_ACTUALS_MATCH,
-                    ETC_OUTPUT_RESET,
+                    ETC_OUTPUT_ACTUALS_ERROR_COLOR,
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
                 ),
             )
-            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET)
+            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[12], '')
 
         with self.subTest('With wrong character at middle - Small str'):
@@ -792,31 +792,31 @@ class BaseClassTest(BaseTestCase):
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
-            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[5],
                 '{0}A{1}b{0}C{2}'.format(
-                    ETC_OUTPUT_EXPECTED_MATCH,
-                    ETC_OUTPUT_EXPECTED_ERROR,
-                    ETC_OUTPUT_RESET,
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_EXPECTED_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
                 ),
             )
-            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[9],
                 '{0}A{1}B{0}C{2}'.format(
-                    ETC_OUTPUT_ACTUALS_MATCH,
-                    ETC_OUTPUT_ACTUALS_ERROR,
-                    ETC_OUTPUT_RESET,
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_ACTUALS_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
                 ),
             )
-            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET)
+            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[12], '')
 
         with self.subTest('With wrong character at middle - Larger str'):
@@ -828,31 +828,31 @@ class BaseClassTest(BaseTestCase):
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
-            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[5],
                 '{0}This {1}IS{0} {1}A{0} {1}TEST{0} value.{2}'.format(
-                    ETC_OUTPUT_EXPECTED_MATCH,
-                    ETC_OUTPUT_EXPECTED_ERROR,
-                    ETC_OUTPUT_RESET,
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_EXPECTED_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
                 ),
             )
-            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[9],
                 '{0}This {1}is{0} {1}a{0} {1}test{0} value.{2}'.format(
-                    ETC_OUTPUT_ACTUALS_MATCH,
-                    ETC_OUTPUT_ACTUALS_ERROR,
-                    ETC_OUTPUT_RESET,
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_ACTUALS_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
                 ),
             )
-            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET)
+            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[12], '')
 
         with self.subTest('With wrong character at end - Small str'):
@@ -864,31 +864,31 @@ class BaseClassTest(BaseTestCase):
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
-            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[5],
                 '{0}AB{1}c{2}'.format(
-                    ETC_OUTPUT_EXPECTED_MATCH,
-                    ETC_OUTPUT_EXPECTED_ERROR,
-                    ETC_OUTPUT_RESET,
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_EXPECTED_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
                 ),
             )
-            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[9],
                 '{0}AB{1}C{2}'.format(
-                    ETC_OUTPUT_ACTUALS_MATCH,
-                    ETC_OUTPUT_ACTUALS_ERROR,
-                    ETC_OUTPUT_RESET,
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_ACTUALS_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
                 ),
             )
-            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET)
+            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[12], '')
 
         with self.subTest('With wrong characters at end - Larger str'):
@@ -900,31 +900,31 @@ class BaseClassTest(BaseTestCase):
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
-            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[5],
                 '{0}This is a test {1}VALUE!{2}'.format(
-                    ETC_OUTPUT_EXPECTED_MATCH,
-                    ETC_OUTPUT_EXPECTED_ERROR,
-                    ETC_OUTPUT_RESET,
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_EXPECTED_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
                 ),
             )
-            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH, ETC_OUTPUT_RESET))
+            self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
             self.assertEqual(
                 std_out_lines[9],
                 '{0}This is a test {1}value.{2}'.format(
-                    ETC_OUTPUT_ACTUALS_MATCH,
-                    ETC_OUTPUT_ACTUALS_ERROR,
-                    ETC_OUTPUT_RESET,
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_ACTUALS_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
                 ),
             )
-            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET)
-            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET)
+            self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
+            self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[12], '')
 
     # endregion Assertion Tests
