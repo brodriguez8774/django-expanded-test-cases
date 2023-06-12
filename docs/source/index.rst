@@ -60,6 +60,7 @@ Below is an example of **ETC**'s debug output when a UnitTest fails for a basic 
 
    configuration/general
    configuration/users
+   configuration/debug_output
 
 
 .. toctree::

@@ -3,7 +3,7 @@ General Setting Configuration
 
 The following
 `Django settings <https://docs.djangoproject.com/en/dev/topics/settings/>`_
-allow configuration of the ExpandedTestCases package.
+allow configuration of the **ExpandedTestCases** package.
 
 All of these settings are optional, and will fall back to a default value if
 not defined.
