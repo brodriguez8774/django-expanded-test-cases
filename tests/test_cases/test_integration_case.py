@@ -17,7 +17,7 @@ from django.http import HttpResponse
 from django_expanded_test_cases import IntegrationTestCase
 
 
-class IntegrationClassTest__Base():
+class IntegrationClassTest__Base(IntegrationTestCase):
     """Tests for IntegrationTestCase class."""
 
     # region Assertion Tests
@@ -1184,7 +1184,7 @@ class IntegrationClassTest__Base():
             )
 
         with self.subTest('Standard Response - Set of items on user page - As list'):
-            response = self._get_page_response('django_expanded_test_cases:user-detail', args=(1,))
+            response = self._get_page_response('django_expanded_test_cases:user-detail', args=(1,), user=self.test_user)
 
             # Standard, ordered page match.
             self.assertPageContent(
@@ -1192,8 +1192,8 @@ class IntegrationClassTest__Base():
                 [
                     '<h1>User Detail Page Header</h1>',
                     'Username: "test_superuser"',
-                    'First Name: "TestFirst"',
-                    'Last Name: "TestLast"',
+                    'First Name: "SuperUserFirst"',
+                    'Last Name: "SuperUserLast"',
                     'Is Active: "True"',
                     'Is SuperUser: "True"',
                     'Is Staff: "False"',
@@ -1207,13 +1207,11 @@ class IntegrationClassTest__Base():
                     '<h1>User Detail Page Header</h1>',
                     'User Detail',
                     'Username: "test_superuser"',
-                    'First Name: "TestFirst"',
-                    'Last Name: "TestLast"',
+                    'First Name: "SuperUserFirst"',
+                    'Last Name: "SuperUserLast"',
                     'Is Active: "True"',
                     'Is SuperUser: "True"',
                     'Is Staff: "False"',
-                    'TestFirst',
-                    'TestLast',
                 ],
                 ignore_ordering=True,  # Ignore because we recheck the same values.
             )
@@ -1226,15 +1224,15 @@ class IntegrationClassTest__Base():
                     'Is SuperUser: "True"',
                     'Is Staff: "False"',
                     'Username: "test_superuser"',
-                    'First Name: "TestFirst"',
-                    'Last Name: "TestLast"',
+                    'First Name: "SuperUserFirst"',
+                    'Last Name: "SuperUserLast"',
                     '<h1>User Detail Page Header</h1>',
                 ],
                 ignore_ordering=True,  # Ignore because unordered.
             )
 
         with self.subTest('Standard Response - Set of items on user page - As Tuple'):
-            response = self._get_page_response('django_expanded_test_cases:user-detail', args=(1,))
+            response = self._get_page_response('django_expanded_test_cases:user-detail', args=(1,), user=self.test_user)
 
             # Standard, ordered page match.
             self.assertPageContent(
@@ -1242,8 +1240,8 @@ class IntegrationClassTest__Base():
                 (
                     '<h1>User Detail Page Header</h1>',
                     'Username: "test_superuser"',
-                    'First Name: "TestFirst"',
-                    'Last Name: "TestLast"',
+                    'First Name: "SuperUserFirst"',
+                    'Last Name: "SuperUserLast"',
                     'Is Active: "True"',
                     'Is SuperUser: "True"',
                     'Is Staff: "False"',
@@ -1257,13 +1255,11 @@ class IntegrationClassTest__Base():
                     '<h1>User Detail Page Header</h1>',
                     'User Detail',
                     'Username: "test_superuser"',
-                    'First Name: "TestFirst"',
-                    'Last Name: "TestLast"',
+                    'First Name: "SuperUserFirst"',
+                    'Last Name: "SuperUserLast"',
                     'Is Active: "True"',
                     'Is SuperUser: "True"',
                     'Is Staff: "False"',
-                    'TestFirst',
-                    'TestLast',
                 ),
                 ignore_ordering=True,  # Ignore because we recheck the same values.
             )
@@ -1276,8 +1272,8 @@ class IntegrationClassTest__Base():
                     'Is SuperUser: "True"',
                     'Is Staff: "False"',
                     'Username: "test_superuser"',
-                    'First Name: "TestFirst"',
-                    'Last Name: "TestLast"',
+                    'First Name: "SuperUserFirst"',
+                    'Last Name: "SuperUserLast"',
                     '<h1>User Detail Page Header</h1>',
                 ),
                 ignore_ordering=True,  # Ignore because unordered.
@@ -1521,10 +1517,10 @@ class IntegrationClassTest__Base():
                 self.assertPageContent(
                     response,
                     [
-                        'First Name: "TestFirst"',
+                        'First Name: "SuperUserFirst"',
                         '<h1>User Detail Page Header</h1>',
                         'Username: "test_superuser"',
-                        'Last Name: "TestLast"',
+                        'Last Name: "SuperUserLast"',
                         'Is Active: "True"',
                         'Is SuperUser: "True"',
                         'Is Staff: "False"',
@@ -1538,9 +1534,9 @@ class IntegrationClassTest__Base():
                     response,
                     [
                         '<h1>User Detail Page Header</h1>',
-                        'First Name: "TestFirst"',
+                        'First Name: "SuperUserFirst"',
                         'Username: "test_superuser"',
-                        'Last Name: "TestLast"',
+                        'Last Name: "SuperUserLast"',
                         'Is Active: "True"',
                         'Is SuperUser: "True"',
                         'Is Staff: "False"',
@@ -1555,14 +1551,14 @@ class IntegrationClassTest__Base():
                     [
                         '<h1>User Detail Page Header</h1>',
                         'Username: "test_superuser"',
-                        'Last Name: "TestLast"',
-                        'First Name: "TestFirst"',
+                        'Last Name: "SuperUserLast"',
+                        'First Name: "SuperUserFirst"',
                         'Is Active: "True"',
                         'Is SuperUser: "True"',
                         'Is Staff: "False"',
                     ],
                 )
-            self.assertEqual(str(err.exception), exception_msg_bad_order.format('First Name: "TestFirst"'))
+            self.assertEqual(str(err.exception), exception_msg_bad_order.format('First Name: "SuperUserFirst"'))
 
             with self.assertRaises(AssertionError) as err:
                 # Test "first name" string after active.
@@ -1571,14 +1567,14 @@ class IntegrationClassTest__Base():
                     [
                         '<h1>User Detail Page Header</h1>',
                         'Username: "test_superuser"',
-                        'Last Name: "TestLast"',
+                        'Last Name: "SuperUserLast"',
                         'Is Active: "True"',
-                        'First Name: "TestFirst"',
+                        'First Name: "SuperUserFirst"',
                         'Is SuperUser: "True"',
                         'Is Staff: "False"',
                     ],
                 )
-            self.assertEqual(str(err.exception), exception_msg_bad_order.format('First Name: "TestFirst"'))
+            self.assertEqual(str(err.exception), exception_msg_bad_order.format('First Name: "SuperUserFirst"'))
 
             with self.assertRaises(AssertionError) as err:
                 # Test "first name" string after superuser.
@@ -1587,14 +1583,14 @@ class IntegrationClassTest__Base():
                     [
                         '<h1>User Detail Page Header</h1>',
                         'Username: "test_superuser"',
-                        'Last Name: "TestLast"',
+                        'Last Name: "SuperUserLast"',
                         'Is Active: "True"',
                         'Is SuperUser: "True"',
-                        'First Name: "TestFirst"',
+                        'First Name: "SuperUserFirst"',
                         'Is Staff: "False"',
                     ],
                 )
-            self.assertEqual(str(err.exception), exception_msg_bad_order.format('First Name: "TestFirst"'))
+            self.assertEqual(str(err.exception), exception_msg_bad_order.format('First Name: "SuperUserFirst"'))
 
             with self.assertRaises(AssertionError) as err:
                 # Test "first name" string after staff.
@@ -1603,14 +1599,14 @@ class IntegrationClassTest__Base():
                     [
                         '<h1>User Detail Page Header</h1>',
                         'Username: "test_superuser"',
-                        'Last Name: "TestLast"',
+                        'Last Name: "SuperUserLast"',
                         'Is Active: "True"',
                         'Is SuperUser: "True"',
                         'Is Staff: "False"',
-                        'First Name: "TestFirst"',
+                        'First Name: "SuperUserFirst"',
                     ],
                 )
-            self.assertEqual(str(err.exception), exception_msg_bad_order.format('First Name: "TestFirst"'))
+            self.assertEqual(str(err.exception), exception_msg_bad_order.format('First Name: "SuperUserFirst"'))
 
     def test__assertPageContent__failure__with_bad_search_space(self):
         exception_msg = 'Could not find "{0}" value in content response. Provided value was:\n{1}'
