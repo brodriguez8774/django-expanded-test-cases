@@ -2,6 +2,18 @@ Version History
 ***************
 
 
+0.3.0 - Debug Output Customization
+==================================
+
+* Updates project settings to allow better customization of debug output upon
+  UnitTest failure.
+* Also refactors existing settings to be more consistent and uniform.
+
+  * Some existing settings names have changed.
+
+* Docs now reflect setting options for debug customization.
+
+
 0.3.0 - Default Test User Customization
 =======================================
 
