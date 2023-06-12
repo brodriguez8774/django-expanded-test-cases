@@ -18,79 +18,79 @@ UNDERLINE_RESET = '\u001b[0m'
 
 
 # General output format settings.
-OUTPUT_ERROR = str(getattr(
+ETC_OUTPUT_ERROR = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_OUTPUT_ERROR_HEADER',
     '{0}{1}{2}'.format(Fore.RED, Back.RESET, Style.NORMAL) if COLORAMA_PRESENT else '',
 ))
-OUTPUT_EXPECTED_MATCH = str(getattr(
+ETC_OUTPUT_EXPECTED_MATCH = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_OUTPUT_EXPECTED_MATCH',
     '{0}{1}{2}'.format(Fore.CYAN, Back.RESET, Style.NORMAL) if COLORAMA_PRESENT else '',
 ))
-OUTPUT_EXPECTED_ERROR = str(getattr(
+ETC_OUTPUT_EXPECTED_ERROR = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_OUTPUT_EXPECTED_ERROR',
     '{0}{1}{2}'.format(Fore.BLACK, Back.CYAN, Style.NORMAL) if COLORAMA_PRESENT else '',
 ))
-OUTPUT_ACTUALS_MATCH = str(getattr(
+ETC_OUTPUT_ACTUALS_MATCH = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_OUTPUT_ACTUALS_MATCH',
     '{0}{1}{2}'.format(Fore.MAGENTA, Back.RESET, Style.NORMAL) if COLORAMA_PRESENT else '',
 ))
-OUTPUT_ACTUALS_ERROR = str(getattr(
+ETC_OUTPUT_ACTUALS_ERROR = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_OUTPUT_ACTUALS_ERROR',
     '{0}{1}{2}'.format(Fore.BLACK, Back.MAGENTA, Style.NORMAL) if COLORAMA_PRESENT else '',
 ))
-OUTPUT_EMPHASIS = str(getattr(
+ETC_OUTPUT_EMPHASIS = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_OUTPUT_EMPHASIS',
     (Style.BRIGHT if COLORAMA_PRESENT else '') + UNDERLINE,
 ))
-OUTPUT_RESET = str(getattr(
+ETC_OUTPUT_RESET = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_OUTPUT_RESET',
     Style.RESET_ALL if COLORAMA_PRESENT else UNDERLINE_RESET,
 ))
 
 # Output formatting for response sections.
-RESPONSE_DEBUG_URL = str(getattr(
+ETC_RESPONSE_DEBUG_URL_COLOR = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_RESPONSE_OUTPUT_URL',
     Fore.YELLOW if COLORAMA_PRESENT else '',
 ))
-RESPONSE_DEBUG_CONTENT = str(getattr(
+ETC_RESPONSE_DEBUG_CONTENT_COLOR = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_RESPONSE_OUTPUT_CONTENT',
     Fore.WHITE if COLORAMA_PRESENT else '',
 ))
-RESPONSE_DEBUG_HEADERS = str(getattr(
+ETC_RESPONSE_DEBUG_HEADERS_COLOR = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_RESPONSE_OUTPUT_HEADERS',
     Fore.CYAN if COLORAMA_PRESENT else '',
 ))
-RESPONSE_DEBUG_CONTEXT = str(getattr(
+ETC_RESPONSE_DEBUG_CONTEXT_COLOR = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_RESPONSE_OUTPUT_CONTEXT',
     Fore.BLUE if COLORAMA_PRESENT else '',
 ))
-RESPONSE_DEBUG_SESSION = str(getattr(
+ETC_RESPONSE_DEBUG_SESSION_COLOR = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_RESPONSE_OUTPUT_SESSION',
     Fore.MAGENTA if COLORAMA_PRESENT else '',
 ))
-RESPONSE_DEBUG_MESSAGES = str(getattr(
+ETC_RESPONSE_DEBUG_MESSAGE_COLOR = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_RESPONSE_OUTPUT_MESSAGES',
     Fore.CYAN if COLORAMA_PRESENT else '',
 ))
-RESPONSE_DEBUG_FORMS = str(getattr(
+ETC_RESPONSE_DEBUG_FORM_COLOR = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_RESPONSE_OUTPUT_FORMS',
     Fore.BLUE if COLORAMA_PRESENT else '',
 ))
-RESPONSE_DEBUG_USER_INFO = str(getattr(
+ETC_RESPONSE_DEBUG_USER_INFO_COLOR = str(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_RESPONSE_OUTPUT_USER_INFO',
     Fore.MAGENTA if COLORAMA_PRESENT else '',

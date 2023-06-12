@@ -26,8 +26,8 @@ from django_expanded_test_cases.constants import (
     ETC_ALLOW_MESSAGE_PARTIALS,
     ETC_REQUEST_USER_STRICTNESS,
     ETC_DEFAULT_STANDARD_USER_IDENTIFIER,
-    RESPONSE_DEBUG_URL,
-    OUTPUT_EMPHASIS,
+    ETC_RESPONSE_DEBUG_URL_COLOR,
+    ETC_OUTPUT_EMPHASIS,
     VOID_ELEMENT_LIST,
 )
 from django_expanded_test_cases.mixins import ResponseTestCaseMixin
@@ -898,9 +898,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         self._debug_print('\n\n')
         if ETC_INCLUDE_RESPONSE_DEBUG_URL:
-            self._debug_print('{0}'.format('-' * len(message)), fore=RESPONSE_DEBUG_URL, style=OUTPUT_EMPHASIS)
-            self._debug_print(message, fore=RESPONSE_DEBUG_URL, style=OUTPUT_EMPHASIS)
-            self._debug_print('{0}'.format('-' * len(message)), fore=RESPONSE_DEBUG_URL, style=OUTPUT_EMPHASIS)
+            self._debug_print('{0}'.format('-' * len(message)), fore=ETC_RESPONSE_DEBUG_URL_COLOR, style=ETC_OUTPUT_EMPHASIS)
+            self._debug_print(message, fore=ETC_RESPONSE_DEBUG_URL_COLOR, style=ETC_OUTPUT_EMPHASIS)
+            self._debug_print('{0}'.format('-' * len(message)), fore=ETC_RESPONSE_DEBUG_URL_COLOR, style=ETC_OUTPUT_EMPHASIS)
 
         # Get response object.
         if bool(get):

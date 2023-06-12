@@ -13,15 +13,15 @@ from django.http.response import HttpResponseBase
 # Internal Imports.
 from . import CoreTestCaseMixin
 from django_expanded_test_cases.constants import (
-    OUTPUT_ERROR,
-    RESPONSE_DEBUG_CONTENT,
-    RESPONSE_DEBUG_HEADERS,
-    RESPONSE_DEBUG_CONTEXT,
-    RESPONSE_DEBUG_MESSAGES,
-    RESPONSE_DEBUG_SESSION,
-    RESPONSE_DEBUG_FORMS,
-    RESPONSE_DEBUG_USER_INFO,
-    OUTPUT_EMPHASIS,
+    ETC_OUTPUT_ERROR,
+    ETC_RESPONSE_DEBUG_CONTENT_COLOR,
+    ETC_RESPONSE_DEBUG_HEADERS_COLOR,
+    ETC_RESPONSE_DEBUG_CONTEXT_COLOR,
+    ETC_RESPONSE_DEBUG_MESSAGE_COLOR,
+    ETC_RESPONSE_DEBUG_SESSION_COLOR,
+    ETC_RESPONSE_DEBUG_FORM_COLOR,
+    ETC_RESPONSE_DEBUG_USER_INFO_COLOR,
+    ETC_OUTPUT_EMPHASIS,
 )
 
 
@@ -64,8 +64,8 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         self._debug_print()
         self._debug_print(
             '{0} {1} {0}'.format('=' * 10, 'response.content'),
-            fore=RESPONSE_DEBUG_CONTENT,
-            style=OUTPUT_EMPHASIS,
+            fore=ETC_RESPONSE_DEBUG_CONTENT_COLOR,
+            style=ETC_OUTPUT_EMPHASIS,
         )
 
         # Print out data, if present.
@@ -91,14 +91,14 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         self._debug_print()
         self._debug_print(
             '{0} {1} {0}'.format('=' * 10, 'response.headers'),
-            fore=RESPONSE_DEBUG_HEADERS,
-            style=OUTPUT_EMPHASIS,
+            fore=ETC_RESPONSE_DEBUG_HEADERS_COLOR,
+            style=ETC_OUTPUT_EMPHASIS,
         )
 
         # Print out data, if present.
         if response_headers is not None and len(response_headers) > 0:
             for key, value in response_headers.items():
-                self._debug_print('    * "{0}": "{1}"'.format(key, value), fore=RESPONSE_DEBUG_HEADERS)
+                self._debug_print('    * "{0}": "{1}"'.format(key, value), fore=ETC_RESPONSE_DEBUG_HEADERS_COLOR)
         else:
             self._debug_print('    No response headers found.')
         self._debug_print()
@@ -128,8 +128,8 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         self._debug_print()
         self._debug_print(
             '{0} {1} {0}'.format('=' * 10, 'response.context'),
-            fore=RESPONSE_DEBUG_CONTEXT,
-            style=OUTPUT_EMPHASIS,
+            fore=ETC_RESPONSE_DEBUG_CONTEXT_COLOR,
+            style=ETC_OUTPUT_EMPHASIS,
         )
 
         # NOTE: Response context object is strange, in that it's basically a dictionary,
@@ -141,9 +141,9 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                 # Truncate display if very long.
                 if len(context_value) > 80:
                     context_value = '"{0}"..."{1}"'.format(context_value[:40], context_value[-40:])
-                self._debug_print('    * {0}: {1}'.format(key, context_value), fore=RESPONSE_DEBUG_CONTEXT)
+                self._debug_print('    * {0}: {1}'.format(key, context_value), fore=ETC_RESPONSE_DEBUG_CONTEXT_COLOR)
         else:
-            self._debug_print('    No context data found.', fore=RESPONSE_DEBUG_CONTEXT)
+            self._debug_print('    No context data found.', fore=ETC_RESPONSE_DEBUG_CONTEXT_COLOR)
         self._debug_print()
 
     def show_debug_session_data(self, client):
@@ -156,15 +156,15 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         self._debug_print()
         self._debug_print(
             '{0} {1} {0}'.format('=' * 10, 'client.session'),
-            fore=RESPONSE_DEBUG_SESSION,
-            style=OUTPUT_EMPHASIS,
+            fore=ETC_RESPONSE_DEBUG_SESSION_COLOR,
+            style=ETC_OUTPUT_EMPHASIS,
         )
 
         if client is not None and len(client.session.items()) > 0:
             for key, value in client.session.items():
-                self._debug_print('    * {0}: {1}'.format(key, value), fore=RESPONSE_DEBUG_SESSION)
+                self._debug_print('    * {0}: {1}'.format(key, value), fore=ETC_RESPONSE_DEBUG_SESSION_COLOR)
         else:
-            self._debug_print('    No session data found.', fore=RESPONSE_DEBUG_SESSION)
+            self._debug_print('    No session data found.', fore=ETC_RESPONSE_DEBUG_SESSION_COLOR)
         self._debug_print()
 
     def show_debug_messages(self, response_context):
@@ -177,8 +177,8 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         self._debug_print()
         self._debug_print(
             '{0} {1} {0}'.format('=' * 10, 'response.context["messages"]'),
-            fore=RESPONSE_DEBUG_MESSAGES,
-            style=OUTPUT_EMPHASIS,
+            fore=ETC_RESPONSE_DEBUG_MESSAGE_COLOR,
+            style=ETC_OUTPUT_EMPHASIS,
         )
 
         # Print out data, if present.
@@ -186,11 +186,11 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             messages = response_context['messages']
             if len(messages) > 0:
                 for message in messages:
-                    self._debug_print('    * "{0}"'.format(message), fore=RESPONSE_DEBUG_MESSAGES)
+                    self._debug_print('    * "{0}"'.format(message), fore=ETC_RESPONSE_DEBUG_MESSAGE_COLOR)
             else:
-                self._debug_print('    No context messages found.', fore=RESPONSE_DEBUG_MESSAGES)
+                self._debug_print('    No context messages found.', fore=ETC_RESPONSE_DEBUG_MESSAGE_COLOR)
         else:
-            self._debug_print('    No context messages found.', fore=RESPONSE_DEBUG_MESSAGES)
+            self._debug_print('    No context messages found.', fore=ETC_RESPONSE_DEBUG_MESSAGE_COLOR)
         self._debug_print()
 
     def show_debug_form_data(self, response_context):
@@ -203,8 +203,8 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         self._debug_print()
         self._debug_print(
             '{0} {1} {0}'.format('=' * 10, 'Form Data'),
-            fore=RESPONSE_DEBUG_FORMS,
-            style=OUTPUT_EMPHASIS,
+            fore=ETC_RESPONSE_DEBUG_FORM_COLOR,
+            style=ETC_OUTPUT_EMPHASIS,
         )
 
         # Check if form or formset data is actually present.
@@ -218,31 +218,31 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                 form = response_context['form']
 
                 # Print general form data.
-                self._debug_print('    Provided Form Fields:', fore=RESPONSE_DEBUG_FORMS)
+                self._debug_print('    Provided Form Fields:', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
                 fields_submitted = False
                 for key, value in form.data.items():
-                    self._debug_print('        {0}: {1}'.format(key, value), fore=RESPONSE_DEBUG_FORMS)
+                    self._debug_print('        {0}: {1}'.format(key, value), fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
                     fields_submitted = True
                 if not fields_submitted:
-                    self._debug_print('        No form field data submitted.', fore=RESPONSE_DEBUG_FORMS)
+                    self._debug_print('        No form field data submitted.', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
 
                 # Print form data errors if present.
                 if not form.is_valid():
                     self._debug_print()
                     if len(form.errors) > 0 or len(form.non_field_errors()) > 0:
-                        self._debug_print('    Form Invalid:'.format(not form.is_valid()), fore=RESPONSE_DEBUG_FORMS)
+                        self._debug_print('    Form Invalid:'.format(not form.is_valid()), fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
                         if len(form.non_field_errors()) > 0:
-                            self._debug_print('        Non-field Frrors:', fore=RESPONSE_DEBUG_FORMS)
+                            self._debug_print('        Non-field Frrors:', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
                             for error in form.non_field_errors():
-                                self._debug_print('            {0}'.format(error), fore=RESPONSE_DEBUG_FORMS)
+                                self._debug_print('            {0}'.format(error), fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
 
                         if len(form.errors) > 0:
-                            self._debug_print('        Field Errors:', fore=RESPONSE_DEBUG_FORMS)
+                            self._debug_print('        Field Errors:', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
                             for error in form.errors:
-                                self._debug_print('            {0}'.format(error), fore=RESPONSE_DEBUG_FORMS)
+                                self._debug_print('            {0}'.format(error), fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
 
                 else:
-                    self._debug_print('    Form found and valid.', fore=RESPONSE_DEBUG_FORMS)
+                    self._debug_print('    Form found and valid.', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
 
             # Attempt to get formset data.
             if 'formset' in response_context:
@@ -253,12 +253,12 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                 for form in formset:
                     self._debug_print('Form(set) Errors:')
                     for error in form.non_field_errors():
-                        self._debug_print('    {0}'.format(error), fore=RESPONSE_DEBUG_FORMS)
+                        self._debug_print('    {0}'.format(error), fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
                     for error in form.errors:
-                        self._debug_print('    {0}'.format(error), fore=RESPONSE_DEBUG_FORMS)
+                        self._debug_print('    {0}'.format(error), fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
         else:
             # No identifiable form or formset data present on page.
-            self._debug_print('    No form data found.', fore=RESPONSE_DEBUG_FORMS)
+            self._debug_print('    No form data found.', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
 
         self._debug_print()
 
@@ -271,45 +271,45 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         self._debug_print()
         self._debug_print(
             '{0} {1} {0}'.format('=' * 10, 'User Info'),
-            fore=RESPONSE_DEBUG_USER_INFO,
-            style=OUTPUT_EMPHASIS,
+            fore=ETC_RESPONSE_DEBUG_USER_INFO_COLOR,
+            style=ETC_OUTPUT_EMPHASIS,
         )
 
         # Only proceed if we got a proper user model.
         if isinstance(user, get_user_model()):
 
             # General user information.
-            self._debug_print('    * pk: "{0}"'.format(user.pk), fore=RESPONSE_DEBUG_USER_INFO)
-            self._debug_print('    * Username: "{0}"'.format(user.username), fore=RESPONSE_DEBUG_USER_INFO)
-            self._debug_print('    * First: "{0}"'.format(user.first_name), fore=RESPONSE_DEBUG_USER_INFO)
-            self._debug_print('    * Last: "{0}"'.format(user.last_name), fore=RESPONSE_DEBUG_USER_INFO)
-            self._debug_print('    * Email: "{0}"'.format(user.email), fore=RESPONSE_DEBUG_USER_INFO)
+            self._debug_print('    * pk: "{0}"'.format(user.pk), fore=ETC_RESPONSE_DEBUG_USER_INFO_COLOR)
+            self._debug_print('    * Username: "{0}"'.format(user.username), fore=ETC_RESPONSE_DEBUG_USER_INFO_COLOR)
+            self._debug_print('    * First: "{0}"'.format(user.first_name), fore=ETC_RESPONSE_DEBUG_USER_INFO_COLOR)
+            self._debug_print('    * Last: "{0}"'.format(user.last_name), fore=ETC_RESPONSE_DEBUG_USER_INFO_COLOR)
+            self._debug_print('    * Email: "{0}"'.format(user.email), fore=ETC_RESPONSE_DEBUG_USER_INFO_COLOR)
 
             # User auth data.
             self._debug_print(
                 '    * is_authenticated: {0}'.format(user.is_authenticated),
-                fore=RESPONSE_DEBUG_USER_INFO,
+                fore=ETC_RESPONSE_DEBUG_USER_INFO_COLOR,
             )
 
             # User groups.
-            self._debug_print('    * User Groups: {0}'.format(user.groups.all()), fore=RESPONSE_DEBUG_USER_INFO)
+            self._debug_print('    * User Groups: {0}'.format(user.groups.all()), fore=ETC_RESPONSE_DEBUG_USER_INFO_COLOR)
 
             # User permissions.
             self._debug_print(
                 '    * User Permissions: {0}'.format(user.user_permissions.all()),
-                fore=RESPONSE_DEBUG_USER_INFO,
+                fore=ETC_RESPONSE_DEBUG_USER_INFO_COLOR,
             )
 
         elif isinstance(user, AnonymousUser):
 
-            self._debug_print('    Anonymous user. No user is logged in.', fore=RESPONSE_DEBUG_USER_INFO)
+            self._debug_print('    Anonymous user. No user is logged in.', fore=ETC_RESPONSE_DEBUG_USER_INFO_COLOR)
 
         else:
             self._debug_print('    * Invalid user "{0}" of type "{1}". Expected "{2}".'.format(
                 user,
                 type(user),
                 type(get_user_model()),
-            ), fore=OUTPUT_ERROR)
+            ), fore=ETC_OUTPUT_ERROR)
         self._debug_print()
         self._debug_print()
 

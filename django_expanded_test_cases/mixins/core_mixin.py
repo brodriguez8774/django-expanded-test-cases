@@ -23,12 +23,12 @@ from django_expanded_test_cases.constants import (
     ETC_DEFAULT_INACTIVE_USER_IDENTIFIER,
     ETC_DEFAULT_USER_PASSWORD,
     ETC_GENERATE_USERS_WITH_REAL_NAMES,
-    OUTPUT_ACTUALS_ERROR,
-    OUTPUT_ACTUALS_MATCH,
-    OUTPUT_ERROR,
-    OUTPUT_EXPECTED_ERROR,
-    OUTPUT_EXPECTED_MATCH,
-    OUTPUT_RESET,
+    ETC_OUTPUT_ACTUALS_ERROR,
+    ETC_OUTPUT_ACTUALS_MATCH,
+    ETC_OUTPUT_ERROR,
+    ETC_OUTPUT_EXPECTED_ERROR,
+    ETC_OUTPUT_EXPECTED_MATCH,
+    ETC_OUTPUT_RESET,
 )
 
 
@@ -43,7 +43,7 @@ def wrapper(method):
         except AssertionError as err:
             if ETC_DEBUG_PRINT:
                 print('\n')
-                print('{0}{1}{2}'.format(OUTPUT_ERROR, err, OUTPUT_RESET))
+                print('{0}{1}{2}'.format(ETC_OUTPUT_ERROR, err, ETC_OUTPUT_RESET))
                 print('')
             raise err
     return wrapped
@@ -259,7 +259,7 @@ class CoreTestCaseMixin:
             print(back, end='')
             print(style, end='')
             print(*args, **kwargs, end='')
-            print(OUTPUT_RESET)
+            print(ETC_OUTPUT_RESET)
 
     # region Custom Assertions
 
@@ -322,22 +322,22 @@ class CoreTestCaseMixin:
 
                 if curr_expected_line == curr_actual_line:
                     # Line is full match and correct.
-                    curr_expected_line = '{0}{1}{2}\n'.format(OUTPUT_EXPECTED_MATCH, curr_expected_line, OUTPUT_RESET)
-                    curr_actual_line = '{0}{1}{2}\n'.format(OUTPUT_ACTUALS_MATCH, curr_actual_line, OUTPUT_RESET)
+                    curr_expected_line = '{0}{1}{2}\n'.format(ETC_OUTPUT_EXPECTED_MATCH, curr_expected_line, ETC_OUTPUT_RESET)
+                    curr_actual_line = '{0}{1}{2}\n'.format(ETC_OUTPUT_ACTUALS_MATCH, curr_actual_line, ETC_OUTPUT_RESET)
                 elif curr_expected_line is None:
                     # "Actual" output is longer than "expected" output. Impossible to match current line.
                     curr_expected_line = ''
                     curr_actual_line = '{0}{1}{2}\n'.format(
-                        OUTPUT_ACTUALS_ERROR,
+                        ETC_OUTPUT_ACTUALS_ERROR,
                         curr_actual_line,
-                        OUTPUT_RESET,
+                        ETC_OUTPUT_RESET,
                     )
                 elif curr_actual_line is None:
                     # "Expected" output is longer than "actual" output. Impossible to match current line.
                     curr_expected_line = '{0}{1}{2}\n'.format(
-                        OUTPUT_EXPECTED_ERROR,
+                        ETC_OUTPUT_EXPECTED_ERROR,
                         curr_expected_line,
-                        OUTPUT_RESET,
+                        ETC_OUTPUT_RESET,
                     )
                     curr_actual_line = ''
                 else:
@@ -349,8 +349,8 @@ class CoreTestCaseMixin:
                         max_chars = len(curr_expected_line)
 
                     # Check each character and determine where non-match happens.
-                    curr_expected_color = OUTPUT_RESET
-                    curr_actual_color = OUTPUT_RESET
+                    curr_expected_color = ETC_OUTPUT_RESET
+                    curr_actual_color = ETC_OUTPUT_RESET
                     curr_expected_char_line = ''
                     curr_actual_char_line = ''
                     for char_index in range(max_chars):
@@ -367,19 +367,19 @@ class CoreTestCaseMixin:
                         # Format based on match.
                         if expected_char == actual_char:
                             # Match.
-                            if curr_expected_color != OUTPUT_EXPECTED_MATCH:
-                                curr_expected_color = OUTPUT_EXPECTED_MATCH
+                            if curr_expected_color != ETC_OUTPUT_EXPECTED_MATCH:
+                                curr_expected_color = ETC_OUTPUT_EXPECTED_MATCH
                                 curr_expected_char_line += curr_expected_color
-                            if curr_actual_color != OUTPUT_ACTUALS_MATCH:
-                                curr_actual_color = OUTPUT_ACTUALS_MATCH
+                            if curr_actual_color != ETC_OUTPUT_ACTUALS_MATCH:
+                                curr_actual_color = ETC_OUTPUT_ACTUALS_MATCH
                                 curr_actual_char_line += curr_actual_color
                         else:
                             # Non-match.
-                            if curr_expected_color != OUTPUT_EXPECTED_ERROR:
-                                curr_expected_color = OUTPUT_EXPECTED_ERROR
+                            if curr_expected_color != ETC_OUTPUT_EXPECTED_ERROR:
+                                curr_expected_color = ETC_OUTPUT_EXPECTED_ERROR
                                 curr_expected_char_line += curr_expected_color
-                            if curr_actual_color != OUTPUT_ACTUALS_ERROR:
-                                curr_actual_color = OUTPUT_ACTUALS_ERROR
+                            if curr_actual_color != ETC_OUTPUT_ACTUALS_ERROR:
+                                curr_actual_color = ETC_OUTPUT_ACTUALS_ERROR
                                 curr_actual_char_line += curr_actual_color
 
                         curr_expected_char_line += '{0}'.format(expected_char)
@@ -398,11 +398,11 @@ class CoreTestCaseMixin:
             # Finally print actual debug output.
             self._debug_print('')
             self._debug_print('')
-            self._debug_print('EXPECTED:', fore=OUTPUT_EXPECTED_MATCH)
+            self._debug_print('EXPECTED:', fore=ETC_OUTPUT_EXPECTED_MATCH)
             self._debug_print(formatted_expected_output)
             self._debug_print('')
             self._debug_print('')
-            self._debug_print('ACTUAL:', fore=OUTPUT_ACTUALS_MATCH)
+            self._debug_print('ACTUAL:', fore=ETC_OUTPUT_ACTUALS_MATCH)
             self._debug_print(formatted_actual_output)
             self._debug_print('')
             self._debug_print('')
