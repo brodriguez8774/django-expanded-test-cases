@@ -1229,6 +1229,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         self,
         user,
         *args,
+        auto_login=True,
         user_permissions=None, user_groups=None,
         **kwargs,
     ):

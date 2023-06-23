@@ -5215,6 +5215,56 @@ class IntegrationClassTest__Base(IntegrationTestCase):
     # endregion Helper Function Tests
 
 
+class IntegrationClassTest__WithExtraAuthUpdate(IntegrationClassTest__Base):
+
+    def _get_login_user__extra_user_auth_setup(self, *args, **kwargs):
+        """Modified extra_user_auth_setup function, to mimic actually setting additional logic for user auth."""
+
+        # Add some arbitrary session data.
+        # Being able to save session data is sometimes required for user auth setup,
+        # such as certain 2-factor implementations.
+        session = self.client.session
+        session['etc_testing_session_variable_1'] = True
+        session.save()
+        session['etc_testing_session_variable_2'] = False
+        session.save()
+        session['etc_testing_session_variable_3'] = 'Some Value'
+        session.save()
+
+        # Call parent logic.
+        user = super()._get_login_user__extra_user_auth_setup(*args, **kwargs)
+
+        # Add more arbitrary data.
+        # Ensures we can persist session data both before and after calling parent function logic.
+        session = self.client.session
+        session['etc_testing_session_variable_4'] = True
+        session.save()
+        session['etc_testing_session_variable_5'] = False
+        session.save()
+        session['etc_testing_session_variable_6'] = 'Some Value'
+        session.save()
+
+        # Return original user value.
+        return user
+
+    def test__can_set_session_data_in__extra_user_auth_setup(self):
+        """Verify that we can access our extra session data, set as part of the extra_user_auth function."""
+
+        # Get arbitrary response that has gone through user authentication logic.
+        response = self.assertGetResponse('django_expanded_test_cases:index', user='test_user')
+
+        # Grab session object from response.
+        session = response.client.session
+
+        # Verify expected session data is present.
+        self.assertTrue(session.get('etc_testing_session_variable_1', None))
+        self.assertFalse(session.get('etc_testing_session_variable_2', None))
+        self.assertText('Some Value', session.get('etc_testing_session_variable_3', None))
+        self.assertTrue(session.get('etc_testing_session_variable_4', None))
+        self.assertFalse(session.get('etc_testing_session_variable_5', None))
+        self.assertText('Some Value', session.get('etc_testing_session_variable_6', None))
+
+
 class IntegrationClassTest__StrictnessOfAnonymous(IntegrationTestCase):
     """Tests for IntegrationTestCase class, specifically with user strictness set to "anonymous"."""
 
