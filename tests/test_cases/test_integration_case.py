@@ -56,20 +56,28 @@ class IntegrationClassTest__Base(IntegrationTestCase):
             self.assertEqual(response.url, '127.0.0.1/login/')
 
             # Test "one message" page url.
-            response = self.assertResponse('one-message/')
-            self.assertEqual(response.url, '127.0.0.1/one-message/')
-            response = self.assertResponse('/one-message/')
-            self.assertEqual(response.url, '127.0.0.1/one-message/')
-            response = self.assertResponse('127.0.0.1/one-message/')
-            self.assertEqual(response.url, '127.0.0.1/one-message/')
+            response = self.assertResponse('views/one-message/')
+            self.assertEqual(response.url, '127.0.0.1/views/one-message/')
+            response = self.assertResponse('/views/one-message/')
+            self.assertEqual(response.url, '127.0.0.1/views/one-message/')
+            response = self.assertResponse('127.0.0.1/views/one-message/')
+            self.assertEqual(response.url, '127.0.0.1/views/one-message/')
 
             # Test "two messages" page url.
-            response = self.assertResponse('two-messages/')
-            self.assertEqual(response.url, '127.0.0.1/two-messages/')
-            response = self.assertResponse('/two-messages/')
-            self.assertEqual(response.url, '127.0.0.1/two-messages/')
-            response = self.assertResponse('127.0.0.1/two-messages/')
-            self.assertEqual(response.url, '127.0.0.1/two-messages/')
+            response = self.assertResponse('views/two-messages/')
+            self.assertEqual(response.url, '127.0.0.1/views/two-messages/')
+            response = self.assertResponse('/views/two-messages/')
+            self.assertEqual(response.url, '127.0.0.1/views/two-messages/')
+            response = self.assertResponse('127.0.0.1/views/two-messages/')
+            self.assertEqual(response.url, '127.0.0.1/views/two-messages/')
+
+            # Test "three messages" page url.
+            response = self.assertResponse('views/three-messages/')
+            self.assertEqual(response.url, '127.0.0.1/views/three-messages/')
+            response = self.assertResponse('/views/three-messages/')
+            self.assertEqual(response.url, '127.0.0.1/views/three-messages/')
+            response = self.assertResponse('127.0.0.1/views/three-messages/')
+            self.assertEqual(response.url, '127.0.0.1/views/three-messages/')
 
             # Test "user detail" page url via args.
             response = self.assertResponse('user/detail/1/')
@@ -97,12 +105,16 @@ class IntegrationClassTest__Base(IntegrationTestCase):
             self.assertEqual(response.url, '127.0.0.1/login/')
 
             # Test "one message" page url.
-            response = self.assertResponse('django_expanded_test_cases:one-message')
-            self.assertEqual(response.url, '127.0.0.1/one-message/')
+            response = self.assertResponse('django_expanded_test_cases:response-with-one-message')
+            self.assertEqual(response.url, '127.0.0.1/views/one-message/')
 
             # Test "two messages" page url.
-            response = self.assertResponse('django_expanded_test_cases:two-messages')
-            self.assertEqual(response.url, '127.0.0.1/two-messages/')
+            response = self.assertResponse('django_expanded_test_cases:response-with-two-messages')
+            self.assertEqual(response.url, '127.0.0.1/views/two-messages/')
+
+            # Test "three messages" page url.
+            response = self.assertResponse('django_expanded_test_cases:response-with-three-messages')
+            self.assertEqual(response.url, '127.0.0.1/views/three-messages/')
 
             # Test "user detail" page url via args.
             response = self.assertResponse('django_expanded_test_cases:user-detail', args=(1,))
@@ -124,12 +136,16 @@ class IntegrationClassTest__Base(IntegrationTestCase):
             self.assertEqual(response.url, 'https://my_really_cool_site.com/login/')
 
             # Test "one message" page url.
-            response = self.assertResponse('django_expanded_test_cases:one-message')
-            self.assertEqual(response.url, 'https://my_really_cool_site.com/one-message/')
+            response = self.assertResponse('django_expanded_test_cases:response-with-one-message')
+            self.assertEqual(response.url, 'https://my_really_cool_site.com/views/one-message/')
 
             # Test "two messages" page url.
-            response = self.assertResponse('django_expanded_test_cases:two-messages')
-            self.assertEqual(response.url, 'https://my_really_cool_site.com/two-messages/')
+            response = self.assertResponse('django_expanded_test_cases:response-with-two-messages')
+            self.assertEqual(response.url, 'https://my_really_cool_site.com/views/two-messages/')
+
+            # Test "three messages" page url.
+            response = self.assertResponse('django_expanded_test_cases:response-with-three-messages')
+            self.assertEqual(response.url, 'https://my_really_cool_site.com/views/three-messages/')
 
             # Test "user detail" page url via args.
             response = self.assertResponse('django_expanded_test_cases:user-detail', args=(1,))
@@ -290,24 +306,24 @@ class IntegrationClassTest__Base(IntegrationTestCase):
             self.assertEqual(str(err.exception), exception_msg.format('Wrong message.', 'is'))
 
         with self.subTest('Multiple messages on page - match'):
-            self.assertResponse('django_expanded_test_cases:three-messages', expected_messages='Test info message.')
-            self.assertResponse('django_expanded_test_cases:three-messages', expected_messages=['Test warning message.'])
+            self.assertResponse('django_expanded_test_cases:response-with-three-messages', expected_messages='Test info message.')
+            self.assertResponse('django_expanded_test_cases:response-with-three-messages', expected_messages=['Test warning message.'])
             self.assertResponse(
-                'django_expanded_test_cases:three-messages',
+                'django_expanded_test_cases:response-with-three-messages',
                 expected_messages=['Test info message.', 'Test warning message.'],
             )
             self.assertResponse(
-                'django_expanded_test_cases:three-messages',
+                'django_expanded_test_cases:response-with-three-messages',
                 expected_messages=['Test info message.', 'Test warning message.', 'Test error message.'],
             )
 
         with self.subTest('Multiple messages on page - mismatch'):
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('django_expanded_test_cases:three-messages', expected_messages='Wrong message.')
+                self.assertResponse('django_expanded_test_cases:response-with-three-messages', expected_messages='Wrong message.')
             self.assertEqual(str(err.exception), exception_msg.format('Wrong message.', 'is'))
             with self.assertRaises(AssertionError) as err:
                 self.assertResponse(
-                    'django_expanded_test_cases:three-messages',
+                    'django_expanded_test_cases:response-with-three-messages',
                     expected_messages=['Test info message.', 'Wrong message.'],
                 )
             self.assertEqual(str(err.exception), exception_msg.format('Wrong message.', 'is'))
@@ -985,13 +1001,13 @@ class IntegrationClassTest__Base(IntegrationTestCase):
         We assume a majority of testing will occur in the "disallow_partials" set.
         """
         with self.subTest('Check for single message partial, single message exists'):
-            response = self._get_page_response('django_expanded_test_cases:one-message')
+            response = self._get_page_response('django_expanded_test_cases:response-with-one-message')
             self.assertContextMessages(response, 'This is a test message.')
             self.assertContextMessages(response, 'is a test message')
             self.assertContextMessages(response, 'test')
 
         with self.subTest('Check for three message partials, three messages exists'):
-            response = self._get_page_response('django_expanded_test_cases:three-messages')
+            response = self._get_page_response('django_expanded_test_cases:response-with-three-messages')
             self.assertContextMessages(response, ['info', 'warning message', 'Test error'])
 
     @patch('django_expanded_test_cases.test_cases.integration_test_case.ETC_ALLOW_MESSAGE_PARTIALS', False)
@@ -1002,32 +1018,32 @@ class IntegrationClassTest__Base(IntegrationTestCase):
         The majority of tests for this function exist here.
         """
         with self.subTest('Check for single message, single message exists'):
-            response = self._get_page_response('django_expanded_test_cases:one-message')
+            response = self._get_page_response('django_expanded_test_cases:response-with-one-message')
             self.assertContextMessages(response, 'This is a test message.')
 
         with self.subTest('Check for single message, two messages exists'):
-            response = self._get_page_response('django_expanded_test_cases:two-messages')
+            response = self._get_page_response('django_expanded_test_cases:response-with-two-messages')
             self.assertContextMessages(response, 'Test message #1.')
             self.assertContextMessages(response, 'Test message #2.')
 
         with self.subTest('Check for single message, three messages exists'):
-            response = self._get_page_response('django_expanded_test_cases:three-messages')
+            response = self._get_page_response('django_expanded_test_cases:response-with-three-messages')
             self.assertContextMessages(response, 'Test info message.')
             self.assertContextMessages(response, 'Test warning message.')
             self.assertContextMessages(response, 'Test error message.')
 
         with self.subTest('Check for two messages, two messages exists'):
-            response = self._get_page_response('django_expanded_test_cases:two-messages')
+            response = self._get_page_response('django_expanded_test_cases:response-with-two-messages')
             self.assertContextMessages(response, ['Test message #1.', 'Test message #2.'])
 
         with self.subTest('Check for two messages, three messages exists'):
-            response = self._get_page_response('django_expanded_test_cases:three-messages')
+            response = self._get_page_response('django_expanded_test_cases:response-with-three-messages')
             self.assertContextMessages(response, ['Test info message.', 'Test warning message.'])
             self.assertContextMessages(response, ['Test info message.', 'Test error message.'])
             self.assertContextMessages(response, ['Test warning message.', 'Test error message.'])
 
         with self.subTest('Check for three messages, three messages exists'):
-            response = self._get_page_response('django_expanded_test_cases:three-messages')
+            response = self._get_page_response('django_expanded_test_cases:response-with-three-messages')
             self.assertContextMessages(response, ['Test info message.', 'Test warning message.', 'Test error message.'])
 
     @patch('django_expanded_test_cases.test_cases.integration_test_case.ETC_ALLOW_MESSAGE_PARTIALS', False)
@@ -1045,12 +1061,12 @@ class IntegrationClassTest__Base(IntegrationTestCase):
 
         with self.subTest('Checking for single message, one exists but doesn\'t match'):
             with self.assertRaises(AssertionError) as err:
-                response = self._get_page_response('django_expanded_test_cases:one-message')
+                response = self._get_page_response('django_expanded_test_cases:response-with-one-message')
                 self.assertContextMessages(response, 'Testing!')
             self.assertEqual(str(err.exception), exception_msg.format('Testing!', 'is NOT'))
 
         with self.subTest('Checking for single message, but it\'s only a partial match'):
-            response = self._get_page_response('django_expanded_test_cases:one-message')
+            response = self._get_page_response('django_expanded_test_cases:response-with-one-message')
             with self.assertRaises(AssertionError) as err:
                 self.assertContextMessages(response, 'This is a test message')
             self.assertEqual(str(err.exception), exception_msg.format('This is a test message', 'is NOT'))
@@ -1063,7 +1079,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
 
         with self.subTest('Checking for single message, multiple exist but don\'t match'):
             with self.assertRaises(AssertionError) as err:
-                response = self._get_page_response('django_expanded_test_cases:three-messages')
+                response = self._get_page_response('django_expanded_test_cases:response-with-three-messages')
                 self.assertContextMessages(response, 'Testing!')
             self.assertEqual(str(err.exception), exception_msg.format('Testing!', 'is NOT'))
 
@@ -1075,12 +1091,12 @@ class IntegrationClassTest__Base(IntegrationTestCase):
 
         with self.subTest('Checking for two messages, but only one exists'):
             with self.assertRaises(AssertionError) as err:
-                response = self._get_page_response('django_expanded_test_cases:one-message')
+                response = self._get_page_response('django_expanded_test_cases:response-with-one-message')
                 self.assertContextMessages(response, ['This is a test message.', 'Another message.'])
             self.assertEqual(str(err.exception), exception_msg.format('Another message.', 'is NOT'))
 
         with self.subTest('Checking for two messages, multiple exist but one doesn\'t match'):
-            response = self._get_page_response('django_expanded_test_cases:three-messages')
+            response = self._get_page_response('django_expanded_test_cases:response-with-three-messages')
             with self.assertRaises(AssertionError) as err:
                 self.assertContextMessages(response, ['Test info message.', 'Another message.'])
             self.assertEqual(str(err.exception), exception_msg.format('Another message.', 'is NOT'))
@@ -1090,7 +1106,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
 
         with self.subTest('Checking for two messages, multiple exist but none match'):
             with self.assertRaises(AssertionError) as err:
-                response = self._get_page_response('django_expanded_test_cases:three-messages')
+                response = self._get_page_response('django_expanded_test_cases:response-with-three-messages')
                 self.assertContextMessages(response, ['Testing!', 'Testing again!'])
             self.assertEqual(str(err.exception), exception_msg.format('Testing!', 'is NOT'))
 
@@ -1148,7 +1164,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
             self.assertPageContent(response, '<h1>Home Page Header</h1><p>Pretend this is the project landing page.</p>')
 
         with self.subTest('Standard Response - One Message Page'):
-            response = self._get_page_response('django_expanded_test_cases:one-message')
+            response = self._get_page_response('django_expanded_test_cases:response-with-one-message')
             self.assertPageContent(
                 response,
                 (
@@ -3199,20 +3215,20 @@ class IntegrationClassTest__Base(IntegrationTestCase):
             self.assertEqual(len(messages), 0)
 
         with self.subTest('Single message'):
-            response = self._get_page_response('django_expanded_test_cases:one-message')
+            response = self._get_page_response('django_expanded_test_cases:response-with-one-message')
             messages = self.get_context_messages(response)
             self.assertEqual(len(messages), 1)
             self.assertIn('This is a test message.', messages)
 
         with self.subTest('Two messages'):
-            response = self._get_page_response('django_expanded_test_cases:two-messages')
+            response = self._get_page_response('django_expanded_test_cases:response-with-two-messages')
             messages = self.get_context_messages(response)
             self.assertEqual(len(messages), 2)
             self.assertIn('Test message #1.', messages)
             self.assertIn('Test message #2.', messages)
 
         with self.subTest('Three messages'):
-            response = self._get_page_response('django_expanded_test_cases:three-messages')
+            response = self._get_page_response('django_expanded_test_cases:response-with-three-messages')
             messages = self.get_context_messages(response)
             self.assertEqual(len(messages), 3)
             self.assertIn('Test info message.', messages)
@@ -3296,7 +3312,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
             )
 
         with self.subTest('Standard Response - One Message Page'):
-            response = self._get_page_response('django_expanded_test_cases:one-message')
+            response = self._get_page_response('django_expanded_test_cases:response-with-one-message')
             response = self.get_minimized_response_content(response, strip_newlines=True)
             self.assertEqual(
                 response,
@@ -3374,7 +3390,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
             )
 
         with self.subTest('Standard Response - One Message Page'):
-            response = self._get_page_response('django_expanded_test_cases:one-message')
+            response = self._get_page_response('django_expanded_test_cases:response-with-one-message')
             response = self.get_minimized_response_content(response, strip_newlines=False)
             self.assertEqual(
                 response,

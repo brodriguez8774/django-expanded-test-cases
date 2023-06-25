@@ -6,12 +6,13 @@ Testing views for django-expanded-test-cases project.
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.template.response import TemplateResponse
 
 
 def index(request):
     """Page that simulates a site index/home."""
+
     # Render response.
     return render(request, 'django_expanded_test_cases/index.html', {
         'header': 'Home Page',
@@ -21,6 +22,7 @@ def index(request):
 
 def template_response_index(request):
     """Page that simulates a site index/home. Specifically served as TemplateResponse."""
+
     # Render response.
     return TemplateResponse(request, 'django_expanded_test_cases/index.html', {
         'header': 'Home Page',
@@ -30,6 +32,7 @@ def template_response_index(request):
 
 def login(request):
     """Page that simulates a login page."""
+
     # Render response.
     return render(request, 'django_expanded_test_cases/index.html', {
         'header': 'Login Page',
@@ -39,6 +42,8 @@ def login(request):
 
 def view_with_one_message(request):
     """Page that simulates a view with a single message."""
+
+    # Generate response messages.
     messages.info(request, 'This is a test message.')
 
     # Render response.
@@ -52,6 +57,8 @@ def view_with_one_message(request):
 
 def view_with_two_messages(request):
     """Page that simulates a view with two messages."""
+
+    # Generate response messages.
     messages.info(request, 'Test message #1.')
     messages.warning(request, 'Test message #2.')
 
@@ -66,6 +73,8 @@ def view_with_two_messages(request):
 
 def view_with_three_messages(request):
     """Page that simulates a view with three messages."""
+
+    # Generate response messages.
     messages.info(request, 'Test info message.')
     messages.warning(request, 'Test warning message.')
     messages.error(request, 'Test error message.')
@@ -79,23 +88,58 @@ def view_with_three_messages(request):
     })
 
 
+def view_with_args(request, id, name):
+    """Page that simulates a view with passed args."""
+
+    # Render response.
+    return render(request, 'django_expanded_test_cases/index.html', {
+        'header': 'View with Args',
+        'text': (
+            'Pretend useful stuff is displayed here, for render() view with url args.'
+        ),
+        'li_set': (
+            'id: "{0}"'.format(id),
+            'name: "{0}"'.format(name),
+        ),
+    })
+
+
 def template_response_with_three_messages(request):
     """Page that simulates a view with three messages. Specifically served as TemplateResponse."""
+
+    # Generate response messages.
     messages.info(request, 'Test info message.')
     messages.warning(request, 'Test warning message.')
     messages.error(request, 'Test error message.')
 
     # Render response.
     return TemplateResponse(request, 'django_expanded_test_cases/index.html', {
-        'header': 'View with Three Messages',
+        'header': 'TemplateResponse View with Three Messages',
         'text': (
             'Pretend useful stuff is displayed here, for three-message TemplateResponse view.'
         )
     })
 
 
+def template_response_with_args(request, id, name):
+    """Page that simulates a view with passed args. Specifically served as a TemplateResponse."""
+
+    # Render response.
+    return TemplateResponse(request, 'django_expanded_test_cases/index.html', {
+        'header': 'TemplateResponse View with Args',
+        'text': (
+            'Pretend useful stuff is displayed here, for TemplateResponse view with url args.'
+        ),
+        'li_set': (
+            'id: "{0}"'.format(id),
+            'name: "{0}"'.format(name),
+        ),
+    })
+
+
 def user_detail(request, pk):
     """Page that simulates a model detail page."""
+
     # Pull database info.
     user = get_object_or_404(get_user_model(), pk=pk)
 
@@ -116,4 +160,16 @@ def user_detail(request, pk):
 
 def redirect_to_index(request):
     """Page that simulates a redirect."""
+
+    # Redirect to intended view.
     return redirect('django_expanded_test_cases:index')
+
+
+def redirect_with_args(request, id, name):
+    """Page that simulates a redirect, with included url args."""
+
+    # Redirect to intended view.
+    return redirect(reverse(
+        'django_expanded_test_cases:template-response-with-args',
+        args=(id, name),
+    ))
