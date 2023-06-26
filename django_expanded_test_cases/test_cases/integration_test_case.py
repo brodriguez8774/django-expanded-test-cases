@@ -158,12 +158,12 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             **kwargs,
         )
 
+        # Verify page status code.
+        self.assertStatusCode(response, expected_status)
+
         # Verify page redirect.
         if expected_redirect_url is not None:
             self.assertRedirects(response, expected_redirect_url)
-
-        # Verify page status code.
-        self.assertStatusCode(response, expected_status)
 
         # Verify page title.
         if expected_title is not None:
