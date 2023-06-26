@@ -12,6 +12,7 @@ from django.contrib.auth.models import AnonymousUser, Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
+from django.urls import reverse
 
 # Internal Imports.
 from django_expanded_test_cases import IntegrationTestCase
@@ -199,6 +200,185 @@ class IntegrationClassTest__Base(IntegrationTestCase):
             with self.assertRaises(AssertionError) as err:
                 self.assertResponse('django_expanded_test_cases:login', expected_redirect_url='django_expanded_test_cases:index')
             self.assertEqual(str(err.exception), exception_msg)
+
+    def test__assertResponse__url_redirect__with_args(self):
+        """
+        Tests "url_redirect" functionality of assertResponse() function,
+        when accessing a view via url args.
+        """
+
+        with self.subTest('Provide args via standard url reverse args'):
+            self.assertResponse(
+
+                # Standard url reverse, as the passed url.
+                reverse(
+                    'django_expanded_test_cases:redirect-with-args',
+                    args=(1, 'As standard url reverse() args'),
+                ),
+
+                # Url we expect to end up at.
+                expected_redirect_url=reverse(
+                    'django_expanded_test_cases:template-response-with-args',
+                    args=(1, 'As standard url reverse() args'),
+                ),
+
+                # Expected content on final page.
+                expected_content=[
+                    'id: "1"',
+                    'name: "As standard url reverse() args"',
+                ],
+            )
+
+        with self.subTest('Provide args via standard url reverse kwargs'):
+            self.assertResponse(
+
+                # Standard url reverse, as the passed url.
+                reverse(
+                    'django_expanded_test_cases:redirect-with-args',
+                    kwargs={'id': 2, 'name': 'As standard url reverse() kwargs'},
+                ),
+
+                # Url we expect to end up at.
+                expected_redirect_url=reverse(
+                    'django_expanded_test_cases:template-response-with-args',
+                    args=(2, 'As standard url reverse() kwargs'),
+                ),
+
+                # Expected content on final page.
+                expected_content=[
+                    'id: "2"',
+                    'name: "As standard url reverse() kwargs"',
+                ],
+            )
+
+        with self.subTest('Provide args via individually passed args'):
+            self.assertResponse(
+
+                # Desired url, as standard reverse string.
+                'django_expanded_test_cases:redirect-with-args',
+
+                # Individual args to use for url.
+                3,
+                'As passed args',
+
+                # Url we expect to end up at.
+                expected_redirect_url=reverse(
+                    'django_expanded_test_cases:template-response-with-args',
+                    args=(3, 'As passed args'),
+                ),
+
+                # Expected content on final page.
+                expected_content=[
+                    'id: "3"',
+                    'name: "As passed args"',
+                ],
+            )
+
+        with self.subTest('Provide args via "url_args" keyword'):
+            self.assertResponse(
+                # Desired url, as standard reverse string.
+                'django_expanded_test_cases:redirect-with-args',
+
+                # Url we expect to end up at.
+                expected_redirect_url=reverse(
+                    'django_expanded_test_cases:template-response-with-args',
+                    args=(4, 'As url_args'),
+                ),
+
+                # Args for url.
+                url_args=[4, 'As url_args'],
+
+                # Expected content on final page.
+                expected_content=[
+                    'id: "4"',
+                    'name: "As url_args"',
+                ],
+            )
+
+        with self.subTest('Provide args via "redirect_args" keyword'):
+            self.assertResponse(
+                # Desired url, as standard reverse string.
+                'django_expanded_test_cases:redirect-with-args',
+
+                # Url we expect to end up at.
+                expected_redirect_url=reverse(
+                    'django_expanded_test_cases:template-response-with-args',
+                    args=(5, 'As redirect_args'),
+                ),
+
+                # Args for url.
+                redirect_args=[5, 'As redirect_args'],
+
+                # Expected content on final page.
+                expected_content=[
+                    'id: "5"',
+                    'name: "As redirect_args"',
+                ],
+            )
+
+        with self.subTest('Provide args via individually passed kwargs'):
+            self.assertResponse(
+                # Desired url, as standard reverse string.
+                'django_expanded_test_cases:redirect-with-args',
+
+                # Url we expect to end up at.
+                expected_redirect_url=reverse(
+                    'django_expanded_test_cases:template-response-with-args',
+                    args=(6, 'As individually passed kwargs'),
+                ),
+
+                # Individual args to use for url.
+                id=6,
+                name='As individually passed kwargs',
+
+                # Expected content on final page.
+                expected_content=[
+                    'id: "6"',
+                    'name: "As individually passed kwargs"',
+                ],
+            )
+
+        with self.subTest('Provide args via "url_kwargs" keyword'):
+            self.assertResponse(
+                # Desired url, as standard reverse string.
+                'django_expanded_test_cases:redirect-with-args',
+
+                # Url we expect to end up at.
+                expected_redirect_url=reverse(
+                    'django_expanded_test_cases:template-response-with-args',
+                    args=(7, 'As url_kwargs'),
+                ),
+
+                # Args for url.
+                url_args=[7, 'As url_kwargs'],
+
+                # Expected content on final page.
+                expected_content=[
+                    'id: "7"',
+                    'name: "As url_kwargs"',
+                ],
+            )
+
+        with self.subTest('Provide args via "redirect_kwargs" keyword'):
+            self.assertResponse(
+                # Desired url, as standard reverse string.
+                'django_expanded_test_cases:redirect-with-args',
+
+                # Url we expect to end up at.
+                expected_redirect_url=reverse(
+                    'django_expanded_test_cases:template-response-with-args',
+                    args=(8, 'As redirect_kwargs'),
+                ),
+
+                # Args for url.
+                url_args=[8, 'As redirect_kwargs'],
+
+                # Expected content on final page.
+                expected_content=[
+                    'id: "8"',
+                    'name: "As redirect_kwargs"',
+                ],
+            )
 
     def test__assertResponse__status_code(self):
         """

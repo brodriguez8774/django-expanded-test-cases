@@ -79,10 +79,14 @@ of ``status_code``, which will assume a default of ``200`` if not provided.
            request. True means GET.
 :param data: Dictionary of values to pass for request generation, if method is
             POST.
-:param expected_redirect_url: Expected url that response should end at, after
-                             any redirections have completed.
 :param expected_status: Expected status code the response should have, after all
                        redirections have completed.
+:param expected_redirect_url: Expected url that response should end at, after
+                             any redirections have completed.
+:param url_args: Values to provide for URL population, in "arg" format.
+:param url_kwargs: Values to provide for URL population, in "kwarg" format.
+:param redirect_args: Values to provide for URL population, in "arg" format.
+:param redirect_kwargs: Values to provide for URL population, in "kwarg" format.
 :param expected_title: Expected title (``<title>`` tag) the response should
                       include.
 :param expected_header: Expected page header (``<h1>`` tag) response should

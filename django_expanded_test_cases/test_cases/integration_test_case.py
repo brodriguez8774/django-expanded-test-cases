@@ -54,7 +54,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         self,
         url, *args,
         get=True, data=None,
-        expected_redirect_url=None, expected_status=200,
+        expected_status=200,
+        expected_redirect_url=None,
+        url_args=None, url_kwargs=None, redirect_args=None, redirect_kwargs=None,
         expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
         auto_login=True, user=None, user_permissions=None, user_groups=None,
         ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
@@ -73,6 +75,10 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param get: Bool indicating if response is GET or POST. Defaults to GET.
         :param data: Optional dict of items to pass into response generation.
         :param expected_redirect_url: Expected url, after any redirections.
+        :param url_args: Values to provide for URL population, in "arg" format.
+        :param url_kwargs: Values to provide for URL population, in "kwarg" format.
+        :param redirect_args: Values to provide for URL population, in "arg" format.
+        :param redirect_kwargs: Values to provide for URL population, in "kwarg" format.
         :param expected_status: Expected status code, after any redirections. Default code of 200.
         :param expected_title: Expected page title to verify. Skips title test if left as None.
         :param expected_header: Expected page h1 to verify. Skips header test if left as None.
@@ -88,8 +94,18 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param content_ends_before: The HTML that expected_content should occur before. This HTML and everything
                                     following is stripped out of the "search space" for the expected_content value.
         """
+
         # Django imports here to avoid situational "Apps aren't loaded yet" error.
         from django.contrib.auth.models import AnonymousUser
+
+        # Handle mutable data defaults.
+        data = data or {}
+        url_args = url_args or ()
+        url_kwargs = url_kwargs or {}
+        redirect_args = redirect_args or []
+        redirect_kwargs = redirect_kwargs or {}
+        provided_args = (*args, *kwargs.pop('args', []), *url_args, *redirect_args)
+        provided_kwargs = {**kwargs.pop('kwargs', {}), **url_kwargs, **redirect_kwargs, **kwargs}
 
         # Reset client "user login" state for new response generation.
         self.client.logout()
@@ -100,14 +116,14 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Run logic to get corresponding response object.
         response = self._get_page_response(
             url,
-            *args,
             get=get,
             data=data,
+            provided_args=provided_args,
+            provided_kwargs=provided_kwargs,
             auto_login=auto_login,
             user=user,
             user_permissions=user_permissions,
             user_groups=user_groups,
-            **kwargs,
         )
 
         # Optionally output all debug info for found response.
@@ -132,7 +148,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             url, *args,
             response=response,
             get=get, data=data,
-            expected_redirect_url=expected_redirect_url, expected_status=expected_status,
+            expected_status=expected_status,
+            expected_redirect_url=expected_redirect_url, redirect_args=redirect_args, redirect_kwargs=redirect_kwargs,
             expected_title=expected_title, expected_header=expected_header, expected_messages=expected_messages,
             expected_content=expected_content,
             auto_login=auto_login, user=user, user_permissions=user_permissions, user_groups=user_groups,
@@ -176,7 +193,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             url, *args,
             response=response,
             get=get, data=data,
-            expected_redirect_url=expected_redirect_url, expected_status=expected_status,
+            expected_status=expected_status,
+            expected_redirect_url=expected_redirect_url, redirect_args=redirect_args, redirect_kwargs=redirect_kwargs,
             expected_title=expected_title, expected_header=expected_header, expected_messages=expected_messages,
             expected_content=expected_content,
             auto_login=auto_login, user=user, user_permissions=user_permissions, user_groups=user_groups,
@@ -192,7 +210,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         self,
         url, *args,
         data=None,
-        expected_redirect_url=None, expected_status=200,
+        expected_status=200,
+        expected_redirect_url=None,
+        url_args=None, url_kwargs=None, redirect_args=None, redirect_kwargs=None,
         expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
         auto_login=True, user=None, user_permissions=None, user_groups=None,
         ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
@@ -200,14 +220,25 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
     ):
         """Verifies a GET response was found at given URL, and matches provided parameters."""
 
+        # Handle mutable data defaults.
+        data = data or {}
+        url_args = url_args or []
+        url_kwargs = url_kwargs or {}
+        redirect_args = redirect_args or []
+        redirect_kwargs = redirect_kwargs or {}
+
         # Call base function to handle actual logic.
         return self.assertResponse(
             url,
             *args,
             get=True,
             data=data,
-            expected_redirect_url=expected_redirect_url,
             expected_status=expected_status,
+            expected_redirect_url=expected_redirect_url,
+            url_args=url_args,
+            url_kwargs=url_kwargs,
+            redirect_args=redirect_args,
+            redirect_kwargs=redirect_kwargs,
             expected_title=expected_title,
             expected_header=expected_header,
             expected_messages=expected_messages,
@@ -226,7 +257,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         self,
         url, *args,
         data=None,
-        expected_redirect_url=None, expected_status=200,
+        expected_status=200,
+        expected_redirect_url=None,
+        url_args=None, url_kwargs=None, redirect_args=None, redirect_kwargs=None,
         expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
         auto_login=True, user=None, user_permissions=None, user_groups=None,
         ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
@@ -236,6 +269,10 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Handle mutable data defaults.
         data = data or {}
+        url_args = url_args or []
+        url_kwargs = url_kwargs or {}
+        redirect_args = redirect_args or []
+        redirect_kwargs = redirect_kwargs or {}
 
         # Forcibly add values to "data" dict, so that POST doesn't validate to empty in view.
         # This guarantees that view serves as POST, like this specific assertion expects.
@@ -249,8 +286,12 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             *args,
             get=False,
             data=data,
-            expected_redirect_url=expected_redirect_url,
             expected_status=expected_status,
+            expected_redirect_url=expected_redirect_url,
+            url_args=url_args,
+            url_kwargs=url_kwargs,
+            redirect_args=redirect_args,
+            redirect_kwargs=redirect_kwargs,
             expected_title=expected_title,
             expected_header=expected_header,
             expected_messages=expected_messages,
@@ -795,6 +836,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         url,
         *args,
         get=True, data=None,
+        provided_args=None,
+        provided_kwargs=None,
         auto_login=True, user=None, user_permissions=None, user_groups=None,
         **kwargs,
     ):
@@ -805,6 +848,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param url: Url to get response object from.
         :param get: Bool indicating if response is GET or POST. Defaults to GET.
         :param data: Optional dict of items to pass into response generation.
+        :param provided_args: Values to provide for URL population, in "arg" format.
+        :param provided_kwargs: Values to provide for URL population, in "kwarg" format.
         :param auto_login: Bool indicating if User should be "logged in" to client or not.
         :param user_permissions: Set of Django Permissions to give to test user before accessing page.
         :param user_groups: Set of Django PermissionGroups to give to test user before accessing page.
@@ -812,6 +857,10 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         """
         # Handle mutable data defaults.
         data = data or {}
+        provided_args = provided_args or []
+        provided_kwargs = provided_kwargs or {}
+        provided_args = (*args, *kwargs.pop('args', []), *provided_args)
+        provided_kwargs = {**kwargs.pop('kwargs', {}), **provided_kwargs, **kwargs}
 
         # Validate data types.
         if not isinstance(data, dict):
@@ -819,7 +868,6 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Handle getting user.
         user = self._get_default_request_user(user, auto_login)
-
         user = self._get_login_user(
             user,
             *args,
@@ -835,8 +883,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Preprocess all potential url values.
         url = str(url).strip()
         current_site = '127.0.0.1'
-        url_args = ()
-        url_kwargs = {}
+        url_args = provided_args
+        url_kwargs = provided_kwargs
 
         # Handle site_root_url value.
         if self.site_root_url is not None:
@@ -845,12 +893,6 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Standardize if literal site url was provided and included site_root.
         if url.startswith(current_site):
             url = url[len(current_site):]
-
-        # If "args" key or "kwargs" key exists in function kwargs param, assume is meant for url reverse.
-        if 'args' in kwargs.keys():
-            url_args = kwargs['args']
-        if 'kwargs' in kwargs.keys():
-            url_kwargs = kwargs['kwargs']
 
         # Attempt to get reverse of provided url.
         try:
