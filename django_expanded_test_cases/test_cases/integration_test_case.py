@@ -28,6 +28,10 @@ from django_expanded_test_cases.constants import (
     ETC_DEFAULT_STANDARD_USER_IDENTIFIER,
     ETC_RESPONSE_DEBUG_URL_COLOR,
     ETC_OUTPUT_EMPHASIS_COLOR,
+    ETC_OUTPUT_ERROR_COLOR,
+    ETC_OUTPUT_RESET_COLOR,
+    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
     VOID_ELEMENT_LIST,
 )
 from django_expanded_test_cases.mixins import ResponseTestCaseMixin
@@ -540,7 +544,20 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             # Print out actual response content, for debug output.
             self.show_debug_content(response)
 
-        main_err_msg = 'Could not find expected content value in response. Provided value was:\n{0}'
+        main_err_msg = (
+            'Could not find expected content value in response. Provided value was:\n'
+            '{0}\n'
+        )
+        checked_content_str_addon = (
+            '\n'
+            '\n'
+            'Surrounding Checks:\n'
+            '{0}'
+            '{1}'
+            '{2}'
+            '{3}'
+            '{4}'
+        )
         ordering_err_msg = 'Expected content value was found, but ordering of values do not match. Problem value:\n{0}'
         casing_err_msg = (
             'Expected content value was found, but letter capitalization did not match. Expected was:\n'
@@ -565,7 +582,38 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         if isinstance(expected_content, list) or isinstance(expected_content, tuple):
             # The expected_content param is an array of items. Verify they all exist on page.
             trimmed_content = trimmed_original_content
-            for expected in expected_content:
+            for index in range(len(expected_content)):
+                expected = expected_content[index]
+
+                # Update str in event of error.
+                updated_checked_content_str_addon = checked_content_str_addon.format(
+                    '{1}    * {0}{2}\n'.format(
+                        expected_content[index - 2],
+                        ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                        ETC_OUTPUT_RESET_COLOR,
+                    ) if index >= 2 else '',
+                    '{1}    * {0}{2}\n'.format(
+                        expected_content[index - 1],
+                        ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                        ETC_OUTPUT_RESET_COLOR,
+                    ) if index >= 1 else '',
+                    '{1}  > * {0}{2}\n'.format(
+                        expected_content[index],
+                        ETC_OUTPUT_ERROR_COLOR,
+                        ETC_OUTPUT_RESET_COLOR,
+                    ),
+                    '{1}    * {0}{2}\n'.format(
+                        expected_content[index + 1],
+                        ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                        ETC_OUTPUT_RESET_COLOR,
+                    ) if (len(expected_content) - index) > 1 else '',
+                    '{1}    * {0}{2}\n'.format(
+                        expected_content[index + 2],
+                        ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                        ETC_OUTPUT_RESET_COLOR,
+                    ) if (len(expected_content) - index) > 2 else '',
+                )
+
                 stripped_expected = self.get_minimized_response_content(expected, strip_newlines=True)
                 if ignore_ordering:
                     # Ignoring ordering. Check as-is.
@@ -598,6 +646,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                                 content_starts_after,
                                 content_ends_before,
                                 main_err_msg,
+                                updated_checked_content_str_addon,
                             )
                 else:
                     # Verifying ordering.
@@ -633,10 +682,13 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                                     content_starts_after,
                                     content_ends_before,
                                     main_err_msg,
+                                    updated_checked_content_str_addon,
                                 )
 
                         # If we made it this far, then item was found in full content, but came after a previous
                         # expected value. Raise error.
+                        if updated_checked_content_str_addon:
+                            ordering_err_msg += updated_checked_content_str_addon
                         self.fail(ordering_err_msg.format(expected))
 
                 # If we made it this far, then value was found. Handle for ordering.
@@ -678,12 +730,18 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                         content_starts_after,
                         content_ends_before,
                         main_err_msg,
+                        '',
                     )
 
         # Return page content in case user wants to run additional logic on it.
         return trimmed_original_content
 
-    def _assertPageContent(self, actual_content, minimized_expected, display_expected, strip_actual_start, strip_actual_end, err_msg):
+    def _assertPageContent(
+        self,
+        actual_content, minimized_expected, display_expected,
+        strip_actual_start, strip_actual_end,
+        err_msg, checked_content_str_addon
+    ):
         """Internal sub-assertion for assertPageContent() function."""
         strip_err_msg = 'Expected content value was found, but occurred in "{0}" section. Expected was:\n{1}'
 
@@ -702,10 +760,14 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Output message based on above searches.
         if found_expected:
             # Content value was in stripped section. Raise corresponding strip message.
+            if checked_content_str_addon:
+                strip_err_msg += checked_content_str_addon
             self.fail(strip_err_msg.format(found_expected, display_expected))
 
         else:
             # Content value was physically not present at all. Raise "main" message.
+            if checked_content_str_addon:
+                err_msg += checked_content_str_addon
             self.fail(err_msg.format(display_expected))
 
     def assertRepeatingElement(
