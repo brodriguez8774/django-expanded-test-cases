@@ -15,13 +15,13 @@ from django.urls.exceptions import NoReverseMatch
 # Internal Imports.
 from .base_test_case import BaseTestCase
 from django_expanded_test_cases.constants import (
+    ETC_INCLUDE_RESPONSE_DEBUG_URL,
     ETC_INCLUDE_RESPONSE_DEBUG_CONTENT,
     ETC_INCLUDE_RESPONSE_DEBUG_CONTEXT,
     ETC_INCLUDE_RESPONSE_DEBUG_FORMS,
     ETC_INCLUDE_RESPONSE_DEBUG_HEADER,
     ETC_INCLUDE_RESPONSE_DEBUG_MESSAGES,
     ETC_INCLUDE_RESPONSE_DEBUG_SESSION,
-    ETC_INCLUDE_RESPONSE_DEBUG_URL,
     ETC_INCLUDE_RESPONSE_DEBUG_USER_INFO,
     ETC_ALLOW_MESSAGE_PARTIALS,
     ETC_REQUEST_USER_STRICTNESS,
@@ -985,28 +985,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             # Could not find as reverse. Assume is literal url.
             pass
 
-        # Make sure exactly one slash is prepended to the url value.
-        url = url.lstrip('/').rstrip('/')
-        if len(url) == 0:
-            url = '/'
-        else:
-            if settings.APPEND_SLASH:
-                url = '/{0}/'.format(url)
-            else:
-                url = '/{0}'.format(url)
-
-        # Log url we're attempting to access.
-        if self.site_root_url is not None:
-            current_site = '{0}{1}'.format(self.site_root_url, url)
-        else:
-            current_site = '127.0.0.1{0}'.format(url)
-        message = 'Attempting to access url "{0}"'.format(current_site)
-
-        self._debug_print('\n\n')
         if ETC_INCLUDE_RESPONSE_DEBUG_URL:
-            self._debug_print('{0}'.format('-' * len(message)), fore=ETC_RESPONSE_DEBUG_URL_COLOR, style=ETC_OUTPUT_EMPHASIS_COLOR)
-            self._debug_print(message, fore=ETC_RESPONSE_DEBUG_URL_COLOR, style=ETC_OUTPUT_EMPHASIS_COLOR)
-            self._debug_print('{0}'.format('-' * len(message)), fore=ETC_RESPONSE_DEBUG_URL_COLOR, style=ETC_OUTPUT_EMPHASIS_COLOR)
+            self.show_debug_url(url)
 
         # Get response object.
         if bool(get):

@@ -7,6 +7,7 @@ import logging, re
 
 # Third-Party Imports.
 from bs4 import BeautifulSoup
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.http.response import HttpResponseBase
 
@@ -19,6 +20,7 @@ from django_expanded_test_cases.constants import (
     ETC_RESPONSE_DEBUG_CONTEXT_COLOR,
     ETC_RESPONSE_DEBUG_MESSAGE_COLOR,
     ETC_RESPONSE_DEBUG_SESSION_COLOR,
+    ETC_RESPONSE_DEBUG_URL_COLOR,
     ETC_RESPONSE_DEBUG_FORM_COLOR,
     ETC_RESPONSE_DEBUG_USER_INFO_COLOR,
     ETC_OUTPUT_EMPHASIS_COLOR,
@@ -47,6 +49,29 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         super().set_up_class(debug_print=debug_print)
 
     # region Debug Output Functions
+
+    def show_debug_url(self, url):
+        # Make sure exactly one slash is prepended to the url value.
+        url = url.lstrip('/').rstrip('/')
+        if len(url) == 0:
+            url = '/'
+        else:
+            if settings.APPEND_SLASH:
+                url = '/{0}/'.format(url)
+            else:
+                url = '/{0}'.format(url)
+
+        # Log url we're attempting to access.
+        if self.site_root_url is not None:
+            current_site = '{0}{1}'.format(self.site_root_url, url)
+        else:
+            current_site = '127.0.0.1{0}'.format(url)
+        message = 'Attempting to access url "{0}"'.format(current_site)
+
+        self._debug_print('\n\n')
+        self._debug_print('{0}'.format('-' * len(message)), fore=ETC_RESPONSE_DEBUG_URL_COLOR, style=ETC_OUTPUT_EMPHASIS_COLOR)
+        self._debug_print(message, fore=ETC_RESPONSE_DEBUG_URL_COLOR, style=ETC_OUTPUT_EMPHASIS_COLOR)
+        self._debug_print('{0}'.format('-' * len(message)), fore=ETC_RESPONSE_DEBUG_URL_COLOR, style=ETC_OUTPUT_EMPHASIS_COLOR)
 
     def show_debug_content(self, response_content):
         """Prints debug response page output."""
