@@ -51,19 +51,32 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
     # region Debug Output Functions
 
     def show_debug_url(self, url):
+        """Prints debug url output."""
+
         # Make sure exactly one slash is prepended to the url value.
-        url = url.lstrip('/').rstrip('/')
+        url = str(url).lstrip('/').rstrip('/').lstrip(self.site_root_url)
         if len(url) == 0:
             url = '/'
         else:
-            if settings.APPEND_SLASH:
-                url = '/{0}/'.format(url)
-            else:
+            # Handle for prepend slash.
+            # Only apply if not already present and not including the site root in url.
+            if not (
+                (self.site_root_url is not None and str(url).startswith(self.site_root_url))
+                and not url.startswith('/')
+            ):
                 url = '/{0}'.format(url)
+
+            # Handle for append slash.
+            # Only apply if not already present and settings.APPEND_SLASH is true.
+            if settings.APPEND_SLASH and not url.endswith('/'):
+                url = '{0}/'.format(url)
 
         # Log url we're attempting to access.
         if self.site_root_url is not None:
-            current_site = '{0}{1}'.format(self.site_root_url, url)
+            if str(url).startswith(self.site_root_url):
+                current_site = url
+            else:
+                current_site = '{0}{1}'.format(self.site_root_url, url)
         else:
             current_site = '127.0.0.1{0}'.format(url)
         message = 'Attempting to access url "{0}"'.format(current_site)
