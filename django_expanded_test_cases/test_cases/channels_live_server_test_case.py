@@ -9,12 +9,10 @@ Tends to take longer to test. So consider using IntegrationTestCase instead, whe
 import time
 
 # Third-Party Imports.
-from django.test import LiveServerTestCase as DjangoLiveServerTestCase
-# from django.test.selenium import LiveServerTestCase
-# from django.test.selenium import SeleniumTestCase
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.firefox.service import Service as FireFoxService
+from channels.testing import ChannelsLiveServerTestCase as DjangoChannelsLiveServerTestCase
 from django.conf import settings
 
 # Internal Imports.
@@ -27,8 +25,8 @@ from django_expanded_test_cases.constants import (
 from django_expanded_test_cases.mixins.response_mixin import ResponseTestCaseMixin
 
 
-class LiveServerTestCase(DjangoLiveServerTestCase, ResponseTestCaseMixin):
-    """Uses Django package to test functionality through selenium. Simulates web browser navigation."""
+class ChannelsLiveServerTestCase(DjangoChannelsLiveServerTestCase, ResponseTestCaseMixin):
+    """Uses DjangoChannels package to test functionality through selenium. Simulates web browser navigation."""
 
     @classmethod
     def setUpClass(cls, debug_print=None):
