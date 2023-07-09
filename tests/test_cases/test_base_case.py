@@ -78,10 +78,10 @@ class BaseClassTest(BaseTestCase):
         Tests assertText() function, in cases when it should succeed.
         """
         with self.subTest('Empty string'):
-            self.assertText('', '')
+            self.assertEqual('', '')
 
         with self.subTest('Single character'):
-            # Direct match.
+            # Basic match.
             self.assertText('a', 'a')
             self.assertText(1, 1)
             self.assertText('1', 1)
@@ -93,7 +93,7 @@ class BaseClassTest(BaseTestCase):
             self.assertText(' a ', ' a ')
 
         with self.subTest('Small string'):
-            # Direct match.
+            # Basic match.
             self.assertText('abc', 'abc')
 
             # Match with inner whitespace.
@@ -127,57 +127,57 @@ class BaseClassTest(BaseTestCase):
         with self.subTest('Single character mismatch'):
             with self.assertRaises(AssertionError) as err:
                 self.assertText('a', 'b')
-            self.assertEqual(str(err.exception), exception_msg.format('a', 'b', '', ''))
+            self.assertEqual(exception_msg.format('a', 'b', '', ''), str(err.exception))
 
             with self.assertRaises(AssertionError) as err:
                 self.assertText('a', 'A')
-            self.assertEqual(str(err.exception), exception_msg.format('a', 'A', '', ''))
+            self.assertEqual(exception_msg.format('a', 'A', '', ''), str(err.exception))
 
             with self.assertRaises(AssertionError) as err:
                 self.assertText('a', 1)
-            self.assertEqual(str(err.exception), exception_msg.format('a', '1', '', ''))
+            self.assertEqual(exception_msg.format('a', '1', '', ''), str(err.exception))
 
         with self.subTest('Whitespace mismatch'):
             with self.assertRaises(AssertionError) as err:
                 self.assertText('a b c', 'abc')
-            self.assertEqual(str(err.exception), exception_msg.format('a b c', 'abc', '?  - -\n', ''))
+            self.assertEqual(exception_msg.format('a b c', 'abc', '?  - -\n', ''), str(err.exception))
 
             with self.assertRaises(AssertionError) as err:
                 self.assertText('abc', 'a b c')
-            self.assertEqual(str(err.exception), exception_msg.format('abc', 'a b c', '', '?  + +\n'))
+            self.assertEqual(exception_msg.format('abc', 'a b c', '', '?  + +\n'), str(err.exception))
 
         with self.subTest('Inner value mismatch'):
             with self.assertRaises(AssertionError) as err:
                 self.assertText('This is a test sentence.', 'This is a test')
             self.assertEqual(
-                str(err.exception),
                 exception_msg.format(
                     'This is a test sentence.',
                     'This is a test',
                     '?               ----------\n',
                     '',
                 ),
+                str(err.exception),
             )
 
             with self.assertRaises(AssertionError) as err:
                 self.assertText('This is a test sentence.', 'This is test sentence.')
             self.assertEqual(
-                str(err.exception),
                 exception_msg.format('This is a test sentence.', 'This is test sentence.', '?        --\n', ''),
+                str(err.exception),
             )
 
             with self.assertRaises(AssertionError) as err:
                 self.assertText('This is a test sentence.', 'test sentence.')
             self.assertEqual(
-                str(err.exception),
                 exception_msg.format('This is a test sentence.', 'test sentence.', '? ----------\n', ''),
+                str(err.exception),
             )
 
             with self.assertRaises(AssertionError) as err:
                 self.assertText('This is a test sentence.', 'This is a test.')
             self.assertEqual(
-                str(err.exception),
                 exception_msg.format('This is a test sentence.', 'This is a test.', '?               ---------\n', ''),
+                str(err.exception),
             )
 
         with self.subTest('Large string'):
@@ -926,6 +926,302 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[12], '')
+
+    def test__assertTextStartsWith__success(self):
+        """
+        Tests assertTextStartsWith() function, in cases when it should succeed.
+        """
+        with self.subTest('Empty string'):
+            self.assertTextStartsWith('', '')
+
+        with self.subTest('Single character'):
+            # Basic match.
+            self.assertTextStartsWith('a', 'a')
+            self.assertTextStartsWith(1, 1)
+            self.assertTextStartsWith('1', 1)
+            self.assertTextStartsWith(1, '1')
+
+            # Match with outer whitespace.
+            self.assertTextStartsWith(' a ', 'a')
+            self.assertTextStartsWith('a', ' a ')
+            self.assertTextStartsWith(' a ', ' a ')
+
+        with self.subTest('Small string'):
+            # Basic match.
+            self.assertTextStartsWith('abc', 'abc')
+            self.assertTextStartsWith('ab', 'abc')
+            self.assertTextStartsWith('a', 'abc')
+
+            # Match with inner whitespace.
+            self.assertTextStartsWith('a b c', 'a b c')
+            self.assertTextStartsWith('a b', 'a b c')
+            self.assertTextStartsWith('a', 'a b c')
+
+            # Match with outer whitespace.
+            self.assertTextStartsWith(' abc ', 'abc')
+            self.assertTextStartsWith(' ab ', 'abc')
+            self.assertTextStartsWith(' a ', 'abc')
+            self.assertTextStartsWith('abc', ' abc ')
+            self.assertTextStartsWith('ab', ' abc ')
+            self.assertTextStartsWith('a', ' abc ')
+            self.assertTextStartsWith(' abc ', ' abc ')
+            self.assertTextStartsWith(' ab ', ' abc ')
+            self.assertTextStartsWith(' a ', ' abc ')
+
+            # Match with inner and outer whitespace.
+            self.assertTextStartsWith(' a b c ', 'a b c')
+            self.assertTextStartsWith(' a b ', 'a b c')
+            self.assertTextStartsWith(' a ', 'a b c')
+            self.assertTextStartsWith('a b c', ' a b c ')
+            self.assertTextStartsWith('a b', ' a b c ')
+            self.assertTextStartsWith('a', ' a b c ')
+            self.assertTextStartsWith(' a b c ', ' a b c ')
+            self.assertTextStartsWith(' a b ', ' a b c ')
+            self.assertTextStartsWith(' a ', ' a b c ')
+
+        with self.subTest('Large string'):
+            # Full lorem.
+            self.assertTextStartsWith(lorem_str, lorem_str)
+
+            # Substring match.
+            lorem_len = len(lorem_str)
+            self.assertTextStartsWith(lorem_str[:int(lorem_len - 1)], lorem_str)
+            self.assertTextStartsWith(lorem_str[:int(lorem_len - 2)], lorem_str)
+            self.assertTextStartsWith(lorem_str[:int(lorem_len - 3)], lorem_str)
+            self.assertTextStartsWith(lorem_str[:int(lorem_len - 4)], lorem_str)
+            self.assertTextStartsWith(lorem_str[:int(lorem_len - 5)], lorem_str)
+            self.assertTextStartsWith(lorem_str[:int(lorem_len / 2)], lorem_str)
+            self.assertTextStartsWith(lorem_str[:int(lorem_len / 3)], lorem_str)
+            self.assertTextStartsWith(lorem_str[:int(lorem_len / 4)], lorem_str)
+            self.assertTextStartsWith(lorem_str[:int(lorem_len / 5)], lorem_str)
+
+    def test__assertTextStartsWith__fail(self):
+        """
+        Tests assertTextStartsWith() function, in cases when it should fail.
+        """
+        exception_msg = '\'{0}\' != \'{1}\'\n- {0}\n{2}+ {1}\n{3}'
+
+        with self.subTest('Single character mismatch'):
+            with self.assertRaises(AssertionError) as err:
+                self.assertTextStartsWith('a', 'b')
+            self.assertEqual(exception_msg.format('a', 'b', '', ''), str(err.exception))
+
+            with self.assertRaises(AssertionError) as err:
+                self.assertTextStartsWith('a', 'A')
+            self.assertEqual(exception_msg.format('a', 'A', '', ''), str(err.exception))
+
+            with self.assertRaises(AssertionError) as err:
+                self.assertTextStartsWith('a', 1)
+            self.assertEqual( exception_msg.format('a', '1', '', ''), str(err.exception))
+
+        with self.subTest('Whitespace mismatch'):
+            with self.assertRaises(AssertionError) as err:
+                self.assertTextStartsWith('a b c', 'abc')
+            self.assertEqual(exception_msg.format('a b c', 'abc', '?  - -\n', ''), str(err.exception))
+            with self.assertRaises(AssertionError) as err:
+                self.assertTextStartsWith('a b', 'abc')
+            self.assertEqual(exception_msg.format('a b', 'abc', '?  -\n', '?   +\n'), str(err.exception))
+
+            with self.assertRaises(AssertionError) as err:
+                self.assertTextStartsWith('abc', 'a b c')
+            self.assertEqual(exception_msg.format('abc', 'a b c', '', '?  + +\n'), str(err.exception))
+            with self.assertRaises(AssertionError) as err:
+                self.assertTextStartsWith('ab', 'a b c')
+            self.assertEqual(exception_msg.format('ab', 'a b c', '', ''), str(err.exception))
+
+        with self.subTest('Inner value mismatch'):
+            with self.assertRaises(AssertionError) as err:
+                self.assertTextStartsWith('This is a test sentence.', 'This is test sentence.')
+            self.assertEqual(
+                exception_msg.format('This is a test sentence.', 'This is test sentence.', '?        --\n', ''),
+                str(err.exception),
+            )
+
+            with self.assertRaises(AssertionError) as err:
+                self.assertTextStartsWith('This is a test sentence.', 'test sentence.')
+            self.assertEqual(
+                exception_msg.format('This is a test sentence.', 'test sentence.', '? ----------\n', ''),
+                str(err.exception),
+            )
+
+            with self.assertRaises(AssertionError) as err:
+                self.assertTextStartsWith('This is a test sentence.', 'This is a test.')
+            self.assertEqual(
+                exception_msg.format('This is a test sentence.', 'This is a test.', '?               ---------\n', ''),
+                str(err.exception),
+            )
+
+        with self.subTest('Large string'):
+            half_lorem_len = int(len(lorem_str) / 2)
+
+            # With character replaced.
+            with self.assertRaises(AssertionError) as err:
+                modified_str = lorem_str[:(half_lorem_len - 1)] + 'z' + lorem_str[(half_lorem_len + 1):]
+                self.assertTextStartsWith(lorem_str, modified_str)
+            # self.assertEqual(str(err.exception), exception_msg)
+
+            # With character added.
+            with self.assertRaises(AssertionError) as err:
+                modified_str = lorem_str[:(half_lorem_len)] + 'z' + lorem_str[(half_lorem_len + 1):]
+                self.assertTextStartsWith(lorem_str, modified_str)
+            # self.assertEqual(str(err.exception), exception_msg)
+
+            # With character removed.
+            with self.assertRaises(AssertionError) as err:
+                modified_str = lorem_str[:(half_lorem_len - 1)] + lorem_str[(half_lorem_len + 1):]
+                self.assertTextStartsWith(lorem_str, modified_str)
+            # self.assertEqual(str(err.exception), exception_msg)
+
+    def test__assertTextEndsWith__success(self):
+        """
+        Tests assertTextEndsWith() function, in cases when it should succeed.
+        """
+        with self.subTest('Empty string'):
+            self.assertTextEndsWith('', '')
+
+        with self.subTest('Single character'):
+            # Basic match.
+            self.assertTextEndsWith('a', 'a')
+            self.assertTextEndsWith(1, 1)
+            self.assertTextEndsWith('1', 1)
+            self.assertTextEndsWith(1, '1')
+
+            # Match with outer whitespace.
+            self.assertTextEndsWith(' a ', 'a')
+            self.assertTextEndsWith('a', ' a ')
+            self.assertTextEndsWith(' a ', ' a ')
+
+        with self.subTest('Small string'):
+            # Basic match.
+            self.assertTextEndsWith('abc', 'abc')
+            self.assertTextEndsWith('bc', 'abc')
+            self.assertTextEndsWith('c', 'abc')
+
+            # Match with inner whitespace.
+            self.assertTextEndsWith('a b c', 'a b c')
+            self.assertTextEndsWith('b c', 'a b c')
+            self.assertTextEndsWith('c', 'a b c')
+
+            # Match with outer whitespace.
+            self.assertTextEndsWith(' abc ', 'abc')
+            self.assertTextEndsWith(' bc ', 'abc')
+            self.assertTextEndsWith(' c ', 'abc')
+            self.assertTextEndsWith('abc', ' abc ')
+            self.assertTextEndsWith('bc', ' abc ')
+            self.assertTextEndsWith('c', ' abc ')
+            self.assertTextEndsWith(' abc ', ' abc ')
+            self.assertTextEndsWith(' bc ', ' abc ')
+            self.assertTextEndsWith(' c ', ' abc ')
+
+            # Match with inner and outer whitespace.
+            self.assertTextEndsWith(' a b c ', 'a b c')
+            self.assertTextEndsWith(' b c ', 'a b c')
+            self.assertTextEndsWith(' c ', 'a b c')
+            self.assertTextEndsWith('a b c', ' a b c ')
+            self.assertTextEndsWith('b c', ' a b c ')
+            self.assertTextEndsWith('c', ' a b c ')
+            self.assertTextEndsWith(' a b c ', ' a b c ')
+            self.assertTextEndsWith(' b c ', ' a b c ')
+            self.assertTextEndsWith(' c ', ' a b c ')
+
+        with self.subTest('Large string'):
+            # Full lorem.
+            self.assertTextEndsWith(lorem_str, lorem_str)
+
+            # Substring match.
+            lorem_len = len(lorem_str)
+            self.assertTextEndsWith(lorem_str[int(lorem_len - 1):], lorem_str)
+            self.assertTextEndsWith(lorem_str[int(lorem_len - 2):], lorem_str)
+            self.assertTextEndsWith(lorem_str[int(lorem_len - 3):], lorem_str)
+            self.assertTextEndsWith(lorem_str[int(lorem_len - 4):], lorem_str)
+            self.assertTextEndsWith(lorem_str[int(lorem_len - 5):], lorem_str)
+            self.assertTextEndsWith(lorem_str[int(lorem_len / 2):], lorem_str)
+            self.assertTextEndsWith(lorem_str[int(lorem_len / 3):], lorem_str)
+            self.assertTextEndsWith(lorem_str[int(lorem_len / 4):], lorem_str)
+            self.assertTextEndsWith(lorem_str[int(lorem_len / 5):], lorem_str)
+
+    def test__assertTextEndsWith__fail(self):
+        """
+        Tests assertTextEndsWith() function, in cases when it should fail.
+        """
+        exception_msg = '\'{0}\' != \'{1}\'\n- {0}\n{2}+ {1}\n{3}'
+
+        with self.subTest('Single character mismatch'):
+            with self.assertRaises(AssertionError) as err:
+                self.assertTextEndsWith('a', 'b')
+            self.assertEqual(exception_msg.format('a', 'b', '', ''), str(err.exception))
+
+            with self.assertRaises(AssertionError) as err:
+                self.assertTextEndsWith('a', 'A')
+            self.assertEqual(exception_msg.format('a', 'A', '', ''), str(err.exception))
+
+            with self.assertRaises(AssertionError) as err:
+                self.assertTextEndsWith('a', 1)
+            self.assertEqual(exception_msg.format('a', '1', '', ''), str(err.exception))
+
+        with self.subTest('Whitespace mismatch'):
+            with self.assertRaises(AssertionError) as err:
+                self.assertTextEndsWith('a b c', 'abc')
+            self.assertEqual(exception_msg.format('a b c', 'abc', '?  - -\n', ''), str(err.exception))
+
+            with self.assertRaises(AssertionError) as err:
+                self.assertTextEndsWith('abc', 'a b c')
+            self.assertEqual(exception_msg.format('abc', 'a b c', '', '?  + +\n'), str(err.exception))
+
+        with self.subTest('Inner value mismatch'):
+            with self.assertRaises(AssertionError) as err:
+                self.assertTextEndsWith('This is a test sentence.', 'This is a test')
+            self.assertEqual(
+                exception_msg.format(
+                    'This is a test sentence.',
+                    'This is a test',
+                    '?               ----------\n',
+                    '',
+                ),
+                str(err.exception),
+            )
+
+            with self.assertRaises(AssertionError) as err:
+                self.assertTextEndsWith('This is a test sentence.', 'This is test sentence.')
+            self.assertEqual(
+                exception_msg.format('This is a test sentence.', 'This is test sentence.', '?        --\n', ''),
+                str(err.exception),
+            )
+
+            with self.assertRaises(AssertionError) as err:
+                self.assertTextEndsWith('This is a test sentence.', 'test sentence.')
+            self.assertEqual(
+                exception_msg.format('This is a test sentence.', 'test sentence.', '? ----------\n', ''),
+                str(err.exception),
+            )
+
+            with self.assertRaises(AssertionError) as err:
+                self.assertTextEndsWith('This is a test sentence.', 'This is a test.')
+            self.assertEqual(
+                exception_msg.format('This is a test sentence.', 'This is a test.', '?               ---------\n', ''),
+                str(err.exception),
+            )
+
+        with self.subTest('Large string'):
+            half_lorem_len = int(len(lorem_str) / 2)
+
+            # With character replaced.
+            with self.assertRaises(AssertionError) as err:
+                modified_str = lorem_str[:(half_lorem_len - 1)] + 'z' + lorem_str[(half_lorem_len + 1):]
+                self.assertTextEndsWith(lorem_str, modified_str)
+            # self.assertEqual(str(err.exception), exception_msg)
+
+            # With character added.
+            with self.assertRaises(AssertionError) as err:
+                modified_str = lorem_str[:(half_lorem_len)] + 'z' + lorem_str[(half_lorem_len + 1):]
+                self.assertTextEndsWith(lorem_str, modified_str)
+            # self.assertEqual(str(err.exception), exception_msg)
+
+            # With character removed.
+            with self.assertRaises(AssertionError) as err:
+                modified_str = lorem_str[:(half_lorem_len - 1)] + lorem_str[(half_lorem_len + 1):]
+                self.assertTextEndsWith(lorem_str, modified_str)
+            # self.assertEqual(str(err.exception), exception_msg)
 
     # endregion Assertion Tests
 

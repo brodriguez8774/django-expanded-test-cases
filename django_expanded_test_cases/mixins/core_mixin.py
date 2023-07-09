@@ -263,7 +263,7 @@ class CoreTestCaseMixin:
 
     # region Custom Assertions
 
-    def assertText(self, expected_text, actual_text, strip=True):
+    def assertText(self, expected_text, actual_text, compare_index=None, strip=True):
         """Wrapper for assertEqual(), that prints full values to console on mismatch.
 
         :param expected_text: Expected text value to check against.
@@ -278,6 +278,12 @@ class CoreTestCaseMixin:
         if strip:
             expected_text = expected_text.strip()
             actual_text = actual_text.strip()
+
+        # Sanitize compare_index, used for startsWith() and endsWith() versions.
+        if compare_index is not None:
+            compare_index = int(compare_index)
+            if compare_index == 0:
+                compare_index = None
 
         # Attempt assertion.
         try:
@@ -305,7 +311,21 @@ class CoreTestCaseMixin:
 
             formatted_expected_output = ''
             formatted_actual_output = ''
+            total_actual_count_thus_far = 0
+            total_actual_index = None
+            actual_text_total_len = len(actual_text)
+            if compare_index is not None:
+                if compare_index > 0:
+                    # Is positive, so starstWith().
+                    total_actual_index = 0
+                else:
+                    # Is negative, so endsWith().
+                    total_actual_index = actual_text_total_len
+
+            # Loop through all lines.
             for line_index in range(max_lines):
+
+                # Check if expected/actual each have lines up to this index.
                 try:
                     curr_expected_line = split_expected[line_index]
                     if append_newline:
@@ -319,6 +339,15 @@ class CoreTestCaseMixin:
                 except IndexError:
                     curr_actual_line = None
                 append_newline = False
+
+                # Handle if compare_index value is provided.
+                if compare_index is not None and line_index > 0:
+                    if compare_index > 0:
+                        # Is positive, so startsWith. Count from start of text.
+                        total_actual_index = total_actual_count_thus_far
+                    else:
+                        # Is negative, so endsWith(). Count from end of text.
+                        total_actual_index = actual_text_total_len - total_actual_count_thus_far
 
                 if curr_expected_line == curr_actual_line:
                     # Line is full match and correct.
@@ -354,6 +383,25 @@ class CoreTestCaseMixin:
                     curr_expected_char_line = ''
                     curr_actual_char_line = ''
                     for char_index in range(max_chars):
+
+                        # Handle if starstWith() or endsWith().
+                        do_char_compare = True
+                        if compare_index is not None:
+                            if compare_index > 0:
+                                # Is positive, so startsWith()
+                                total_actual_index += 1
+
+                                # Skip comparison if actual_index is past compare_index.
+                                if total_actual_index > compare_index:
+                                    do_char_compare = False
+                            else:
+                                # Is negative, so endsWith().
+                                total_actual_index -= 1
+
+                                # Skip comparison if actual_index is before compare_index.
+                                if total_actual_index > - compare_index:
+                                    do_char_compare = False
+
                         # Grab current character.
                         try:
                             expected_char = curr_expected_line[char_index]
@@ -365,7 +413,16 @@ class CoreTestCaseMixin:
                             actual_char = ''
 
                         # Format based on match.
-                        if expected_char == actual_char:
+                        if not do_char_compare:
+                            # Skip comparison, for either startsWith() or endsWith() assertions.
+                            if curr_expected_color != ETC_OUTPUT_RESET_COLOR:
+                                curr_expected_color = ETC_OUTPUT_RESET_COLOR
+                                curr_expected_char_line += curr_expected_color
+                            if curr_actual_color != ETC_OUTPUT_RESET_COLOR:
+                                curr_actual_color = ETC_OUTPUT_RESET_COLOR
+                                curr_actual_char_line += curr_actual_color
+
+                        elif expected_char == actual_char:
                             # Match.
                             if curr_expected_color != ETC_OUTPUT_EXPECTED_MATCH_COLOR:
                                 curr_expected_color = ETC_OUTPUT_EXPECTED_MATCH_COLOR
@@ -373,6 +430,7 @@ class CoreTestCaseMixin:
                             if curr_actual_color != ETC_OUTPUT_ACTUALS_MATCH_COLOR:
                                 curr_actual_color = ETC_OUTPUT_ACTUALS_MATCH_COLOR
                                 curr_actual_char_line += curr_actual_color
+
                         else:
                             # Non-match.
                             if curr_expected_color != ETC_OUTPUT_EXPECTED_ERROR_COLOR:
@@ -395,6 +453,9 @@ class CoreTestCaseMixin:
                 formatted_expected_output += curr_expected_line
                 formatted_actual_output += curr_actual_line
 
+                # Update total actual length.
+                total_actual_count_thus_far += len(curr_actual_line)
+
             # Finally print actual debug output.
             self._debug_print('')
             self._debug_print('')
@@ -409,6 +470,52 @@ class CoreTestCaseMixin:
 
             # Raise original error.
             raise AssertionError(err) from err
+
+    def assertTextStartsWith(self, expected_text, actual_text, strip=True):
+        """Modiefied wrapper for assertEqual(), that prints full values to console on mismatch.
+
+        Considered a pass if entire string of "expected_text" is at the beginning of "actual_text" variable.
+        """
+        # Enforce str type.
+        expected_text = str(expected_text)
+        actual_text = str(actual_text)
+
+        # Handle optional cleaning params.
+        if strip:
+            expected_text = expected_text.strip()
+            actual_text = actual_text.strip()
+
+        # Check if start matches.
+        if not str(actual_text).startswith(expected_text):
+            # Failed to match. Call original assertText for output handling.
+            text_length = len(expected_text)
+            return self.assertText(expected_text, actual_text, text_length, strip=strip)
+
+        # Passed.
+        return True
+
+    def assertTextEndsWith(self, expected_text, actual_text, strip=True):
+        """Modified wrapper for assertEqual(), that prints full values to console on mismatch.
+
+        Considered a pass if entire string of "expected_text" is at the beginning of "actual_text" variable.
+        """
+        # Enforce str type.
+        expected_text = str(expected_text)
+        actual_text = str(actual_text)
+
+        # Handle optional cleaning params.
+        if strip:
+            expected_text = expected_text.strip()
+            actual_text = actual_text.strip()
+
+        # Check if ending matches.
+        if not str(actual_text).endswith(expected_text):
+            # Failed to match. Call original assertText for output handling.
+            text_length = len(expected_text)
+            return self.assertText(expected_text, actual_text, compare_index=-text_length, strip=strip)
+
+        # Passed.
+        return True
 
     # endregion Custom Assertions
 
