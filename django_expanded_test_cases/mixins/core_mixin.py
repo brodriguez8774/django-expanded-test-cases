@@ -469,7 +469,7 @@ class CoreTestCaseMixin:
             self._debug_print('')
 
             # Raise original error.
-            raise AssertionError(err) from err
+            raise err
 
     def assertTextStartsWith(self, expected_text, actual_text, strip=True):
         """Modiefied wrapper for assertEqual(), that prints full values to console on mismatch.
