@@ -78,7 +78,7 @@ class BaseClassTest(BaseTestCase):
         Tests assertText() function, in cases when it should succeed.
         """
         with self.subTest('Empty string'):
-            self.assertEqual('', '')
+            self.assertText('', '')
 
         with self.subTest('Single character'):
             # Basic match.
@@ -1411,36 +1411,36 @@ class BaseClassTest(BaseTestCase):
         with self.subTest('Generate from passed "url" param'):
             # Test no params.
             url = self.generate_get_url('http://127.0.0.1/')
-            self.assertEqual(url, 'http://127.0.0.1/')
+            self.assertText('http://127.0.0.1/', url)
 
             # Test one str param.
             url = self.generate_get_url('http://127.0.0.1/', test_1='one')
-            self.assertEqual(url, 'http://127.0.0.1/?test_1=one')
+            self.assertText('http://127.0.0.1/?test_1=one', url)
 
             # Test two str params.
             url = self.generate_get_url('http://127.0.0.1/', test_1='one', test_2='two')
-            self.assertEqual(url, 'http://127.0.0.1/?test_1=one&test_2=two')
+            self.assertText('http://127.0.0.1/?test_1=one&test_2=two', url)
 
             # Test one non-str simple param.
             url = self.generate_get_url('http://127.0.0.1/', test_1=1)
-            self.assertEqual(url, 'http://127.0.0.1/?test_1=1')
+            self.assertText('http://127.0.0.1/?test_1=1', url)
 
             # Test two non-str simple params.
             url = self.generate_get_url('http://127.0.0.1/', test_1=1, test_2=True)
-            self.assertEqual(url, 'http://127.0.0.1/?test_1=1&test_2=True')
+            self.assertText('http://127.0.0.1/?test_1=1&test_2=True', url)
 
             # Test one non-str complex param.
             url = self.generate_get_url('http://127.0.0.1/', test_1=['a', 'b', 'c'])
-            self.assertEqual(url, 'http://127.0.0.1/?test_1=%5B%27a%27%2C+%27b%27%2C+%27c%27%5D')
+            self.assertText('http://127.0.0.1/?test_1=%5B%27a%27%2C+%27b%27%2C+%27c%27%5D', url)
 
             # Test two non-str complex params.
             url = self.generate_get_url('http://127.0.0.1/', test_1=['foo', 'bar'], test_2={'cat': 'Tabby', 'dog': 'Spot'})
-            self.assertEqual(
-                url,
+            self.assertText(
                 (
                     'http://127.0.0.1/?test_1=%5B%27foo%27%2C+%27bar%27%5D&test_2=%7B%27cat%27%3A+'
                     '%27Tabby%27%2C+%27dog%27%3A+%27Spot%27%7D'
                 ),
+                url,
             )
 
         with self.subTest('Generate from class "self.url" variable'):
@@ -1449,36 +1449,36 @@ class BaseClassTest(BaseTestCase):
 
             # Test no params.
             url = self.generate_get_url()
-            self.assertEqual(url, 'http://127.0.0.1/')
+            self.assertText('http://127.0.0.1/', url)
 
             # Test one str param.
             url = self.generate_get_url(test_1='one')
-            self.assertEqual(url, 'http://127.0.0.1/?test_1=one')
+            self.assertText('http://127.0.0.1/?test_1=one', url)
 
             # Test two str params.
             url = self.generate_get_url(test_1='one', test_2='two')
-            self.assertEqual(url, 'http://127.0.0.1/?test_1=one&test_2=two')
+            self.assertText('http://127.0.0.1/?test_1=one&test_2=two', url)
 
             # Test one non-str simple param.
             url = self.generate_get_url(test_1=1)
-            self.assertEqual(url, 'http://127.0.0.1/?test_1=1')
+            self.assertText('http://127.0.0.1/?test_1=1', url)
 
             # Test two non-str simple params.
             url = self.generate_get_url(test_1=1, test_2=True)
-            self.assertEqual(url, 'http://127.0.0.1/?test_1=1&test_2=True')
+            self.assertText('http://127.0.0.1/?test_1=1&test_2=True', url)
 
             # Test one non-str complex param.
             url = self.generate_get_url(test_1=['a', 'b', 'c'])
-            self.assertEqual(url, 'http://127.0.0.1/?test_1=%5B%27a%27%2C+%27b%27%2C+%27c%27%5D')
+            self.assertText('http://127.0.0.1/?test_1=%5B%27a%27%2C+%27b%27%2C+%27c%27%5D', url)
 
             # Test two non-str complex params.
             url = self.generate_get_url(test_1=['foo', 'bar'], test_2={'cat': 'Tabby', 'dog': 'Spot'})
-            self.assertEqual(
-                url,
+            self.assertText(
                 (
                     'http://127.0.0.1/?test_1=%5B%27foo%27%2C+%27bar%27%5D&test_2=%7B%27cat%27%3A+'
                     '%27Tabby%27%2C+%27dog%27%3A+%27Spot%27%7D'
                 ),
+                url,
             )
 
     def assert_symbol_standardization(self, symbol_str, expected_return):
@@ -1487,11 +1487,11 @@ class BaseClassTest(BaseTestCase):
         """
         # Test in smaller child function.
         return_val = self.standardize_symbols(symbol_str)
-        self.assertEqual(return_val, expected_return)
+        self.assertText(expected_return, return_val)
 
         # Test in full parent function.
         return_val = self.standardize_characters(symbol_str)
-        self.assertEqual(return_val, expected_return)
+        self.assertText(expected_return, return_val)
 
     def assert_number_standardization(self, number_str, expected_return):
         """
@@ -1499,11 +1499,11 @@ class BaseClassTest(BaseTestCase):
         """
         # Test in smaller child function.
         return_val = self.standardize_numbers(number_str)
-        self.assertEqual(return_val, expected_return)
+        self.assertText(expected_return, return_val)
 
         # Test in full parent function.
         return_val = self.standardize_characters(number_str)
-        self.assertEqual(return_val, expected_return)
+        self.assertText(expected_return, return_val)
 
     def assert_letter_standardization(self, letter_str, expected_return):
         """
@@ -1511,11 +1511,11 @@ class BaseClassTest(BaseTestCase):
         """
         # Test in smaller child function.
         return_val = self.standardize_letters(letter_str)
-        self.assertEqual(return_val, expected_return)
+        self.assertText(expected_return, return_val)
 
         # Test in full parent function.
         return_val = self.standardize_characters(letter_str)
-        self.assertEqual(return_val, expected_return)
+        self.assertText(expected_return, return_val)
 
     def test__standardize_characters__symbols(self):
         """
@@ -2110,98 +2110,98 @@ class BaseClassTest(BaseTestCase):
         """
         with self.subTest('Test <br> tag - Isolated'):
             return_val = self.standardize_newlines('<br>')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_newlines('</br>')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_newlines('<br/>')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_newlines('<br />')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
         with self.subTest('Test <br> tag - As inner element'):
             return_val = self.standardize_newlines('A<br>B')
-            self.assertEqual(return_val, 'A\nB')
+            self.assertText('A\nB', return_val)
             return_val = self.standardize_newlines('A</br>B')
-            self.assertEqual(return_val, 'A\nB')
+            self.assertText('A\nB', return_val)
             return_val = self.standardize_newlines('A<br/>B')
-            self.assertEqual(return_val, 'A\nB')
+            self.assertText('A\nB', return_val)
             return_val = self.standardize_newlines('A<br />B')
-            self.assertEqual(return_val, 'A\nB')
+            self.assertText('A\nB', return_val)
 
         with self.subTest('Test single newline characters - Isolated'):
             return_val = self.standardize_newlines('\n')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_newlines('\r\n')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_newlines('\n\r')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
         with self.subTest('Test single newline characters - As inner element'):
             return_val = self.standardize_newlines('A\nB')
-            self.assertEqual(return_val, 'A\nB')
+            self.assertText('A\nB', return_val)
             return_val = self.standardize_newlines('A\r\nB')
-            self.assertEqual(return_val, 'A\nB')
+            self.assertText('A\nB', return_val)
             return_val = self.standardize_newlines('A\n\rB')
-            self.assertEqual(return_val, 'A\nB')
+            self.assertText('A\nB', return_val)
 
         with self.subTest('Test repeated newline characters - Isolated'):
             return_val = self.standardize_newlines('\n\n')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_newlines('\n\n\n')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_newlines('\n\r\n\r\n')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
         with self.subTest('Test repeated newline characters - As inner element'):
             return_val = self.standardize_newlines('A\n\nB')
-            self.assertEqual(return_val, 'A\nB')
+            self.assertText('A\nB', return_val)
             return_val = self.standardize_newlines('A\n\n\nB')
-            self.assertEqual(return_val, 'A\nB')
+            self.assertText('A\nB', return_val)
             return_val = self.standardize_newlines('A\n\r\n\r\nB')
-            self.assertEqual(return_val, 'A\nB')
+            self.assertText('A\nB', return_val)
 
         with self.subTest('Test with whitespace - Isolated'):
             return_val = self.standardize_newlines('<br>   <br>')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_newlines('<br>   <br>   <br>')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_newlines('<br>   \n   <br>')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_newlines('\n   \n')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_newlines('\n   \n   \n')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
         with self.subTest('Test with whitespace - As inner element'):
             return_val = self.standardize_newlines('A<br>   <br>B')
-            self.assertEqual(return_val, 'A\nB')
+            self.assertText('A\nB', return_val)
             return_val = self.standardize_newlines('A<br>   <br>   <br>B')
-            self.assertEqual(return_val, 'A\nB')
+            self.assertText('A\nB', return_val)
             return_val = self.standardize_newlines('A<br>   \n   <br>B')
-            self.assertEqual(return_val, 'A\nB')
+            self.assertText('A\nB', return_val)
             return_val = self.standardize_newlines('A\n   \nB')
-            self.assertEqual(return_val, 'A\nB')
+            self.assertText('A\nB', return_val)
             return_val = self.standardize_newlines('A\n   \n   \nB')
-            self.assertEqual(return_val, 'A\nB')
+            self.assertText('A\nB', return_val)
 
         with self.subTest('Test with non-breaking space - Isolated'):
             return_val = self.standardize_newlines('<br> &nbsp; <br>')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_newlines('<br> &nbsp; <br> &nbsp; <br>')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_newlines('<br> &nbsp; \n &nbsp; <br>')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_newlines('\n &nbsp; \n')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_newlines('\n &nbsp; \n &nbsp; \n')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
         with self.subTest('Test with non-breaking space - As inner element'):
             return_val = self.standardize_newlines('A<br> &nbsp; <br>B')
-            self.assertEqual(return_val, 'A\nB')
+            self.assertText('A\nB', return_val)
             return_val = self.standardize_newlines('A<br> &nbsp; <br> &nbsp; <br>B')
-            self.assertEqual(return_val, 'A\nB')
+            self.assertText('A\nB', return_val)
             return_val = self.standardize_newlines('A<br> &nbsp; \n &nbsp; <br>B')
-            self.assertEqual(return_val, 'A\nB')
+            self.assertText('A\nB', return_val)
             return_val = self.standardize_newlines('A\n &nbsp; \nB')
-            self.assertEqual(return_val, 'A\nB')
+            self.assertText('A\nB', return_val)
             return_val = self.standardize_newlines('A\n &nbsp; \n &nbsp; \nB')
-            self.assertEqual(return_val, 'A\nB')
+            self.assertText('A\nB', return_val)
 
     def test__standardize_whitespace(self):
         """
@@ -2209,98 +2209,98 @@ class BaseClassTest(BaseTestCase):
         """
         with self.subTest('Test <br> tag - Isolated'):
             return_val = self.standardize_whitespace('<br>')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_whitespace('</br>')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_whitespace('<br/>')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_whitespace('<br />')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
         with self.subTest('Test <br> tag - As inner element'):
             return_val = self.standardize_whitespace('A<br>B')
-            self.assertEqual(return_val, 'A B')
+            self.assertText('A B', return_val)
             return_val = self.standardize_whitespace('A</br>B')
-            self.assertEqual(return_val, 'A B')
+            self.assertText('A B', return_val)
             return_val = self.standardize_whitespace('A<br/>B')
-            self.assertEqual(return_val, 'A B')
+            self.assertText('A B', return_val)
             return_val = self.standardize_whitespace('A<br />B')
-            self.assertEqual(return_val, 'A B')
+            self.assertText('A B', return_val)
 
         with self.subTest('Test single newline characters - Isolated'):
             return_val = self.standardize_whitespace('\n')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_whitespace('\r\n')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_whitespace('\n\r')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
         with self.subTest('Test single newline characters - As inner element'):
             return_val = self.standardize_whitespace('A\nB')
-            self.assertEqual(return_val, 'A B')
+            self.assertText('A B', return_val)
             return_val = self.standardize_whitespace('A\r\nB')
-            self.assertEqual(return_val, 'A B')
+            self.assertText('A B', return_val)
             return_val = self.standardize_whitespace('A\n\rB')
-            self.assertEqual(return_val, 'A B')
+            self.assertText('A B', return_val)
 
         with self.subTest('Test repeated newline characters - Isolated'):
             return_val = self.standardize_whitespace('\n\n')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_whitespace('\n\n\n')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_whitespace('\n\r\n\r\n')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
         with self.subTest('Test repeated newline characters - As inner element'):
             return_val = self.standardize_whitespace('A\n\nB')
-            self.assertEqual(return_val, 'A B')
+            self.assertText('A B', return_val)
             return_val = self.standardize_whitespace('A\n\n\nB')
-            self.assertEqual(return_val, 'A B')
+            self.assertText('A B', return_val)
             return_val = self.standardize_whitespace('A\n\r\n\r\nB')
-            self.assertEqual(return_val, 'A B')
+            self.assertText('A B', return_val)
 
         with self.subTest('Test with whitespace - Isolated'):
             return_val = self.standardize_whitespace('<br>   <br>')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_whitespace('<br>   <br>   <br>')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_whitespace('<br>   \n   <br>')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_whitespace('\n   \n')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_whitespace('\n   \n   \n')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
         with self.subTest('Test with whitespace - As inner element'):
             return_val = self.standardize_whitespace('A<br>   <br>B')
-            self.assertEqual(return_val, 'A B')
+            self.assertText('A B', return_val)
             return_val = self.standardize_whitespace('A<br>   <br>   <br>B')
-            self.assertEqual(return_val, 'A B')
+            self.assertText('A B', return_val)
             return_val = self.standardize_whitespace('A<br>   \n   <br>B')
-            self.assertEqual(return_val, 'A B')
+            self.assertText('A B', return_val)
             return_val = self.standardize_whitespace('A\n   \nB')
-            self.assertEqual(return_val, 'A B')
+            self.assertText('A B', return_val)
             return_val = self.standardize_whitespace('A\n   \n   \nB')
-            self.assertEqual(return_val, 'A B')
+            self.assertText('A B', return_val)
 
         with self.subTest('Test with whitespace - Isolated'):
             return_val = self.standardize_whitespace('<br> &nbsp; <br>')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_whitespace('<br> &nbsp; <br> &nbsp; <br>')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_whitespace('<br> &nbsp; \n &nbsp; <br>')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_whitespace('\n &nbsp; \n')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
             return_val = self.standardize_whitespace('\n &nbsp; \n &nbsp; \n')
-            self.assertEqual(return_val, '')
+            self.assertText('', return_val)
         with self.subTest('Test with whitespace - As inner element'):
             return_val = self.standardize_whitespace('A<br> &nbsp; <br>B')
-            self.assertEqual(return_val, 'A B')
+            self.assertText('A B', return_val)
             return_val = self.standardize_whitespace('A<br> &nbsp; <br> &nbsp; <br>B')
-            self.assertEqual(return_val, 'A B')
+            self.assertText('A B', return_val)
             return_val = self.standardize_whitespace('A<br> &nbsp; \n &nbsp; <br>B')
-            self.assertEqual(return_val, 'A B')
+            self.assertText('A B', return_val)
             return_val = self.standardize_whitespace('A\n &nbsp; \nB')
-            self.assertEqual(return_val, 'A B')
+            self.assertText('A B', return_val)
             return_val = self.standardize_whitespace('A\n &nbsp; \n &nbsp; \nB')
-            self.assertEqual(return_val, 'A B')
+            self.assertText('A B', return_val)
 
     # endregion Helper Function Tests
 
