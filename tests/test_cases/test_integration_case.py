@@ -32,129 +32,168 @@ class IntegrationClassTest__Base(IntegrationTestCase):
         with self.subTest('With no site_root_url value defined - Via literal value'):
             # Test 404 page url.
             response = self.assertResponse('bad_url', expected_status=404)
-            self.assertText('127.0.0.1/bad_url/', response.url)
+            self.assertText('/bad_url/', response.url)
+            self.assertText('127.0.0.1/bad_url/', response.full_url)
             response = self.assertResponse('bad_url/', expected_status=404)
-            self.assertText('127.0.0.1/bad_url/', response.url)
+            self.assertText('/bad_url/', response.url)
+            self.assertText('127.0.0.1/bad_url/', response.full_url)
             response = self.assertResponse('127.0.0.1/bad_url/', expected_status=404)
-            self.assertText('127.0.0.1/bad_url/', response.url)
+            self.assertText('/bad_url/', response.url)
+            self.assertText('127.0.0.1/bad_url/', response.full_url)
             response = self.assertResponse('///bad_url///', expected_status=404)
-            self.assertText('127.0.0.1/bad_url/', response.url)
+            self.assertText('/bad_url/', response.url)
+            self.assertText('127.0.0.1/bad_url/', response.full_url)
 
             # Test "index" page url.
             response = self.assertResponse('')
-            self.assertText('127.0.0.1/', response.url)
+            self.assertText('/', response.url)
+            self.assertText('127.0.0.1/', response.full_url)
             response = self.assertResponse('/')
-            self.assertText('127.0.0.1/', response.url)
+            self.assertText('/', response.url)
+            self.assertText('127.0.0.1/', response.full_url)
             response = self.assertResponse('127.0.0.1/')
-            self.assertText('127.0.0.1/', response.url)
+            self.assertText('/', response.url)
+            self.assertText('127.0.0.1/', response.full_url)
 
             # Test "login" page url.
             response = self.assertResponse('login/')
-            self.assertText('127.0.0.1/login/', response.url)
+            self.assertText('/login/', response.url)
+            self.assertText('127.0.0.1/login/', response.full_url)
             response = self.assertResponse('/login/')
-            self.assertText('127.0.0.1/login/', response.url)
+            self.assertText('/login/', response.url)
+            self.assertText('127.0.0.1/login/', response.full_url)
             response = self.assertResponse('127.0.0.1/login/')
-            self.assertText('127.0.0.1/login/', response.url)
+            self.assertText('/login/', response.url)
+            self.assertText('127.0.0.1/login/', response.full_url)
 
             # Test "one message" page url.
             response = self.assertResponse('views/one-message/')
-            self.assertText('127.0.0.1/views/one-message/', response.url)
+            self.assertText('/views/one-message/', response.url)
+            self.assertText('127.0.0.1/views/one-message/', response.full_url)
             response = self.assertResponse('/views/one-message/')
-            self.assertText('127.0.0.1/views/one-message/', response.url)
+            self.assertText('/views/one-message/', response.url)
+            self.assertText('127.0.0.1/views/one-message/', response.full_url)
             response = self.assertResponse('127.0.0.1/views/one-message/')
-            self.assertText('127.0.0.1/views/one-message/', response.url)
+            self.assertText('/views/one-message/', response.url)
+            self.assertText('127.0.0.1/views/one-message/', response.full_url)
 
             # Test "two messages" page url.
             response = self.assertResponse('views/two-messages/')
-            self.assertText('127.0.0.1/views/two-messages/', response.url)
+            self.assertText('/views/two-messages/', response.url)
+            self.assertText('127.0.0.1/views/two-messages/', response.full_url)
             response = self.assertResponse('/views/two-messages/')
-            self.assertText('127.0.0.1/views/two-messages/', response.url)
+            self.assertText('/views/two-messages/', response.url)
+            self.assertText('127.0.0.1/views/two-messages/', response.full_url)
             response = self.assertResponse('127.0.0.1/views/two-messages/')
-            self.assertText('127.0.0.1/views/two-messages/', response.url)
+            self.assertText('/views/two-messages/', response.url)
+            self.assertText('127.0.0.1/views/two-messages/', response.full_url)
 
             # Test "three messages" page url.
             response = self.assertResponse('views/three-messages/')
-            self.assertText('127.0.0.1/views/three-messages/', response.url)
+            self.assertText('/views/three-messages/', response.url)
+            self.assertText('127.0.0.1/views/three-messages/', response.full_url)
             response = self.assertResponse('/views/three-messages/')
-            self.assertText('127.0.0.1/views/three-messages/', response.url)
+            self.assertText('/views/three-messages/', response.url)
+            self.assertText('127.0.0.1/views/three-messages/', response.full_url)
             response = self.assertResponse('127.0.0.1/views/three-messages/')
-            self.assertText('127.0.0.1/views/three-messages/', response.url)
+            self.assertText('/views/three-messages/', response.url)
+            self.assertText('127.0.0.1/views/three-messages/', response.full_url)
 
             # Test "user detail" page url via args.
             response = self.assertResponse('user/detail/1/')
-            self.assertText('127.0.0.1/user/detail/1/', response.url)
+            self.assertText('/user/detail/1/', response.url)
+            self.assertText('127.0.0.1/user/detail/1/', response.full_url)
             response = self.assertResponse('/user/detail/1/')
-            self.assertText('127.0.0.1/user/detail/1/', response.url)
+            self.assertText('/user/detail/1/', response.url)
+            self.assertText('127.0.0.1/user/detail/1/', response.full_url)
             response = self.assertResponse('127.0.0.1/user/detail/1/')
-            self.assertText('127.0.0.1/user/detail/1/', response.url)
+            self.assertText('/user/detail/1/', response.url)
+            self.assertText('127.0.0.1/user/detail/1/', response.full_url)
 
             # Test "user detail" page url via kwargs.
             response = self.assertResponse('user/detail/2/')
-            self.assertText('127.0.0.1/user/detail/2/', response.url)
+            self.assertText('/user/detail/2/', response.url)
+            self.assertText('127.0.0.1/user/detail/2/', response.full_url)
             response = self.assertResponse('/user/detail/2/')
-            self.assertText('127.0.0.1/user/detail/2/', response.url)
+            self.assertText('/user/detail/2/', response.url)
+            self.assertText('127.0.0.1/user/detail/2/', response.full_url)
             response = self.assertResponse('127.0.0.1/user/detail/2/')
-            self.assertText('127.0.0.1/user/detail/2/', response.url)
+            self.assertText('/user/detail/2/', response.url)
+            self.assertText('127.0.0.1/user/detail/2/', response.full_url)
 
         with self.subTest('With no site_root_url value defined - Via reverse()'):
             # Test "index" page url.
             response = self.assertResponse('django_expanded_test_cases:index')
-            self.assertText('127.0.0.1/', response.url)
+            self.assertText('/', response.url)
+            self.assertText('127.0.0.1/', response.full_url)
 
             # Test "login" page url.
             response = self.assertResponse('django_expanded_test_cases:login')
-            self.assertText('127.0.0.1/login/', response.url)
+            self.assertText('/login/', response.url)
+            self.assertText('127.0.0.1/login/', response.full_url)
 
             # Test "one message" page url.
             response = self.assertResponse('django_expanded_test_cases:response-with-one-message')
-            self.assertText('127.0.0.1/views/one-message/', response.url)
+            self.assertText('/views/one-message/', response.url)
+            self.assertText('127.0.0.1/views/one-message/', response.full_url)
 
             # Test "two messages" page url.
             response = self.assertResponse('django_expanded_test_cases:response-with-two-messages')
-            self.assertText('127.0.0.1/views/two-messages/', response.url)
+            self.assertText('/views/two-messages/', response.url)
+            self.assertText('127.0.0.1/views/two-messages/', response.full_url)
 
             # Test "three messages" page url.
             response = self.assertResponse('django_expanded_test_cases:response-with-three-messages')
-            self.assertText('127.0.0.1/views/three-messages/', response.url)
+            self.assertText('/views/three-messages/', response.url)
+            self.assertText('127.0.0.1/views/three-messages/', response.full_url)
 
             # Test "user detail" page url via args.
             response = self.assertResponse('django_expanded_test_cases:user-detail', args=(1,))
-            self.assertText('127.0.0.1/user/detail/1/', response.url)
+            self.assertText('/user/detail/1/', response.url)
+            self.assertText('127.0.0.1/user/detail/1/', response.full_url)
 
             # Test "user detail" page url via kwargs.
             response = self.assertResponse('django_expanded_test_cases:user-detail', kwargs={'pk': 2})
-            self.assertText('127.0.0.1/user/detail/2/', response.url)
+            self.assertText('/user/detail/2/', response.url)
+            self.assertText('127.0.0.1/user/detail/2/', response.full_url)
 
         with self.subTest('With custom site_root_url value defined'):
             self.site_root_url = 'https://my_really_cool_site.com/'
 
             # Test "index" page url.
             response = self.assertResponse('django_expanded_test_cases:index')
-            self.assertText('https://my_really_cool_site.com/', response.url)
+            self.assertText('/', response.url)
+            self.assertText('https://my_really_cool_site.com/', response.full_url)
 
             # Test "login" page url.
             response = self.assertResponse('django_expanded_test_cases:login')
-            self.assertText('https://my_really_cool_site.com/login/', response.url)
+            self.assertText('/login/', response.url)
+            self.assertText('https://my_really_cool_site.com/login/', response.full_url)
 
             # Test "one message" page url.
             response = self.assertResponse('django_expanded_test_cases:response-with-one-message')
-            self.assertText('https://my_really_cool_site.com/views/one-message/', response.url)
+            self.assertText('/views/one-message/', response.url)
+            self.assertText('https://my_really_cool_site.com/views/one-message/', response.full_url)
 
             # Test "two messages" page url.
             response = self.assertResponse('django_expanded_test_cases:response-with-two-messages')
-            self.assertText('https://my_really_cool_site.com/views/two-messages/', response.url)
+            self.assertText('/views/two-messages/', response.url)
+            self.assertText('https://my_really_cool_site.com/views/two-messages/', response.full_url)
 
             # Test "three messages" page url.
             response = self.assertResponse('django_expanded_test_cases:response-with-three-messages')
-            self.assertText('https://my_really_cool_site.com/views/three-messages/', response.url)
+            self.assertText('/views/three-messages/', response.url)
+            self.assertText('https://my_really_cool_site.com/views/three-messages/', response.full_url)
 
             # Test "user detail" page url via args.
             response = self.assertResponse('django_expanded_test_cases:user-detail', args=(1,))
-            self.assertText('https://my_really_cool_site.com/user/detail/1/', response.url)
+            self.assertText('/user/detail/1/', response.url)
+            self.assertText('https://my_really_cool_site.com/user/detail/1/', response.full_url)
 
             # Test "user detail" page url via kwargs.
             response = self.assertResponse('django_expanded_test_cases:user-detail', kwargs={'pk': 2})
-            self.assertText('https://my_really_cool_site.com/user/detail/2/', response.url)
+            self.assertText('/user/detail/2/', response.url)
+            self.assertText('https://my_really_cool_site.com/user/detail/2/', response.full_url)
 
     def test__assertResponse__url_redirect(self):
         """
@@ -574,10 +613,10 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                     expected_content=[
                         'Home Page Header',
                         'Pretend this is',
-                        'Wrong value'
+                        'Wrong value',
                     ],
                 )
-            self.assertText(exception_msg.format('Wrong value'), str(err.exception))
+            self.assertTextStartsWith(exception_msg.format('Wrong value'), str(err.exception))
 
         with self.subTest('With search subsections'):
             # Strip start.
@@ -682,7 +721,8 @@ class IntegrationClassTest__Base(IntegrationTestCase):
         """
         response = self.assertGetResponse('django_expanded_test_cases:index')
 
-        self.assertText('127.0.0.1/', response.url)
+        self.assertText('/', response.url)
+        self.assertText('127.0.0.1/', response.full_url)
         self.assertEqual(response.status_code, 200)
 
     def test__assertPostResponse(self):
@@ -693,7 +733,8 @@ class IntegrationClassTest__Base(IntegrationTestCase):
         """
         response = self.assertPostResponse('django_expanded_test_cases:index')
 
-        self.assertText('127.0.0.1/', response.url)
+        self.assertText('/', response.url)
+        self.assertText('127.0.0.1/', response.full_url)
         self.assertEqual(response.status_code, 200)
 
     # endregion Response Assertion Tests
@@ -1678,41 +1719,41 @@ class IntegrationClassTest__Base(IntegrationTestCase):
             # Test as list.
             with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(response, ['<h1>Test Page Header</h1>'])
-            self.assertText(exception_msg_not_found.format('<h1>Test Page Header</h1>'), str(err.exception))
+            self.assertTextStartsWith(exception_msg_not_found.format('<h1>Test Page Header</h1>'), str(err.exception))
             with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(response, ['Wrong Content'])
-            self.assertText(exception_msg_not_found.format('Wrong Content'), str(err.exception))
+            self.assertTextStartsWith(exception_msg_not_found.format('Wrong Content'), str(err.exception))
             with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(response, ['<h1>Home Page Wrong'])
-            self.assertText(exception_msg_not_found.format('<h1>Home Page Wrong'), str(err.exception))
+            self.assertTextStartsWith(exception_msg_not_found.format('<h1>Home Page Wrong'), str(err.exception))
             with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(response, ['Wrong Page Header</h1>'])
-            self.assertText(exception_msg_not_found.format('Wrong Page Header</h1>'), str(err.exception))
+            self.assertTextStartsWith(exception_msg_not_found.format('Wrong Page Header</h1>'), str(err.exception))
             with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(response, ['<h1>Home Page Header</h1>', 'Wrong text'])
-            self.assertText(exception_msg_not_found.format('Wrong text'), str(err.exception))
+            self.assertTextStartsWith(exception_msg_not_found.format('Wrong text'), str(err.exception))
             with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(response, ['<h1>Wrong Header</h1>', 'project landing page'])
-            self.assertText(exception_msg_not_found.format('<h1>Wrong Header</h1>'), str(err.exception))
+            self.assertTextStartsWith(exception_msg_not_found.format('<h1>Wrong Header</h1>'), str(err.exception))
             # Test as tuple.
             with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(response, ('<h1>Test Page Header</h1>',))
-            self.assertText(exception_msg_not_found.format('<h1>Test Page Header</h1>'), str(err.exception))
+            self.assertTextStartsWith(exception_msg_not_found.format('<h1>Test Page Header</h1>'), str(err.exception))
             with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(response, ('Wrong Content',))
-            self.assertText(exception_msg_not_found.format('Wrong Content'), str(err.exception))
+            self.assertTextStartsWith(exception_msg_not_found.format('Wrong Content'), str(err.exception))
             with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(response, ('<h1>Home Page Wrong',))
-            self.assertText(exception_msg_not_found.format('<h1>Home Page Wrong'), str(err.exception))
+            self.assertTextStartsWith(exception_msg_not_found.format('<h1>Home Page Wrong'), str(err.exception))
             with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(response, ('Wrong Page Header</h1>',))
-            self.assertText(exception_msg_not_found.format('Wrong Page Header</h1>'), str(err.exception))
+            self.assertTextStartsWith(exception_msg_not_found.format('Wrong Page Header</h1>'), str(err.exception))
             with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(response, ('<h1>Home Page Header</h1>', 'Wrong text'))
-            self.assertText(exception_msg_not_found.format('Wrong text'), str(err.exception))
+            self.assertTextStartsWith(exception_msg_not_found.format('Wrong text'), str(err.exception))
             with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(response, ('<h1>Wrong Header</h1>', 'project landing page'))
-            self.assertText(exception_msg_not_found.format('<h1>Wrong Header</h1>'), str(err.exception))
+            self.assertTextStartsWith(exception_msg_not_found.format('<h1>Wrong Header</h1>'), str(err.exception))
 
         with self.subTest('Standard Response - Wrong ordering'):
             response = self._get_page_response('django_expanded_test_cases:user-detail', args=(1,))
@@ -1731,7 +1772,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                         'Is Staff: "False"',
                     ],
                 )
-            self.assertText(exception_msg_bad_order.format('<h1>User Detail Page Header</h1>'), str(err.exception))
+            self.assertTextStartsWith(exception_msg_bad_order.format('<h1>User Detail Page Header</h1>'), str(err.exception))
 
             with self.assertRaises(AssertionError) as err:
                 # Test "first name" string after header.
@@ -1747,7 +1788,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                         'Is Staff: "False"',
                     ],
                 )
-            self.assertText(exception_msg_bad_order.format('Username: "test_superuser"'), str(err.exception))
+            self.assertTextStartsWith(exception_msg_bad_order.format('Username: "test_superuser"'), str(err.exception))
 
             with self.assertRaises(AssertionError) as err:
                 # Test "first name" string after last name.
@@ -1763,7 +1804,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                         'Is Staff: "False"',
                     ],
                 )
-            self.assertText(exception_msg_bad_order.format('First Name: "SuperUserFirst"'), str(err.exception))
+            self.assertTextStartsWith(exception_msg_bad_order.format('First Name: "SuperUserFirst"'), str(err.exception))
 
             with self.assertRaises(AssertionError) as err:
                 # Test "first name" string after active.
@@ -1779,7 +1820,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                         'Is Staff: "False"',
                     ],
                 )
-            self.assertText(exception_msg_bad_order.format('First Name: "SuperUserFirst"'), str(err.exception))
+            self.assertTextStartsWith(exception_msg_bad_order.format('First Name: "SuperUserFirst"'), str(err.exception))
 
             with self.assertRaises(AssertionError) as err:
                 # Test "first name" string after superuser.
@@ -1795,7 +1836,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                         'Is Staff: "False"',
                     ],
                 )
-            self.assertText(exception_msg_bad_order.format('First Name: "SuperUserFirst"'), str(err.exception))
+            self.assertTextStartsWith(exception_msg_bad_order.format('First Name: "SuperUserFirst"'), str(err.exception))
 
             with self.assertRaises(AssertionError) as err:
                 # Test "first name" string after staff.
@@ -1811,7 +1852,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                         'First Name: "SuperUserFirst"',
                     ],
                 )
-            self.assertText(exception_msg_bad_order.format('First Name: "SuperUserFirst"'), str(err.exception))
+            self.assertTextStartsWith(exception_msg_bad_order.format('First Name: "SuperUserFirst"'), str(err.exception))
 
     def test__assertPageContent__failure__with_bad_search_space(self):
         exception_msg = 'Could not find "{0}" value in content response. Provided value was:\n{1}'
@@ -1940,7 +1981,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                     ],
                     content_starts_after='<h1>Home Page Header</h1>',
                 )
-            self.assertText(
+            self.assertTextStartsWith(
                 exception_msg.format('content_starts_after', '<meta charset="utf-8">'),
                 str(err.exception),
             )
@@ -1955,7 +1996,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                     ignore_ordering=True,
                     content_starts_after='<h1>Home Page Header</h1>',
                 )
-            self.assertText(
+            self.assertTextStartsWith(
                 exception_msg.format('content_starts_after', '<meta charset="utf-8">'),
                 str(err.exception),
             )
@@ -1970,7 +2011,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                     ignore_ordering=True,
                     content_starts_after='<h1>Home Page Header</h1>',
                 )
-            self.assertText(
+            self.assertTextStartsWith(
                 exception_msg.format('content_starts_after', '<title>Home Page | Test Views</title>'),
                 str(err.exception),
             )
@@ -2036,7 +2077,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                     ],
                     content_ends_before='<h1>Home Page Header</h1>',
                 )
-            self.assertText(
+            self.assertTextStartsWith(
                 exception_msg.format('content_ends_before', '<p>Pretend this is the project landing page.</p>'),
                 str(err.exception),
             )
@@ -2051,7 +2092,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                     ignore_ordering=True,
                     content_ends_before='<h1>Home Page Header</h1>',
                 )
-            self.assertText(
+            self.assertTextStartsWith(
                 exception_msg.format('content_ends_before', '<p>Pretend this is the project landing page.</p>'),
                 str(err.exception),
             )
@@ -2066,7 +2107,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                     ignore_ordering=True,
                     content_ends_before='<h1>Home Page Header</h1>',
                 )
-            self.assertText(exception_msg.format('content_ends_before', '</body>'), str(err.exception))
+            self.assertTextStartsWith(exception_msg.format('content_ends_before', '</body>'), str(err.exception))
 
         with self.subTest('Standard Response - With both content containers defined'):
             response = self._get_page_response('django_expanded_test_cases:index')
@@ -2141,7 +2182,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                     content_starts_after='<title>Home Page | Test Views</title>',
                     content_ends_before='<p>Pretend this is the project landing page.</p>',
                 )
-            self.assertText(exception_msg.format('content_starts_after', '<head>'), str(err.exception))
+            self.assertTextStartsWith(exception_msg.format('content_starts_after', '<head>'), str(err.exception))
             # Expected as array - Above search area, with ignore_ordering.
             with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
@@ -2154,7 +2195,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                     content_starts_after='<title>Home Page | Test Views</title>',
                     content_ends_before='<p>Pretend this is the project landing page.</p>',
                 )
-            self.assertText(exception_msg.format('content_starts_after', '<head>'), str(err.exception))
+            self.assertTextStartsWith(exception_msg.format('content_starts_after', '<head>'), str(err.exception))
             # Expected as array - Above search area, with ignore_ordering and content mis-ordered.
             with self.assertRaises(AssertionError) as err:
                 self.assertPageContent(
@@ -2167,7 +2208,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                     content_starts_after='<title>Home Page | Test Views</title>',
                     content_ends_before='<p>Pretend this is the project landing page.</p>',
                 )
-            self.assertText(
+            self.assertTextStartsWith(
                 exception_msg.format('content_starts_after', '<meta charset="utf-8">'),
                 str(err.exception),
             )
@@ -2182,7 +2223,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                     content_starts_after='<title>Home Page | Test Views</title>',
                     content_ends_before='<p>Pretend this is',
                 )
-            self.assertText(
+            self.assertTextStartsWith(
                 exception_msg.format('content_ends_before', 'the project landing page.</p>'),
                 str(err.exception),
             )
@@ -2198,7 +2239,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                     content_starts_after='<title>Home Page | Test Views</title>',
                     content_ends_before='<p>Pretend this is',
                 )
-            self.assertText(
+            self.assertTextStartsWith(
                 exception_msg.format('content_ends_before', 'the project landing page.</p>'),
                 str(err.exception),
             )
@@ -2214,7 +2255,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                     content_starts_after='<title>Home Page | Test Views</title>',
                     content_ends_before='<p>Pretend this is',
                 )
-            self.assertText(exception_msg.format('content_ends_before', '</body>'), str(err.exception))
+            self.assertTextStartsWith(exception_msg.format('content_ends_before', '</body>'), str(err.exception))
 
     def test__assertPageContent__fail__with_content_casing_mismatch__exact_match(self):
         exception_msg = (

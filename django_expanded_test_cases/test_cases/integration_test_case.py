@@ -149,7 +149,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Optional hook for running custom pre-builtin-test logic.
         self._assertResponse__pre_builtin_tests(
-            url, *args,
+            response.url, *args,
             response=response,
             get=get, data=data,
             expected_status=expected_status,
@@ -195,7 +195,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Optional hook for running custom post-builtin-test logic.
         self._assertResponse__post_builtin_tests(
-            url, *args,
+            response.url, *args,
             response=response,
             get=get, data=data,
             expected_status=expected_status,
@@ -935,58 +935,17 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         user = self._get_login_user(
             user,
             *args,
-            url=url,
-            get=get,
-            data=data,
             auto_login=auto_login,
             user_permissions=user_permissions,
             user_groups=user_groups,
             **kwargs,
         )
 
-        # Preprocess all potential url values.
-        url = str(url).strip()
-        current_site = '127.0.0.1'
-        url_args = provided_args
-        url_kwargs = provided_kwargs
-
-        # Handle site_root_url value.
-        if self.site_root_url is not None:
-            current_site = self.site_root_url
-
-        # Standardize if literal site url was provided and included site_root.
-        if url.startswith(current_site):
-            url = url[len(current_site):]
-
-        # Attempt to get reverse of provided url.
-        try:
-            url = reverse(url, args=url_args, kwargs=url_kwargs)
-
-            # Provide warning based on APPEND_SLASH setting.
-            # See https://stackoverflow.com/a/42213107 for discussion on why this setting exists
-            # as well as how Django generally handles url composition.
-            if settings.APPEND_SLASH:
-                if len(url) > 0 and url[-1] != '/':
-                    warn_msg = (
-                        'Django setting APPEND_SLASH is set to True, '
-                        'but url did not resolve with trailing slash. '
-                        'This may cause UnitTests with ETC to fail. Url was: {0}'
-                    ).format(url)
-                    logging.warning(warn_msg)
-            else:
-                if len(url) > 0 and url[-1] == '/':
-                    warn_msg = (
-                        'Django setting APPEND_SLASH is set to False, '
-                        'but url resolved with trailing slash. '
-                        'This may cause UnitTests with ETC to fail. Url was: {0}'
-                    ).format(url)
-                    logging.warning(warn_msg)
-        except NoReverseMatch:
-            # Could not find as reverse. Assume is literal url.
-            pass
-
+        # Handle url sanitization.
+        url = self.standardize_url(url, url_args=provided_args, url_kwargs=provided_kwargs, append_root=False)
+        full_url = '{0}{1}'.format(self.site_root_url, url)
         if ETC_INCLUDE_RESPONSE_DEBUG_URL:
-            self.show_debug_url(url)
+            self.show_debug_url(full_url)
 
         # Get response object.
         if bool(get):
@@ -995,7 +954,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             response = self.client.post(url, data=data, follow=True)
 
         # Update response object with additional useful values for further testing/analysis.
-        response.url = current_site
+        response.url = url
+        response.full_url = full_url
         response.user = user
 
         # Return generated response.

@@ -113,7 +113,6 @@ class ChannelsLiveServerTestCase(DjangoChannelsLiveServerTestCase, ResponseTestC
         super().setUp()
 
         self._error_displayed = False
-        self.site_root_url = self.live_server_url
 
     def subTest(self, *args, **kwargs):
         # Call CoreMixin logic.

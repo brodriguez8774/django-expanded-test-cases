@@ -914,7 +914,16 @@ class CoreTestCaseMixin:
     @property
     def site_root_url(self):
         """"""
-        return self._site_root_url
+        if (
+            self._site_root_url is None
+            or self._site_root_url == ''
+        ):
+            # No site root populated. Return default (will apply in most cases).
+            return '127.0.0.1'
+        else:
+            # Site root is populated. Return value.
+            return self._site_root_url
+
 
     @site_root_url.setter
     def site_root_url(self, value):

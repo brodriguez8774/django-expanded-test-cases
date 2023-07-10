@@ -13,6 +13,8 @@ from django.http.response import HttpResponseBase
 
 # Internal Imports.
 from . import CoreTestCaseMixin
+from django.urls import reverse
+from django.urls.exceptions import NoReverseMatch
 from django_expanded_test_cases.constants import (
     ETC_OUTPUT_ERROR_COLOR,
     ETC_RESPONSE_DEBUG_CONTENT_COLOR,
@@ -53,33 +55,9 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
     def show_debug_url(self, url):
         """Prints debug url output."""
 
-        # Make sure exactly one slash is prepended to the url value.
-        url = str(url).lstrip('/').rstrip('/').lstrip(self.site_root_url)
-        if len(url) == 0:
-            url = '/'
-        else:
-            # Handle for prepend slash.
-            # Only apply if not already present and not including the site root in url.
-            if not (
-                (self.site_root_url is not None and str(url).startswith(self.site_root_url))
-                and not url.startswith('/')
-            ):
-                url = '/{0}'.format(url)
-
-            # Handle for append slash.
-            # Only apply if not already present and settings.APPEND_SLASH is true.
-            if settings.APPEND_SLASH and not url.endswith('/'):
-                url = '{0}/'.format(url)
-
-        # Log url we're attempting to access.
-        if self.site_root_url is not None:
-            if str(url).startswith(self.site_root_url):
-                current_site = url
-            else:
-                current_site = '{0}{1}'.format(self.site_root_url, url)
-        else:
-            current_site = '127.0.0.1{0}'.format(url)
-        message = 'Attempting to access url "{0}"'.format(current_site)
+        # Ensure url is in consistent format.
+        url = self.standardize_url(url, append_root=True)
+        message = 'Attempting to access url "{0}"'.format(url)
 
         self._debug_print('\n\n')
         self._debug_print('{0}'.format('-' * len(message)), fore=ETC_RESPONSE_DEBUG_URL_COLOR, style=ETC_OUTPUT_EMPHASIS_COLOR)
@@ -352,6 +330,81 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         self._debug_print()
 
     # endregion Debug Output Functions.
+
+    def standardize_url(self, url, url_args=None, url_kwargs=None, append_root=True):
+        """Attempts to standardize URL value, such as in event url is in format for reverse() function.
+
+        :param url: Url value to attempt to parse and standardize.
+        :param url_args: Additional "args" to pass for reverse() function, if applicable.
+        :param url_kwargs: Additional "kwargs" to pass for reverse() function, if applicable.
+        :param append_root: Bool indicating if "site root" should be included in url (if not already).
+        :return: Attempt at fully-formatted url.
+        """
+
+        # Handle mutable data defaults.
+        url_args = url_args or ()
+        url_kwargs = url_kwargs or {}
+
+        # Preprocess all potential url values.
+        url = str(url).strip()
+
+        # Attempt to get reverse of provided url.
+        try:
+            url = reverse(url, args=url_args, kwargs=url_kwargs)
+
+            # Provide warning based on APPEND_SLASH setting.
+            # See https://stackoverflow.com/a/42213107 for discussion on why this setting exists
+            # as well as how Django generally handles url composition.
+            if settings.APPEND_SLASH:
+                if len(url) > 0 and url[-1] != '/':
+                    warn_msg = (
+                        'Django setting APPEND_SLASH is set to True, '
+                        'but url did not resolve with trailing slash. '
+                        'This may cause UnitTests with ETC to fail. Url was: {0}'
+                    ).format(url)
+                    logging.warning(warn_msg)
+            else:
+                if len(url) > 0 and url[-1] == '/':
+                    warn_msg = (
+                        'Django setting APPEND_SLASH is set to False, '
+                        'but url resolved with trailing slash. '
+                        'This may cause UnitTests with ETC to fail. Url was: {0}'
+                    ).format(url)
+                    logging.warning(warn_msg)
+
+        except NoReverseMatch:
+            # Could not find as reverse. Assume is literal url.
+
+            # Trim any known extra values on literal url str.
+            url = str(url).strip().lstrip('/').rstrip('/')
+            if url.startswith(self.site_root_url):
+                url = url.lstrip(self.site_root_url)
+            elif url.startswith('127.0.0.1'):
+                url = url.lstrip('127.0.0.1')
+
+            # Check if empty url.
+            if len(url) == 0:
+                # Empty url. Populate to single slash.
+                url = '/'
+            else:
+                # Non-empty url.
+
+                # Handle for prepend slash.
+                # Only apply if not already present and not equivalent to site-root.
+                if not url.startswith('/'):
+                    # Site root not defined.
+                    url = '/{0}'.format(url)
+
+                # Handle for append slash.
+                # Only apply if not already present and settings.APPEND_SLASH is true.
+                if settings.APPEND_SLASH and not url.endswith('/'):
+                    url = '{0}/'.format(url)
+
+        # Finally, prepend site root to url, if applicable.
+        if append_root:
+            url = '{0}{1}'.format(self.site_root_url, url)
+
+        return url
 
     def standardize_html_tags(self, value):
         """Standardizes spacing around html-esque elements, to remove unnecessary spacing.
