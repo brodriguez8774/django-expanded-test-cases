@@ -32,7 +32,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 )
 if CHANNELS_PACKAGE_INSTALLED:
-    INSTALLED_APPS += ('channels',)
+    INSTALLED_APPS += ('channels', 'daphne')
 ASGI_APPLICATION = 'tests.asgi.application'
 
 
