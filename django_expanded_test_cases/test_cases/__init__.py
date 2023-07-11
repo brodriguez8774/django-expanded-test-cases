@@ -24,7 +24,7 @@ except ModuleNotFoundError:
         Cannot use LiveServerTestCase class without "selenium" package installed.
         To use this TestCase, add the following packages to your project:
             * selenium              # Required
-            * webdriver-manager     # Optional
+            * webdriver-manager     # Required
 
         For more information, see:
         https://www.selenium.dev/documentation/webdriver/getting_started/
@@ -48,13 +48,13 @@ except ModuleNotFoundError:
     # This is okay, as we don't want this logic as a hard requirement to use this library.
 
     # However, we do want to define a dummy class to give feedback errors.
-    class LiveServerTestCase(BaseTestCase):
+    class ChannelsLiveServerTestCase(BaseTestCase):
         err_msg = """
         Cannot use ChannelsLiveServerTestCase class without "channels" package installed.
         To use this TestCase, add the following packages to your project:
             * channels              # Required
             * daphne                # Required
-            * webdriver-manager     # Optional
+            * webdriver-manager     # Required
 
         For more information, see:
         https://www.selenium.dev/documentation/webdriver/getting_started/

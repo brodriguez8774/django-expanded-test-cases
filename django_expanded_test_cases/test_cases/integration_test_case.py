@@ -3,7 +3,7 @@ Testing logic for views and other multi-part components.
 """
 
 # System Imports.
-import logging, re, textwrap
+import re, textwrap
 
 # Third-Party Imports.
 from django.conf import settings
@@ -50,7 +50,6 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         except NoReverseMatch:
             # Login url is not defined.
             cls.login_url = None
-        cls._site_root_url = None
 
     # region Custom Assertions
 

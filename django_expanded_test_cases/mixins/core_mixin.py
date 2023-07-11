@@ -93,6 +93,8 @@ class CoreTestCaseMixin:
         else:
             cls._debug_print_bool = ETC_DEBUG_PRINT
 
+        cls._site_root_url = None
+
     @classmethod
     def set_up_test_data(cls, extra_usergen_kwargs=None):
         """
@@ -918,7 +920,16 @@ class CoreTestCaseMixin:
             self._site_root_url is None
             or self._site_root_url == ''
         ):
-            # No site root populated. Return default (will apply in most cases).
+            # No site root populated. Check for "live_server_url", which is auto-populated for Selenium tests.
+            if (
+                hasattr(self, 'live_server_url')
+                and self.live_server_url is not None
+                and self.live_server_url != ''
+            ):
+                return self.live_server_url
+
+            # Failed to get auto-populated Selenium url.
+            # Return default (will apply in most cases).
             return '127.0.0.1'
         else:
             # Site root is populated. Return value.

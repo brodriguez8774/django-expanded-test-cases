@@ -10,8 +10,6 @@ import time
 
 # Third-Party Imports.
 from django.test import LiveServerTestCase as DjangoLiveServerTestCase
-# from django.test.selenium import LiveServerTestCase
-# from django.test.selenium import SeleniumTestCase
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.firefox.service import Service as FireFoxService
@@ -39,7 +37,6 @@ class LiveServerTestCase(DjangoLiveServerTestCase, ResponseTestCaseMixin):
         cls.set_up_class(debug_print=debug_print)
 
         # Populate some initial values.
-        cls.site_root_url = None
         cls._driver_set = []
         cls._options = None
 
@@ -88,6 +85,20 @@ class LiveServerTestCase(DjangoLiveServerTestCase, ResponseTestCaseMixin):
                 # Fall back to manual installation handling.
                 # cls._service = ChromeService(executable_path='/usr/bin/google-chrome')
                 cls._service = ChromeService(executable_path='/usr/local/share/chromedriver')
+
+                # Set required options to prevent crashing.
+                chromeOptions = webdriver.ChromeOptions()
+                chromeOptions.add_experimental_option("prefs", {"profile.managed_default_content_settings.images": 2})
+                chromeOptions.add_argument("--no-sandbox")
+                chromeOptions.add_argument("--disable-setuid-sandbox")
+                chromeOptions.add_argument("--remote-debugging-port=9222")
+                chromeOptions.add_argument("--disable-dev-shm-using")
+                chromeOptions.add_argument("--disable-extensions")
+                chromeOptions.add_argument("--disable-gpu")
+                chromeOptions.add_argument("disable-infobars")
+
+                # Save options.
+                cls._options = chromeOptions
 
             # All further handling should behave the same as chrome.
             cls._browser = 'chrome'
@@ -150,6 +161,13 @@ class LiveServerTestCase(DjangoLiveServerTestCase, ResponseTestCaseMixin):
         driver.implicitly_wait(5)
 
         return driver
+
+    def get_driver(self):
+        """Returns first driver off of driver stack, or creates new one if none are present."""
+        try:
+            return self._driver_set[-1]
+        except IndexError:
+            return self.create_driver()
 
     def close_driver(self, driver):
         """Closes provided browser manager instance.

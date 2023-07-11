@@ -37,7 +37,6 @@ class ChannelsLiveServerTestCase(DjangoChannelsLiveServerTestCase, ResponseTestC
         cls.set_up_class(debug_print=debug_print)
 
         # Populate some initial values.
-        cls.site_root_url = None
         cls._driver_set = []
         cls._options = None
 
@@ -148,6 +147,13 @@ class ChannelsLiveServerTestCase(DjangoChannelsLiveServerTestCase, ResponseTestC
         driver.implicitly_wait(5)
 
         return driver
+
+    def get_driver(self):
+        """Returns first driver off of driver stack, or creates new one if none are present."""
+        try:
+            return self._driver_set[-1]
+        except IndexError:
+            return self.create_driver()
 
     def close_driver(self, driver):
         """Closes provided browser manager instance.
@@ -604,5 +610,5 @@ class ChannelsLiveServerTestCase(DjangoChannelsLiveServerTestCase, ResponseTestC
 
 # Define acceptable imports on file.
 __all__ = [
-    'LiveServerTestCase',
+    'ChannelsLiveServerTestCase',
 ]
