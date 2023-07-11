@@ -66,4 +66,6 @@ twine = "*"                     # For pushing/publishing packages.
 # Selenium dependencies.
 channels = "*"                  # Django websocket/background-task dependencies.
 colorama = "*"                  # Console coloring package.
+daphne = "*"                    # Django websocket/background-task dependencies.
+selenium = "*"                  # Allows using Django to launch selenium live-server brower instances.
 webdriver-manager = "*"         # Auto-magically installs/fetches the correct web driver versions to run tests.
