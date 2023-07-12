@@ -1311,6 +1311,65 @@ class BaseClassTest(BaseTestCase):
         self.assertFalse(self.test_admin.user_permissions.all().exists())
         self.assertFalse(self.test_user.user_permissions.all().exists())
 
+        with self.subTest('Test add permission to default user'):
+            # In context of this test, the "default user" is test_user.
+
+            # Test adding permission.
+            return_val = self.add_user_permission('test_perm_1')
+            self.assertEqual(return_val, self.test_user)
+
+            # Verify respective users received expected permissions.
+            self.assertEqual(self.test_user.user_permissions.all().count(), 1)
+            self.assertEqual(self.test_user.user_permissions.all()[0], perm_1)
+
+            # Verify other users are unaffected.
+            self.assertFalse(self.test_admin.user_permissions.all().exists())
+            self.assertFalse(self.test_superuser.user_permissions.all().exists())
+
+        # Reset permission relations.
+        self.test_user.user_permissions.remove(perm_1)
+        self.test_admin.user_permissions.remove(perm_2)
+
+        # Verify user Permission states.
+        self.assertFalse(self.test_superuser.user_permissions.all().exists())
+        self.assertFalse(self.test_admin.user_permissions.all().exists())
+        self.assertFalse(self.test_user.user_permissions.all().exists())
+
+        with self.subTest('Test add permission by direct model'):
+            # Test adding permission.
+            return_val = self.add_user_permission(perm_1, user='test_user')
+            self.assertEqual(return_val, self.test_user)
+
+            # Verify respective users received expected permissions.
+            self.assertEqual(self.test_user.user_permissions.all().count(), 1)
+            self.assertEqual(self.test_user.user_permissions.all()[0], perm_1)
+
+            # Verify other users are unaffected.
+            self.assertFalse(self.test_admin.user_permissions.all().exists())
+            self.assertFalse(self.test_superuser.user_permissions.all().exists())
+
+            # Test adding different permission.
+            return_val = self.add_user_permission(perm_2, user='test_admin')
+            self.assertEqual(return_val, self.test_admin)
+
+            # Verify respective users received expected permissions.
+            self.assertEqual(self.test_user.user_permissions.all().count(), 1)
+            self.assertEqual(self.test_user.user_permissions.all()[0], perm_1)
+            self.assertEqual(self.test_admin.user_permissions.all().count(), 1)
+            self.assertEqual(self.test_admin.user_permissions.all()[0], perm_2)
+
+            # Verify other users are unaffected.
+            self.assertFalse(self.test_superuser.user_permissions.all().exists())
+
+        # Reset permission relations.
+        self.test_user.user_permissions.remove(perm_1)
+        self.test_admin.user_permissions.remove(perm_2)
+
+        # Verify user Permission states.
+        self.assertFalse(self.test_superuser.user_permissions.all().exists())
+        self.assertFalse(self.test_admin.user_permissions.all().exists())
+        self.assertFalse(self.test_user.user_permissions.all().exists())
+
         with self.subTest('Test add permission by codename'):
             # Test adding permission.
             return_val = self.add_user_permission('test_perm_1', user='test_user')
@@ -1372,6 +1431,52 @@ class BaseClassTest(BaseTestCase):
             # Verify other users are unaffected.
             self.assertFalse(self.test_superuser.user_permissions.all().exists())
 
+        # Reset permission relations.
+        self.test_user.user_permissions.remove(perm_1)
+        self.test_admin.user_permissions.remove(perm_2)
+
+        # Verify user Permission states.
+        self.assertFalse(self.test_superuser.user_permissions.all().exists())
+        self.assertFalse(self.test_admin.user_permissions.all().exists())
+        self.assertFalse(self.test_user.user_permissions.all().exists())
+
+        with self.subTest('Test add permission by class user'):
+            # Test adding permission.
+            self.user = 'test_user'
+            return_val = self.add_user_permission('test_perm_1')
+            self.assertEqual(return_val, self.test_user)
+
+            # Verify respective users received expected permissions.
+            self.assertEqual(self.test_user.user_permissions.all().count(), 1)
+            self.assertEqual(self.test_user.user_permissions.all()[0], perm_1)
+
+            # Verify other users are unaffected.
+            self.assertFalse(self.test_admin.user_permissions.all().exists())
+            self.assertFalse(self.test_superuser.user_permissions.all().exists())
+
+            # Test adding different permission.
+            self.user = 'test_admin'
+            return_val = self.add_user_permission('test_perm_2')
+            self.assertEqual(return_val, self.test_admin)
+
+            # Verify respective users received expected permissions.
+            self.assertEqual(self.test_user.user_permissions.all().count(), 1)
+            self.assertEqual(self.test_user.user_permissions.all()[0], perm_1)
+            self.assertEqual(self.test_admin.user_permissions.all().count(), 1)
+            self.assertEqual(self.test_admin.user_permissions.all()[0], perm_2)
+
+            # Verify other users are unaffected.
+            self.assertFalse(self.test_superuser.user_permissions.all().exists())
+
+        # Reset permission relations.
+        self.test_user.user_permissions.remove(perm_1)
+        self.test_admin.user_permissions.remove(perm_2)
+
+        # Verify user Permission states.
+        self.assertFalse(self.test_superuser.user_permissions.all().exists())
+        self.assertFalse(self.test_admin.user_permissions.all().exists())
+        self.assertFalse(self.test_user.user_permissions.all().exists())
+
     def test__add_user_group(self):
         """
         Tests add_user_group() function.
@@ -1385,20 +1490,135 @@ class BaseClassTest(BaseTestCase):
         self.assertFalse(self.test_admin.groups.all().exists())
         self.assertFalse(self.test_user.groups.all().exists())
 
-        # Test adding group.
-        return_val = self.add_user_group('group_1', user='test_user')
-        self.assertEqual(return_val, self.test_user)
-        self.assertEqual(self.test_user.groups.all().count(), 1)
-        self.assertEqual(self.test_user.groups.all()[0], group_1)
+        with self.subTest('Test add group to default user'):
+            # In context of this test, the "default user" is test_user.
 
-        # Test adding different group.
-        return_val = self.add_user_group('group_2', user='test_admin')
-        self.assertEqual(return_val, self.test_admin)
-        self.assertEqual(self.test_admin.groups.all().count(), 1)
-        self.assertEqual(self.test_admin.groups.all()[0], group_2)
+            # Test adding group.
+            return_val = self.add_user_group('group_1')
+            self.assertEqual(return_val, self.test_user)
 
-        # Verify other users are unaffected.
+            # Verify respective users received expected groups.
+            self.assertEqual(self.test_user.groups.all().count(), 1)
+            self.assertEqual(self.test_user.groups.all()[0], group_1)
+
+            # Verify other users are unaffected.
+            self.assertFalse(self.test_admin.user_permissions.all().exists())
+            self.assertFalse(self.test_superuser.user_permissions.all().exists())
+
+        # Reset group relations.
+        self.test_user.groups.remove(group_1)
+
+        # Verify user Group states.
         self.assertFalse(self.test_superuser.groups.all().exists())
+        self.assertFalse(self.test_admin.groups.all().exists())
+        self.assertFalse(self.test_user.groups.all().exists())
+
+        with self.subTest('Test add group to user by direct model'):
+            # Test adding group.
+            return_val = self.add_user_group(group_1, user='test_user')
+            self.assertEqual(return_val, self.test_user)
+
+            # Verify respective users received expected groups.
+            self.assertEqual(self.test_user.groups.all().count(), 1)
+            self.assertEqual(self.test_user.groups.all()[0], group_1)
+
+            # Verify other users are unaffected.
+            self.assertFalse(self.test_admin.user_permissions.all().exists())
+            self.assertFalse(self.test_superuser.user_permissions.all().exists())
+
+            # Test adding different group.
+            return_val = self.add_user_group(group_2, user='test_admin')
+            self.assertEqual(return_val, self.test_admin)
+
+            # Verify respective users received expected groups.
+            self.assertEqual(self.test_user.groups.all().count(), 1)
+            self.assertEqual(self.test_user.groups.all()[0], group_1)
+            self.assertEqual(self.test_admin.groups.all().count(), 1)
+            self.assertEqual(self.test_admin.groups.all()[0], group_2)
+
+            # Verify other users are unaffected.
+            self.assertFalse(self.test_superuser.user_permissions.all().exists())
+
+        # Reset group relations.
+        self.test_user.groups.remove(group_1)
+        self.test_admin.groups.remove(group_2)
+
+        # Verify user Group states.
+        self.assertFalse(self.test_superuser.groups.all().exists())
+        self.assertFalse(self.test_admin.groups.all().exists())
+        self.assertFalse(self.test_user.groups.all().exists())
+
+        with self.subTest('Test add permission to user by name'):
+            # Test adding group.
+            return_val = self.add_user_group('group_1', user='test_user')
+            self.assertEqual(return_val, self.test_user)
+
+            # Verify respective users received expected groups.
+            self.assertEqual(self.test_user.groups.all().count(), 1)
+            self.assertEqual(self.test_user.groups.all()[0], group_1)
+
+            # Verify other users are unaffected.
+            self.assertFalse(self.test_admin.user_permissions.all().exists())
+            self.assertFalse(self.test_superuser.user_permissions.all().exists())
+
+            # Test adding different group.
+            return_val = self.add_user_group('group_2', user='test_admin')
+            self.assertEqual(return_val, self.test_admin)
+
+            # Verify respective users received expected groups.
+            self.assertEqual(self.test_user.groups.all().count(), 1)
+            self.assertEqual(self.test_user.groups.all()[0], group_1)
+            self.assertEqual(self.test_admin.groups.all().count(), 1)
+            self.assertEqual(self.test_admin.groups.all()[0], group_2)
+
+            # Verify other users are unaffected.
+            self.assertFalse(self.test_superuser.user_permissions.all().exists())
+
+        # Reset group relations.
+        self.test_user.groups.remove(group_1)
+        self.test_admin.groups.remove(group_2)
+
+        # Verify user Group states.
+        self.assertFalse(self.test_superuser.groups.all().exists())
+        self.assertFalse(self.test_admin.groups.all().exists())
+        self.assertFalse(self.test_user.groups.all().exists())
+
+        with self.subTest('Test add group by class user'):
+            # Test adding group.
+            self.user = self.test_user
+            return_val = self.add_user_group('group_1')
+            self.assertEqual(return_val, self.test_user)
+
+            # Verify respective users received expected groups.
+            self.assertEqual(self.test_user.groups.all().count(), 1)
+            self.assertEqual(self.test_user.groups.all()[0], group_1)
+
+            # Verify other users are unaffected.
+            self.assertFalse(self.test_admin.user_permissions.all().exists())
+            self.assertFalse(self.test_superuser.user_permissions.all().exists())
+
+            # Test adding different group.
+            self.user = self.test_admin
+            return_val = self.add_user_group('group_2')
+            self.assertEqual(return_val, self.test_admin)
+
+            # Verify respective users received expected groups.
+            self.assertEqual(self.test_user.groups.all().count(), 1)
+            self.assertEqual(self.test_user.groups.all()[0], group_1)
+            self.assertEqual(self.test_admin.groups.all().count(), 1)
+            self.assertEqual(self.test_admin.groups.all()[0], group_2)
+
+            # Verify other users are unaffected.
+            self.assertFalse(self.test_superuser.user_permissions.all().exists())
+
+        # Reset group relations.
+        self.test_user.groups.remove(group_1)
+        self.test_admin.groups.remove(group_2)
+
+        # Verify user Group states.
+        self.assertFalse(self.test_superuser.groups.all().exists())
+        self.assertFalse(self.test_admin.groups.all().exists())
+        self.assertFalse(self.test_user.groups.all().exists())
 
     # endregion User Management Function Tests
 

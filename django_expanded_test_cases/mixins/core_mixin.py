@@ -532,6 +532,7 @@ class CoreTestCaseMixin:
                                      function.
         :return: User object
         """
+
         # Check if instance is User model.
         if isinstance(user, get_user_model()):
             # Already User model. This is fine.
@@ -589,7 +590,7 @@ class CoreTestCaseMixin:
         :return: Updated user object.
         """
         # Django imports here to avoid situational "Apps aren't loaded yet" error.
-        from django.contrib.auth.models import Permission
+        from django.contrib.auth.models import AnonymousUser, Permission
 
         # Check if instance is a Permission model.
         if isinstance(user_permission, Permission):
@@ -613,8 +614,8 @@ class CoreTestCaseMixin:
         if user is not None:
             # Actual user arg provided to function. Use that.
             user = self.get_user(user)
-        elif self.user:
-            # No arg provided to function. Fall back to set class user, if provided.
+        elif self.user and not isinstance(self.user, AnonymousUser):
+            # No arg provided to function. Fall back to class user, if provided.
             user = self.get_user(self.user)
         else:
             # No arg provided to function AND no class user defined.
@@ -635,7 +636,7 @@ class CoreTestCaseMixin:
         :return: Updated user object.
         """
         # Django imports here to avoid situational "Apps aren't loaded yet" error.
-        from django.contrib.auth.models import Group
+        from django.contrib.auth.models import AnonymousUser, Group
 
         # Check if instance is a Group model.
         if isinstance(user_group, Group):
@@ -655,8 +656,8 @@ class CoreTestCaseMixin:
         if user is not None:
             # Actual user arg provided to function. Use that.
             user = self.get_user(user)
-        elif self.user:
-            # No arg provided to function. Fall back to set class user, if provided.
+        elif self.user and not isinstance(self.user, AnonymousUser):
+            # No arg provided to function. Fall back to class user, if provided.
             user = self.get_user(self.user)
         else:
             # No arg provided to function AND no class user defined.
