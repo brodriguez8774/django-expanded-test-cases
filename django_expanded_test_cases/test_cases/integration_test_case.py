@@ -23,6 +23,7 @@ from django_expanded_test_cases.constants import (
     ETC_INCLUDE_RESPONSE_DEBUG_MESSAGES,
     ETC_INCLUDE_RESPONSE_DEBUG_SESSION,
     ETC_INCLUDE_RESPONSE_DEBUG_USER_INFO,
+    ETC_ALLOW_TITLE_PARTIALS,
     ETC_ALLOW_MESSAGE_PARTIALS,
     ETC_REQUEST_USER_STRICTNESS,
     ETC_DEFAULT_STANDARD_USER_IDENTIFIER,
@@ -367,7 +368,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Return status in case user wants to run additional logic on it.
         return actual_status
 
-    def assertPageTitle(self, response, expected_title, exact_match=True):
+    def assertPageTitle(self, response, expected_title, allow_partials=None):
         """Verifies the page title HTML element.
 
         Note: Some sites have titles with nested elements.
@@ -378,9 +379,15 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         :param response: Response object to check against.
         :param expected_title: Expected full string in title HTML element.
-        :param exact_match: Bool indicating if title should be exact match, or partial.
+        :param allow_partials: Bool indicating if title should be exact match, or partial.
         :return: Parsed out title string.
         """
+        # Parse out settings values.
+        if allow_partials is None:
+            allow_partials = ETC_ALLOW_TITLE_PARTIALS
+        else:
+            allow_partials = bool(allow_partials)
+
         # Parse out title element from response.
         actual_title = self.get_page_title(response)
 
@@ -394,7 +401,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Check element.
         err_msg = 'Expected title HTML contents of "{0}" ({1}). Actual value was "{2}".'
-        if exact_match:
+        if not allow_partials:
+            # Check using exact match.
             if expected_title != actual_title:
                 self.fail(err_msg.format(
                     expected_title,
@@ -402,6 +410,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                     actual_title,
                 ))
         else:
+            # Check using partial match.
             if expected_title not in actual_title:
                 self.fail(err_msg.format(
                     expected_title,
@@ -512,9 +521,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
                 # Raise assertion error if not found.
                 if not message_found:
-                    self.fail('Failed to find message "{0}" in context (Partial matching {1} allowed).'.format(
+                    self.fail('Failed to find message "{0}" in context (using {1} matching).'.format(
                         expected_message,
-                        'is' if allow_partials else 'is NOT'
+                        'partial' if allow_partials else 'exact'
                     ))
 
     def assertPageContent(

@@ -169,13 +169,24 @@ ETC_DEBUG_PRINT = bool(getattr(
     'DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT',
     True,
 ))
-# Indicates whether partial matches are allowed for messages.
+# Indicates whether partial matches are allowed for site title assertions.
+# IE: Will pass as long as provided text appears as a subsection of the full site title.
+# Defaults to needing exact match.
+ETC_ALLOW_TITLE_PARTIALS = bool(getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_ALLOW_TITLE_PARTIALS',
+    False,
+))
+# Indicates whether partial matches are allowed for message assertions.
+# IE: Will pass as long as provided text appears as a subsection of one or more messages.
+# Defaults to needing exact match.
 ETC_ALLOW_MESSAGE_PARTIALS = bool(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS',
-    True,
+    False,
 ))
 # Indicates whether tests fail when there are messages in the response that were not explicitly tested for.
+# Aka, when doing ANY message assertion, if this is True, then ALL messages in response need to be checked.
 ETC_MATCH_ALL_CONTEXT_MESSAGES = bool(getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_MATCH_ALL_CONTEXT_MESSAGES',

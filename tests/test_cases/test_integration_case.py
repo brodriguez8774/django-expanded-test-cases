@@ -510,7 +510,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
         """
         Tests "expected_messages" functionality of assertResponse() function.
         """
-        exception_msg = 'Failed to find message "{0}" in context (Partial matching {1} allowed).'
+        exception_msg = 'Failed to find message "{0}" in context (using {1} matching).'
 
         with self.subTest('No messages on page - match'):
             self.assertResponse('django_expanded_test_cases:index', expected_messages='')
@@ -519,10 +519,10 @@ class IntegrationClassTest__Base(IntegrationTestCase):
         with self.subTest('No messages on page - mismatch'):
             with self.assertRaises(AssertionError) as err:
                 self.assertResponse('django_expanded_test_cases:index', expected_messages='Wrong message.')
-            self.assertText(exception_msg.format('Wrong message.', 'is'), str(err.exception))
+            self.assertText(exception_msg.format('Wrong message.', 'exact'), str(err.exception))
             with self.assertRaises(AssertionError) as err:
                 self.assertResponse('django_expanded_test_cases:index', expected_messages=['Wrong message.'])
-            self.assertText(exception_msg.format('Wrong message.', 'is'), str(err.exception))
+            self.assertText(exception_msg.format('Wrong message.', 'exact'), str(err.exception))
 
         with self.subTest('Multiple messages on page - match'):
             self.assertResponse('django_expanded_test_cases:response-with-three-messages', expected_messages='Test info message.')
@@ -539,13 +539,13 @@ class IntegrationClassTest__Base(IntegrationTestCase):
         with self.subTest('Multiple messages on page - mismatch'):
             with self.assertRaises(AssertionError) as err:
                 self.assertResponse('django_expanded_test_cases:response-with-three-messages', expected_messages='Wrong message.')
-            self.assertText(exception_msg.format('Wrong message.', 'is'), str(err.exception))
+            self.assertText(exception_msg.format('Wrong message.', 'exact'), str(err.exception))
             with self.assertRaises(AssertionError) as err:
                 self.assertResponse(
                     'django_expanded_test_cases:response-with-three-messages',
                     expected_messages=['Test info message.', 'Wrong message.'],
                 )
-            self.assertText(exception_msg.format('Wrong message.', 'is'), str(err.exception))
+            self.assertText(exception_msg.format('Wrong message.', 'exact'), str(err.exception))
 
     def test__assertResponse__expected_content(self):
         """
@@ -895,55 +895,55 @@ class IntegrationClassTest__Base(IntegrationTestCase):
 
         with self.subTest('Complex title - Exact Match'):
             response = HttpResponse('<title>Test Title | My Custom App | My Really Cool Site</title>')
-            self.assertPageTitle(response, 'Test Title | My Custom App | My Really Cool Site', exact_match=True)
+            self.assertPageTitle(response, 'Test Title | My Custom App | My Really Cool Site', allow_partials=False)
 
         with self.subTest('Complex title, with extra whitespace (to simulate Django templating) - Exact Match'):
             response = HttpResponse(
                 '<title>   Test   Title    \n|\n   My Custom App   \n|\n   My Really Cool Site   </title>'
             )
-            self.assertPageTitle(response, 'Test Title | My Custom App | My Really Cool Site', exact_match=True)
+            self.assertPageTitle(response, 'Test Title | My Custom App | My Really Cool Site', allow_partials=False)
 
         with self.subTest('Complex title - Loose Match'):
             response = HttpResponse('<title>Test Title | My Custom App | My Really Cool Site</title>')
-            self.assertPageTitle(response, 'Test Title', exact_match=False)
-            self.assertPageTitle(response, 'My Custom App', exact_match=False)
-            self.assertPageTitle(response, 'My Really Cool Site', exact_match=False)
+            self.assertPageTitle(response, 'Test Title', allow_partials=True)
+            self.assertPageTitle(response, 'My Custom App', allow_partials=True)
+            self.assertPageTitle(response, 'My Really Cool Site', allow_partials=True)
 
         with self.subTest('Complex title, with extra whitespace (to simulate Django templating) - Loose Match'):
             response = HttpResponse(
                 '<title>   Test   Title    \n|\n   My Custom App   \n|\n   My Really Cool Site   </title>'
             )
-            self.assertPageTitle(response, 'Test Title', exact_match=False)
-            self.assertPageTitle(response, 'My Custom App', exact_match=False)
-            self.assertPageTitle(response, 'My Really Cool Site', exact_match=False)
+            self.assertPageTitle(response, 'Test Title', allow_partials=True)
+            self.assertPageTitle(response, 'My Custom App', allow_partials=True)
+            self.assertPageTitle(response, 'My Really Cool Site', allow_partials=True)
 
     def test__assertPageTitle__failure(self):
         """
         Tests assertPageTitle() function, in cases when it should fail.
         """
-        exception_msg = 'Expected title HTML contents of "{0}" (using exact matching). Actual value was "{1}".'
+        exception_msg = 'Expected title HTML contents of "{0}" (using {2} matching). Actual value was "{1}".'
 
         with self.subTest('Checking for title when none exists'):
             with self.assertRaises(AssertionError) as err:
                 response = HttpResponse('')
                 self.assertPageTitle(response, 'Test Title')
-            self.assertText(exception_msg.format('Test Title', ''), str(err.exception))
+            self.assertText(exception_msg.format('Test Title', '', 'exact'), str(err.exception))
 
         with self.subTest('Expected value is on page, but not in title tag'):
             with self.assertRaises(AssertionError) as err:
                 response = HttpResponse('Test Title')
                 self.assertPageTitle(response, 'Test Title')
-            self.assertText(exception_msg.format('Test Title', ''), str(err.exception))
+            self.assertText(exception_msg.format('Test Title', '', 'exact'), str(err.exception))
             with self.assertRaises(AssertionError) as err:
                 response = HttpResponse('<h1>Test Title</h1><p>Test Title</p>')
                 self.assertPageTitle(response, 'Test Title')
-            self.assertText(exception_msg.format('Test Title', ''), str(err.exception))
+            self.assertText(exception_msg.format('Test Title', '', 'exact'), str(err.exception))
 
         with self.subTest('Assuming extra whitespace is still present'):
             with self.assertRaises(AssertionError) as err:
                 response = HttpResponse('<title>   Test    Title   </title>')
                 self.assertPageTitle(response, '   Test    Title   ')
-            self.assertText(exception_msg.format('Test    Title', 'Test Title'), str(err.exception))
+            self.assertText(exception_msg.format('Test    Title', 'Test Title', 'exact'), str(err.exception))
 
         with self.subTest('Set to exact match, but only passing in title subsection'):
             with self.assertRaises(AssertionError) as err:
@@ -953,6 +953,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                 exception_msg.format(
                     'Test Title',
                     'Test Title | My Custom App | My Really Cool Site',
+                    'exact',
                 ),
                 str(err.exception),
             )
@@ -963,6 +964,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                 exception_msg.format(
                     'My Custom App',
                     'Test Title | My Custom App | My Really Cool Site',
+                    'exact',
                 ),
                 str(err.exception),
             )
@@ -973,6 +975,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                 exception_msg.format(
                     'My Really Cool Site',
                     'Test Title | My Custom App | My Really Cool Site',
+                    'exact',
                 ),
                 str(err.exception),
             )
@@ -981,22 +984,22 @@ class IntegrationClassTest__Base(IntegrationTestCase):
             # Full mismatch.
             with self.assertRaises(AssertionError) as err:
                 response = HttpResponse('Test Title')
-                self.assertPageTitle(response, 'Wrong Value')
-            self.assertText(exception_msg.format('Wrong Value', ''), str(err.exception))
+                self.assertPageTitle(response, 'Wrong Value', allow_partials=True)
+            self.assertText(exception_msg.format('Wrong Value', '', 'partial'), str(err.exception))
             with self.assertRaises(AssertionError) as err:
                 response = HttpResponse('<title>Test Title</title>')
-                self.assertPageTitle(response, 'Wrong Value')
-            self.assertText(exception_msg.format('Wrong Value', 'Test Title'), str(err.exception))
+                self.assertPageTitle(response, 'Wrong Value', allow_partials=True)
+            self.assertText(exception_msg.format('Wrong Value', 'Test Title', 'partial'), str(err.exception))
 
             # Partial match, but also has extra.
             with self.assertRaises(AssertionError) as err:
                 response = HttpResponse('Test Title')
-                self.assertPageTitle(response, 'Test Title and More')
-            self.assertText(exception_msg.format('Test Title and More', ''), str(err.exception))
+                self.assertPageTitle(response, 'Test Title and More', allow_partials=True)
+            self.assertText(exception_msg.format('Test Title and More', '', 'partial'), str(err.exception))
             with self.assertRaises(AssertionError) as err:
                 response = HttpResponse('<title>Test Title</title>')
-                self.assertPageTitle(response, 'Test Title and More')
-            self.assertText(exception_msg.format('Test Title and More', 'Test Title'), str(err.exception))
+                self.assertPageTitle(response, 'Test Title and More', allow_partials=True)
+            self.assertText(exception_msg.format('Test Title and More', 'Test Title', 'partial'), str(err.exception))
 
         with self.subTest('Multiple Titles - Two and no spaces'):
             with self.assertRaises(AssertionError) as err:
@@ -1281,64 +1284,93 @@ class IntegrationClassTest__Base(IntegrationTestCase):
         """
         Tests assertContextMessages() function, in cases when it should fail.
         """
-        exception_msg = 'Failed to find message "{0}" in context (Partial matching {1} allowed).'
+        exception_msg = 'Failed to find message "{0}" in context (using {1} matching).'
 
         with self.subTest('Checking for single message, none exist'):
             with self.assertRaises(AssertionError) as err:
                 response = self._get_page_response('django_expanded_test_cases:index')
                 self.assertContextMessages(response, 'This is a test message.')
-            self.assertText(exception_msg.format('This is a test message.', 'is NOT'), str(err.exception))
+            self.assertText(exception_msg.format('This is a test message.', 'exact'), str(err.exception))
 
         with self.subTest('Checking for single message, one exists but doesn\'t match'):
             with self.assertRaises(AssertionError) as err:
                 response = self._get_page_response('django_expanded_test_cases:response-with-one-message')
                 self.assertContextMessages(response, 'Testing!')
-            self.assertText(exception_msg.format('Testing!', 'is NOT'), str(err.exception))
+            self.assertText(exception_msg.format('Testing!', 'exact'), str(err.exception))
 
         with self.subTest('Checking for single message, but it\'s only a partial match'):
             response = self._get_page_response('django_expanded_test_cases:response-with-one-message')
             with self.assertRaises(AssertionError) as err:
                 self.assertContextMessages(response, 'This is a test message')
-            self.assertText(exception_msg.format('This is a test message', 'is NOT'), str(err.exception))
+            self.assertText(exception_msg.format('This is a test message', 'exact'), str(err.exception))
             with self.assertRaises(AssertionError) as err:
                 self.assertContextMessages(response, 'test message.')
-            self.assertText(exception_msg.format('test message.', 'is NOT'), str(err.exception))
+            self.assertText(exception_msg.format('test message.', 'exact'), str(err.exception))
             with self.assertRaises(AssertionError) as err:
                 self.assertContextMessages(response, 'test')
-            self.assertText(exception_msg.format('test', 'is NOT'), str(err.exception))
+            self.assertText(exception_msg.format('test', 'exact'), str(err.exception))
 
         with self.subTest('Checking for single message, multiple exist but don\'t match'):
             with self.assertRaises(AssertionError) as err:
                 response = self._get_page_response('django_expanded_test_cases:response-with-three-messages')
                 self.assertContextMessages(response, 'Testing!')
-            self.assertText(exception_msg.format('Testing!', 'is NOT'), str(err.exception))
+            self.assertText(exception_msg.format('Testing!', 'exact'), str(err.exception))
 
         with self.subTest('Checking for two messages, none exist'):
             with self.assertRaises(AssertionError) as err:
                 response = self._get_page_response('django_expanded_test_cases:index')
                 self.assertContextMessages(response, ['This is a test message.', 'Another message.'])
-            self.assertText(exception_msg.format('This is a test message.', 'is NOT'), str(err.exception))
+            self.assertText(exception_msg.format('This is a test message.', 'exact'), str(err.exception))
 
         with self.subTest('Checking for two messages, but only one exists'):
             with self.assertRaises(AssertionError) as err:
                 response = self._get_page_response('django_expanded_test_cases:response-with-one-message')
                 self.assertContextMessages(response, ['This is a test message.', 'Another message.'])
-            self.assertText(exception_msg.format('Another message.', 'is NOT'), str(err.exception))
+            self.assertText(exception_msg.format('Another message.', 'exact'), str(err.exception))
 
         with self.subTest('Checking for two messages, multiple exist but one doesn\'t match'):
             response = self._get_page_response('django_expanded_test_cases:response-with-three-messages')
             with self.assertRaises(AssertionError) as err:
                 self.assertContextMessages(response, ['Test info message.', 'Another message.'])
-            self.assertText(exception_msg.format('Another message.', 'is NOT'), str(err.exception))
+            self.assertText(exception_msg.format('Another message.', 'exact'), str(err.exception))
             with self.assertRaises(AssertionError) as err:
                 self.assertContextMessages(response, ['Bad message', 'Test info message.'])
-            self.assertText(exception_msg.format('Bad message', 'is NOT'), str(err.exception))
+            self.assertText(exception_msg.format('Bad message', 'exact'), str(err.exception))
 
         with self.subTest('Checking for two messages, multiple exist but none match'):
             with self.assertRaises(AssertionError) as err:
                 response = self._get_page_response('django_expanded_test_cases:response-with-three-messages')
                 self.assertContextMessages(response, ['Testing!', 'Testing again!'])
-            self.assertText(exception_msg.format('Testing!', 'is NOT'), str(err.exception))
+            self.assertText(exception_msg.format('Testing!', 'exact'), str(err.exception))
+
+        with self.subTest('Set to partial match, but value is not in title'):
+            # Full mismatch.
+            with self.assertRaises(AssertionError) as err:
+                response = self._get_page_response('django_expanded_test_cases:response-with-one-message')
+                self.assertContextMessages(response, 'Wrong Value', allow_partials=True)
+            self.assertText(exception_msg.format('Wrong Value', 'partial'), str(err.exception))
+            with self.assertRaises(AssertionError) as err:
+                response = self._get_page_response('django_expanded_test_cases:response-with-two-messages')
+                self.assertContextMessages(response, 'Wrong Value', allow_partials=True)
+            self.assertText(exception_msg.format('Wrong Value', 'partial'), str(err.exception))
+            with self.assertRaises(AssertionError) as err:
+                response = self._get_page_response('django_expanded_test_cases:response-with-three-messages')
+                self.assertContextMessages(response, 'Wrong Value', allow_partials=True)
+            self.assertText(exception_msg.format('Wrong Value', 'partial'), str(err.exception))
+
+            # Partial match, but also has extra.
+            with self.assertRaises(AssertionError) as err:
+                response = self._get_page_response('django_expanded_test_cases:response-with-one-message')
+                self.assertContextMessages(response, 'This is a test message, testing', allow_partials=True)
+            self.assertText(exception_msg.format('This is a test message, testing', 'partial'), str(err.exception))
+            with self.assertRaises(AssertionError) as err:
+                response = self._get_page_response('django_expanded_test_cases:response-with-two-messages')
+                self.assertContextMessages(response, 'This is and more', allow_partials=True)
+            self.assertText(exception_msg.format('This is and more','partial'), str(err.exception))
+            with self.assertRaises(AssertionError) as err:
+                response = self._get_page_response('django_expanded_test_cases:response-with-three-messages')
+                self.assertContextMessages(response, 'info message and more', allow_partials=True)
+            self.assertText(exception_msg.format('info message and more','partial'), str(err.exception))
 
     def test__assertPageContent__success(self):
         """
