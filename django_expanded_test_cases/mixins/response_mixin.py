@@ -224,7 +224,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         )
 
         # Check if form or formset data is actually present.
-        if 'form' in response_context or 'formset' in response_context:
+        if response_context is not None and ('form' in response_context or 'formset' in response_context):
             # Form or formset present on page.
 
             # Attempt to get form data.

@@ -935,7 +935,6 @@ class CoreTestCaseMixin:
             # Site root is populated. Return value.
             return self._site_root_url
 
-
     @site_root_url.setter
     def site_root_url(self, value):
         """"""
