@@ -538,13 +538,13 @@ class CoreTestCaseMixin:
             pass
 
         # Handle all "special cases" for testing logic.
-        elif user == ETC_DEFAULT_SUPER_USER_IDENTIFIER:
+        elif ETC_AUTO_GENERATE_USERS is True and user == ETC_DEFAULT_SUPER_USER_IDENTIFIER:
             user = self.test_superuser
-        elif user == ETC_DEFAULT_ADMIN_USER_IDENTIFIER:
+        elif ETC_AUTO_GENERATE_USERS is True and user == ETC_DEFAULT_ADMIN_USER_IDENTIFIER:
             user = self.test_admin
-        elif user == ETC_DEFAULT_INACTIVE_USER_IDENTIFIER:
+        elif ETC_AUTO_GENERATE_USERS is True and user == ETC_DEFAULT_INACTIVE_USER_IDENTIFIER:
             user = self.test_inactive_user
-        elif user == ETC_DEFAULT_STANDARD_USER_IDENTIFIER:
+        elif ETC_AUTO_GENERATE_USERS is True and user == ETC_DEFAULT_STANDARD_USER_IDENTIFIER:
             user = self.test_user
         else:
             # Is not User model. Get or create.
