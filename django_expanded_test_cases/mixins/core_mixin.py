@@ -581,7 +581,7 @@ class CoreTestCaseMixin:
 
         return user
 
-    def add_user_permission(self, user_permission, user=ETC_DEFAULT_STANDARD_USER_IDENTIFIER):
+    def add_user_permission(self, user_permission, user=None):
         """Adds Permission to given user.
 
         :param user_permission: Permission to add.
@@ -609,13 +609,25 @@ class CoreTestCaseMixin:
                     raise ValueError('Failed to find permission of "{0}".'.format(user_permission)) from pde
 
         # If we made it this far, then valid Permission was found. Apply to user.
-        user = self.get_user(user)
+        # But first determine what user we're applying to.
+        if user is not None:
+            # Actual user arg provided to function. Use that.
+            user = self.get_user(user)
+        elif self.user:
+            # No arg provided to function. Fall back to set class user, if provided.
+            user = self.get_user(self.user)
+        else:
+            # No arg provided to function AND no class user defined.
+            # Resort to "default standard user" as final fallback.
+            user = self.get_user(ETC_DEFAULT_STANDARD_USER_IDENTIFIER)
+
+        # Actually add permission.
         user.user_permissions.add(permission)
 
         # Return user object in case user wants to run additional checks.
         return user
 
-    def add_user_group(self, user_group, user=ETC_DEFAULT_STANDARD_USER_IDENTIFIER):
+    def add_user_group(self, user_group, user=None):
         """Adds Group to given user.
 
         :param user_group: Group to add.
@@ -639,7 +651,19 @@ class CoreTestCaseMixin:
                 raise ValueError('Failed to find Group of "{0}".'.format(user_group)) from gde
 
         # If we made it this far, then valid Group was found. Apply to user.
-        user = self.get_user(user)
+        # But first determine what user we're applying to.
+        if user is not None:
+            # Actual user arg provided to function. Use that.
+            user = self.get_user(user)
+        elif self.user:
+            # No arg provided to function. Fall back to set class user, if provided.
+            user = self.get_user(self.user)
+        else:
+            # No arg provided to function AND no class user defined.
+            # Resort to "default standard user" as final fallback.
+            user = self.get_user(ETC_DEFAULT_STANDARD_USER_IDENTIFIER)
+
+        # Actually add groups.
         user.groups.add(group)
 
         # Return user object in case user wants to run additional checks.
