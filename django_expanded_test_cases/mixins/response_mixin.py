@@ -4,6 +4,7 @@ Core testing logic that pertains to handling Response objects.
 
 # System Imports.
 import logging, re
+from urllib.parse import parse_qs
 
 # Third-Party Imports.
 from bs4 import BeautifulSoup
@@ -331,7 +332,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
 
     # endregion Debug Output Functions.
 
-    def standardize_url(self, url, url_args=None, url_kwargs=None, query_params=None, append_root=True):
+    def standardize_url(self, url, url_args=None, url_kwargs=None, url_query_params=None, append_root=True):
         """Attempts to standardize URL value, such as in event url is in format for reverse() function.
 
         :param url: Url value to attempt to parse and standardize.
@@ -340,29 +341,18 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         :param append_root: Bool indicating if "site root" should be included in url (if not already).
         :return: Attempt at fully-formatted url.
         """
-        from urllib.parse import urlparse, parse_qs, urlencode, quote
-
-        print('\n\n\n\n')
 
         # Handle mutable data defaults.
         url_args = url_args or ()
         url_kwargs = url_kwargs or {}
-        query_params = query_params or {}
+        url_query_params = url_query_params or {}
 
         # Preprocess all potential url values.
         url = str(url).strip()
 
-        print('url: {0}'.format(url))
-        print('url_args: {0}'.format(url_args))
-        print('url_kwargs: {0}'.format(url_kwargs))
-        print('query_params: {0}'.format(query_params))
-
         # Attempt to get reverse of provided url.
         try:
-            print('Attempting reverse...')
             url = reverse(url, args=url_args, kwargs=url_kwargs)
-
-            print('Reverse succeeded.')
 
             # Provide warning based on APPEND_SLASH setting.
             # See https://stackoverflow.com/a/42213107 for discussion on why this setting exists
@@ -386,7 +376,6 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
 
         except NoReverseMatch:
             # Could not find as reverse. Assume is literal url.
-            print('Reverse failed. Interpreting as basic url str.')
 
             # Trim any known extra values on literal url str.
             url = str(url).strip().lstrip('/').rstrip('/')
@@ -409,7 +398,6 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
 
                 # Handle if GET args are included within url.
                 split_url = url.split('?')
-                print('split_url: {0}'.format(split_url))
                 if len(split_url) == 1:
                     # No GET args found.
                     url = split_url[0]
@@ -421,31 +409,21 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                     url_args = '{0}'.format('?'.join(x for x in split_url))
                     temp_dict = parse_qs(url_args)
                     for key, value in temp_dict.items():
-                        query_params[key] = value[0]
+                        url_query_params[key] = value[0]
 
                 # Handle for append slash.
                 # Only apply if not already present and settings.APPEND_SLASH is true.
                 if settings.APPEND_SLASH and not url.endswith('/'):
                     url = '{0}/'.format(url)
 
-        print('almost done')
-        print('parsed url: {0}'.format(url))
-        print('parsed query_params: {0}'.format(query_params))
-        print('')
-
-        if query_params:
-            url = self.generate_get_url(url, **query_params)
+        if url_query_params:
+            url = self.generate_get_url(url, **url_query_params)
 
         # Finally, prepend site root to url, if applicable.
         if append_root:
             url = '{0}{1}'.format(self.site_root_url, url)
 
-        print('final url: {0}'.format(url))
-        print('\n\n\n\n')
-
-        # url = quote(url)
-        # url = urlparse(url).geturl()
-
+        # Return final full url.
         return url
 
     def standardize_html_tags(self, value):

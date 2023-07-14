@@ -147,16 +147,6 @@ class IntegrationClassTest__Base(IntegrationTestCase):
             self.assertText('/views/three-messages/', response.url)
             self.assertText('127.0.0.1/views/three-messages/', response.full_url)
 
-            # Test "user detail" page url via args.
-            response = self.assertResponse('django_expanded_test_cases:user-detail', args=(1,))
-            self.assertText('/user/detail/1/', response.url)
-            self.assertText('127.0.0.1/user/detail/1/', response.full_url)
-
-            # Test "user detail" page url via kwargs.
-            response = self.assertResponse('django_expanded_test_cases:user-detail', kwargs={'pk': 2})
-            self.assertText('/user/detail/2/', response.url)
-            self.assertText('127.0.0.1/user/detail/2/', response.full_url)
-
         with self.subTest('With custom site_root_url value defined'):
             self.site_root_url = 'https://my_really_cool_site.com/'
 
@@ -185,15 +175,60 @@ class IntegrationClassTest__Base(IntegrationTestCase):
             self.assertText('/views/three-messages/', response.url)
             self.assertText('https://my_really_cool_site.com/views/three-messages/', response.full_url)
 
+    def test__assertResponse__url__with_args(self):
+        """
+        Tests URL value returned response object in assertResponse() function.
+        """
+        with self.subTest('With no site_root_url value defined - Via reverse()'):
+
             # Test "user detail" page url via args.
             response = self.assertResponse('django_expanded_test_cases:user-detail', args=(1,))
             self.assertText('/user/detail/1/', response.url)
-            self.assertText('https://my_really_cool_site.com/user/detail/1/', response.full_url)
+            self.assertText('127.0.0.1/user/detail/1/', response.full_url)
 
             # Test "user detail" page url via kwargs.
             response = self.assertResponse('django_expanded_test_cases:user-detail', kwargs={'pk': 2})
             self.assertText('/user/detail/2/', response.url)
-            self.assertText('https://my_really_cool_site.com/user/detail/2/', response.full_url)
+            self.assertText('127.0.0.1/user/detail/2/', response.full_url)
+
+            # Test "user detail" page url via args plus query params.
+            response = self.assertResponse(
+                'django_expanded_test_cases:user-detail',
+                args=(1,),
+                url_query_params={'test_1': 'aaa', 'test_2': 'bbb'},
+            )
+            self.assertText('/user/detail/1/?test_1=aaa&test_2=bbb', response.url)
+            self.assertText('127.0.0.1/user/detail/1/?test_1=aaa&test_2=bbb', response.full_url)
+
+            # Test "user detail" page url via kwargs plus query params.
+            response = self.assertResponse(
+                'django_expanded_test_cases:user-detail',
+                kwargs={'pk': 2},
+                url_query_params={'test_1': 'aaa', 'test_2': 'bbb'},
+            )
+            self.assertText('/user/detail/2/?test_1=aaa&test_2=bbb', response.url)
+            self.assertText('127.0.0.1/user/detail/2/?test_1=aaa&test_2=bbb', response.full_url)
+
+        with self.subTest('With custom site_root_url value defined'):
+            self.site_root_url = 'https://my_really_cool_site.com/'
+
+            # Test "user detail" page url via args.
+            response = self.assertResponse(
+                'django_expanded_test_cases:user-detail',
+                args=(1,),
+                url_query_params={'test_1': 'aaa', 'test_2': 'bbb'},
+            )
+            self.assertText('/user/detail/1/?test_1=aaa&test_2=bbb', response.url)
+            self.assertText('https://my_really_cool_site.com/user/detail/1/?test_1=aaa&test_2=bbb', response.full_url)
+
+            # Test "user detail" page url via kwargs.
+            response = self.assertResponse(
+                'django_expanded_test_cases:user-detail',
+                kwargs={'pk': 2},
+                url_query_params={'test_1': 'aaa', 'test_2': 'bbb'},
+            )
+            self.assertText('/user/detail/2/?test_1=aaa&test_2=bbb', response.url)
+            self.assertText('https://my_really_cool_site.com/user/detail/2/?test_1=aaa&test_2=bbb', response.full_url)
 
     def test__assertResponse__url__with_query_params(self):
         """
@@ -243,27 +278,27 @@ class IntegrationClassTest__Base(IntegrationTestCase):
             self.assertText('/login/?next=%2Fhome_page%2F', response.url)
             self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
 
-        # with self.subTest('Login page with "next" privided as query_param kwarg - No ending slash'):
-        #     # Test base url.
-        #     response = self.assertResponse('/login', query_params={'next': '/home_page/'})
-        #     self.assertText('/login/?next=%2Fhome_page%2F', response.url)
-        #     self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
-        #
-        #     # Test with site root.
-        #     response = self.assertResponse('127.0.0.1/login', query_params={'next': '/home_page/'})
-        #     self.assertText('/login/?next=%2Fhome_page%2F', response.url)
-        #     self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
-        #
-        # with self.subTest('Login page with "next" privided as query_param kwarg - With ending slash'):
-        #     # Test base url.
-        #     response = self.assertResponse('/login/', query_params={'next': '/home_page/'})
-        #     self.assertText('/login/?next=%2Fhome_page%2F', response.url)
-        #     self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
-        #
-        #     # Test with site root.
-        #     response = self.assertResponse('127.0.0.1/login/', query_params={'next': '/home_page/'})
-        #     self.assertText('/login/?next=%2Fhome_page%2F', response.url)
-        #     self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
+        with self.subTest('Login page with "next" provided as query_param kwarg - No ending slash'):
+            # Test base url.
+            response = self.assertResponse('/login', url_query_params={'next': '/home_page/'})
+            self.assertText('/login/?next=%2Fhome_page%2F', response.url)
+            self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
+
+            # Test with site root.
+            response = self.assertResponse('127.0.0.1/login', url_query_params={'next': '/home_page/'})
+            self.assertText('/login/?next=%2Fhome_page%2F', response.url)
+            self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
+
+        with self.subTest('Login page with "next" provided as query_param kwarg - With ending slash'):
+            # Test base url.
+            response = self.assertResponse('/login/', url_query_params={'next': '/home_page/'})
+            self.assertText('/login/?next=%2Fhome_page%2F', response.url)
+            self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
+
+            # Test with site root.
+            response = self.assertResponse('127.0.0.1/login/', url_query_params={'next': '/home_page/'})
+            self.assertText('/login/?next=%2Fhome_page%2F', response.url)
+            self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
 
     def test__assertResponse__url_redirect(self):
         """
@@ -316,7 +351,9 @@ class IntegrationClassTest__Base(IntegrationTestCase):
         when accessing a view via url args.
         """
 
-        with self.subTest('Provide args via standard url reverse args'):
+        with self.subTest('Provide via standard reverse'):
+
+            # Reverse, as args.
             self.assertResponse(
 
                 # Standard url reverse, as the passed url.
@@ -338,7 +375,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                 ],
             )
 
-        with self.subTest('Provide args via standard url reverse kwargs'):
+            # Reverse, as kwargs.
             self.assertResponse(
 
                 # Standard url reverse, as the passed url.
@@ -350,7 +387,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                 # Url we expect to end up at.
                 expected_redirect_url=reverse(
                     'django_expanded_test_cases:template-response-with-args',
-                    args=(2, 'As standard url reverse() kwargs'),
+                    kwargs={'id': 2, 'name': 'As standard url reverse() kwargs'},
                 ),
 
                 # Expected content on final page.
@@ -360,7 +397,9 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                 ],
             )
 
-        with self.subTest('Provide args via individually passed args'):
+        with self.subTest('Provide via individually passed values'):
+
+            # As args.
             self.assertResponse(
 
                 # Desired url, as standard reverse string.
@@ -383,49 +422,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                 ],
             )
 
-        with self.subTest('Provide args via "url_args" keyword'):
-            self.assertResponse(
-                # Desired url, as standard reverse string.
-                'django_expanded_test_cases:redirect-with-args',
-
-                # Url we expect to end up at.
-                expected_redirect_url=reverse(
-                    'django_expanded_test_cases:template-response-with-args',
-                    args=(4, 'As url_args'),
-                ),
-
-                # Args for url.
-                url_args=[4, 'As url_args'],
-
-                # Expected content on final page.
-                expected_content=[
-                    'id: "4"',
-                    'name: "As url_args"',
-                ],
-            )
-
-        with self.subTest('Provide args via "redirect_args" keyword'):
-            self.assertResponse(
-                # Desired url, as standard reverse string.
-                'django_expanded_test_cases:redirect-with-args',
-
-                # Url we expect to end up at.
-                expected_redirect_url=reverse(
-                    'django_expanded_test_cases:template-response-with-args',
-                    args=(5, 'As redirect_args'),
-                ),
-
-                # Args for url.
-                redirect_args=[5, 'As redirect_args'],
-
-                # Expected content on final page.
-                expected_content=[
-                    'id: "5"',
-                    'name: "As redirect_args"',
-                ],
-            )
-
-        with self.subTest('Provide args via individually passed kwargs'):
+            # As kwargs.
             self.assertResponse(
                 # Desired url, as standard reverse string.
                 'django_expanded_test_cases:redirect-with-args',
@@ -447,45 +444,41 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                 ],
             )
 
-        with self.subTest('Provide args via "url_kwargs" keyword'):
+        with self.subTest('Provide via args keyword'):
             self.assertResponse(
                 # Desired url, as standard reverse string.
                 'django_expanded_test_cases:redirect-with-args',
 
                 # Url we expect to end up at.
-                expected_redirect_url=reverse(
-                    'django_expanded_test_cases:template-response-with-args',
-                    args=(7, 'As url_kwargs'),
-                ),
+                expected_redirect_url='django_expanded_test_cases:template-response-with-args',
 
                 # Args for url.
-                url_args=[7, 'As url_kwargs'],
+                url_args=[4, 'As url_args'],
+                redirect_args=(4, 'As url_args'),
 
                 # Expected content on final page.
                 expected_content=[
-                    'id: "7"',
-                    'name: "As url_kwargs"',
+                    'id: "4"',
+                    'name: "As url_args"',
                 ],
             )
 
-        with self.subTest('Provide args via "redirect_kwargs" keyword'):
+        with self.subTest('Provide via kwargs keyword'):
             self.assertResponse(
                 # Desired url, as standard reverse string.
                 'django_expanded_test_cases:redirect-with-args',
 
                 # Url we expect to end up at.
-                expected_redirect_url=reverse(
-                    'django_expanded_test_cases:template-response-with-args',
-                    args=(8, 'As redirect_kwargs'),
-                ),
+                expected_redirect_url='django_expanded_test_cases:template-response-with-args',
 
                 # Args for url.
-                url_args=[8, 'As redirect_kwargs'],
+                url_kwargs={'id': 5, 'name': 'As redirect_args'},
+                redirect_kwargs={'id': 5, 'name': 'As redirect_args'},
 
                 # Expected content on final page.
                 expected_content=[
-                    'id: "8"',
-                    'name: "As redirect_kwargs"',
+                    'id: "5"',
+                    'name: "As redirect_args"',
                 ],
             )
 

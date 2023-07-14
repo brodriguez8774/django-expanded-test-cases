@@ -60,7 +60,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         get=True, data=None,
         expected_status=200,
         expected_redirect_url=None,
-        url_args=None, url_kwargs=None, redirect_args=None, redirect_kwargs=None,
+        url_args=None, url_kwargs=None, url_query_params=None,
+        redirect_args=None, redirect_kwargs=None, redirect_query_params=None,
         expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
         auto_login=True, user=None, user_permissions=None, user_groups=None,
         ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
@@ -81,8 +82,10 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param expected_redirect_url: Expected url, after any redirections.
         :param url_args: Values to provide for URL population, in "arg" format.
         :param url_kwargs: Values to provide for URL population, in "kwarg" format.
-        :param redirect_args: Values to provide for URL population, in "arg" format.
-        :param redirect_kwargs: Values to provide for URL population, in "kwarg" format.
+        :param url_query_params: Query parameter values to provide for URL population.
+        :param redirect_args: Values to provide for redirect URL population, in "arg" format.
+        :param redirect_kwargs: Values to provide for redirect URL population, in "kwarg" format.
+        :param redirect_query_params: Query parameter values to provide for redirect URL population.
         :param expected_status: Expected status code, after any redirections. Default code of 200.
         :param expected_title: Expected page title to verify. Skips title test if left as None.
         :param expected_header: Expected page h1 to verify. Skips header test if left as None.
@@ -99,17 +102,14 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                                     following is stripped out of the "search space" for the expected_content value.
         """
 
-        # Django imports here to avoid situational "Apps aren't loaded yet" error.
-        from django.contrib.auth.models import AnonymousUser
-
         # Handle mutable data defaults.
         data = data or {}
-        url_args = url_args or ()
-        url_kwargs = url_kwargs or {}
-        redirect_args = redirect_args or []
-        redirect_kwargs = redirect_kwargs or {}
-        provided_args = (*args, *kwargs.pop('args', []), *url_args, *redirect_args)
-        provided_kwargs = {**kwargs.pop('kwargs', {}), **url_kwargs, **redirect_kwargs, **kwargs}
+        url_args = (*args, *kwargs.pop('args', []), *(url_args or []))
+        url_query_params = url_query_params or {}
+        redirect_args = (*args, *(redirect_args or []))
+        redirect_kwargs = {**kwargs, **(redirect_kwargs or {})}
+        redirect_query_params = redirect_query_params or {}
+        url_kwargs = {**kwargs.pop('kwargs', {}), **(url_kwargs or {}), **kwargs}
 
         # Reset client "user login" state for new response generation.
         self.client.logout()
@@ -122,8 +122,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             url,
             get=get,
             data=data,
-            provided_args=provided_args,
-            provided_kwargs=provided_kwargs,
+            url_args=url_args,
+            url_kwargs=url_kwargs,
+            query_params=url_query_params,
             auto_login=auto_login,
             user=user,
             user_permissions=user_permissions,
@@ -154,7 +155,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             get=get, data=data,
             expected_status=expected_status,
             expected_redirect_url=expected_redirect_url,
-            url_args=url_args, url_kwargs=url_kwargs, redirect_args=redirect_args, redirect_kwargs=redirect_kwargs,
+            url_args=url_args, url_kwargs=url_kwargs, url_query_params=url_query_params,
+            redirect_args=redirect_args, redirect_kwargs=redirect_kwargs, redirect_query_params=redirect_query_params,
             expected_title=expected_title, expected_header=expected_header, expected_messages=expected_messages,
             expected_content=expected_content,
             auto_login=auto_login, user=user, user_permissions=user_permissions, user_groups=user_groups,
@@ -168,7 +170,13 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Verify page redirect.
         if expected_redirect_url is not None:
-            self.assertRedirects(response, expected_redirect_url)
+            self.assertRedirects(
+                response,
+                expected_redirect_url,
+                redirect_args=redirect_args,
+                redirect_kwargs=redirect_kwargs,
+                redirect_query_params=redirect_query_params,
+            )
 
         # Verify page title.
         if expected_title is not None:
@@ -200,7 +208,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             get=get, data=data,
             expected_status=expected_status,
             expected_redirect_url=expected_redirect_url,
-            url_args=url_args, url_kwargs=url_kwargs, redirect_args=redirect_args, redirect_kwargs=redirect_kwargs,
+            url_args=url_args, url_kwargs=url_kwargs, url_query_params=url_query_params,
+            redirect_args=redirect_args, redirect_kwargs=redirect_kwargs, redirect_query_params=redirect_query_params,
             expected_title=expected_title, expected_header=expected_header, expected_messages=expected_messages,
             expected_content=expected_content,
             auto_login=auto_login, user=user, user_permissions=user_permissions, user_groups=user_groups,
@@ -218,7 +227,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         data=None,
         expected_status=200,
         expected_redirect_url=None,
-        url_args=None, url_kwargs=None, redirect_args=None, redirect_kwargs=None,
+        url_args=None, url_kwargs=None, url_query_params=None,
+        redirect_args=None, redirect_kwargs=None, redirect_query_params=None,
         expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
         auto_login=True, user=None, user_permissions=None, user_groups=None,
         ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
@@ -230,8 +240,10 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         data = data or {}
         url_args = url_args or []
         url_kwargs = url_kwargs or {}
+        url_query_params = url_query_params or []
         redirect_args = redirect_args or []
         redirect_kwargs = redirect_kwargs or {}
+        redirect_query_params = redirect_query_params or {}
 
         # Call base function to handle actual logic.
         return self.assertResponse(
@@ -243,8 +255,10 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             expected_redirect_url=expected_redirect_url,
             url_args=url_args,
             url_kwargs=url_kwargs,
+            url_query_params=url_query_params,
             redirect_args=redirect_args,
             redirect_kwargs=redirect_kwargs,
+            redirect_query_params=redirect_query_params,
             expected_title=expected_title,
             expected_header=expected_header,
             expected_messages=expected_messages,
@@ -265,7 +279,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         data=None,
         expected_status=200,
         expected_redirect_url=None,
-        url_args=None, url_kwargs=None, redirect_args=None, redirect_kwargs=None,
+        url_args=None, url_kwargs=None, url_query_params=None,
+        redirect_args=None, redirect_kwargs=None, redirect_query_params=None,
         expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
         auto_login=True, user=None, user_permissions=None, user_groups=None,
         ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
@@ -277,8 +292,10 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         data = data or {}
         url_args = url_args or []
         url_kwargs = url_kwargs or {}
+        url_query_params = url_query_params or {}
         redirect_args = redirect_args or []
         redirect_kwargs = redirect_kwargs or {}
+        redirect_query_params = redirect_query_params or {}
 
         # Forcibly add values to "data" dict, so that POST doesn't validate to empty in view.
         # This guarantees that view serves as POST, like this specific assertion expects.
@@ -296,8 +313,10 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             expected_redirect_url=expected_redirect_url,
             url_args=url_args,
             url_kwargs=url_kwargs,
+            url_query_params=url_query_params,
             redirect_args=redirect_args,
             redirect_kwargs=redirect_kwargs,
+            redirect_query_params=redirect_query_params,
             expected_title=expected_title,
             expected_header=expected_header,
             expected_messages=expected_messages,
@@ -312,7 +331,11 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             **kwargs,
         )
 
-    def assertRedirects(self, response, expected_redirect_url, *args, **kwargs):
+    def assertRedirects(
+        self,
+        response, expected_redirect_url, *args,
+        redirect_args=None, redirect_kwargs=None, redirect_query_params=None, **kwargs,
+    ):
         """Assert that a response redirected to a specific URL and that the redirect URL can be loaded.
 
         Most functionality is in the default Django assertRedirects() function.
@@ -320,6 +343,11 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             * Check that provided response param is a valid Response object. Attempts to generate one if not.
             * Attempt url as reverse, before trying assertion.
         """
+        # Handle mutable data defaults.
+        redirect_args = redirect_args or []
+        redirect_kwargs = redirect_kwargs or {}
+        redirect_query_params = redirect_query_params or {}
+
         # Ensure provided response is actual response.
         if isinstance(response, HttpResponseBase):
             # Is literal response.
@@ -328,12 +356,14 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             # Is not response. Attempt to get.
             response = self._get_page_response(response)
 
-        # Try to get reverse of provided redirect.
-        try:
-            expected_redirect_url = reverse(expected_redirect_url)
-        except NoReverseMatch:
-            # Not a reverse for url. Assume is a literal url.
-            pass
+        # Sanitize redirect url.
+        expected_redirect_url = self.standardize_url(
+            expected_redirect_url,
+            url_args=redirect_args,
+            url_kwargs=redirect_kwargs,
+            url_query_params=redirect_query_params,
+            append_root=False,
+        )
 
         # Run assertion on provided value.
         try:
@@ -908,8 +938,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         url,
         *args,
         get=True, data=None,
-        provided_args=None,
-        provided_kwargs=None,
+        url_args=None, url_kwargs=None, query_params=None,
         auto_login=True, user=None, user_permissions=None, user_groups=None,
         **kwargs,
     ):
@@ -920,8 +949,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param url: Url to get response object from.
         :param get: Bool indicating if response is GET or POST. Defaults to GET.
         :param data: Optional dict of items to pass into response generation.
-        :param provided_args: Values to provide for URL population, in "arg" format.
-        :param provided_kwargs: Values to provide for URL population, in "kwarg" format.
+        :param url_args: Values to provide for URL population, in "arg" format.
+        :param url_kwargs: Values to provide for URL population, in "kwarg" format.
         :param auto_login: Bool indicating if User should be "logged in" to client or not.
         :param user_permissions: Set of Django Permissions to give to test user before accessing page.
         :param user_groups: Set of Django PermissionGroups to give to test user before accessing page.
@@ -929,10 +958,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         """
         # Handle mutable data defaults.
         data = data or {}
-        provided_args = provided_args or []
-        provided_kwargs = provided_kwargs or {}
-        provided_args = (*args, *kwargs.pop('args', []), *provided_args)
-        provided_kwargs = {**kwargs.pop('kwargs', {}), **provided_kwargs, **kwargs}
+        url_args = (*args, *kwargs.pop('args', []), *(url_args or []))
+        url_kwargs = {**kwargs.pop('kwargs', {}), **(url_kwargs or {}), **kwargs}
+        query_params = query_params or {}
 
         # Validate data types.
         if not isinstance(data, dict):
@@ -950,7 +978,13 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         )
 
         # Handle url sanitization.
-        url = self.standardize_url(url, url_args=provided_args, url_kwargs=provided_kwargs, append_root=False)
+        url = self.standardize_url(
+            url,
+            url_args=url_args,
+            url_kwargs=url_kwargs,
+            url_query_params=query_params,
+            append_root=False,
+        )
         full_url = '{0}{1}'.format(self.site_root_url, url)
         if ETC_INCLUDE_RESPONSE_DEBUG_URL:
             self.show_debug_url(full_url)
