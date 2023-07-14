@@ -1630,34 +1630,44 @@ class BaseClassTest(BaseTestCase):
         """
         with self.subTest('Generate from passed "url" param'):
             # Test no params.
+            url = self.generate_get_url('http://127.0.0.1')
+            self.assertText('http://127.0.0.1/', url)
             url = self.generate_get_url('http://127.0.0.1/')
             self.assertText('http://127.0.0.1/', url)
+            url = self.generate_get_url('http://127.0.0.1/aaa')
+            self.assertText('http://127.0.0.1/aaa/', url)
+            url = self.generate_get_url('http://127.0.0.1/bbb/')
+            self.assertText('http://127.0.0.1/bbb/', url)
 
             # Test one str param.
-            url = self.generate_get_url('http://127.0.0.1/', test_1='one')
-            self.assertText('http://127.0.0.1/?test_1=one', url)
+            url = self.generate_get_url('http://127.0.0.1/my-page', test_1='one')
+            self.assertText('http://127.0.0.1/my-page/?test_1=one', url)
 
             # Test two str params.
-            url = self.generate_get_url('http://127.0.0.1/', test_1='one', test_2='two')
-            self.assertText('http://127.0.0.1/?test_1=one&test_2=two', url)
+            url = self.generate_get_url('http://127.0.0.1/my-page', test_1='one', test_2='two')
+            self.assertText('http://127.0.0.1/my-page/?test_1=one&test_2=two', url)
 
             # Test one non-str simple param.
-            url = self.generate_get_url('http://127.0.0.1/', test_1=1)
-            self.assertText('http://127.0.0.1/?test_1=1', url)
+            url = self.generate_get_url('http://127.0.0.1/my-page', test_1=1)
+            self.assertText('http://127.0.0.1/my-page/?test_1=1', url)
 
             # Test two non-str simple params.
-            url = self.generate_get_url('http://127.0.0.1/', test_1=1, test_2=True)
-            self.assertText('http://127.0.0.1/?test_1=1&test_2=True', url)
+            url = self.generate_get_url('http://127.0.0.1/my-page', test_1=1, test_2=True)
+            self.assertText('http://127.0.0.1/my-page/?test_1=1&test_2=True', url)
 
             # Test one non-str complex param.
-            url = self.generate_get_url('http://127.0.0.1/', test_1=['a', 'b', 'c'])
-            self.assertText('http://127.0.0.1/?test_1=%5B%27a%27%2C+%27b%27%2C+%27c%27%5D', url)
+            url = self.generate_get_url('http://127.0.0.1/my-page', test_1=['a', 'b', 'c'])
+            self.assertText('http://127.0.0.1/my-page/?test_1=%5B%27a%27%2C+%27b%27%2C+%27c%27%5D', url)
 
             # Test two non-str complex params.
-            url = self.generate_get_url('http://127.0.0.1/', test_1=['foo', 'bar'], test_2={'cat': 'Tabby', 'dog': 'Spot'})
+            url = self.generate_get_url(
+                'http://127.0.0.1/my-page',
+                test_1=['foo', 'bar'],
+                test_2={'cat': 'Tabby', 'dog': 'Spot'},
+            )
             self.assertText(
                 (
-                    'http://127.0.0.1/?test_1=%5B%27foo%27%2C+%27bar%27%5D&test_2=%7B%27cat%27%3A+'
+                    'http://127.0.0.1/my-page/?test_1=%5B%27foo%27%2C+%27bar%27%5D&test_2=%7B%27cat%27%3A+'
                     '%27Tabby%27%2C+%27dog%27%3A+%27Spot%27%7D'
                 ),
                 url,
@@ -1665,41 +1675,74 @@ class BaseClassTest(BaseTestCase):
 
         with self.subTest('Generate from class "self.url" variable'):
             # Set class variable.
-            self.url = 'http://127.0.0.1/'
+            self.url = 'http://127.0.0.1/test-page/'
 
             # Test no params.
             url = self.generate_get_url()
-            self.assertText('http://127.0.0.1/', url)
+            self.assertText('http://127.0.0.1/test-page/', url)
 
             # Test one str param.
             url = self.generate_get_url(test_1='one')
-            self.assertText('http://127.0.0.1/?test_1=one', url)
+            self.assertText('http://127.0.0.1/test-page/?test_1=one', url)
 
             # Test two str params.
             url = self.generate_get_url(test_1='one', test_2='two')
-            self.assertText('http://127.0.0.1/?test_1=one&test_2=two', url)
+            self.assertText('http://127.0.0.1/test-page/?test_1=one&test_2=two', url)
 
             # Test one non-str simple param.
             url = self.generate_get_url(test_1=1)
-            self.assertText('http://127.0.0.1/?test_1=1', url)
+            self.assertText('http://127.0.0.1/test-page/?test_1=1', url)
 
             # Test two non-str simple params.
             url = self.generate_get_url(test_1=1, test_2=True)
-            self.assertText('http://127.0.0.1/?test_1=1&test_2=True', url)
+            self.assertText('http://127.0.0.1/test-page/?test_1=1&test_2=True', url)
 
             # Test one non-str complex param.
             url = self.generate_get_url(test_1=['a', 'b', 'c'])
-            self.assertText('http://127.0.0.1/?test_1=%5B%27a%27%2C+%27b%27%2C+%27c%27%5D', url)
+            self.assertText('http://127.0.0.1/test-page/?test_1=%5B%27a%27%2C+%27b%27%2C+%27c%27%5D', url)
 
             # Test two non-str complex params.
             url = self.generate_get_url(test_1=['foo', 'bar'], test_2={'cat': 'Tabby', 'dog': 'Spot'})
             self.assertText(
                 (
-                    'http://127.0.0.1/?test_1=%5B%27foo%27%2C+%27bar%27%5D&test_2=%7B%27cat%27%3A+'
+                    'http://127.0.0.1/test-page/?test_1=%5B%27foo%27%2C+%27bar%27%5D&test_2=%7B%27cat%27%3A+'
                     '%27Tabby%27%2C+%27dog%27%3A+%27Spot%27%7D'
                 ),
                 url,
             )
+
+        with self.subTest('With mixed characters'):
+            # Base url.
+            url = self.generate_get_url('/my/url/here', test='testing stuff?<blah>weird_values-aaa')
+            self.assertText('/my/url/here/?test=testing+stuff%3F%3Cblah%3Eweird_values-aaa', url)
+
+            # With ending slash.
+            url = self.generate_get_url('/my/url/here/', test='testing stuff?<blah>weird_values-aaa')
+            self.assertText('/my/url/here/?test=testing+stuff%3F%3Cblah%3Eweird_values-aaa', url)
+
+        with self.subTest('With extra ? to start query params'):
+            # Base url.
+            url = self.generate_get_url('/my/url/here?', my_value='test')
+            self.assertText('/my/url/here/?my_value=test', url)
+
+            # With ending slash.
+            url = self.generate_get_url('/my/url/here/?', my_value='test')
+            self.assertText('/my/url/here/?my_value=test', url)
+
+        with self.subTest('With mixed characters and extra ? to start query params'):
+            # Base url.
+            url = self.generate_get_url('/my/url/here?', test='testing stuff?<blah>weird_values-aaa')
+            self.assertText('/my/url/here/?test=testing+stuff%3F%3Cblah%3Eweird_values-aaa', url)
+
+            # With ending slash.
+            url = self.generate_get_url('/my/url/here/?', test='testing stuff?<blah>weird_values-aaa')
+            self.assertText('/my/url/here/?test=testing+stuff%3F%3Cblah%3Eweird_values-aaa', url)
+
+        with self.subTest('With multiple instances of ? and /'):
+            # Base url.
+            url = self.generate_get_url('/my/url/here////???//', my_value='test')
+            self.assertText('/my/url/here/?my_value=test', url)
+
 
     def assert_symbol_standardization(self, symbol_str, expected_return):
         """

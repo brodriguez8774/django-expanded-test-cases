@@ -695,9 +695,26 @@ class CoreTestCaseMixin:
         if len(url) == 0:
             raise ValueError(value_error)
 
+        # If kwargs were provided, trim final slash if url ends with such.
+        while url.endswith('/'):
+            url = url[:-1]
+
+        # Trim final ? if url ends with such.
+        while url.endswith('?'):
+            url = url[:-1]
+
+        # If kwargs were provided, trim final slash if url ends with such.
+        # Makes sure handling is consistent, even if ordering of ? and / are weird.
+        while url.endswith('/'):
+            url = url[:-1]
+
         # Finally, generate actual url and return.
         get_params = urlencode(kwargs)
-        get_url = url + ('' if get_params == '' else '?' + get_params)
+        get_url = '{0}/{1}'.format(
+            url,
+            ('' if get_params == '' else '?' + get_params)
+        )
+
         self._debug_print('URL: {0}'.format(get_url))
         return get_url
 

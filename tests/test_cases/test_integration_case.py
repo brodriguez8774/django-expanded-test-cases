@@ -195,6 +195,76 @@ class IntegrationClassTest__Base(IntegrationTestCase):
             self.assertText('/user/detail/2/', response.url)
             self.assertText('https://my_really_cool_site.com/user/detail/2/', response.full_url)
 
+    def test__assertResponse__url__with_query_params(self):
+        """
+        Tests URL value returned response object in assertResponse() function.
+        """
+        with self.subTest('Login page with "next" built into url - No ending slash'):
+            # Test base url.
+            response = self.assertResponse('/login?next=%2Fhome_page%2F')
+            self.assertText('/login/?next=%2Fhome_page%2F', response.url)
+            self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
+
+            # Test with site root.
+            response = self.assertResponse('127.0.0.1/login?next=%2Fhome_page%2F')
+            self.assertText('/login/?next=%2Fhome_page%2F', response.url)
+            self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
+
+        with self.subTest('Login page with "next" built into url - With ending slash'):
+            # Test base url.
+            response = self.assertResponse('/login/?next=%2Fhome_page%2F')
+            self.assertText('/login/?next=%2Fhome_page%2F', response.url)
+            self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
+
+            # Test with site root.
+            response = self.assertResponse('127.0.0.1/login/?next=%2Fhome_page%2F')
+            self.assertText('/login/?next=%2Fhome_page%2F', response.url)
+            self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
+
+        with self.subTest('Login page with "next" built via generate_get_url() function - No ending slash'):
+            # Test base url.
+            response = self.assertResponse(self.generate_get_url('/login', next='/home_page/'))
+            self.assertText('/login/?next=%2Fhome_page%2F', response.url)
+            self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
+
+            # Test with site root.
+            response = self.assertResponse(self.generate_get_url('/login', next='/home_page/'))
+            self.assertText('/login/?next=%2Fhome_page%2F', response.url)
+            self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
+
+        with self.subTest('Login page with "next" built via generate_get_url() function - With ending slash'):
+            # Test base url.
+            response = self.assertResponse(self.generate_get_url('/login/', next='/home_page/'))
+            self.assertText('/login/?next=%2Fhome_page%2F', response.url)
+            self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
+
+            # Test with site root.
+            response = self.assertResponse(self.generate_get_url('/login/', next='/home_page/'))
+            self.assertText('/login/?next=%2Fhome_page%2F', response.url)
+            self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
+
+        # with self.subTest('Login page with "next" privided as query_param kwarg - No ending slash'):
+        #     # Test base url.
+        #     response = self.assertResponse('/login', query_params={'next': '/home_page/'})
+        #     self.assertText('/login/?next=%2Fhome_page%2F', response.url)
+        #     self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
+        #
+        #     # Test with site root.
+        #     response = self.assertResponse('127.0.0.1/login', query_params={'next': '/home_page/'})
+        #     self.assertText('/login/?next=%2Fhome_page%2F', response.url)
+        #     self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
+        #
+        # with self.subTest('Login page with "next" privided as query_param kwarg - With ending slash'):
+        #     # Test base url.
+        #     response = self.assertResponse('/login/', query_params={'next': '/home_page/'})
+        #     self.assertText('/login/?next=%2Fhome_page%2F', response.url)
+        #     self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
+        #
+        #     # Test with site root.
+        #     response = self.assertResponse('127.0.0.1/login/', query_params={'next': '/home_page/'})
+        #     self.assertText('/login/?next=%2Fhome_page%2F', response.url)
+        #     self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
+
     def test__assertResponse__url_redirect(self):
         """
         Tests "url_redirect" functionality of assertResponse() function.
@@ -3665,6 +3735,149 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                 ),
                 response,
             )
+
+    def test__standardize_url__success(self):
+        """
+        Tests standardize_url() function, in situations when it should succeed.
+        """
+
+        with self.subTest('Emtpy url'):
+            # Base url.
+            url = self.standardize_url('', append_root=False)
+            self.assertText('/', url)
+
+            # With site root.
+            url = self.standardize_url('', append_root=True)
+            self.assertText('127.0.0.1/', url)
+
+        with self.subTest('Basic url - No outer slashes'):
+            # Base url.
+            url = self.standardize_url('login', append_root=False)
+            self.assertText('/login/', url)
+
+            # With site root.
+            url = self.standardize_url('login', append_root=True)
+            self.assertText('127.0.0.1/login/', url)
+
+        with self.subTest('Basic url - With outer slashes'):
+            # Base url.
+            url = self.standardize_url('/login/', append_root=False)
+            self.assertText('/login/', url)
+
+            # With site root.
+            url = self.standardize_url('/login/', append_root=True)
+            self.assertText('127.0.0.1/login/', url)
+
+        with self.subTest('Longer url - No outer slashes'):
+            # Base url.
+            url = self.standardize_url('this/is/a/test/url', append_root=False)
+            self.assertText('/this/is/a/test/url/', url)
+
+            # With site root.
+            url = self.standardize_url('/this/is/a/test/url/', append_root=True)
+            self.assertText('127.0.0.1/this/is/a/test/url/', url)
+
+        with self.subTest('With GET args - Provided in url'):
+            # Base url.
+            url = self.standardize_url('/my/url/?arg1=testing&arg2=aaa', append_root=False)
+            self.assertText('/my/url/?arg1=testing&arg2=aaa', url)
+
+            # With site root.
+            url = self.standardize_url('/my/url/?arg1=testing&arg2=aaa', append_root=True)
+            self.assertText('127.0.0.1/my/url/?arg1=testing&arg2=aaa', url)
+
+        with self.subTest('With GET args - Provided via generate_get_url()'):
+            # Base url.
+            url = self.standardize_url(self.generate_get_url('/my/url/', arg1='testing', arg2='aaa'), append_root=False)
+            self.assertText('/my/url/?arg1=testing&arg2=aaa', url)
+
+            # With site root.
+            url = self.standardize_url(self.generate_get_url('/my/url/', arg1='testing', arg2='aaa'), append_root=True)
+            self.assertText('127.0.0.1/my/url/?arg1=testing&arg2=aaa', url)
+
+        with self.subTest('With GET args - Provided in url with mixed characters'):
+            # Base url.
+            url = self.standardize_url('/my/url/?arg1=testing stuff?<blah>weird_values-aaa', append_root=False)
+            self.assertText('/my/url/?arg1=testing+stuff%3F%3Cblah%3Eweird_values-aaa', url)
+
+            # With site root.
+            url = self.standardize_url('/my/url/?arg1=testing stuff?<blah>weird_values-aaa', append_root=True)
+            self.assertText('127.0.0.1/my/url/?arg1=testing+stuff%3F%3Cblah%3Eweird_values-aaa', url)
+
+        with self.subTest('With GET args - Provided in generate_get_url() with mixed characters'):
+            # Base url.
+            url = self.standardize_url(self.generate_get_url('/my/url/?', test='testing stuff?<blah>weird_values-aaa'), append_root=False)
+            self.assertText('/my/url/?test=testing+stuff%3F%3Cblah%3Eweird_values-aaa', url)
+
+            # With site root.
+            url = self.standardize_url(self.generate_get_url('/my/url/?', test='testing stuff?<blah>weird_values-aaa'), append_root=True)
+            self.assertText('127.0.0.1/my/url/?test=testing+stuff%3F%3Cblah%3Eweird_values-aaa', url)
+
+        with self.subTest('Basic resolve url'):
+            # Base url.
+            url = self.standardize_url('django_expanded_test_cases:login', append_root=False)
+            self.assertText('/login/', url)
+
+            # With site root.
+            url = self.standardize_url('django_expanded_test_cases:login', append_root=True)
+            self.assertText('127.0.0.1/login/', url)
+
+        with self.subTest('Resolve url with params as args'):
+            # Base url.
+            url = self.standardize_url(
+                'django_expanded_test_cases:response-with-args',
+                url_args=(11, 'args_test_1'),
+                append_root=False,
+            )
+            self.assertText('/views/11/args_test_1/', url)
+
+            # With site root.
+            url = self.standardize_url(
+                'django_expanded_test_cases:response-with-args',
+                url_args=(12, 'args_test_2'),
+                append_root=True,
+            )
+            self.assertText('127.0.0.1/views/12/args_test_2/', url)
+
+        with self.subTest('Resolve url with params as kwargs'):
+            # Base url.
+            url = self.standardize_url(
+                'django_expanded_test_cases:response-with-args',
+                url_kwargs={'id': 21, 'name': 'kwargs_test_1'},
+                append_root=False,
+            )
+            self.assertText('/views/21/kwargs_test_1/', url)
+
+            # With site root.
+            url = self.standardize_url(
+                'django_expanded_test_cases:response-with-args',
+                url_kwargs={'id': 22, 'name': 'kwargs_test_2'},
+                append_root=True,
+            )
+            self.assertText('127.0.0.1/views/22/kwargs_test_2/', url)
+
+    def test__standardize_url__failure(self):
+        """
+        Tests standardize_url() function, in situations when it should fail.
+        """
+        with self.subTest('Resolve url with with args and kwargs'):
+            # Base url.
+            with self.assertRaises(ValueError):
+                url = self.standardize_url(
+                    'django_expanded_test_cases:response-with-args',
+                    url_args=(31, 'testing'),
+                    url_kwargs={'id': 31, 'name': 'testing'},
+                    append_root=False,
+                )
+
+            # With site root.
+            with self.assertRaises(ValueError):
+                url = self.standardize_url(
+                    'django_expanded_test_cases:response-with-args',
+                    url_args=(31, 'testing'),
+                    url_kwargs={'id': 31, 'name': 'testing'},
+                    append_root=True,
+                )
 
     def test__standardize_html_tags(self):
         """
