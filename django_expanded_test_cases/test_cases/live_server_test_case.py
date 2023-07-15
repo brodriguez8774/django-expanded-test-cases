@@ -6,7 +6,6 @@ Tends to take longer to test. So consider using IntegrationTestCase instead, whe
 """
 
 # System Imports.
-import time
 
 # Third-Party Imports.
 from django.test import LiveServerTestCase as DjangoLiveServerTestCase
@@ -16,10 +15,10 @@ from selenium.webdriver.firefox.service import Service as FireFoxService
 from django.conf import settings
 
 # Internal Imports.
-from .universal_live_server_test_case import UniversalLiveServerTestCaseMixin
+from django_expanded_test_cases.mixins.live_server_mixin import LiveServerMixin
 
 
-class LiveServerTestCase(DjangoLiveServerTestCase, UniversalLiveServerTestCaseMixin):
+class LiveServerTestCase(DjangoLiveServerTestCase, LiveServerMixin):
     """Uses Django package to test functionality through selenium. Simulates web browser navigation."""
 
     @classmethod
