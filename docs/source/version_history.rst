@@ -2,7 +2,47 @@ Version History
 ***************
 
 
-0.3.0 - Debug Output Customization
+0.5.0 - Improved Integration TestCase & Initial LiveServer TestCases
+====================================================================
+* Generally reworked/improved how URLs are handled in response assertions.
+
+  * All **assertResponse** type calls take args for additional parameters for
+    url parsing, provided as args or kwargs (for Django
+    `reverse <https://docs.djangoproject.com/en/4.2/ref/urlresolvers/#reverse>`_
+    calls), or query_parameters (for GET style url calls).
+  * These parameters can be sent for both standard url resolving, and redirect
+    url resolving.
+
+* Changed ``response.url`` to ``response.full_url``.
+
+  * ``response.url`` now contains the response url minus site root, while
+    ``response.full_url`` contains response url with site root.
+
+* Added `assertTextStartsWith()` and `assertTextEndsWith()` functions.
+
+  * These are more forgiving versions of `assertText()`, with similar output on
+    failure.
+
+* Added setting for behavior of `assertTitle()` function in page response tests.
+
+  * To make behavior consistent across functions, the `assertTitle()`'s
+    `exact_match` arg (default of `True`) has been renamed to `allow_partials`
+    (default of `False`).
+
+* Updated default value of `DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS`
+  to be False, to better match what is likely the default expected logic for
+  most users.
+
+* `LiveServerTestCase` has been split into `LiveServerTestCase` and
+  `ChannelsLiveServerTestCase` and is now tentatively usable.
+
+  * `LiveServerTestCase` uses basic selenium testing, while
+    `ChannelsLiveServerTestCase` uses selinium via DjangoChannels.
+
+* General small bugfixes.
+
+
+0.4.0 - Debug Output Customization
 ==================================
 
 * Updates project settings to allow better customization of debug output upon
