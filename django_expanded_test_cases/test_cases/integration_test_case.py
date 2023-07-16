@@ -57,7 +57,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
     def assertResponse(
         self,
         url, *args,
-        get=True, data=None,
+        get=True, data=None, secure=True,
         expected_status=200,
         expected_redirect_url=None,
         url_args=None, url_kwargs=None, url_query_params=None,
@@ -79,6 +79,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param url: Url to get response object from.
         :param get: Bool indicating if response is GET or POST. Defaults to GET.
         :param data: Optional dict of items to pass into response generation.
+        :param secure: Bool indicating if request should be retrieved as HTTP or HTTPS.
         :param expected_redirect_url: Expected url, after any redirections.
         :param url_args: Values to provide for URL population, in "arg" format.
         :param url_kwargs: Values to provide for URL population, in "kwarg" format.
@@ -122,6 +123,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             url,
             get=get,
             data=data,
+            secure=secure,
             url_args=url_args,
             url_kwargs=url_kwargs,
             query_params=url_query_params,
@@ -152,7 +154,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         self._assertResponse__pre_builtin_tests(
             response.url, *args,
             response=response,
-            get=get, data=data,
+            get=get, data=data, secure=secure,
             expected_status=expected_status,
             expected_redirect_url=expected_redirect_url,
             url_args=url_args, url_kwargs=url_kwargs, url_query_params=url_query_params,
@@ -205,7 +207,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         self._assertResponse__post_builtin_tests(
             response.url, *args,
             response=response,
-            get=get, data=data,
+            get=get, data=data, secure=secure,
             expected_status=expected_status,
             expected_redirect_url=expected_redirect_url,
             url_args=url_args, url_kwargs=url_kwargs, url_query_params=url_query_params,
@@ -224,7 +226,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
     def assertGetResponse(
         self,
         url, *args,
-        data=None,
+        data=None, secure=True,
         expected_status=200,
         expected_redirect_url=None,
         url_args=None, url_kwargs=None, url_query_params=None,
@@ -251,6 +253,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             *args,
             get=True,
             data=data,
+            secure=secure,
             expected_status=expected_status,
             expected_redirect_url=expected_redirect_url,
             url_args=url_args,
@@ -276,7 +279,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
     def assertPostResponse(
         self,
         url, *args,
-        data=None,
+        data=None, secure=True,
         expected_status=200,
         expected_redirect_url=None,
         url_args=None, url_kwargs=None, url_query_params=None,
@@ -309,6 +312,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             *args,
             get=False,
             data=data,
+            secure=secure,
             expected_status=expected_status,
             expected_redirect_url=expected_redirect_url,
             url_args=url_args,
@@ -937,7 +941,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         self,
         url,
         *args,
-        get=True, data=None,
+        get=True, data=None, secure=True,
         url_args=None, url_kwargs=None, query_params=None,
         auto_login=True, user=None, user_permissions=None, user_groups=None,
         **kwargs,
@@ -949,6 +953,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param url: Url to get response object from.
         :param get: Bool indicating if response is GET or POST. Defaults to GET.
         :param data: Optional dict of items to pass into response generation.
+        :param secure: Bool indicating if request should be retrieved as HTTP or HTTPS.
         :param url_args: Values to provide for URL population, in "arg" format.
         :param url_kwargs: Values to provide for URL population, in "kwarg" format.
         :param auto_login: Bool indicating if User should be "logged in" to client or not.
@@ -991,9 +996,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Get response object.
         if bool(get):
-            response = self.client.get(url, data=data, follow=True)
+            response = self.client.get(url, data=data, secure=secure, follow=True)
         else:
-            response = self.client.post(url, data=data, follow=True)
+            response = self.client.post(url, data=data, secure=secure, follow=True)
 
         # Update response object with additional useful values for further testing/analysis.
         response.url = url
