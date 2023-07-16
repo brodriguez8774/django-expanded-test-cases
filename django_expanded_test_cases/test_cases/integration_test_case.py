@@ -63,7 +63,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         url_args=None, url_kwargs=None, url_query_params=None,
         redirect_args=None, redirect_kwargs=None, redirect_query_params=None,
         expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
-        auto_login=True, user=None, user_permissions=None, user_groups=None,
+        auto_login=True, user=None, user_permissions=None, user_groups=None, extra_usergen_kwargs=None,
         ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
         **kwargs,
     ):
@@ -96,6 +96,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param user: User to log in with, if auto_login is True. Defaults to `test_user`.
         :param user_permissions: Optional permissions to provide to login user.
         :param user_groups: Optional groups to provide to login user.
+        :param extra_usergen_kwargs: Optional dictionary of values to pass to _get_login_user__extra_user_auth_setup().
         :param ignore_content_ordering: Bool indicating if ordering should be verified. Defaults to checking ordering.
         :param content_starts_after: The HTML that expected_content should occur after. This HTML and everything
                                      preceding is stripped out of the "search space" for the expected_content value.
@@ -111,6 +112,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         redirect_kwargs = {**kwargs, **(redirect_kwargs or {})}
         redirect_query_params = redirect_query_params or {}
         url_kwargs = {**kwargs.pop('kwargs', {}), **(url_kwargs or {}), **kwargs}
+        extra_usergen_kwargs = extra_usergen_kwargs or {}
 
         # Reset client "user login" state for new response generation.
         self.client.logout()
@@ -131,6 +133,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             user=user,
             user_permissions=user_permissions,
             user_groups=user_groups,
+            extra_usergen_kwargs=extra_usergen_kwargs,
         )
 
         # Optionally output all debug info for found response.
@@ -162,6 +165,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             expected_title=expected_title, expected_header=expected_header, expected_messages=expected_messages,
             expected_content=expected_content,
             auto_login=auto_login, user=user, user_permissions=user_permissions, user_groups=user_groups,
+            extra_usergen_kwargs=extra_usergen_kwargs,
             ignore_content_ordering=ignore_content_ordering, content_starts_after=content_starts_after,
             content_ends_before=content_ends_before,
             **kwargs,
@@ -215,6 +219,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             expected_title=expected_title, expected_header=expected_header, expected_messages=expected_messages,
             expected_content=expected_content,
             auto_login=auto_login, user=user, user_permissions=user_permissions, user_groups=user_groups,
+            extra_usergen_kwargs=extra_usergen_kwargs,
             ignore_content_ordering=ignore_content_ordering, content_starts_after=content_starts_after,
             content_ends_before=content_ends_before,
             **kwargs,
@@ -232,7 +237,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         url_args=None, url_kwargs=None, url_query_params=None,
         redirect_args=None, redirect_kwargs=None, redirect_query_params=None,
         expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
-        auto_login=True, user=None, user_permissions=None, user_groups=None,
+        auto_login=True, user=None, user_permissions=None, user_groups=None, extra_usergen_kwargs=None,
         ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
         **kwargs,
     ):
@@ -246,6 +251,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         redirect_args = redirect_args or []
         redirect_kwargs = redirect_kwargs or {}
         redirect_query_params = redirect_query_params or {}
+        extra_usergen_kwargs = extra_usergen_kwargs or {}
 
         # Call base function to handle actual logic.
         return self.assertResponse(
@@ -270,6 +276,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             user=user,
             user_permissions=user_permissions,
             user_groups=user_groups,
+            extra_usergen_kwargs=extra_usergen_kwargs,
             ignore_content_ordering=ignore_content_ordering,
             content_starts_after=content_starts_after,
             content_ends_before=content_ends_before,
@@ -285,7 +292,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         url_args=None, url_kwargs=None, url_query_params=None,
         redirect_args=None, redirect_kwargs=None, redirect_query_params=None,
         expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
-        auto_login=True, user=None, user_permissions=None, user_groups=None,
+        auto_login=True, user=None, user_permissions=None, user_groups=None, extra_usergen_kwargs=None,
         ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
         **kwargs,
     ):
@@ -299,6 +306,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         redirect_args = redirect_args or []
         redirect_kwargs = redirect_kwargs or {}
         redirect_query_params = redirect_query_params or {}
+        extra_usergen_kwargs = extra_usergen_kwargs or {}
 
         # Forcibly add values to "data" dict, so that POST doesn't validate to empty in view.
         # This guarantees that view serves as POST, like this specific assertion expects.
@@ -329,6 +337,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             user=user,
             user_permissions=user_permissions,
             user_groups=user_groups,
+            extra_usergen_kwargs=extra_usergen_kwargs,
             ignore_content_ordering=ignore_content_ordering,
             content_starts_after=content_starts_after,
             content_ends_before=content_ends_before,
@@ -943,7 +952,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         *args,
         get=True, data=None, secure=True,
         url_args=None, url_kwargs=None, query_params=None,
-        auto_login=True, user=None, user_permissions=None, user_groups=None,
+        auto_login=True, user=None, user_permissions=None, user_groups=None, extra_usergen_kwargs=None,
         **kwargs,
     ):
         """Helper function for assertResponse().
@@ -959,6 +968,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param auto_login: Bool indicating if User should be "logged in" to client or not.
         :param user_permissions: Set of Django Permissions to give to test user before accessing page.
         :param user_groups: Set of Django PermissionGroups to give to test user before accessing page.
+        :param extra_usergen_kwargs: Optional dictionary of values to pass to _get_login_user__extra_user_auth_setup().
         :return: Django response object for provided url.
         """
         # Handle mutable data defaults.
@@ -966,6 +976,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         url_args = (*args, *kwargs.pop('args', []), *(url_args or []))
         url_kwargs = {**kwargs.pop('kwargs', {}), **(url_kwargs or {}), **kwargs}
         query_params = query_params or {}
+        extra_usergen_kwargs = {**kwargs, **(extra_usergen_kwargs or {})}
 
         # Validate data types.
         if not isinstance(data, dict):
@@ -979,7 +990,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             auto_login=auto_login,
             user_permissions=user_permissions,
             user_groups=user_groups,
-            **kwargs,
+            **extra_usergen_kwargs,
         )
 
         # Handle url sanitization.
