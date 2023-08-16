@@ -88,6 +88,27 @@ def view_with_three_messages(request):
     })
 
 
+def view_with_repeating_elements(request):
+    """Page that simulates a view with multiple repeating elements."""
+
+    # Render response.
+    return render(request, 'django_expanded_test_cases/index.html', {
+        'header': 'View with Repeating Elements',
+        'text': (
+            'Pretend useful stuff is displayed here, for render() view with url args.'
+        ),
+        'li_set': (
+            '<p>Repeating Line</p>',
+            '<p>Test First Unique Line</p>',
+            '<p>Repeating Line</p>',
+            '<p>Test Second Unique Line</p>',
+            '<p>Repeating Line</p>',
+            '<p>Test Third Unique Line</p>',
+            '<p>Repeating Line</p>',
+        ),
+    })
+
+
 def view_with_args(request, id, name):
     """Page that simulates a view with passed args."""
 

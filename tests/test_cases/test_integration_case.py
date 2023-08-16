@@ -834,6 +834,42 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                 content_ends_before='<p>Pretend this is the project landing page.</p>',
             )
 
+    def test__assertPageContent__expected_content__repeating_elements(self):
+        with (self.subTest('Sanity check, making sure each individual content section is found from full response')):
+            self.assertResponse(
+                'django_expanded_test_cases:response-with-repeating-elements',
+                expected_content=['<p>Test First Unique Line</p>'],
+                content_starts_after='<p>Repeating Line</p>',
+            )
+            self.assertResponse(
+                'django_expanded_test_cases:response-with-repeating-elements',
+                expected_content=['<p>Test Second Unique Line</p>'],
+                content_starts_after='<p>Repeating Line</p>',
+            )
+            self.assertResponse(
+                'django_expanded_test_cases:response-with-repeating-elements',
+                expected_content=['<p>Test Third Unique Line</p>'],
+                content_starts_after='<p>Repeating Line</p>',
+              )
+            self.assertResponse(
+                'django_expanded_test_cases:response-with-repeating-elements',
+                expected_content=['<p>Repeating Line</p>'],
+            )
+
+        with self.subTest('Check all values together'):
+            self.assertResponse(
+                'django_expanded_test_cases:response-with-repeating-elements',
+                expected_content=[
+                    '<p>Repeating Line</p>',
+                    '<p>Test First Unique Line</p>',
+                    '<p>Repeating Line</p>',
+                    '<p>Test Second Unique Line</p>',
+                    '<p>Repeating Line</p>',
+                    '<p>Test Third Unique Line</p>',
+                    '<p>Repeating Line</p>',
+                ],
+            )
+
     def test__assertGetResponse(self):
         """
         Tests assertGetResponse() function.

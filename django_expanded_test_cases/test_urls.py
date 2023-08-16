@@ -18,7 +18,9 @@ urlpatterns = [
     path('views/one-message/', views.view_with_one_message, name='response-with-one-message'),
     path('views/two-messages/', views.view_with_two_messages, name='response-with-two-messages'),
     path('views/three-messages/', views.view_with_three_messages, name='response-with-three-messages'),
+    path('views/repeating-elements/', views.view_with_repeating_elements, name='response-with-repeating-elements'),
     path('views/<int:id>/<str:name>/', views.view_with_args, name='response-with-args'),
+
 
     # Template response views.
     path('template-response/index/', views.template_response_index, name='template-response-index'),
