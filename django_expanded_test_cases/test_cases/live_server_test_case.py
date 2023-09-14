@@ -36,14 +36,13 @@ class LiveServerTestCase(DjangoLiveServerTestCase, LiveServerMixin):
         # Import/Initialize some values based on chosen testing browser. Default to chrome.
         cls._browser = str(getattr(settings, 'SELENIUM_TEST_BROWSER', 'chrome')).lower()
 
-        if cls._browser == 'chrome':
-            # Setup for Chrome browser.
+        if cls._browser in ['chrome', 'chromium']:
+            # Setup for Chrome/Chromium browser.
 
             # Setup browser driver to launch browser with.
             try:
                 # Attempt driver auto-install, if webdriver_manager package is present.
-                from webdriver_manager.chrome import ChromeDriverManager
-                cls._service = ChromeService(executable_path=ChromeDriverManager().install())
+                cls._service = ChromeService()
 
                 # Set required options to prevent crashing.
                 chromeOptions = webdriver.ChromeOptions()
@@ -61,39 +60,16 @@ class LiveServerTestCase(DjangoLiveServerTestCase, LiveServerMixin):
 
             except ModuleNotFoundError:
                 # Fall back to manual installation handling.
-                # raise NotImplementedError('Currently not supported to')
-                # cls._service = ChromeService(executable_path='/usr/bin/google-chrome')
-                cls._service = ChromeService(executable_path='/usr/local/share/chromedriver')
 
-        elif cls._browser == 'chromium':
-            # Setup for Chromium browser.
+                if cls._browser == 'chrome':
+                    # For Chrome.
+                    cls._service = ChromeService(executable_path='/usr/local/share/chromedriver')
 
-            # Setup browser driver to launch browser with.
-            try:
-                # Attempt driver auto-install, if webdriver_manager package is present.
-                from webdriver_manager.chrome import ChromeDriverManager
-                from webdriver_manager.core.utils import ChromeType
-                cls._service = ChromeService(executable_path=ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
-            except ModuleNotFoundError:
-                # Fall back to manual installation handling.
-                # cls._service = ChromeService(executable_path='/usr/bin/google-chrome')
-                cls._service = ChromeService(executable_path='/usr/local/share/chromedriver')
+                if cls._browser == 'chromium':
+                    # For Chromium.
+                    cls._service = ChromeService(executable_path='/usr/local/share/chromedriver')
 
-                # Set required options to prevent crashing.
-                chromeOptions = webdriver.ChromeOptions()
-                chromeOptions.add_experimental_option("prefs", {"profile.managed_default_content_settings.images": 2})
-                chromeOptions.add_argument("--no-sandbox")
-                chromeOptions.add_argument("--disable-setuid-sandbox")
-                chromeOptions.add_argument("--remote-debugging-port=9222")
-                chromeOptions.add_argument("--disable-dev-shm-using")
-                chromeOptions.add_argument("--disable-extensions")
-                chromeOptions.add_argument("--disable-gpu")
-                chromeOptions.add_argument("disable-infobars")
-
-                # Save options.
-                cls._options = chromeOptions
-
-            # All further handling should behave the same as chrome.
+            # Everything else should handle the same for both.
             cls._browser = 'chrome'
 
         elif cls._browser == 'firefox':
