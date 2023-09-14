@@ -2,12 +2,13 @@ LiveServerTestCase
 ******************
 
 
-The **LiveServerTestCase** class provides additional wrapper functionality for
-writing tests that directly check a browser window instance, such as
+The **LiveServerTestCase** and **ChannelsLiveServerTestCase** classes provide
+additional wrapper functionality for writing tests that directly check a
+browser window instance, such as when using
 `Selenium <https://www.selenium.dev/documentation/>`_.
 
 
-This class can be very helpful in testing logic that requires live browser
+These classes can be very helpful in testing logic that requires live browser
 manipulation, such as any logic that uses JavaScript to function.
 
 
@@ -23,6 +24,6 @@ manipulation, such as any logic that uses JavaScript to function.
 
 .. attention::
 
-    This TestCase is not yet implemented.
+    This TestCase is not yet fully implemented.
 
     See :doc:`../roadmap`.

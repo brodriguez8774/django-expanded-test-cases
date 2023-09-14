@@ -14,7 +14,7 @@ Below is the minimum viable state for each version release.
 
     * At least some documentation exists for BaseTestCase and IntegrationTestCase.
 
-* v 0.5.x
+* v 0.6.x
 
     * Project is in a viable state to test both basic responses and selenium
       browser responses.
@@ -27,7 +27,7 @@ Below is the minimum viable state for each version release.
       if not complete.
     * At least some documentation exists for LiveServerTestCase.
 
-* v 0.6.x
+* v 0.7.x
 
     * Project is in a viable state to test basic responses, selenium browser
       responses, and CSV file downloads.

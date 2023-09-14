@@ -64,11 +64,10 @@ Example::
 
 SELENIUM_TEST_BROWSER
 =====================
-When using the :doc:`../test_cases/live_server_test_case` class for
-`Selenium <https://www.selenium.dev/>`_ tests, this setting specify which browser
-type you wish to use.
+When using the :doc:`../test_cases/live_server_test_case` classes
+for `Selenium <https://www.selenium.dev/>`_ tests, this setting specifies which browser to use.
 
-Supported test browsers are as follows:
+Currently, supported test browsers are as follows:
  * chrome
  * chromium
  * firefox

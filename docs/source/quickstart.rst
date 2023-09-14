@@ -32,13 +32,45 @@ definition:
         'django.contrib.sessions',
     )
 
+Optional Packages
+-----------------
 
-Finally, for colorized debug output, also install the ``colorama`` package.
+Django ETC comes with support for the following optional packages.
+
+
+For colorized debug output, install the ``colorama`` package.
 
 .. code:: python
 
     pip install colorama
 
+
+For basic `selenium <https://www.selenium.dev/>`_ support, install the ``selenium`` and ``webdriver-manager`` packages.
+
+.. code:: python
+
+    pip install selenium webdriver-manager
+
+.. note::
+
+    As of Chrome version 115 and higher, the official chromedriver API has been modified, and the traditional release
+    repository is no longer supported. Chromedriver releases can now only be discovered programmatically. To support
+    that, ``selenium`` package version 4.11.2 or higher is now required.
+
+    See https://bonigarcia.dev/webdrivermanager/#support-for-chromedriver-115 and
+    https://chromedriver.chromium.org/downloads/version-selection for more information.
+
+
+For full `Django Channels <https://github.com/django/channels>`_ selenium support, install the `channels` and `daphne`
+packages.
+
+.. code:: python
+
+    pip install channels daphne
+
+Or alternatively see the
+`official channels installation guide <https://channels.readthedocs.io/en/latest/installation.html>`_ for additional
+methods.
 
 Testing Environments
 ====================
