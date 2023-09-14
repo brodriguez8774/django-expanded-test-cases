@@ -2,6 +2,12 @@ Version History
 ***************
 
 
+0.5.1 - Update Docs and Preparation for 0.6 LiveServer Release
+==============================================================
+* Updated/corrected docs.
+* Updated beta LiveServer classes to function with Chromedriver version 115 and higher.
+
+
 0.5.0 - Improved Integration TestCase & Initial LiveServer TestCases
 ====================================================================
 * Generally reworked/improved how URLs are handled in response assertions.
