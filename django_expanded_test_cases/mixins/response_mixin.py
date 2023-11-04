@@ -821,7 +821,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         # Return found item.
         return element_list[0]
 
-    def find_elements_by_text(self, content, text):
+    def find_elements_by_text(self, content, text, element_type=None):
         """Finds all HTML elements that contain the provided text.
 
         :param content: Content to search through.
@@ -832,17 +832,28 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
 
         # Search for all matching elements.
         soup = BeautifulSoup(content, 'html.parser')
-        elements = soup.find_all(string=re.compile('{0}'.format(text)))
-        element_list = [self.get_minimized_response_content(element.parent) for element in elements]
+        if not element_type:
+            elements = soup.find_all(string=re.compile('{0}'.format(text)))
+        else:
+            elements = soup.find_all(str(element_type), string=re.compile('{0}'.format(text)))
+        if element_type:
+            element_list = [self.get_minimized_response_content(element.prettify()) for element in elements]
+        else:
+            element_list = [self.get_minimized_response_content(element.parent.prettify()) for element in elements]
 
         # Verify one or more values were found.
         if not len(element_list) > 0:
-            self.fail(f'Unable to find element text "{text}" in content. Provided content was:\n{content}')
+            type_substring = ''
+            if element_type:
+                type_substring = ' under element type of "{0}"'.format(element_type)
+            self.fail(
+                f'Unable to find element text "{text}" in content{type_substring}. Provided content was:\n{content}'
+            )
 
         # Return found values.
         return element_list
 
-    def find_element_by_text(self, content, text):
+    def find_element_by_text(self, content, text, element_type=None):
         """Finds first HTML element that matches the provided text.
 
         :param content: Content to search through.
@@ -852,7 +863,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         content = self.get_minimized_response_content(content)
 
         # Call parent function logic.
-        element_list = self.find_elements_by_text(content, text)
+        element_list = self.find_elements_by_text(content, text, element_type=element_type)
 
         # Verify only one value was found.
         if len(element_list) > 1:

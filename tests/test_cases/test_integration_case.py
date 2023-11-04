@@ -5932,27 +5932,23 @@ class IntegrationClassTest__Base(IntegrationTestCase):
         """
         Tests find_elements_by_text() function, in cases when it should succeed.
         """
-        with self.subTest('When expected link_text is the only item, with standard element'):
+        with self.subTest('When expected text is the only item, with standard element'):
             response = HttpResponse('<p>This are words test_element_text test test test.</p>')
 
             results = self.find_elements_by_text(response, 'test_element_text')
             self.assertEqual(len(results), 1)
-            print('found results:')
-            print(results)
-            self.assertIn('<p>This are words test_element_text test test test.</p>', results)
+            self.assertIn('<p>\n This are words test_element_text test test test.\n</p>', results)
 
-        with self.subTest('When expected link_text exists multiple times - Two instances'):
+        with self.subTest('When expected text exists multiple times - Two instances'):
             response = HttpResponse('<li>test_element_text One</li><li>test_element_text Two</li>')
 
             # By base element tag.
             results = self.find_elements_by_text(response, 'test_element_text')
             self.assertEqual(len(results), 2)
-            print('found results:')
-            print(results)
-            self.assertIn('<li>test_element_text One</li>', results)
-            self.assertIn('<li>test_element_text Two</li>', results)
+            self.assertIn('<li>\n test_element_text One\n</li>', results)
+            self.assertIn('<li>\n test_element_text Two\n</li>', results)
 
-        with self.subTest('When expected element exists multiple times - Three instances plus extra'):
+        with self.subTest('When expected text exists multiple times - Three instances plus extra'):
             response = HttpResponse(
                 """
                 <div>
@@ -5976,9 +5972,95 @@ class IntegrationClassTest__Base(IntegrationTestCase):
             )
             results = self.find_elements_by_text(response, 'test_element_text')
             self.assertEqual(len(results), 3)
-            self.assertIn('<a href="">test_element_text One</a>', results)
-            self.assertIn('<a href="">test_element_text Two</a>', results)
-            self.assertIn('<a href="">test_element_text Four</a>', results)
+            self.assertIn('<a href="">\n test_element_text One\n</a>', results)
+            self.assertIn('<a href="">\n test_element_text Two\n</a>', results)
+            self.assertIn('<a href="">\n test_element_text Four\n</a>', results)
+
+        with self.subTest('When expected text exists - Filtered by type'):
+            response = HttpResponse(
+                '<h1>test_element_text</h1>'
+                '<h2>test_element_text</h2>'
+                '<h3>test_element_text</h3>'
+                '<h4>test_element_text</h4>'
+                '<h5>test_element_text</h5>'
+                '<h6>test_element_text</h6>'
+                '<p>test_element_text</p>'
+                '<span>test_element_text</span>'
+                '<li>test_element_text</li>'
+            )
+
+            # Verify full results when not limiting by element type.
+            results = self.find_elements_by_text(response, 'test_element_text')
+            self.assertEqual(len(results), 9)
+
+            # Verify results when limiting by each type.
+            # Type h1.
+            results = self.find_elements_by_text(response, 'test_element_text', element_type='h1')
+            self.assertEqual(len(results), 1)
+            self.assertIn('<h1>\n test_element_text\n</h1>', results)
+            # Type h2.
+            results = self.find_elements_by_text(response, 'test_element_text', element_type='h2')
+            self.assertEqual(len(results), 1)
+            self.assertIn('<h2>\n test_element_text\n</h2>', results)
+            # Type h3.
+            results = self.find_elements_by_text(response, 'test_element_text', element_type='h3')
+            self.assertEqual(len(results), 1)
+            self.assertIn('<h3>\n test_element_text\n</h3>', results)
+            # Type h4.
+            results = self.find_elements_by_text(response, 'test_element_text', element_type='h4')
+            self.assertEqual(len(results), 1)
+            self.assertIn('<h4>\n test_element_text\n</h4>', results)
+            # Type h5.
+            results = self.find_elements_by_text(response, 'test_element_text', element_type='h5')
+            self.assertEqual(len(results), 1)
+            self.assertIn('<h5>\n test_element_text\n</h5>', results)
+            # Type h6.
+            results = self.find_elements_by_text(response, 'test_element_text', element_type='h6')
+            self.assertEqual(len(results), 1)
+            self.assertIn('<h6>\n test_element_text\n</h6>', results)
+            # Type p.
+            results = self.find_elements_by_text(response, 'test_element_text', element_type='p')
+            self.assertEqual(len(results), 1)
+            self.assertIn('<p>\n test_element_text\n</p>', results)
+            # Type span.
+            results = self.find_elements_by_text(response, 'test_element_text', element_type='span')
+            self.assertEqual(len(results), 1)
+            self.assertIn('<span>\n test_element_text\n</span>', results)
+            # Type li.
+            results = self.find_elements_by_text(response, 'test_element_text', element_type='li')
+            self.assertEqual(len(results), 1)
+            self.assertIn('<li>\n test_element_text\n</li>', results)
+
+        with self.subTest('When expected text exists - Filtered by type and multiple matches'):
+            response = HttpResponse(
+                '<h1>test_element_text One</h1>'
+                '<h2>test_element_text One</h2>'
+                '<h2>test_element_text Two</h2>'
+                '<h3>test_element_text One</h3>'
+                '<h3>test_element_text Two</h3>'
+                '<h3>test_element_text Three</h3>'
+            )
+
+            # Verify full results when not limiting by element type.
+            results = self.find_elements_by_text(response, 'test_element_text')
+            self.assertEqual(len(results), 6)
+
+            # Verify results when limiting by each type.
+            # Type h1.
+            results = self.find_elements_by_text(response, 'test_element_text', element_type='h1')
+            self.assertEqual(len(results), 1)
+            self.assertIn('<h1>\n test_element_text One\n</h1>', results)
+            # Type h2.
+            results = self.find_elements_by_text(response, 'test_element_text', element_type='h2')
+            self.assertEqual(len(results), 2)
+            self.assertIn('<h2>\n test_element_text One\n</h2>', results)
+            self.assertIn('<h2>\n test_element_text Two\n</h2>', results)
+            # Type h3.
+            results = self.find_elements_by_text(response, 'test_element_text', element_type='h3')
+            self.assertEqual(len(results), 3)
+            self.assertIn('<h3>\n test_element_text One\n</h3>', results)
+            self.assertIn('<h3>\n test_element_text Two\n</h3>', results)
+            self.assertIn('<h3>\n test_element_text Three\n</h3>', results)
 
     def test__find_elements_by_text__failure(self):
         """
@@ -6027,6 +6109,50 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                 self.find_elements_by_text(response, 'test_element_text')
             self.assertText(err_msg, str(err.exception))
 
+        with self.subTest('When expected text exists - But filtered by type that is not found'):
+            response = HttpResponse(
+                """
+                <div>
+                    <h1>test_element_text</h1>
+                    <h2>test_element_text</h2>
+                    <p>test_element_text</p>
+                    <li>test_element_text</li>
+                </div>
+                """
+            )
+
+            # Verify full results when not limiting by element type.
+            results = self.find_elements_by_text(response, 'test_element_text')
+            self.assertEqual(len(results), 4)
+
+            # Verify non-results when limiting by each non-present type.
+            # Type h3.
+            err_msg = (
+                'Unable to find element text "test_element_text" in content under element type of "h3". Provided content was:\n'
+                '<div>\n'
+                '<h1>test_element_text</h1>\n'
+                '<h2>test_element_text</h2>\n'
+                '<p>test_element_text</p>\n'
+                '<li>test_element_text</li>\n'
+                '</div>\n'
+            )
+            with self.assertRaises(AssertionError) as err:
+                self.find_elements_by_text(response, 'test_element_text', element_type='h3')
+            self.assertText(err_msg, str(err.exception))
+            # Type span.
+            err_msg = (
+                'Unable to find element text "test_element_text" in content under element type of "span". Provided content was:\n'
+                '<div>\n'
+                '<h1>test_element_text</h1>\n'
+                '<h2>test_element_text</h2>\n'
+                '<p>test_element_text</p>\n'
+                '<li>test_element_text</li>\n'
+                '</div>\n'
+            )
+            with self.assertRaises(AssertionError) as err:
+                self.find_elements_by_text(response, 'test_element_text', element_type='span')
+            self.assertText(err_msg, str(err.exception))
+
     def test__find_element_by_text__success(self):
         """
         Tests find_element_by_text() function, in cases when it should succeed.
@@ -6035,7 +6161,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
             response = HttpResponse('<p>test_element_text</p>')
 
             results = self.find_element_by_text(response, 'test_element_text')
-            self.assertText('<p>test_element_text</p>', results)
+            self.assertText('<p>\n test_element_text\n</p>', results)
 
         with self.subTest('When expected element exists plus extra'):
             response = HttpResponse(
@@ -6052,7 +6178,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                 """
             )
             results = self.find_element_by_text(response, 'test_element_text')
-            self.assertText('<a href="">test_element_text One</a>', results)
+            self.assertText('<a href="">\n test_element_text One\n</a>', results)
 
     def test__find_element_by_text__failure(self):
         """
