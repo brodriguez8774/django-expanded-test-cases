@@ -5928,6 +5928,191 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                 self.find_element_by_link_text(response, 'test_link_text')
             self.assertText(err_msg, str(err.exception))
 
+    def test__find_elements_by_text__success(self):
+        """
+        Tests find_elements_by_text() function, in cases when it should succeed.
+        """
+        with self.subTest('When expected link_text is the only item, with standard element'):
+            response = HttpResponse('<p>This are words test_element_text test test test.</p>')
+
+            results = self.find_elements_by_text(response, 'test_element_text')
+            self.assertEqual(len(results), 1)
+            print('found results:')
+            print(results)
+            self.assertIn('<p>This are words test_element_text test test test.</p>', results)
+
+        with self.subTest('When expected link_text exists multiple times - Two instances'):
+            response = HttpResponse('<li>test_element_text One</li><li>test_element_text Two</li>')
+
+            # By base element tag.
+            results = self.find_elements_by_text(response, 'test_element_text')
+            self.assertEqual(len(results), 2)
+            print('found results:')
+            print(results)
+            self.assertIn('<li>test_element_text One</li>', results)
+            self.assertIn('<li>test_element_text Two</li>', results)
+
+        with self.subTest('When expected element exists multiple times - Three instances plus extra'):
+            response = HttpResponse(
+                """
+                <div>
+                    <ul>
+                        <li><a href="">test_element_text One</a></li>
+                        <li><a href="">test_element_text Two</a></li>
+                        <li><a href="">other_element_textThree</a></li>
+                    </ul>
+                    <ul>
+                        <li><a href="">test_element_text Four</a></li>
+                        <li><a href="">another_element_text Five</a></li>
+                        <li><a href="">test Six</a></li>
+                    </ul>
+                    <ul>
+                        <li><a href="test_element_text">Seven</a></li>
+                        <li><a data="test_element_text">Eight</a></li>
+                        <li><a test_element_text="">Nine</a></li>
+                    </ul>
+                </div>
+                """
+            )
+            results = self.find_elements_by_text(response, 'test_element_text')
+            self.assertEqual(len(results), 3)
+            self.assertIn('<a href="">test_element_text One</a>', results)
+            self.assertIn('<a href="">test_element_text Two</a>', results)
+            self.assertIn('<a href="">test_element_text Four</a>', results)
+
+    def test__find_elements_by_text__failure(self):
+        """
+        Tests find_elements_by_text() function, in cases when it should fail.
+        """
+        with self.subTest('When expected text is not present - Blank response'):
+            response = HttpResponse('')
+            err_msg = 'Unable to find element text "test_element_text" in content. Provided content was:\n'
+
+            with self.assertRaises(AssertionError) as err:
+                self.find_elements_by_text(response, 'test_element_text')
+            self.assertText(err_msg, str(err.exception))
+
+        with self.subTest('When expected text is not present - Single-item response'):
+            response = HttpResponse('<a href="">other_element_text</a>')
+            err_msg = (
+                'Unable to find element text "test_element_text" in content. '
+                'Provided content was:\n<a href="">other_element_text</a>'
+            )
+
+            with self.assertRaises(AssertionError) as err:
+                self.find_elements_by_text(response, 'test_element_text')
+            self.assertText(err_msg, str(err.exception))
+
+        with self.subTest('When expected text is not present - Multi-item response'):
+            response = HttpResponse(
+                """
+                <div>
+                    <h1>Page Header</h1>
+                    <a href="">other_element_text Some text.</a>
+                    <a href="">another_element_text Some more text.</a>
+                    <a href="">test Some text with the str "element_text" in it.</a>
+                </div>
+                """
+            )
+            err_msg = (
+                'Unable to find element text "test_element_text" in content. Provided content was:\n'
+                '<div>\n'
+                '<h1>Page Header</h1>\n'
+                '<a href="">other_element_text Some text.</a>\n'
+                '<a href="">another_element_text Some more text.</a>\n'
+                '<a href="">test Some text with the str "element_text" in it.</a>\n'
+                '</div>\n'
+            )
+            with self.assertRaises(AssertionError) as err:
+                self.find_elements_by_text(response, 'test_element_text')
+            self.assertText(err_msg, str(err.exception))
+
+    def test__find_element_by_text__success(self):
+        """
+        Tests find_element_by_text() function, in cases when it should succeed.
+        """
+        with self.subTest('When expected element is the only item, with standard element'):
+            response = HttpResponse('<p>test_element_text</p>')
+
+            results = self.find_element_by_text(response, 'test_element_text')
+            self.assertText('<p>test_element_text</p>', results)
+
+        with self.subTest('When expected element exists plus extra'):
+            response = HttpResponse(
+                """
+                <div>
+                    <ul>
+                        <li><a href="">test_element_text One</a></li>
+                    </ul>
+                    <ul></ul>
+                </div>
+                <div>
+                    <ul></ul>
+                </div>
+                """
+            )
+            results = self.find_element_by_text(response, 'test_element_text')
+            self.assertText('<a href="">test_element_text One</a>', results)
+
+    def test__find_element_by_text__failure(self):
+        """
+        Tests find_element_by_text() function, in cases when it should fail.
+        """
+        with self.subTest('When expected text is not present - Blank response'):
+            response = HttpResponse('')
+            err_msg = 'Unable to find element text "test_element_text" in content. Provided content was:\n'
+
+            with self.assertRaises(AssertionError) as err:
+                self.find_element_by_text(response, 'test_element_text')
+            self.assertText(err_msg, str(err.exception))
+
+        with self.subTest('When expected element_text is not present - Single-item response'):
+            response = HttpResponse('<a href="">other_element_text</a>')
+            err_msg = (
+                'Unable to find element text "test_element_text" in content. '
+                'Provided content was:\n<a href="">other_element_text</a>'
+            )
+
+            with self.assertRaises(AssertionError) as err:
+                self.find_element_by_text(response, 'test_element_text')
+            self.assertText(err_msg, str(err.exception))
+
+        with self.subTest('When expected text is not present - Multi-item response'):
+            response = HttpResponse(
+                """
+                <div>
+                    <h1>Page Header</h1>
+                    <a href="">other_element_text Some text.</a>
+                    <a href="">another_element_text Some more text.</a>
+                    <a href="">test Some text with the str "element_text" in it.</a>
+                </div>
+                """
+            )
+            err_msg = (
+                'Unable to find element text "test_element_text" in content. Provided content was:\n'
+                '<div>\n'
+                '<h1>Page Header</h1>\n'
+                '<a href="">other_element_text Some text.</a>\n'
+                '<a href="">another_element_text Some more text.</a>\n'
+                '<a href="">test Some text with the str "element_text" in it.</a>\n'
+                '</div>\n'
+            )
+
+            with self.assertRaises(AssertionError) as err:
+                self.find_element_by_text(response, 'test_element_text')
+            self.assertText(err_msg, str(err.exception))
+
+        with self.subTest('When expected element_text is present multiple times'):
+            response = HttpResponse('<a href="">test_element_text</a><a href="">test_element_text</a>')
+            err_msg = (
+                'Found multiple instances of "test_element_text" element text. Expected only one instance. Content was:\n'
+                '<a href="">test_element_text</a><a href="">test_element_text</a>'
+            )
+
+            with self.assertRaises(AssertionError) as err:
+                self.find_element_by_text(response, 'test_element_text')
+            self.assertText(err_msg, str(err.exception))
+
     # endregion Helper Function Tests
 
 

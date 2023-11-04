@@ -821,6 +821,49 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         # Return found item.
         return element_list[0]
 
+    def find_elements_by_text(self, content, text):
+        """Finds all HTML elements that contain the provided text.
+
+        :param content: Content to search through.
+        :param text: Element text to search for.
+        """
+        # Ensure response content is in expected minimized format.
+        content = self.get_minimized_response_content(content)
+
+        # Search for all matching elements.
+        soup = BeautifulSoup(content, 'html.parser')
+        elements = soup.find_all(string=re.compile('{0}'.format(text)))
+        element_list = [self.get_minimized_response_content(element.parent) for element in elements]
+
+        # Verify one or more values were found.
+        if not len(element_list) > 0:
+            self.fail(f'Unable to find element text "{text}" in content. Provided content was:\n{content}')
+
+        # Return found values.
+        return element_list
+
+    def find_element_by_text(self, content, text):
+        """Finds first HTML element that matches the provided text.
+
+        :param content: Content to search through.
+        :param text: Element text to search for.
+        """
+        # Ensure response content is in expected minimized format.
+        content = self.get_minimized_response_content(content)
+
+        # Call parent function logic.
+        element_list = self.find_elements_by_text(content, text)
+
+        # Verify only one value was found.
+        if len(element_list) > 1:
+            self.fail(
+                f'Found multiple instances of "{text}" element text. Expected only one instance. '
+                f'Content was:\n{content}'
+            )
+
+        # Return found item.
+        return element_list[0]
+
     # endregion Html Search Functions
 
 
