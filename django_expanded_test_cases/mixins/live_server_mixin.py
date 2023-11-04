@@ -17,8 +17,16 @@ from django_expanded_test_cases.constants import (
     ETC_INCLUDE_RESPONSE_DEBUG_CONTENT,
     ETC_RESPONSE_DEBUG_CONTENT_COLOR,
     ETC_OUTPUT_EMPHASIS_COLOR,
+
+    ETC_SELENIUM_PAGE_TIMEOUT_DEFAULT,
+    ETC_SELENIUM_IMPLICIT_WAIT_DEFAULT,
 )
 from django_expanded_test_cases.mixins.response_mixin import ResponseTestCaseMixin
+
+
+# Module Variables.
+# Debug port, to get around st
+SELENIUM_DEBUG_PORT = 9221
 
 
 class LiveServerMixin(ResponseTestCaseMixin):
@@ -26,31 +34,62 @@ class LiveServerMixin(ResponseTestCaseMixin):
 
     # region Utility Functions
 
-    def create_driver(self):
-        """Creates new browser manager instance."""
+    def create_driver(self, switch_window=True):
+        """Creates new browser manager instance.
 
+        Each driver represents one or more browser windows, each with a set of one or more tabs.
+        :param switch_window: Bool indicating if window should be immediately switched to after creation.
+        """
         # Create instance, based on selected driver type.
         if self._browser == 'chrome':
+            # # Avoid possible error when many drivers are opened.
+            # # See https://stackoverflow.com/a/56638103
+            global SELENIUM_DEBUG_PORT
+            SELENIUM_DEBUG_PORT += 1
+            self._options.add_argument('--remote-debugging-port={0}'.format(SELENIUM_DEBUG_PORT))
             driver = webdriver.Chrome(service=self._service, options=self._options)
         elif self._browser == 'firefox':
             driver = webdriver.Firefox(service=self._service, options=self._options)
         else:
             raise ValueError('Unknown browser "{0}".'.format(self._browser))
 
-        # Make class aware of window.
+        # Set number of seconds to wait before giving up on page response.
+        driver.set_page_load_timeout(ETC_SELENIUM_PAGE_TIMEOUT_DEFAULT)
+
+        # Set number of seconds to wait before giving up on page element.
+        driver.implicitly_wait(ETC_SELENIUM_IMPLICIT_WAIT_DEFAULT)
+
+        # Make class aware of driver set.
         self._driver_set.append(driver)
 
-        # Set to check page for 5 seconds before giving up on element.
-        driver.implicitly_wait(5)
+        if switch_window:
+            # Assume we want to auto-switch windows.
+            driver.switch_to.window(driver.window_handles[-1])
 
         return driver
 
-    def get_driver(self):
-        """Returns first driver off of driver stack, or creates new one if none are present."""
-        try:
-            return self._driver_set[-1]
-        except IndexError:
+    def get_driver(self, index=-1, switch_window=True):
+        """Returns first driver off of driver stack, or creates new one if none are present.
+
+        :param switch_window: Bool indicating if window should be immediately switched to after creation.
+        """
+
+        # Don't even attempt, index is not int.
+        if not isinstance(index, int):
             return self.create_driver()
+
+        # Attempt to get given index.
+        try:
+            driver = self._driver_set[index]
+        except IndexError:
+            # Invalid index. Create new instead.
+            driver = self.create_driver()
+
+        if switch_window:
+            # Assume we want to auto-switch windows.
+            driver.switch_to.window(driver.window_handles[-1])
+
+        return driver
 
     def close_driver(self, driver):
         """Closes provided browser manager instance.
@@ -60,7 +99,7 @@ class LiveServerMixin(ResponseTestCaseMixin):
         # Remove reference in class.
         self._driver_set.remove(driver)
 
-        # Close window.
+        # Close driver itself.
         driver.quit()
 
     def close_all_drivers(self):
@@ -74,11 +113,8 @@ class LiveServerMixin(ResponseTestCaseMixin):
         :param driver: Driver manager object to generate window for.
         :return: New focus window.
         """
-        # Open blank new window.
+        # Open blank new window and automatically switch.
         driver.switch_to.new_window('window')
-
-        # Switch to recently created window.
-        return self.switch_to_window_at_index(driver, len(driver.window_handles) - 1)
 
     def open_new_tab(self, driver):
         """Opens a new window for the provided driver.
@@ -90,29 +126,41 @@ class LiveServerMixin(ResponseTestCaseMixin):
         driver.switch_to.new_window('tab')
 
         # Switch to recently created window.
-        return self.switch_to_window_at_index(driver, len(driver.window_handles) - 1)
+        return self.switch_to_window(driver, len(driver.window_handles) - 1)
 
-    def close_window_at_index(self, driver, window_index):
+    def close_window(self, driver, window_index):
         """Closes a window at specific index for the provided driver.
 
         :param driver: Driver manager object containing the desired window.
         :param window_index: Index of window to close.
         """
-        # Attempt to get window at specified driver index.
-        try:
-            focus_window = driver.window_handles[window_index]
-        except IndexError:
-            err_msg = 'Attempted to close to window of index "{0}", but driver only has "{1}" windows open.'.format(
-                window_index,
-                len(driver.window_handles)
-            )
-            raise IndexError(err_msg)
-
         # Close window.
-        self.switch_to_window_at_index(driver, window_index)
-        driver.execute_script('window.close();')
+        self.switch_to_window(driver, window_index)
+        driver.close()
 
-    def switch_to_window_at_index(self, driver, window_index):
+    def close_all_windows(self, driver):
+        """Closes all open windows for a given driver.
+
+        :param driver: Driver manager object to close windows for.
+        """
+        # Iterate upon all windows until none remain.
+        while len(driver.window_handles) > 1:
+            self.close_window(driver, 0)
+
+    def close_all_other_windows(self, driver, window_index_to_keep):
+        """Closes all open windows, except for window at given index.
+
+        :param driver: Driver manager object containing the desired window.
+        :param window_index: Index of window to keep open.
+        """
+        # Iterate upon all windows until none remain.
+        while len(driver.window_handles) > 2:
+            if window_index_to_keep == 0:
+                self.close_window_at_index(driver, 1)
+            else:
+                self.close_window_at_index(driver, 0)
+
+    def switch_to_window(self, driver, window_index):
         """Sets window at specific driver/index to be the current focus.
 
         :param driver: Driver manager object containing the desired window.
@@ -123,7 +171,7 @@ class LiveServerMixin(ResponseTestCaseMixin):
         try:
             focus_window = driver.window_handles[window_index]
         except IndexError:
-            err_msg = 'Attempted to switch to window of index "{0}", but driver only has "{1}" windows open.'.format(
+            err_msg = 'Attempted to switch to window of index "{0}", but driver only has {1} windows open.'.format(
                 window_index,
                 len(driver.window_handles)
             )
@@ -135,15 +183,22 @@ class LiveServerMixin(ResponseTestCaseMixin):
         # Return newly switched window.
         return focus_window
 
+    def sleep_driver(self, seconds):
+        """Halts driver for provided number of seconds.
+
+        Useful for visually verifying browser state, when trying to debug tests.
+        """
+        time.sleep(seconds)
+
     def sleep_browser(self, seconds):
-        """Halts browser for provided number of seconds.
+        """Halts browser for provided number of seconds. Alias for sleep_driver().
 
         Useful for visually verifying browser state, when trying to debug tests.
         """
         time.sleep(seconds)
 
     def is_webdriver(self, obj):
-        """Verifies if object matches set on known web driver types."""
+        """Verifies if object matches set of known web driver types."""
 
         # Import all known drivers for type checking.
         from selenium.webdriver.chrome.webdriver import WebDriver as ChromeDriver
@@ -498,6 +553,50 @@ class LiveServerMixin(ResponseTestCaseMixin):
         try:
             # Return original parent call with correct variables.
             return super().find_element_by_link_text(content, link_text)
+        except Exception as err:
+            self.show_debug_data(content)
+            raise err
+
+    def find_elements_by_text(self, content, text, element_type=None):
+        """Finds all HTML elements that match the provided inner text.
+
+        :param content: Content to search through.
+        :param text: Element text to search for.
+        :param element_type: Optionally filter by type of element as well (h1, p, li, etc).
+        """
+        self.current_url = None
+
+        # Handle if webdriver was provided.
+        # Otherwise assume was standard "page content".
+        if self.is_webdriver(content):
+            self.current_url = content.current_url
+            content = content.page_source
+
+        try:
+            # Return original parent call with correct variables.
+            return super().find_elements_by_text(content, text, element_type=element_type)
+        except Exception as err:
+            self.show_debug_data(content)
+            raise err
+
+    def find_element_by_text(self, content, text, element_type=None):
+        """Finds first HTML element that matches the provided inner text.
+
+        :param content: Content to search through.
+        :param text: Element text to search for.
+        :param element_type: Optionally filter by type of element as well (h1, p, li, etc).
+        """
+        self.current_url = None
+
+        # Handle if webdriver was provided.
+        # Otherwise assume was standard "page content".
+        if self.is_webdriver(content):
+            self.current_url = content.current_url
+            content = content.page_source
+
+        try:
+            # Return original parent call with correct variables.
+            return super().find_element_by_text(content, text, element_type=element_type)
         except Exception as err:
             self.show_debug_data(content)
             raise err

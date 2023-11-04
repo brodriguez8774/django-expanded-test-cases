@@ -17,6 +17,8 @@ UNDERLINE = '\u001b[4m'
 UNDERLINE_RESET = '\u001b[0m'
 
 
+# region Console Color Options
+
 # General output/color format settings.
 ETC_OUTPUT_ERROR_COLOR = str(getattr(
     settings,
@@ -96,6 +98,11 @@ ETC_RESPONSE_DEBUG_USER_INFO_COLOR = str(getattr(
     Fore.MAGENTA if COLORAMA_PRESENT else '',
 ))
 
+# endregion Console Color Options
+
+
+# region Console Region Show/Hide Options
+
 # Enabling/disabling output of specific sections.
 ETC_INCLUDE_RESPONSE_DEBUG_URL = bool(getattr(
     settings,
@@ -138,6 +145,8 @@ ETC_INCLUDE_RESPONSE_DEBUG_USER_INFO = bool(getattr(
     True,
 ))
 
+# endregion Console Region Show/Hide Options
+
 
 # Void element list as defined at:
 # https://www.w3.org/TR/2011/WD-html-markup-20110113/syntax.html#void-element
@@ -162,6 +171,8 @@ VOID_ELEMENT_LIST = [
     'wbr',
 ]
 
+
+# region General Options
 
 # Indicates whether the additional debug information should be output.
 ETC_DEBUG_PRINT = bool(getattr(
@@ -193,6 +204,57 @@ ETC_MATCH_ALL_CONTEXT_MESSAGES = bool(getattr(
     False,
 ))
 
+# endregion General Options
+
+
+# region Selenium Options
+
+# Browser to launch for selenium testing. Options of 'chrome'/'firefox' are good defaults.
+ETC_SELENIUM_BROWSER = str(getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_SELENIUM_BROWSER',
+    'chrome',
+))
+# Run Selenium tests in "headless" mode.
+# Default is to visually show browser. "Headless" will skipp visually rendering the browser while still running tests.
+# Good for speed but bad for debugging issues.
+ETC_SELENIUM_HEADLESS = bool(getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_SELENIUM_HEADLESS',
+    False,
+))
+# Set browser/selenium cache to be ignored.
+# Using the cache can sometimes lead to incorrect/failing tests when running selenium in a multi-threaded environment.
+ETC_SELENIUM_DISABLE_CACHE = bool(getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_DISABLE_CACHE',
+    False,
+))
+# Extra options to pass into browser. Should be some iterable, such as a list or tuple of strings.
+ETC_SELENIUM_EXTRA_BROWSER_OPTIONS = getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_EXTRA_BROWSER_OPTIONS',
+    None,
+)
+# Number of seconds to wait on selenium page load before giving up.
+# Refers to the full page itself loading. As in getting any page response at all. Default of 30 seconds.
+ETC_SELENIUM_PAGE_TIMEOUT_DEFAULT = int(getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_SELENIUM_PAGE_TIMEOUT_DEFAULT',
+    30,
+))
+# Number of seconds to wait on selenium page element (constantly checking for existence) before giving up.
+# Refers to a specific element loading within a page. Default of 5 seconds.
+ETC_SELENIUM_IMPLICIT_WAIT_DEFAULT = int(getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_SELENIUM_IMPLICIT_WAIT_DEFAULT',
+    5,
+))
+
+# endregion Selenium Options
+
+
+# region User Handling Options
 
 # Controls if test-users should be automatically generated or not.
 ETC_AUTO_GENERATE_USERS = bool(getattr(
@@ -249,6 +311,8 @@ ETC_GENERATE_USERS_WITH_REAL_NAMES = bool(getattr(
     'DJANGO_EXPANDED_TESTCASES_GENERATE_USERS_WITH_REAL_NAMES',
     False,
 ))
+
+# endregion User Handling Options
 
 
 # region User Identifiers

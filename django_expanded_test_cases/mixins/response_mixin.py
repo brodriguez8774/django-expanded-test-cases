@@ -822,10 +822,11 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         return element_list[0]
 
     def find_elements_by_text(self, content, text, element_type=None):
-        """Finds all HTML elements that contain the provided text.
+        """Finds all HTML elements that contain the provided inner text.
 
         :param content: Content to search through.
         :param text: Element text to search for.
+        :param element_type: Optionally filter by type of element as well (h1, p, li, etc).
         """
         # Ensure response content is in expected minimized format.
         content = self.get_minimized_response_content(content)
@@ -854,10 +855,11 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         return element_list
 
     def find_element_by_text(self, content, text, element_type=None):
-        """Finds first HTML element that matches the provided text.
+        """Finds first HTML element that matches the provided inner text.
 
         :param content: Content to search through.
         :param text: Element text to search for.
+        :param element_type: Optionally filter by type of element as well (h1, p, li, etc).
         """
         # Ensure response content is in expected minimized format.
         content = self.get_minimized_response_content(content)

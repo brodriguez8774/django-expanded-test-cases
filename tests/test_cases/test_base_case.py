@@ -1743,7 +1743,6 @@ class BaseClassTest(BaseTestCase):
             url = self.generate_get_url('/my/url/here////???//', my_value='test')
             self.assertText('/my/url/here/?my_value=test', url)
 
-
     def assert_symbol_standardization(self, symbol_str, expected_return):
         """
         Helper sub-function for testing the standardization methods.
