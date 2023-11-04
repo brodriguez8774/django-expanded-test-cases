@@ -41,7 +41,6 @@ pytest = "*"                    # Base Pytest package. Current preferred testing
 pytest-asyncio = "*"            # Additional Pytest logic for asyncio support.
 pytest-django = "*"             # Additional Pytest logic for Django support.
 pytest-xdist = "*"              # Additional Pytest features, such as multithreading and looping.
-selenium = "*"                  # Support for running UnitTests that directly simulate browser usage.
 
 # Docs build dependencies.
 sphinx = "*"                    # Core package to build project docs.
@@ -68,4 +67,3 @@ channels = "*"                  # Django websocket/background-task dependencies.
 colorama = "*"                  # Console coloring package.
 daphne = "*"                    # Django websocket/background-task dependencies.
 selenium = "*"                  # Allows using Django to launch selenium live-server brower instances.
-webdriver-manager = "*"         # Auto-magically installs/fetches the correct web driver versions to run tests.
