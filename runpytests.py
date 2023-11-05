@@ -15,7 +15,6 @@ def runtests():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tests.settings')
     os.environ.setdefault('PYTHONPATH', ROOT_DIR)
 
-    # os.environ.setdefault('EXPANDED_TEST_CASES_SELENIUM_BROWSER', 'firefox')
     argv = ['pytest'] + sys.argv[1:] + ['--asyncio-mode=auto']
     subprocess.run(argv, check=False)
 

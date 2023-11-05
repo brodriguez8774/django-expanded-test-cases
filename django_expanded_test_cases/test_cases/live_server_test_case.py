@@ -18,6 +18,7 @@ from django_expanded_test_cases.constants import (
     ETC_SELENIUM_BROWSER,
     ETC_SELENIUM_HEADLESS,
     ETC_SELENIUM_DISABLE_CACHE,
+    ETC_SELENIUM_WINDOW_POSITIONS,
     ETC_SELENIUM_EXTRA_BROWSER_OPTIONS,
 )
 from django_expanded_test_cases.mixins.live_server_mixin import LiveServerMixin
@@ -117,7 +118,15 @@ class LiveServerTestCase(DjangoLiveServerTestCase, LiveServerMixin):
         if ETC_SELENIUM_DISABLE_CACHE:
             cls._options.add_argument('disable-application-cache')
 
-        # Create initial testing driver, one for each test.
+        # Handle window position values.
+        cls._window_positions = None
+        if ETC_SELENIUM_WINDOW_POSITIONS:
+            window_positions = list(ETC_SELENIUM_WINDOW_POSITIONS)
+            if len(window_positions) > 0:
+                cls._window_positions = window_positions
+                cls._window_position_index = 0
+
+        # Create initial testing driver.
         cls.driver = cls.create_driver(cls)
 
     def setUp(self):

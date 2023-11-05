@@ -47,6 +47,27 @@ class LiveServerMixin(ResponseTestCaseMixin):
         """
         try:
 
+            # Handle window positions, if set.
+            # If not provided, then defaults to however the OS spawns windows in.
+
+            # cls._window_positions = ETC_SELENIUM_WINDOW_POSITIONS
+            # cls._window_position_index = 0
+            if self._window_positions:
+                # Window position value exists. Attempt to read in.
+                try:
+                    # Pull x and y pixel location from provided data.
+                    window_x, window_y = self._window_positions[self._window_position_index]
+                except IndexError:
+                    # Must have gone through all provided values. Loop back to first index.
+                    self._window_position_index = 0
+                    window_x, window_y = self._window_positions[self._window_position_index]
+
+                # Rotate through provided values so that no consecutive two window spawns use the same location.
+                self._window_position_index += 1
+
+                # Add window position data to driver options.
+                self._options.add_argument('window-position={0},{1}'.format(window_x, window_y))
+
             # Create instance, based on selected driver type.
             if self._browser == 'chrome':
                 # # Avoid possible error when many drivers are opened.

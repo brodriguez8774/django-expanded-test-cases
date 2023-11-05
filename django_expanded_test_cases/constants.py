@@ -227,7 +227,7 @@ ETC_SELENIUM_HEADLESS = bool(getattr(
 # Using the cache can sometimes lead to incorrect/failing tests when running selenium in a multi-threaded environment.
 ETC_SELENIUM_DISABLE_CACHE = bool(getattr(
     settings,
-    'DJANGO_EXPANDED_TESTCASES_DISABLE_CACHE',
+    'DJANGO_EXPANDED_TESTCASES_SELENIUM_DISABLE_CACHE',
     False,
 ))
 # Starting debug port, to get around remote-debugging-port option using the same value for all generated drivers,
@@ -238,10 +238,18 @@ ETC_SELENIUM_DEBUG_PORT_START_VALUE = int(getattr(
     'DJANGO_EXPANDED_TESTCASES_SELENIUM_DEBUG_PORT_START_VALUE',
     9221,
 ))
+# A list of lists, comprised of desired (x, y) window positions to spawn selenium browsers at.
+# If not provided, then defaults to however the OS spawns windows in.
+# Ex: [(0, 0), (960, 0)] for a standard 1920 x 1080 landscape display.
+ETC_SELENIUM_WINDOW_POSITIONS = getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_SELENIUM_WINDOW_POSITIONS',
+    None,
+)
 # Extra options to pass into browser. Should be some iterable, such as a list or tuple of strings.
 ETC_SELENIUM_EXTRA_BROWSER_OPTIONS = getattr(
     settings,
-    'DJANGO_EXPANDED_TESTCASES_EXTRA_BROWSER_OPTIONS',
+    'DJANGO_EXPANDED_TESTCASES_SELENIUM_EXTRA_BROWSER_OPTIONS',
     None,
 )
 # Number of seconds to wait on selenium page load before giving up.
