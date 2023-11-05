@@ -153,6 +153,9 @@ class LiveServerMixin(ResponseTestCaseMixin):
         cls.driver = cls.create_driver(cls)
 
     def set_up(self):
+        # Call parent logic.
+        super().set_up()
+
         self._error_displayed = False
 
     def sub_test(self, *args, **kwargs):
@@ -161,12 +164,12 @@ class LiveServerMixin(ResponseTestCaseMixin):
 
     @classmethod
     def tear_down_class(cls):
+        # Call parent teardown logic.
+        super().tear_down_class()
+
         # Close all remaining driver instances for class.
         while len(cls._driver_set) > 0:
             cls.close_driver(cls, cls._driver_set[0])
-
-        # Call parent teardown logic.
-        super().tear_down_class()
 
     # region Utility Functions
 
@@ -181,8 +184,8 @@ class LiveServerMixin(ResponseTestCaseMixin):
             # Handle window positions, if set.
             # If not provided, then defaults to however the OS spawns windows in.
 
-            # cls._window_positions = ETC_SELENIUM_WINDOW_POSITIONS
-            # cls._window_position_index = 0
+            self._window_positions = ETC_SELENIUM_WINDOW_POSITIONS
+            self._window_position_index = 0
             if self._window_positions:
                 # Window position value exists. Attempt to read in.
                 try:

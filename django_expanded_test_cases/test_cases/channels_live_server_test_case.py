@@ -27,7 +27,9 @@ class ChannelsLiveServerTestCase(DjangoChannelsLiveServerTestCase, LiveServerMix
 
     @classmethod
     def setUpTestData(cls):
-        """"""
+        # Run parent setup logic.
+        super().setUpTestData()
+
         # Initialize default data models.
         cls.set_up_test_data()
 
