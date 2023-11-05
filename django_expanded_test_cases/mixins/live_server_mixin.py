@@ -68,15 +68,18 @@ class LiveServerMixin(ResponseTestCaseMixin):
                 # Add window position data to driver options.
                 self._options.add_argument('window-position={0},{1}'.format(window_x, window_y))
 
+            # Avoid possible error when many drivers are opened.
+            # See https://stackoverflow.com/a/56638103
+            global SELENIUM_DEBUG_PORT
+            SELENIUM_DEBUG_PORT += 1
+
             # Create instance, based on selected driver type.
             if self._browser == 'chrome':
-                # # Avoid possible error when many drivers are opened.
-                # # See https://stackoverflow.com/a/56638103
-                global SELENIUM_DEBUG_PORT
-                SELENIUM_DEBUG_PORT += 1
+
                 self._options.add_argument('--remote-debugging-port={0}'.format(SELENIUM_DEBUG_PORT))
                 driver = webdriver.Chrome(service=self._service, options=self._options)
             elif self._browser == 'firefox':
+                self._service = webdriver.firefox.service.Service(port=SELENIUM_DEBUG_PORT)
                 driver = webdriver.Firefox(service=self._service, options=self._options)
             else:
                 raise ValueError('Unknown browser "{0}".'.format(self._browser))
