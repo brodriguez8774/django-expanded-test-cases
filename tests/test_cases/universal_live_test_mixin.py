@@ -3367,9 +3367,6 @@ class UniversalLiveTestMixin__DriverTests:
         # Declare file name for all subtests.
         file_name = str(Path('./tests/mock_pages/test__driver_handling.html').resolve())
 
-        # Start by closing base driver.
-        self.close_driver(self.driver)
-
         with self.subTest('Test driver_create() function'):
             # Open file and write expected page contents.
             with open(file_name, 'w') as file:
@@ -3434,19 +3431,13 @@ class UniversalLiveTestMixin__DriverTests:
             self.assertEqual(len(results), 1)
             self.assertIn('<li>\n Driver 3\n</li>', results)
 
-            print('\n\n\n\n')
-            print('printing driver info...')
-            for driver in self._driver_set:
-                print('    {0}'.format(driver))
-                print('        Handles: {0}'.format(driver.window_handles))
-
         # Three separate drivers created.
         # We have verified we can access expected data immediately after each driver creation.
         # Now verify we can switch between them and still get expected data.
         # Aka, verify that we didn't accidentally reuse the same window for all above tests.
         with self.subTest('Test driver_get() function'):
             # Verify we actually have three our separate drivers.
-            self.assertEqual(3, len(self._driver_set))
+            self.assertEqual(4, len(self._driver_set))
             self.assertIn(first_driver, self._driver_set)
             self.assertIn(second_driver, self._driver_set)
             self.assertIn(third_driver, self._driver_set)
@@ -3494,7 +3485,7 @@ class UniversalLiveTestMixin__DriverTests:
         #   of drivers in the background.
         with self.subTest('Test driver_close() function'):
             # Double check we still have three separate drivers.
-            self.assertEqual(3, len(self._driver_set))
+            self.assertEqual(4, len(self._driver_set))
 
             # Save some data for verification.
             first_session_id = first_driver.session_id
@@ -3505,7 +3496,7 @@ class UniversalLiveTestMixin__DriverTests:
             self.close_driver(second_driver)
 
             # Verify actually closed.
-            self.assertEqual(2, len(self._driver_set))
+            self.assertEqual(3, len(self._driver_set))
             self.assertIn(first_driver, self._driver_set)
             self.assertNotIn(second_driver, self._driver_set)
             self.assertIn(third_driver, self._driver_set)
@@ -3518,7 +3509,7 @@ class UniversalLiveTestMixin__DriverTests:
             self.close_driver(third_driver)
 
             # Verify actually closed.
-            self.assertEqual(1, len(self._driver_set))
+            self.assertEqual(2, len(self._driver_set))
             self.assertIn(first_driver, self._driver_set)
             self.assertNotIn(second_driver, self._driver_set)
             self.assertNotIn(third_driver, self._driver_set)
@@ -3526,9 +3517,9 @@ class UniversalLiveTestMixin__DriverTests:
             self.assertNotEqual(second_session_id, first_driver.session_id)
             self.assertNotEqual(third_session_id, first_driver.session_id)
 
-            # Close remaining driver and check that none remain.
+            # Close remaining driver and check that none (other than default) remain.
             self.close_driver(first_driver)
-            self.assertEqual(0, len(self._driver_set))
+            self.assertEqual(1, len(self._driver_set))
             self.assertNotIn(first_driver, self._driver_set)
             self.assertNotIn(second_driver, self._driver_set)
             self.assertNotIn(third_driver, self._driver_set)

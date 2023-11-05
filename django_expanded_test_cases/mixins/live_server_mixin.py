@@ -7,6 +7,7 @@ Tends to take longer to test. So consider using IntegrationTestCase instead, whe
 
 # System Imports.
 import time
+from textwrap import dedent
 
 # Third-Party Imports.
 from selenium import webdriver
@@ -18,15 +19,19 @@ from django_expanded_test_cases.constants import (
     ETC_RESPONSE_DEBUG_CONTENT_COLOR,
     ETC_OUTPUT_EMPHASIS_COLOR,
 
+    ETC_SELENIUM_DEBUG_PORT_START_VALUE,
     ETC_SELENIUM_PAGE_TIMEOUT_DEFAULT,
     ETC_SELENIUM_IMPLICIT_WAIT_DEFAULT,
 )
+from django_expanded_test_cases.exceptions import EtcSeleniumRuntimeError
 from django_expanded_test_cases.mixins.response_mixin import ResponseTestCaseMixin
 
 
 # Module Variables.
-# Debug port, to get around st
-SELENIUM_DEBUG_PORT = 9221
+# Starting debug port, to get around remote-debugging-port option using the same value for all generated drivers,
+# Using the same port seems to cause issues with allowing proper switching between drivers.
+# Each generated driver increments this value by one, to guarantee all tests among all files should have unique ports.
+SELENIUM_DEBUG_PORT = ETC_SELENIUM_DEBUG_PORT_START_VALUE
 
 
 class LiveServerMixin(ResponseTestCaseMixin):
@@ -40,31 +45,54 @@ class LiveServerMixin(ResponseTestCaseMixin):
         Each driver represents one or more browser windows, each with a set of one or more tabs.
         :param switch_window: Bool indicating if window should be immediately switched to after creation.
         """
-        # Create instance, based on selected driver type.
-        if self._browser == 'chrome':
-            # # Avoid possible error when many drivers are opened.
-            # # See https://stackoverflow.com/a/56638103
-            global SELENIUM_DEBUG_PORT
-            SELENIUM_DEBUG_PORT += 1
-            self._options.add_argument('--remote-debugging-port={0}'.format(SELENIUM_DEBUG_PORT))
-            driver = webdriver.Chrome(service=self._service, options=self._options)
-        elif self._browser == 'firefox':
-            driver = webdriver.Firefox(service=self._service, options=self._options)
-        else:
-            raise ValueError('Unknown browser "{0}".'.format(self._browser))
+        try:
 
-        # Set number of seconds to wait before giving up on page response.
-        driver.set_page_load_timeout(ETC_SELENIUM_PAGE_TIMEOUT_DEFAULT)
+            # Create instance, based on selected driver type.
+            if self._browser == 'chrome':
+                # # Avoid possible error when many drivers are opened.
+                # # See https://stackoverflow.com/a/56638103
+                global SELENIUM_DEBUG_PORT
+                SELENIUM_DEBUG_PORT += 1
+                self._options.add_argument('--remote-debugging-port={0}'.format(SELENIUM_DEBUG_PORT))
+                driver = webdriver.Chrome(service=self._service, options=self._options)
+            elif self._browser == 'firefox':
+                driver = webdriver.Firefox(service=self._service, options=self._options)
+            else:
+                raise ValueError('Unknown browser "{0}".'.format(self._browser))
 
-        # Set number of seconds to wait before giving up on page element.
-        driver.implicitly_wait(ETC_SELENIUM_IMPLICIT_WAIT_DEFAULT)
+            # Set number of seconds to wait before giving up on page response.
+            driver.set_page_load_timeout(ETC_SELENIUM_PAGE_TIMEOUT_DEFAULT)
 
-        # Make class aware of driver set.
-        self._driver_set.append(driver)
+            # Set number of seconds to wait before giving up on page element.
+            driver.implicitly_wait(ETC_SELENIUM_IMPLICIT_WAIT_DEFAULT)
 
-        if switch_window:
-            # Assume we want to auto-switch windows.
-            driver.switch_to.window(driver.window_handles[-1])
+            # Make class aware of driver set.
+            self._driver_set.append(driver)
+
+            if switch_window:
+                # Assume we want to auto-switch windows.
+                driver.switch_to.window(driver.window_handles[-1])
+
+        except ValueError as err:
+            # Check type of error.
+            if str(err) == 'I/O operation on closed file':
+                # Likely is a known specific error.
+                # Override output to be more descriptive/informative.
+                exception_str = dedent(
+                    """
+                    Error attempting to open new Selenium Webdriver instance.
+                    This is likely due to closing all prior Webdriver instances and then trying to open a new one.
+
+                    To correct this issue, make sure at least one Webdriver instance is open at all times.
+
+                    This includes leaving at least one driver instance open at the end of any test functions. The ETC
+                    package should automatically handle cleanup and close all applicable pending windows/drivers at
+                    the end of each test.
+                    """
+                )
+                raise EtcSeleniumRuntimeError(exception_str)
+            else:
+                raise err
 
         return driver
 

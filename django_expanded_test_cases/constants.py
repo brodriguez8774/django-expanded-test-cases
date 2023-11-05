@@ -230,6 +230,14 @@ ETC_SELENIUM_DISABLE_CACHE = bool(getattr(
     'DJANGO_EXPANDED_TESTCASES_DISABLE_CACHE',
     False,
 ))
+# Starting debug port, to get around remote-debugging-port option using the same value for all generated drivers,
+# Using the same port seems to cause issues with allowing proper switching between drivers.
+# Each generated driver increments this value by one, to guarantee all tests among all files should have unique ports.
+ETC_SELENIUM_DEBUG_PORT_START_VALUE = int(getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_SELENIUM_DEBUG_PORT_START_VALUE',
+    9221,
+))
 # Extra options to pass into browser. Should be some iterable, such as a list or tuple of strings.
 ETC_SELENIUM_EXTRA_BROWSER_OPTIONS = getattr(
     settings,
