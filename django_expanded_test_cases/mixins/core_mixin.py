@@ -77,7 +77,7 @@ class CoreTestCaseMixin:
     # region Class Functions
 
     @classmethod
-    def set_up_class(cls, debug_print=None):
+    def set_up_class(cls, *args, debug_print=None, **kwargs):
         """
         Acts as the equivalent of the UnitTesting "setUpClass()" function.
 
@@ -96,7 +96,7 @@ class CoreTestCaseMixin:
         cls._site_root_url = None
 
     @classmethod
-    def set_up_test_data(cls, extra_usergen_kwargs=None):
+    def set_up_test_data(cls, *args, extra_usergen_kwargs=None, **kwargs):
         """
         Acts as the equivalent of the UnitTesting "setUpTestData()" function.
 
@@ -117,6 +117,26 @@ class CoreTestCaseMixin:
                 )
 
             cls._auto_generate_test_users(extra_usergen_kwargs=extra_usergen_kwargs)
+
+    def set_up(self, *args, **kwargs):
+        pass
+
+    def sub_test(self, *args, **kwargs):
+        """
+        Acts as the equivalent of the UnitTesting "subtTest()" function.
+
+        However, since this is not inheriting from a given TestCase, calling the literal function
+        here would override instead.
+        """
+        # Reset display error, in case multiple subtests run and fail in a given test.
+        self._error_displayed = False
+
+    @classmethod
+    def tear_down_class(cls, *args, **kwargs):
+        pass
+
+    def tear_down(self, *args, **kwargs):
+        pass
 
     @classmethod
     def _auto_generate_test_users(cls, extra_usergen_kwargs=None):
@@ -239,16 +259,6 @@ class CoreTestCaseMixin:
                 'Invalid value provided for EXPANDED_TEST_CASES_REQUEST_USER_STRICTNESS setting. '
                 'Must be one of: ["anonymous", "relaxed", "strict"].'
             )
-
-    def sub_test(self):
-        """
-        Acts as the equivalent of the UnitTesting "subtTest()" function.
-
-        However, since this is not inheriting from a given TestCase, calling the literal function
-        here would override instead.
-        """
-        # Reset display error, in case multiple subtests run and fail in a given test.
-        self._error_displayed = False
 
     def _debug_print(self, *args, fore='', back='', style='', **kwargs):
         """Prints or suppresses output, based on DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT settings variable.

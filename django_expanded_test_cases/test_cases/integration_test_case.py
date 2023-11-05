@@ -40,6 +40,7 @@ from django_expanded_test_cases.mixins import ResponseTestCaseMixin
 
 class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
     """Testing functionality for views and other multi-part components."""
+
     @classmethod
     def setUpClass(cls, *args, debug_print=None, **kwargs):
         # Run parent setup logic.

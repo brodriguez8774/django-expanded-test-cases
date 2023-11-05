@@ -11,6 +11,8 @@ from textwrap import dedent
 
 # Third-Party Imports.
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.firefox.service import Service as FireFoxService
 
 # Internal Imports.
 from django_expanded_test_cases.constants import (
@@ -19,7 +21,12 @@ from django_expanded_test_cases.constants import (
     ETC_RESPONSE_DEBUG_CONTENT_COLOR,
     ETC_OUTPUT_EMPHASIS_COLOR,
 
+    ETC_SELENIUM_BROWSER,
+    ETC_SELENIUM_HEADLESS,
+    ETC_SELENIUM_DISABLE_CACHE,
     ETC_SELENIUM_DEBUG_PORT_START_VALUE,
+    ETC_SELENIUM_WINDOW_POSITIONS,
+    ETC_SELENIUM_EXTRA_BROWSER_OPTIONS,
     ETC_SELENIUM_PAGE_TIMEOUT_DEFAULT,
     ETC_SELENIUM_IMPLICIT_WAIT_DEFAULT,
 )
@@ -36,6 +43,130 @@ SELENIUM_DEBUG_PORT = ETC_SELENIUM_DEBUG_PORT_START_VALUE
 
 class LiveServerMixin(ResponseTestCaseMixin):
     """Universal logic for all selenium LiveServer test cases."""
+
+    @classmethod
+    def set_up_class(cls, debug_print=None):
+        """
+        Acts as the equivalent of the UnitTesting "setUpClass()" function.
+
+        However, since this is not inheriting from a given TestCase, calling the literal function
+        here would override instead.
+
+        :param debug_print: Optional bool that indicates if debug output should print to console.
+                            Param overrides setting value if both param and setting are set.
+        """
+        # Call CoreMixin setup logic.
+        super().set_up_class(debug_print=debug_print)
+
+        # Populate some initial values.
+        cls._driver_set = []
+        cls._options = None
+
+        # Import/Initialize some values based on chosen testing browser. Default to chrome.
+        cls._browser = str(ETC_SELENIUM_BROWSER).lower()
+
+        if cls._browser in ['chrome', 'chromium']:
+            # Setup for Chrome/Chromium browser.
+
+            # Setup browser driver to launch browser with.
+            try:
+                # Attempt driver auto-install, if webdriver_manager package is present.
+                cls._service = ChromeService()
+
+            except ModuleNotFoundError:
+                # Fall back to manual installation handling.
+
+                if cls._browser == 'chrome':
+                    # For Chrome.
+                    cls._service = ChromeService(executable_path='/usr/local/share/chromedriver')
+
+                if cls._browser == 'chromium':
+                    # For Chromium.
+                    cls._service = ChromeService(executable_path='/usr/local/share/chromedriver')
+
+            # Set required chrome options.
+            chromeOptions = webdriver.ChromeOptions()
+            # Disable any existing extensions on local chrome setup, for consistent test runs across machines.
+            chromeOptions.add_argument('--disable-extensions')
+
+            # Add any user-provided options.
+            if ETC_SELENIUM_EXTRA_BROWSER_OPTIONS:
+                for browser_option in ETC_SELENIUM_EXTRA_BROWSER_OPTIONS:
+                    chromeOptions.add_argument(browser_option)
+
+            # TODO: Document these? Seemed to come up a lot in googling errors and whatnot.
+            # # Avoid possible error in certain development environments about resource limits.
+            # # Error is along the lines of "DevToolsActivePort file doesn't exist".
+            # # See https://stackoverflow.com/a/69175552
+            # chromeOptions.add_argument('--disable-dev-shm-using')
+            # # Avoid possible error when many drivers are opened.
+            # # See https://stackoverflow.com/a/56638103
+            # chromeOptions.add_argument("--remote-debugging-port=9222")
+
+            # Save options.
+            cls._options = chromeOptions
+
+            # Everything else should handle the same for both.
+            cls._browser = 'chrome'
+
+        elif cls._browser == 'firefox':
+            # Setup for Firefox browser.
+
+            # Setup browser driver to launch browser with.
+            try:
+                # Attempt driver auto-install, if webdriver_manager package is present.
+                cls._service = FireFoxService()
+
+            except ModuleNotFoundError:
+                # Fall back to manual installation handling.
+                cls._service = FireFoxService(executable_path='/usr/bin/geckodriver')
+
+            # Set required chrome options.
+            firefoxOptions = webdriver.FirefoxOptions()
+
+            # Add any user-provided options.
+            if ETC_SELENIUM_EXTRA_BROWSER_OPTIONS:
+                for browser_option in ETC_SELENIUM_EXTRA_BROWSER_OPTIONS:
+                    firefoxOptions.add_argument(browser_option)
+
+            # Save options.
+            cls._options = firefoxOptions
+
+        else:
+            raise ValueError('Unknown browser "{0}".'.format(cls._browser))
+
+        # Add universal options based on project settings.
+        if ETC_SELENIUM_HEADLESS:
+            cls._options.add_argument('headless')
+        if ETC_SELENIUM_DISABLE_CACHE:
+            cls._options.add_argument('disable-application-cache')
+
+        # Handle window position values.
+        cls._window_positions = None
+        if ETC_SELENIUM_WINDOW_POSITIONS:
+            window_positions = list(ETC_SELENIUM_WINDOW_POSITIONS)
+            if len(window_positions) > 0:
+                cls._window_positions = window_positions
+                cls._window_position_index = 0
+
+        # Create initial testing driver.
+        cls.driver = cls.create_driver(cls)
+
+    def set_up(self):
+        self._error_displayed = False
+
+    def sub_test(self, *args, **kwargs):
+        # Call parent logic.
+        super().sub_test(*args, **kwargs)
+
+    @classmethod
+    def tear_down_class(cls):
+        # Close all remaining driver instances for class.
+        while len(cls._driver_set) > 0:
+            cls.close_driver(cls, cls._driver_set[0])
+
+        # Call parent teardown logic.
+        super().tear_down_class()
 
     # region Utility Functions
 
