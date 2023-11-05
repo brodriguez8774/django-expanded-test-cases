@@ -49,28 +49,6 @@ class LiveServerTestCase(DjangoLiveServerTestCase, LiveServerMixin):
                 # Attempt driver auto-install, if webdriver_manager package is present.
                 cls._service = ChromeService()
 
-                # Set required options to prevent crashing.
-                chromeOptions = webdriver.ChromeOptions()
-                # Disable any existing extensions on local chrome setup, for consistent test runs across machines.
-                chromeOptions.add_argument('--disable-extensions')
-
-                # Add any user-provided options.
-                if ETC_SELENIUM_EXTRA_BROWSER_OPTIONS:
-                    for browser_option in ETC_SELENIUM_EXTRA_BROWSER_OPTIONS:
-                        chromeOptions.add_argument(browser_option)
-
-                # TODO: Document these? Seemed to come up a lot in googling errors and whatnot.
-                # # Avoid possible error in certain development environments about resource limits.
-                # # Error is along the lines of "DevToolsActivePort file doesn't exist".
-                # # See https://stackoverflow.com/a/69175552
-                # chromeOptions.add_argument('--disable-dev-shm-using')
-                # # Avoid possible error when many drivers are opened.
-                # # See https://stackoverflow.com/a/56638103
-                # chromeOptions.add_argument("--remote-debugging-port=9222")
-
-                # Save options.
-                cls._options = chromeOptions
-
             except ModuleNotFoundError:
                 # Fall back to manual installation handling.
 
@@ -82,6 +60,28 @@ class LiveServerTestCase(DjangoLiveServerTestCase, LiveServerMixin):
                     # For Chromium.
                     cls._service = ChromeService(executable_path='/usr/local/share/chromedriver')
 
+            # Set required chrome options.
+            chromeOptions = webdriver.ChromeOptions()
+            # Disable any existing extensions on local chrome setup, for consistent test runs across machines.
+            chromeOptions.add_argument('--disable-extensions')
+
+            # Add any user-provided options.
+            if ETC_SELENIUM_EXTRA_BROWSER_OPTIONS:
+                for browser_option in ETC_SELENIUM_EXTRA_BROWSER_OPTIONS:
+                    chromeOptions.add_argument(browser_option)
+
+            # TODO: Document these? Seemed to come up a lot in googling errors and whatnot.
+            # # Avoid possible error in certain development environments about resource limits.
+            # # Error is along the lines of "DevToolsActivePort file doesn't exist".
+            # # See https://stackoverflow.com/a/69175552
+            # chromeOptions.add_argument('--disable-dev-shm-using')
+            # # Avoid possible error when many drivers are opened.
+            # # See https://stackoverflow.com/a/56638103
+            # chromeOptions.add_argument("--remote-debugging-port=9222")
+
+            # Save options.
+            cls._options = chromeOptions
+
             # Everything else should handle the same for both.
             cls._browser = 'chrome'
 
@@ -91,11 +91,22 @@ class LiveServerTestCase(DjangoLiveServerTestCase, LiveServerMixin):
             # Setup browser driver to launch browser with.
             try:
                 # Attempt driver auto-install, if webdriver_manager package is present.
-                from webdriver_manager.firefox import GeckoDriverManager
-                cls._service = FireFoxService(executable_path=GeckoDriverManager().install())
+                cls._service = FireFoxService()
+
             except ModuleNotFoundError:
                 # Fall back to manual installation handling.
                 cls._service = FireFoxService(executable_path='/usr/bin/geckodriver')
+
+            # Set required chrome options.
+            firefoxOptions = webdriver.FirefoxOptions()
+
+            # Add any user-provided options.
+            if ETC_SELENIUM_EXTRA_BROWSER_OPTIONS:
+                for browser_option in ETC_SELENIUM_EXTRA_BROWSER_OPTIONS:
+                    firefoxOptions.add_argument(browser_option)
+
+            # Save options.
+            cls._options = firefoxOptions
 
         else:
             raise ValueError('Unknown browser "{0}".'.format(cls._browser))
@@ -132,7 +143,7 @@ class LiveServerTestCase(DjangoLiveServerTestCase, LiveServerMixin):
         super().tearDownClass()
 
     def tearDown(self):
-        # TODO: Below seems probably unecessary? Research more.
+        # TODO: Below seems probably unnecessary? Research more.
         # # Close all remaining window instances for test.
         # # (Or at least attempt to for default driver for test).
         # self.close_all_windows(self.driver)
