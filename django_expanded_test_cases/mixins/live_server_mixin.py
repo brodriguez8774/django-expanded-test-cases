@@ -45,18 +45,14 @@ class LiveServerMixin(ResponseTestCaseMixin):
     """Universal logic for all selenium LiveServer test cases."""
 
     @classmethod
-    def set_up_class(cls, debug_print=None):
-        """
-        Acts as the equivalent of the UnitTesting "setUpClass()" function.
-
-        However, since this is not inheriting from a given TestCase, calling the literal function
-        here would override instead.
+    def setUpClass(cls, *args, debug_print=None, **kwargs):
+        """Test logic setup run at the start of class creation.
 
         :param debug_print: Optional bool that indicates if debug output should print to console.
                             Param overrides setting value if both param and setting are set.
         """
         # Call CoreMixin setup logic.
-        super().set_up_class(debug_print=debug_print)
+        super().setUpClass(*args, debug_print=debug_print, **kwargs)
 
         # Populate some initial values.
         cls._driver_set = []
@@ -152,20 +148,20 @@ class LiveServerMixin(ResponseTestCaseMixin):
         # Create initial testing driver.
         cls.driver = cls.create_driver(cls)
 
-    def set_up(self):
+    def setUp(self, *args, **kwargs):
+        """Test logic setup run at the start of function/method execution."""
+
         # Call parent logic.
-        super().set_up()
+        super().setUp(*args, **kwargs)
 
         self._error_displayed = False
 
-    def sub_test(self, *args, **kwargs):
-        # Call parent logic.
-        super().sub_test(*args, **kwargs)
-
     @classmethod
-    def tear_down_class(cls):
+    def tearDownClass(cls, *args, **kwargs):
+        """Test logic setup run at the end of class execution, as part of termination/clean up."""
+
         # Call parent teardown logic.
-        super().tear_down_class()
+        super().tearDownClass(*args, **kwargs)
 
         # Close all remaining driver instances for class.
         while len(cls._driver_set) > 0:

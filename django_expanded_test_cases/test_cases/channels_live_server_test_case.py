@@ -18,44 +18,75 @@ class ChannelsLiveServerTestCase(DjangoChannelsLiveServerTestCase, LiveServerMix
     """Uses DjangoChannels package to test functionality through selenium. Simulates web browser navigation."""
 
     @classmethod
-    def setUpClass(cls, debug_print=None):
-        # Run parent setup logic.
-        super().setUpClass()
+    def setUpClass(cls, *args, debug_print=None, **kwargs):
+        """Test logic setup run at the start of class creation."""
 
-        # Also call Mixin setup logic.
-        cls.set_up_class(debug_print=debug_print)
+        # Call parent logic.
+        return_val = super().setUpClass()
+        LiveServerMixin.setUpClass(*args, debug_print=debug_print, **kwargs)
+
+        # Return original python class value, if any.
+        # ETC setup/teardown functions never contain a return value.
+        return return_val
 
     @classmethod
-    def setUpTestData(cls):
-        # Run parent setup logic.
-        super().setUpTestData()
+    def setUpTestData(cls, *args, **kwargs):
+        """Test logic setup run at the start of class creation, specifically for data setup."""
 
-        # Initialize default data models.
-        cls.set_up_test_data()
+        # Call parent logic.
+        return_val = super().setUpTestData()
+        LiveServerMixin.setUpTestData(*args, **kwargs)
 
-    def setUp(self):
-        # Run parent setup logic.
-        super().setUp()
+        # Return original python class value, if any.
+        # ETC setup/teardown functions never contain a return value.
+        return return_val
 
-        # Also call Mixin setup logic.
-        self.set_up()
+    def setUp(self, *args, **kwargs):
+        """Test logic setup run at the start of function/method execution."""
+
+        # Call parent logic.
+        return_val = super().setUp()
+        LiveServerMixin.setUp(self, *args, **kwargs)
 
         self._error_displayed = False
 
-    def subTest(self, *args, **kwargs):
-        # Call CoreMixin logic.
-        self.sub_test()
+        # Return original python class value, if any.
+        # ETC setup/teardown functions never contain a return value.
+        return return_val
 
-        # Run parent logic.
-        return super().subTest(*args, **kwargs)
+    def subTest(self, *args, **kwargs):
+        """Test logic setup run every time we enter a subtest."""
+
+        # Call parent logic.
+        return_val = super().subTest()
+        LiveServerMixin.subTest(self, *args, **kwargs)
+
+        # Return original python class value, if any.
+        # ETC setup/teardown functions never contain a return value.
+        return return_val
 
     @classmethod
-    def tearDownClass(cls):
-        # Call Mixin setup logic.
-        cls.tear_down_class()
+    def tearDownClass(cls, *args, **kwargs):
+        """Test logic setup run at the end of class execution, as part of termination/clean up."""
 
-        # Call parent teardown logic.
-        super().tearDownClass()
+        # Call parent logic.
+        return_val = super().tearDownClass()
+        LiveServerMixin.tearDownClass(*args, **kwargs)
+
+        # Return original python class value, if any.
+        # ETC setup/teardown functions never contain a return value.
+        return return_val
+
+    def tearDown(self, *args, **kwargs):
+        """Test logic setup run at the end of function/method execution, as part of termination/clean up."""
+
+        # Call parent logic.
+        return_val = super().tearDown()
+        LiveServerMixin.tearDown(self, *args, **kwargs)
+
+        # Return original python class value, if any.
+        # ETC setup/teardown functions never contain a return value.
+        return return_val
 
 
 # Define acceptable imports on file.

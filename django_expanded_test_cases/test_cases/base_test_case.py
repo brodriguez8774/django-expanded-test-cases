@@ -14,31 +14,81 @@ class BaseTestCase(TestCase, CoreTestCaseMixin):
     """Generalized testing functionality. Builds upon Django's default TestCase class."""
 
     @classmethod
-    def setUpClass(cls, debug_print=None):
-        # Run parent setup logic.
-        super().setUpClass()
+    def setUpClass(cls, *args, debug_print=None, **kwargs):
+        """Test logic setup run at the start of class creation."""
+        print('BaseTestCase setUpClass()')
 
-        # Also call CoreMixin setup logic.
-        cls.set_up_class(debug_print=debug_print)
+        # Call parent logic.
+        return_val = super().setUpClass()
+        CoreTestCaseMixin.setUpClass(*args, debug_print=debug_print, **kwargs)
+
+        # Return original python class value, if any.
+        # ETC setup/teardown functions never contain a return value.
+        return return_val
 
     @classmethod
-    def setUpTestData(cls):
-        """"""
-        # Initialize default data models.
-        cls.set_up_test_data()
+    def setUpTestData(cls, *args, **kwargs):
+        """Test logic setup run at the start of class creation, specifically for data setup."""
+        print('BaseTestCase setUpTestData()')
 
-    def setUp(self):
-        # Run parent setup logic.
-        super().setUp()
+        # Call parent logic.
+        return_val = super().setUpTestData()
+        CoreTestCaseMixin.setUpTestData(*args, **kwargs)
+
+        # Return original python class value, if any.
+        # ETC setup/teardown functions never contain a return value.
+        return return_val
+
+    def setUp(self, *args, **kwargs):
+        """Test logic setup run at the start of function/method execution."""
+        print('BaseTestCase setUp()')
+
+        # Call parent logic.
+        return_val = super().setUp()
+        CoreTestCaseMixin.setUp(self, *args, **kwargs)
 
         self._error_displayed = False
 
-    def subTest(self, *args, **kwargs):
-        # Call CoreMixin logic.
-        self.sub_test()
+        # Return original python class value, if any.
+        # ETC setup/teardown functions never contain a return value.
+        return return_val
 
-        # Run parent logic.
-        return super().subTest(*args, **kwargs)
+    def subTest(self, *args, **kwargs):
+        """Test logic setup run every time we enter a subtest."""
+        print('BaseTestCase subTest()')
+
+        # Call parent logic.
+        return_val = super().subTest()
+        CoreTestCaseMixin.subTest(self, *args, **kwargs)
+
+        # Return original python class value, if any.
+        # ETC setup/teardown functions never contain a return value.
+        return return_val
+
+    @classmethod
+    def tearDownClass(cls, *args, **kwargs):
+        """Test logic setup run at the end of class execution, as part of termination/clean up."""
+        print('BaseTestCase tearDownClass()')
+
+        # Call parent logic.
+        return_val = super().tearDownClass()
+        CoreTestCaseMixin.tearDownClass(*args, **kwargs)
+
+        # Return original python class value, if any.
+        # ETC setup/teardown functions never contain a return value.
+        return return_val
+
+    def tearDown(self, *args, **kwargs):
+        """Test logic setup run at the end of function/method execution, as part of termination/clean up."""
+        print('BaseTestCase tearDown()')
+
+        # Call parent logic.
+        return_val = super().tearDown()
+        CoreTestCaseMixin.tearDown(self, *args, **kwargs)
+
+        # Return original python class value, if any.
+        # ETC setup/teardown functions never contain a return value.
+        return return_val
 
     def _handle_test_error(self, err):
         """

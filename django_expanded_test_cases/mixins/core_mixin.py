@@ -64,25 +64,67 @@ class DebugPrintMetaClass(type):
 
 
 class BaseMixin:
-    @classmethod
-    def set_up_class(cls, *args, **kwargs):
-        pass
+    """Base mixin that all other project classes should inherit from in some way.
+
+    Basically only exists to guarantee certain expected functions exist during inheritance chain, unconditionally.
+    Helps prevent MethodNotFound errors and make inheritance/super() calls easier to handle.
+    """
 
     @classmethod
-    def set_up_test_data(cls, *args, **kwargs):
-        pass
+    def setUpClass(cls, *args, **kwargs):
+        """Test logic setup run at the start of class creation.
 
-    def set_up(self, *args, **kwargs):
-        pass
-
-    def sub_test(self, *args, **kwargs):
+        Function is empty, but provided to prevent MethodNotFound errors
+        in case super() is called from an inheriting child.
+        """
+        print('BaseMixin setUpClass()')
         pass
 
     @classmethod
-    def tear_down_class(cls, *args, **kwargs):
+    def setUpTestData(cls, *args, **kwargs):
+        """Test logic setup run at the start of class creation, specifically for data setup.
+
+        Function is empty, but provided to prevent MethodNotFound errors
+        in case super() is called from an inheriting child.
+        """
+        print('BaseMixin setUpTestData()')
         pass
 
-    def tear_down(self, *args, **kwargs):
+    def setUp(self, *args, **kwargs):
+        """Test logic setup run at the start of function/method execution.
+
+        Function is empty, but provided to prevent MethodNotFound errors
+        in case super() is called from an inheriting child.
+        """
+        print('BaseMixin setUp()')
+        pass
+
+    def subTest(self, *args, **kwargs):
+        """Test logic setup run every time we enter a subtest.
+
+        Function is empty, but provided to prevent MethodNotFound errors
+        in case super() is called from an inheriting child.
+        """
+        print('BaseMixin subTest()')
+        pass
+
+    @classmethod
+    def tearDownClass(cls, *args, **kwargs):
+        """Test logic setup run at the end of class execution, as part of termination/clean up.
+
+        Function is empty, but provided to prevent MethodNotFound errors
+        in case super() is called from an inheriting child.
+        """
+        print('BaseMixin tearDownClass()')
+        pass
+
+    def tearDown(self, *args, **kwargs):
+        """Test logic setup run at the end of function/method execution, as part of termination/clean up.
+
+        Function is empty, but provided to prevent MethodNotFound errors
+        in case super() is called from an inheriting child.
+        """
+        print('BaseMixin tearDown()')
         pass
 
 
@@ -100,18 +142,18 @@ class CoreTestCaseMixin(BaseMixin):
     # region Class Functions
 
     @classmethod
-    def set_up_class(cls, *args, debug_print=None, **kwargs):
-        """
-        Acts as the equivalent of the UnitTesting "setUpClass()" function.
-
-        However, since this is not inheriting from a given TestCase, calling the literal function
-        here would override instead.
+    def setUpClass(cls, *args, debug_print=None, **kwargs):
+        """Test logic setup run at the start of class creation.
 
         :param debug_print: Optional bool that indicates if debug output should print to console.
                             Param overrides setting value if both param and setting are set.
         """
+        print('CoreMixin setUpClass()')
+
         # Call parent logic.
-        super().set_up_class(*args, **kwargs)
+        super().setUpClass(*args, **kwargs)
+
+        print('Setting up debug_print class variable')
 
         # Check user debug_print option.
         if debug_print is not None:
@@ -119,21 +161,20 @@ class CoreTestCaseMixin(BaseMixin):
         else:
             cls._debug_print_bool = ETC_DEBUG_PRINT
 
+        print('setting up site_root_url class variable')
         cls._site_root_url = None
 
     @classmethod
-    def set_up_test_data(cls, *args, extra_usergen_kwargs=None, **kwargs):
-        """
-        Acts as the equivalent of the UnitTesting "setUpTestData()" function.
-
-        However, since this is not inheriting from a given TestCase, calling the literal function
-        here would override instead.
+    def setUpTestData(cls, *args, extra_usergen_kwargs=None, **kwargs):
+        """Test logic setup run at the start of class creation, specifically for data setup.
 
         :param extra_usergen_kwargs: Optional extra kwargs to pass into the get_user_model().objects.create_user()
                                      function.
         """
+        print('CoreMixin setUpTestData()')
+
         # Call parent logic.
-        super().set_up_test_data(*args, **kwargs)
+        super().setUpTestData(*args, **kwargs)
 
         if ETC_AUTO_GENERATE_USERS:
             # Run logic to auto-generate test users. Setting is on by default.
@@ -147,31 +188,16 @@ class CoreTestCaseMixin(BaseMixin):
 
             cls._auto_generate_test_users(extra_usergen_kwargs=extra_usergen_kwargs)
 
-    def set_up(self, *args, **kwargs):
-        # Call parent logic.
-        super().set_up(*args, **kwargs)
-
-    def sub_test(self, *args, **kwargs):
+    def subTest(self, *args, **kwargs):
+        """Test logic setup run every time we enter a subtest.
         """
-        Acts as the equivalent of the UnitTesting "subtTest()" function.
+        print('CoreMixin subTest()')
 
-        However, since this is not inheriting from a given TestCase, calling the literal function
-        here would override instead.
-        """
         # Call parent logic.
-        super().sub_test(*args, **kwargs)
+        super().subTest(*args, **kwargs)
 
         # Reset display error, in case multiple subtests run and fail in a given test.
         self._error_displayed = False
-
-    @classmethod
-    def tear_down_class(cls, *args, **kwargs):
-        # Call parent logic.
-        super().tear_down_class(*args, **kwargs)
-
-    def tear_down(self, *args, **kwargs):
-        # Call parent logic.
-        super().tear_down(*args, **kwargs)
 
     @classmethod
     def _auto_generate_test_users(cls, extra_usergen_kwargs=None):

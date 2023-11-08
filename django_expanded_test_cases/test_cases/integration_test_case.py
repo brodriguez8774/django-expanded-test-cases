@@ -25,10 +25,9 @@ from django_expanded_test_cases.constants import (
     ETC_INCLUDE_RESPONSE_DEBUG_USER_INFO,
     ETC_ALLOW_TITLE_PARTIALS,
     ETC_ALLOW_MESSAGE_PARTIALS,
+    ETC_AUTO_GENERATE_USERS,
     ETC_REQUEST_USER_STRICTNESS,
     ETC_DEFAULT_STANDARD_USER_IDENTIFIER,
-    ETC_RESPONSE_DEBUG_URL_COLOR,
-    ETC_OUTPUT_EMPHASIS_COLOR,
     ETC_OUTPUT_ERROR_COLOR,
     ETC_OUTPUT_RESET_COLOR,
     ETC_OUTPUT_ACTUALS_MATCH_COLOR,
@@ -43,8 +42,10 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
     @classmethod
     def setUpClass(cls, *args, debug_print=None, **kwargs):
-        # Run parent setup logic.
-        super().setUpClass(debug_print=None)
+        """Test logic setup run at the start of class creation."""
+
+        # Call parent logic.
+        return_val = super().setUpClass()
 
         # Initialize url variables.
         try:
@@ -52,6 +53,64 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         except NoReverseMatch:
             # Login url is not defined.
             cls.login_url = None
+
+        # Return original python class value, if any.
+        # ETC setup/teardown functions never contain a return value.
+        return return_val
+
+    @classmethod
+    def setUpTestData(cls, *args, **kwargs):
+        """Test logic setup run at the start of class creation, specifically for data setup."""
+
+        # Call parent logic.
+        return_val = super().setUpTestData()
+
+        # Return original python class value, if any.
+        # ETC setup/teardown functions never contain a return value.
+        return return_val
+
+    def setUp(self, *args, **kwargs):
+        """Test logic setup run at the start of function/method execution."""
+
+        # Call parent logic.
+        return_val = super().setUp()
+
+        self._error_displayed = False
+
+        # Return original python class value, if any.
+        # ETC setup/teardown functions never contain a return value.
+        return return_val
+
+    def subTest(self, *args, **kwargs):
+        """Test logic setup run every time we enter a subtest."""
+
+        # Call parent logic.
+        return_val = super().subTest()
+
+        # Return original python class value, if any.
+        # ETC setup/teardown functions never contain a return value.
+        return return_val
+
+    @classmethod
+    def tearDownClass(cls, *args, **kwargs):
+        """Test logic setup run at the end of class execution, as part of termination/clean up."""
+
+        # Call parent logic.
+        return_val = super().tearDownClass()
+
+        # Return original python class value, if any.
+        # ETC setup/teardown functions never contain a return value.
+        return return_val
+
+    def tearDown(self, *args, **kwargs):
+        """Test logic setup run at the end of function/method execution, as part of termination/clean up."""
+
+        # Call parent logic.
+        return_val = super().tearDown()
+
+        # Return original python class value, if any.
+        # ETC setup/teardown functions never contain a return value.
+        return return_val
 
     # region Custom Assertions
 
