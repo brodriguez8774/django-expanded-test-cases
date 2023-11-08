@@ -30,7 +30,7 @@ from django_expanded_test_cases.constants import (
     ETC_SELENIUM_PAGE_TIMEOUT_DEFAULT,
     ETC_SELENIUM_IMPLICIT_WAIT_DEFAULT,
 )
-from django_expanded_test_cases.exceptions import EtcSeleniumRuntimeError
+from django_expanded_test_cases.exceptions import EtcSeleniumRuntimeError, EtcSeleniumSetUpError
 from django_expanded_test_cases.mixins.response_mixin import ResponseTestCaseMixin
 
 
@@ -45,14 +45,24 @@ class LiveServerMixin(ResponseTestCaseMixin):
     """Universal logic for all selenium LiveServer test cases."""
 
     @classmethod
-    def setUpClass(cls, *args, debug_print=None, **kwargs):
+    def setUpClass(cls, *args, initial_driver_count=1, debug_print=None, **kwargs):
         """Test logic setup run at the start of class creation.
 
         :param debug_print: Optional bool that indicates if debug output should print to console.
                             Param overrides setting value if both param and setting are set.
+        :param initial_driver_count: Number of drivers to generate at the start of test class creation. Defaults to 1.
         """
         # Call CoreMixin setup logic.
         super().setUpClass(*args, debug_print=debug_print, **kwargs)
+
+        # Verify variable types.
+        try:
+            initial_driver_count = int(initial_driver_count)
+        except (TypeError, ValueError):
+            raise EtcSeleniumSetUpError(
+                'The setUpClass() initial_driver_count variable must be an integer. '
+                'It refers to the number of drivers that are started up on test class creation, and defaults to 1.'
+            )
 
         # Populate some initial values.
         cls._driver_set = []
@@ -145,8 +155,9 @@ class LiveServerMixin(ResponseTestCaseMixin):
                 cls._window_positions = window_positions
                 cls._window_position_index = 0
 
-        # Create initial testing driver.
-        cls.driver = cls.create_driver(cls)
+        for index in range(int(initial_driver_count)):
+            # Create initial testing driver(s).
+            cls.driver = cls.create_driver(cls)
 
     def setUp(self, *args, **kwargs):
         """Test logic setup run at the start of function/method execution."""

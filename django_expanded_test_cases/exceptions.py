@@ -26,5 +26,9 @@ class ExpandedTestCasesBaseException(ABC, Exception):
         return self.value
 
 
+class EtcSeleniumSetUpError(Exception):
+    """Runtime error when setting up for Selenium testing."""
+
+
 class EtcSeleniumRuntimeError(Exception):
     """Runtime error when using Selenium testing."""
