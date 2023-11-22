@@ -2,10 +2,22 @@ Version History
 ***************
 
 
+0.6.0 - LiveServer Test Case Initial Release
+==============================================================
+* ``LiveServerTestCase`` and ``ChannelsLiveServerTestCase`` both exists, and at
+  least function in a non-multi-threaded environment.
+    * Seems to have some issues in multi-threaded testing environments. Needs
+      further examination.
+    * New documentation for this is fairly non-existent at the moment. All
+      test case options are available to view at
+      ``<project_root>/django_expanded_text_cases/`text_cases/constants.py``.
+
+
 0.5.1 - Update Docs and Preparation for 0.6 LiveServer Release
 ==============================================================
 * Updated/corrected docs.
-* Updated beta LiveServer classes to function with Chromedriver version 115 and higher.
+* Updated beta LiveServer classes to function with Chromedriver version 115 and
+  higher.
 
 
 0.5.0 - Improved Integration TestCase & Initial LiveServer TestCases

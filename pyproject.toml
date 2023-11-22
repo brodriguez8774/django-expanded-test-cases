@@ -4,7 +4,7 @@ build-backend = 'setuptools.build_meta:__legacy__'
 
 [project]
 name = "django-expanded-test-cases"
-version = "0.5.1"
+version = "0.6.0"
 description = "Expands the existing Django TestCase class with extra functionality."
 readme = "readme.md"
 authors = [
