@@ -24,7 +24,6 @@ except ModuleNotFoundError:
         Cannot use LiveServerTestCase class without "selenium" package installed.
         To use this TestCase, add the following packages to your project:
             * selenium              # Required
-            * webdriver-manager     # Required
 
         For more information, see:
         https://www.selenium.dev/documentation/webdriver/getting_started/
@@ -54,7 +53,7 @@ except ModuleNotFoundError:
         To use this TestCase, add the following packages to your project:
             * channels              # Required
             * daphne                # Required
-            * webdriver-manager     # Required
+            * selenium              # Required
 
         For more information, see:
         https://www.selenium.dev/documentation/webdriver/getting_started/
