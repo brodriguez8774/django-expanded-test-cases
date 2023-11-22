@@ -266,6 +266,14 @@ ETC_SELENIUM_IMPLICIT_WAIT_DEFAULT = int(getattr(
     'DJANGO_EXPANDED_TESTCASES_SELENIUM_IMPLICIT_WAIT_DEFAULT',
     5,
 ))
+# Location to auto-create drivers for tests. Should be either "class" or "method".
+# The "class" option will create drivers on test class startup, that all test methods will share.
+# The "method" option will create drivers on each test method instance.
+ETC_SELENIUM_DRIVER_LEVEL = str(getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_SELENIUM_DRIVER_LEVEL',
+    'method',
+)).strip().lower()
 
 # endregion Selenium Options
 

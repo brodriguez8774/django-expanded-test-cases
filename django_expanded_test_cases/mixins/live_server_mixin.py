@@ -29,6 +29,7 @@ from django_expanded_test_cases.constants import (
     ETC_SELENIUM_EXTRA_BROWSER_OPTIONS,
     ETC_SELENIUM_PAGE_TIMEOUT_DEFAULT,
     ETC_SELENIUM_IMPLICIT_WAIT_DEFAULT,
+    ETC_SELENIUM_DRIVER_LEVEL,
 )
 from django_expanded_test_cases.exceptions import EtcSeleniumRuntimeError, EtcSeleniumSetUpError
 from django_expanded_test_cases.mixins.response_mixin import ResponseTestCaseMixin
@@ -43,21 +44,27 @@ SELENIUM_DEBUG_PORT = ETC_SELENIUM_DEBUG_PORT_START_VALUE
 
 class LiveServerMixin(ResponseTestCaseMixin):
     """Universal logic for all selenium LiveServer test cases."""
-
     @classmethod
     def setUpClass(cls, *args, initial_driver_count=1, debug_print=None, **kwargs):
         """Test logic setup run at the start of class creation.
 
+        :param initial_driver_count: Number of drivers to generate at the start of test class creation.
+                                     Defaults to 1. Set to 0 to skip creating drivers at class level.
         :param debug_print: Optional bool that indicates if debug output should print to console.
                             Param overrides setting value if both param and setting are set.
-        :param initial_driver_count: Number of drivers to generate at the start of test class creation. Defaults to 1.
         """
+        # Verify some project settings.
+        if ETC_SELENIUM_DRIVER_LEVEL not in ['class', 'method']:
+            raise ValueError('Unknown value for ETC_SELENIUM_DRIVER_LEVEL. Should be either "class" or "method".')
+
+        cls._initial_driver_count = initial_driver_count
+
         # Call CoreMixin setup logic.
         super().setUpClass(*args, debug_print=debug_print, **kwargs)
 
         # Verify variable types.
         try:
-            initial_driver_count = int(initial_driver_count)
+            cls._initial_driver_count = int(cls._initial_driver_count)
         except (TypeError, ValueError):
             raise EtcSeleniumSetUpError(
                 'The setUpClass() initial_driver_count variable must be an integer. '
@@ -155,9 +162,10 @@ class LiveServerMixin(ResponseTestCaseMixin):
                 cls._window_positions = window_positions
                 cls._window_position_index = 0
 
-        for index in range(int(initial_driver_count)):
-            # Create initial testing driver(s).
-            cls.driver = cls.create_driver(cls)
+        if ETC_SELENIUM_DRIVER_LEVEL == 'class':
+            # Create initial testing driver(s) at class level.
+            for index in range(int(cls._initial_driver_count)):
+                cls.create_driver(cls)
 
     def setUp(self, *args, **kwargs):
         """Test logic setup run at the start of function/method execution."""
@@ -166,6 +174,11 @@ class LiveServerMixin(ResponseTestCaseMixin):
         super().setUp(*args, **kwargs)
 
         self._error_displayed = False
+
+        if ETC_SELENIUM_DRIVER_LEVEL == 'method':
+            # Create initial testing driver(s) at method level.
+            for index in range(int(self._initial_driver_count)):
+                self.create_driver()
 
     @classmethod
     def tearDownClass(cls, *args, **kwargs):
@@ -208,6 +221,8 @@ class LiveServerMixin(ResponseTestCaseMixin):
 
                 # Add window position data to driver options.
                 self._options.add_argument('window-position={0},{1}'.format(window_x, window_y))
+            else:
+                self._options.add_argument('window-position={0},{1}'.format(0, 0))
 
             # Avoid possible error when many drivers are opened.
             # See https://stackoverflow.com/a/56638103
