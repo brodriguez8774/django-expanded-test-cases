@@ -16,7 +16,6 @@ class BaseTestCase(TestCase, CoreTestCaseMixin):
     @classmethod
     def setUpClass(cls, *args, debug_print=None, **kwargs):
         """Test logic setup run at the start of class creation."""
-        print('BaseTestCase setUpClass()')
 
         # Call parent logic.
         return_val = super().setUpClass()
@@ -29,7 +28,6 @@ class BaseTestCase(TestCase, CoreTestCaseMixin):
     @classmethod
     def setUpTestData(cls, *args, **kwargs):
         """Test logic setup run at the start of class creation, specifically for data setup."""
-        print('BaseTestCase setUpTestData()')
 
         # Call parent logic.
         return_val = super().setUpTestData()
@@ -41,7 +39,6 @@ class BaseTestCase(TestCase, CoreTestCaseMixin):
 
     def setUp(self, *args, **kwargs):
         """Test logic setup run at the start of function/method execution."""
-        print('BaseTestCase setUp()')
 
         # Call parent logic.
         return_val = super().setUp()
@@ -55,7 +52,6 @@ class BaseTestCase(TestCase, CoreTestCaseMixin):
 
     def subTest(self, *args, **kwargs):
         """Test logic setup run every time we enter a subtest."""
-        print('BaseTestCase subTest()')
 
         # Call parent logic.
         return_val = super().subTest()
@@ -68,7 +64,6 @@ class BaseTestCase(TestCase, CoreTestCaseMixin):
     @classmethod
     def tearDownClass(cls, *args, **kwargs):
         """Test logic setup run at the end of class execution, as part of termination/clean up."""
-        print('BaseTestCase tearDownClass()')
 
         # Call parent logic.
         return_val = super().tearDownClass()
@@ -80,7 +75,6 @@ class BaseTestCase(TestCase, CoreTestCaseMixin):
 
     def tearDown(self, *args, **kwargs):
         """Test logic setup run at the end of function/method execution, as part of termination/clean up."""
-        print('BaseTestCase tearDown()')
 
         # Call parent logic.
         return_val = super().tearDown()
