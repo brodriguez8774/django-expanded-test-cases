@@ -2,8 +2,14 @@ Version History
 ***************
 
 
+0.6.1 - Minor Updates
+=====================
+* Correct some leftover debug output from last version.
+* Add a missing assertion type to IntegrationTestcase.
+
+
 0.6.0 - LiveServer Test Case Initial Release
-==============================================================
+============================================
 * ``LiveServerTestCase`` and ``ChannelsLiveServerTestCase`` both exists, and at
   least function in a non-multi-threaded environment.
     * Seems to have some issues in multi-threaded testing environments. Needs
