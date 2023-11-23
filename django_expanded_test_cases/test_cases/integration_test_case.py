@@ -122,7 +122,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         expected_redirect_url=None,
         url_args=None, url_kwargs=None, url_query_params=None,
         redirect_args=None, redirect_kwargs=None, redirect_query_params=None,
-        expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
+        expected_title=None, expected_header=None, expected_messages=None,
+        expected_content=None, expected_not_content=None,
         auto_login=True, user=None, user_permissions=None, user_groups=None, extra_usergen_kwargs=None,
         ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
         **kwargs,
@@ -152,6 +153,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param expected_header: Expected page h1 to verify. Skips header test if left as None.
         :param expected_messages: Expected context messages to verify. Skips message test if left as None.
         :param expected_content: Expected page content elements to verify. Skips content test if left as None.
+        :param expected_not_content: Inverse of expected_content. Skips test if left as None.
         :param auto_login: Bool indicating if user should be auto-logged-in.
         :param user: User to log in with, if auto_login is True. Defaults to `test_user`.
         :param user_permissions: Optional permissions to provide to login user.
@@ -223,7 +225,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             url_args=url_args, url_kwargs=url_kwargs, url_query_params=url_query_params,
             redirect_args=redirect_args, redirect_kwargs=redirect_kwargs, redirect_query_params=redirect_query_params,
             expected_title=expected_title, expected_header=expected_header, expected_messages=expected_messages,
-            expected_content=expected_content,
+            expected_content=expected_content, expected_not_content=expected_not_content,
             auto_login=auto_login, user=user, user_permissions=user_permissions, user_groups=user_groups,
             extra_usergen_kwargs=extra_usergen_kwargs,
             ignore_content_ordering=ignore_content_ordering, content_starts_after=content_starts_after,
@@ -267,6 +269,18 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                 debug_output=False,
             )
 
+        if expected_not_content is not None:
+            print('Asserting content is NOT present:')
+            print('{0}'.format(expected_not_content))
+            self.assertNotPageContent(
+                response,
+                expected_not_content,
+                debug_output=True,
+                # debug_output=False,
+            )
+        else:
+            print('No content to verify is NOT present.')
+
         # Optional hook for running custom post-builtin-test logic.
         self._assertResponse__post_builtin_tests(
             response.url, *args,
@@ -277,7 +291,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             url_args=url_args, url_kwargs=url_kwargs, url_query_params=url_query_params,
             redirect_args=redirect_args, redirect_kwargs=redirect_kwargs, redirect_query_params=redirect_query_params,
             expected_title=expected_title, expected_header=expected_header, expected_messages=expected_messages,
-            expected_content=expected_content,
+            expected_content=expected_content, expected_not_content=expected_not_content,
             auto_login=auto_login, user=user, user_permissions=user_permissions, user_groups=user_groups,
             extra_usergen_kwargs=extra_usergen_kwargs,
             ignore_content_ordering=ignore_content_ordering, content_starts_after=content_starts_after,
@@ -296,7 +310,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         expected_redirect_url=None,
         url_args=None, url_kwargs=None, url_query_params=None,
         redirect_args=None, redirect_kwargs=None, redirect_query_params=None,
-        expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
+        expected_title=None, expected_header=None, expected_messages=None,
+        expected_content=None, expected_not_content=None,
         auto_login=True, user=None, user_permissions=None, user_groups=None, extra_usergen_kwargs=None,
         ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
         **kwargs,
@@ -332,6 +347,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             expected_header=expected_header,
             expected_messages=expected_messages,
             expected_content=expected_content,
+            expected_not_content=expected_not_content,
             auto_login=auto_login,
             user=user,
             user_permissions=user_permissions,
@@ -351,7 +367,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         expected_redirect_url=None,
         url_args=None, url_kwargs=None, url_query_params=None,
         redirect_args=None, redirect_kwargs=None, redirect_query_params=None,
-        expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
+        expected_title=None, expected_header=None, expected_messages=None,
+        expected_content=None, expected_not_content=None,
         auto_login=True, user=None, user_permissions=None, user_groups=None, extra_usergen_kwargs=None,
         ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
         **kwargs,
@@ -393,6 +410,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             expected_header=expected_header,
             expected_messages=expected_messages,
             expected_content=expected_content,
+            expected_not_content=expected_not_content,
             auto_login=auto_login,
             user=user,
             user_permissions=user_permissions,
@@ -641,6 +659,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         the same assertions. But we still need to parse and format full response object, to display for test failure
         debugging. So I'm not sure if it's helpful at that point to use those or use separate assertions like here.
         Perhaps examine more closely at a later date.
+
         :param response: Response object to check against.
         :param expected_content: Expected full string (or set of strings) of HTML content.
         :param ignore_ordering: Bool indicating if ordering should be verified. Defaults to checking ordering.
@@ -813,7 +832,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             # Not an array of items. Assume is a single str value.
             stripped_expected = self.get_minimized_response_content(expected_content, strip_newlines=True)
             if stripped_expected not in trimmed_original_content:
-                # Expected value not found in provided content section.
+                # Expected value not found in provided content section. Raise Error.
                 display_expected = self.get_minimized_response_content(expected_content, strip_newlines=False)
 
                 # Check if due to casing mismatch.
@@ -880,6 +899,54 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             if checked_content_str_addon:
                 err_msg += checked_content_str_addon
             self.fail(err_msg.format(display_expected))
+
+    def assertNotPageContent(
+        self,
+        response, expected_not_content,
+        debug_output=True,
+    ):
+        """Verifies the non-existance of page content html.
+        Django templating may create large amounts of whitespace in response html, often in places where we wouldn't
+        intuitively expect it, when running tests. This converts output to a more normalized/predictable format,
+        and then verifies the normalized content is not present. Results in more consistent and predictable testing.
+
+        :param response: Response object to check against.
+        :param expected_not_content: Expected full string (or set of strings) of HTML content.
+        :param debug_output: Bool indicating if debug output should be shown or not. Used for debugging test failures.
+        :return: Parsed out and formatted content string.
+        """
+        if debug_output:
+            # Print out actual response content, for debug output.
+            self.show_debug_content(response)
+
+        # Extra setup logic, to sanitize and handle if content_starts_after/content_ends_before variables are defined.
+        content_dict = self._trim_response_content(response)
+        sanitized_original_content = content_dict['minimized_content']
+        trimmed_original_content = content_dict['truncated_content']
+
+        # Handle possible types.
+        if expected_not_content is None:
+            expected_not_content = ''
+        if isinstance(expected_not_content, list) or isinstance(expected_not_content, tuple):
+            # Is an array of items. Verify none of them exist on page.
+            for content_item in expected_not_content:
+                # Not an array of items. Assume is a single str value.
+                stripped_expected = self.get_minimized_response_content(content_item, strip_newlines=True)
+                if stripped_expected != '' and stripped_expected in trimmed_original_content:
+                    # Expected value found in provided content section. Raise Error.
+                    self.fail(
+                        'Found content in response. Expected content to not be present. Content was:\n'
+                        '{0}'.format(content_item)
+                    )
+        else:
+            # Not an array of items. Assume is a single str value.
+            stripped_expected = self.get_minimized_response_content(expected_not_content, strip_newlines=True)
+            if stripped_expected != '' and stripped_expected in trimmed_original_content:
+                # Expected value found in provided content section. Raise Error.
+                self.fail(
+                    'Found content in response. Expected content to not be present. Content was:\n'
+                    '{0}'.format(expected_not_content)
+                )
 
     def assertRepeatingElement(
         self,
