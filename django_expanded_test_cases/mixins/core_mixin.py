@@ -77,7 +77,6 @@ class BaseMixin:
         Function is empty, but provided to prevent MethodNotFound errors
         in case super() is called from an inheriting child.
         """
-        print('BaseMixin setUpClass()')
         pass
 
     @classmethod
@@ -87,7 +86,6 @@ class BaseMixin:
         Function is empty, but provided to prevent MethodNotFound errors
         in case super() is called from an inheriting child.
         """
-        print('BaseMixin setUpTestData()')
         pass
 
     def setUp(self, *args, **kwargs):
@@ -96,7 +94,6 @@ class BaseMixin:
         Function is empty, but provided to prevent MethodNotFound errors
         in case super() is called from an inheriting child.
         """
-        print('BaseMixin setUp()')
         pass
 
     def subTest(self, *args, **kwargs):
@@ -105,7 +102,6 @@ class BaseMixin:
         Function is empty, but provided to prevent MethodNotFound errors
         in case super() is called from an inheriting child.
         """
-        print('BaseMixin subTest()')
         pass
 
     @classmethod
@@ -115,7 +111,6 @@ class BaseMixin:
         Function is empty, but provided to prevent MethodNotFound errors
         in case super() is called from an inheriting child.
         """
-        print('BaseMixin tearDownClass()')
         pass
 
     def tearDown(self, *args, **kwargs):
@@ -124,7 +119,6 @@ class BaseMixin:
         Function is empty, but provided to prevent MethodNotFound errors
         in case super() is called from an inheriting child.
         """
-        print('BaseMixin tearDown()')
         pass
 
 
@@ -148,12 +142,9 @@ class CoreTestCaseMixin(BaseMixin):
         :param debug_print: Optional bool that indicates if debug output should print to console.
                             Param overrides setting value if both param and setting are set.
         """
-        print('CoreMixin setUpClass()')
 
         # Call parent logic.
         super().setUpClass(*args, **kwargs)
-
-        print('Setting up debug_print class variable')
 
         # Check user debug_print option.
         if debug_print is not None:
@@ -161,7 +152,6 @@ class CoreTestCaseMixin(BaseMixin):
         else:
             cls._debug_print_bool = ETC_DEBUG_PRINT
 
-        print('setting up site_root_url class variable')
         cls._site_root_url = None
 
     @classmethod
@@ -171,7 +161,6 @@ class CoreTestCaseMixin(BaseMixin):
         :param extra_usergen_kwargs: Optional extra kwargs to pass into the get_user_model().objects.create_user()
                                      function.
         """
-        print('CoreMixin setUpTestData()')
 
         # Call parent logic.
         super().setUpTestData(*args, **kwargs)
@@ -191,7 +180,6 @@ class CoreTestCaseMixin(BaseMixin):
     def subTest(self, *args, **kwargs):
         """Test logic setup run every time we enter a subtest.
         """
-        print('CoreMixin subTest()')
 
         # Call parent logic.
         super().subTest(*args, **kwargs)
