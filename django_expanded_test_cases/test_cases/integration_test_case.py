@@ -715,34 +715,37 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             for index in range(len(expected_content)):
                 expected = expected_content[index]
 
-                # Update str in event of error.
-                updated_checked_content_str_addon = checked_content_str_addon.format(
-                    '{1}    * {0}{2}\n'.format(
-                        expected_content[index - 2],
-                        ETC_OUTPUT_EXPECTED_MATCH_COLOR,
-                        ETC_OUTPUT_RESET_COLOR,
-                    ) if index >= 2 else '',
-                    '{1}    * {0}{2}\n'.format(
-                        expected_content[index - 1],
-                        ETC_OUTPUT_EXPECTED_MATCH_COLOR,
-                        ETC_OUTPUT_RESET_COLOR,
-                    ) if index >= 1 else '',
-                    '{1}  > * {0}{2}\n'.format(
-                        expected_content[index],
-                        ETC_OUTPUT_ERROR_COLOR,
-                        ETC_OUTPUT_RESET_COLOR,
-                    ),
-                    '{1}    * {0}{2}\n'.format(
-                        expected_content[index + 1],
-                        ETC_OUTPUT_ACTUALS_MATCH_COLOR,
-                        ETC_OUTPUT_RESET_COLOR,
-                    ) if (len(expected_content) - index) > 1 else '',
-                    '{1}    * {0}{2}\n'.format(
-                        expected_content[index + 2],
-                        ETC_OUTPUT_ACTUALS_MATCH_COLOR,
-                        ETC_OUTPUT_RESET_COLOR,
-                    ) if (len(expected_content) - index) > 2 else '',
-                )
+                if len(expected_content) > 1:
+                    # Update str in event of error.
+                    updated_checked_content_str_addon = checked_content_str_addon.format(
+                        '{1}    * {0}{2}\n'.format(
+                            expected_content[index - 2],
+                            ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                            ETC_OUTPUT_RESET_COLOR,
+                        ) if index >= 2 else '',
+                        '{1}    * {0}{2}\n'.format(
+                            expected_content[index - 1],
+                            ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                            ETC_OUTPUT_RESET_COLOR,
+                        ) if index >= 1 else '',
+                        '{1}  > * {0}{2}\n'.format(
+                            expected_content[index],
+                            ETC_OUTPUT_ERROR_COLOR,
+                            ETC_OUTPUT_RESET_COLOR,
+                        ),
+                        '{1}    * {0}{2}\n'.format(
+                            expected_content[index + 1],
+                            ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                            ETC_OUTPUT_RESET_COLOR,
+                        ) if (len(expected_content) - index) > 1 else '',
+                        '{1}    * {0}{2}\n'.format(
+                            expected_content[index + 2],
+                            ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                            ETC_OUTPUT_RESET_COLOR,
+                        ) if (len(expected_content) - index) > 2 else '',
+                    )
+                else:
+                    updated_checked_content_str_addon = ''
 
                 stripped_expected = self.get_minimized_response_content(expected, strip_newlines=True)
                 if ignore_ordering:
@@ -860,7 +863,6 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                         content_starts_after,
                         content_ends_before,
                         main_err_msg,
-                        '',
                     )
 
         # Return page content in case user wants to run additional logic on it.
@@ -870,7 +872,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         self,
         actual_content, minimized_expected, display_expected,
         strip_actual_start, strip_actual_end,
-        err_msg, checked_content_str_addon
+        err_msg, checked_content_str_addon,
     ):
         """Internal sub-assertion for assertPageContent() function."""
         strip_err_msg = 'Expected content value was found, but occurred in "{0}" section. Expected was:\n{1}'
