@@ -2061,6 +2061,89 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                 self.assertPageContent(response, '<h1>Testing</h1>')
             self.assertText(exception_msg_not_found.format('<h1>Testing</h1>'), str(err.exception))
 
+        with self.subTest('Minimal Response - With additional error info provided.'):
+            # First verify as standard not-found in array.
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>Test Title</h1>')
+                self.assertPageContent(
+                    response,
+                    [
+                        '<h1>Testing</h1>',
+                    ],
+                )
+            self.assertText(exception_msg_not_found.format('<h1>Testing</h1>'), str(err.exception))
+
+            # Now actually verify same thing, but with extra error info (as list).
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>Test Title</h1>')
+                self.assertPageContent(
+                    response,
+                    [
+                        ['<h1>Testing</h1>', 'Extra error stuff here!'],
+                    ],
+                )
+            self.assertText(
+                exception_msg_not_found.format('<h1>Testing</h1>\n\nExtra error stuff here!'),
+                str(err.exception),
+            )
+
+            # Now actually verify same thing, but with extra error info (as tuple).
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>Test Title</h1>')
+                self.assertPageContent(
+                    response,
+                    [
+                        ('<h1>Testing</h1>', 'Extra error stuff here!'),
+                    ],
+                )
+            self.assertText(
+                exception_msg_not_found.format('<h1>Testing</h1>\n\nExtra error stuff here!'),
+                str(err.exception),
+            )
+
+        with self.subTest('Minimal Response - With additional error info provided and ignore ordering.'):
+            # First verify as standard not-found in array.
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>Test Title</h1>')
+                self.assertPageContent(
+                    response,
+                    [
+                        '<h1>Testing</h1>',
+                    ],
+                    ignore_ordering=True,
+                )
+            self.assertText(exception_msg_not_found.format('<h1>Testing</h1>'), str(err.exception))
+
+            # Now actually verify same thing, but with extra error info (as list).
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>Test Title</h1>')
+                self.assertPageContent(
+                    response,
+                    [
+                        ['<h1>Testing</h1>', 'Extra error stuff here!'],
+                    ],
+                    ignore_ordering=True,
+                )
+            self.assertText(
+                exception_msg_not_found.format('<h1>Testing</h1>\n\nExtra error stuff here!'),
+                str(err.exception),
+            )
+
+            # Now actually verify same thing, but with extra error info (as tuple).
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>Test Title</h1>')
+                self.assertPageContent(
+                    response,
+                    [
+                        ('<h1>Testing</h1>', 'Extra error stuff here!'),
+                    ],
+                    ignore_ordering=True,
+                )
+            self.assertText(
+                exception_msg_not_found.format('<h1>Testing</h1>\n\nExtra error stuff here!'),
+                str(err.exception),
+            )
+
         with self.subTest('Standard Response - Wrong value passed'):
             with self.assertRaises(AssertionError) as err:
                 response = self._get_page_response('django_expanded_test_cases:login')
@@ -3261,6 +3344,46 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                 response = HttpResponse('<h1>Test  \n  Title</h1>')
                 self.assertNotPageContent(response, '<h1>Test Title</h1>')
             self.assertText(err_msg.format('<h1>Test Title</h1>'), str(err.exception))
+
+        with self.subTest('Minimal Response - With additional error info provided.'):
+            # First verify as standard not-found in array.
+            with self.assertRaises(AssertionError) as err:
+                response = HttpResponse('<h1>Test Title</h1>')
+                self.assertNotPageContent(
+                    response,
+                    [
+                        '<h1>Test Title</h1>',
+                    ],
+                )
+            self.assertText(err_msg.format('<h1>Test Title</h1>'), str(err.exception))
+
+        # Now actually verify same thing, but with extra error info (as list).
+        with self.assertRaises(AssertionError) as err:
+            response = HttpResponse('<h1>Test Title</h1>')
+            self.assertNotPageContent(
+                response,
+                [
+                    ['<h1>Test Title</h1>', 'Extra error stuff here!'],
+                ],
+            )
+        self.assertText(
+            err_msg.format('<h1>Test Title</h1>\n\nExtra error stuff here!'),
+            str(err.exception),
+        )
+
+        # Now actually verify same thing, but with extra error info (as tuple).
+        with self.assertRaises(AssertionError) as err:
+            response = HttpResponse('<h1>Test Title</h1>')
+            self.assertNotPageContent(
+                response,
+                [
+                    ('<h1>Test Title</h1>', 'Extra error stuff here!'),
+                ],
+            )
+        self.assertText(
+            err_msg.format('<h1>Test Title</h1>\n\nExtra error stuff here!'),
+            str(err.exception),
+        )
 
         with self.subTest('Standard Response - Set of items where one or more items is found (none should be found)'):
             response = self._get_page_response('django_expanded_test_cases:index')

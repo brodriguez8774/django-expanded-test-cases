@@ -96,6 +96,7 @@ of ``status_code``, which will assume a default of ``200`` if not provided.
                          `Django Messages Framework <https://docs.djangoproject.com/en/dev/ref/contrib/messages/>`_.
 :param expected_content: Expected page content that the response should contain.
                          See also ``ignore_content_ordering`` param.
+:param expected_not_content: Content that should NOT show up in the page response.
 :param auto_login: Bool indicating if user should be auto-logged-in, before
                   trying to render the response. Useful for verifying behavior
                   of views with login/permission requirements.

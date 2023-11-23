@@ -270,16 +270,12 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             )
 
         if expected_not_content is not None:
-            print('Asserting content is NOT present:')
-            print('{0}'.format(expected_not_content))
             self.assertNotPageContent(
                 response,
                 expected_not_content,
                 debug_output=True,
                 # debug_output=False,
             )
-        else:
-            print('No content to verify is NOT present.')
 
         # Optional hook for running custom post-builtin-test logic.
         self._assertResponse__post_builtin_tests(
@@ -747,6 +743,14 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                 else:
                     updated_checked_content_str_addon = ''
 
+                # Handle if expected is a list or tuple.
+                additional_error_info = ''
+                if (isinstance(expected, list) or isinstance(expected, tuple)) and len(expected) == 2:
+                    # Nested array or tuple.
+                    # Assuming first value is the value to check for, and second is error message if not found.
+                    additional_error_info = expected[1]
+                    expected = expected[0]
+
                 stripped_expected = self.get_minimized_response_content(expected, strip_newlines=True)
                 if ignore_ordering:
                     # Ignoring ordering. Check as-is.
@@ -780,6 +784,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                                 content_ends_before,
                                 main_err_msg,
                                 updated_checked_content_str_addon,
+                                additional_error_info=additional_error_info,
                             )
                 else:
                     # Verifying ordering.
@@ -816,6 +821,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                                     content_ends_before,
                                     main_err_msg,
                                     updated_checked_content_str_addon,
+                                    additional_error_info=additional_error_info,
                                 )
 
                         # If we made it this far, then item was found in full content, but came after a previous
@@ -863,6 +869,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                         content_starts_after,
                         content_ends_before,
                         main_err_msg,
+                        '',
                     )
 
         # Return page content in case user wants to run additional logic on it.
@@ -873,6 +880,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         actual_content, minimized_expected, display_expected,
         strip_actual_start, strip_actual_end,
         err_msg, checked_content_str_addon,
+        additional_error_info='',
     ):
         """Internal sub-assertion for assertPageContent() function."""
         strip_err_msg = 'Expected content value was found, but occurred in "{0}" section. Expected was:\n{1}'
@@ -900,6 +908,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             # Content value was physically not present at all. Raise "main" message.
             if checked_content_str_addon:
                 err_msg += checked_content_str_addon
+            if additional_error_info:
+                err_msg += '\n{0}'.format(additional_error_info)
             self.fail(err_msg.format(display_expected))
 
     def assertNotPageContent(
@@ -932,14 +942,26 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         if isinstance(expected_not_content, list) or isinstance(expected_not_content, tuple):
             # Is an array of items. Verify none of them exist on page.
             for content_item in expected_not_content:
+
+                # Handle if expected is a list or tuple.
+                additional_error_info = ''
+                if (isinstance(content_item, list) or isinstance(content_item, tuple)) and len(content_item) == 2:
+                    # Nested array or tuple.
+                    # Assuming first value is the value to check for, and second is error message if not found.
+                    additional_error_info = content_item[1]
+                    content_item = content_item[0]
+
                 # Not an array of items. Assume is a single str value.
                 stripped_expected = self.get_minimized_response_content(content_item, strip_newlines=True)
                 if stripped_expected != '' and stripped_expected in trimmed_original_content:
                     # Expected value found in provided content section. Raise Error.
-                    self.fail(
+                    err_msg = (
                         'Found content in response. Expected content to not be present. Content was:\n'
                         '{0}'.format(content_item)
                     )
+                    if additional_error_info:
+                        err_msg += '\n\n{0}'.format(additional_error_info)
+                    self.fail(err_msg)
         else:
             # Not an array of items. Assume is a single str value.
             stripped_expected = self.get_minimized_response_content(expected_not_content, strip_newlines=True)
