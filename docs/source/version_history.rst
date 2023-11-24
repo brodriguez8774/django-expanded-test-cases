@@ -2,6 +2,12 @@ Version History
 ***************
 
 
+0.6.2 - Further Minor Updates
+=============================
+* Correct more debug output from last version.
+* Add assertContent functionality to optionally include custom error messages on failure.
+
+
 0.6.1 - Minor Updates
 =====================
 * Correct some leftover debug output from last version.
