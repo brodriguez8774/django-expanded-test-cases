@@ -25,7 +25,7 @@ copyright = '2022, Brandon Rodriguez'
 author = 'Brandon Rodriguez'
 
 # The full version, including alpha/beta/rc tags
-release = '0.6.2'
+release = '0.6.3'
 
 
 # -- General configuration ---------------------------------------------------

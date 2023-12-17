@@ -2,6 +2,16 @@ Version History
 ***************
 
 
+0.6.3 - Minor Test-Failure Debug Output Customization
+=====================================================
+* Now supports using regex to hide sections of debug output on test failure.
+  * Useful for debugging template output with large amounts of content.
+  * Particularly useful for templates that include third-party content (which
+    you're unlikely to test for, that should be done in the third-party app
+    itself), or projects with large amounts of header/footer/javascript html
+    content.
+
+
 0.6.2 - Further Minor Updates
 =============================
 * Correct more debug output from last version.
