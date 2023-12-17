@@ -1,6 +1,12 @@
 Version History
 ***************
 
+0.6.4 - Correction for Rare Bug in Debug Output Context Parsing
+===============================================================
+* Correction for bug in regards to ContextDict/ContextList objects and
+  displaying debug output.
+
+
 
 0.6.3 - Minor Test-Failure Debug Output Customization
 =====================================================
