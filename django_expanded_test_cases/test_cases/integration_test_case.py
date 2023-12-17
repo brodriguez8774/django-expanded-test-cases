@@ -1304,6 +1304,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                 # Remove any repeating whitespace, plus any outer whitespace.
                 response_title = re.sub(r'(\s)+', ' ', response_title).strip()
 
+                # Ensure title values are actually standardized.
+                response_title = self.standardize_characters(response_title)
+
         # Return formatted title value.
         return response_title
 

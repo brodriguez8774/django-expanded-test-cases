@@ -1242,6 +1242,19 @@ class IntegrationClassTest__Base(IntegrationTestCase):
             self.assertPageTitle(response, 'My Custom App', allow_partials=True)
             self.assertPageTitle(response, 'My Really Cool Site', allow_partials=True)
 
+        with self.subTest('Title has non-standard values in base page'):
+            # Test with "standard" values.
+            response = HttpResponse('<title>This Title has Two Arrows => =></title>')
+            self.assertPageTitle(response, 'This Title has Two Arrows => =>')
+
+            # Test with "mixed" values.
+            response = HttpResponse('<title>This Title has Two Arrows &equals;&gt; =></title>')
+            self.assertPageTitle(response, 'This Title has Two Arrows => =>')
+
+            # Test with "non-standard" values.
+            response = HttpResponse('<title>This Title has Two Arrows &equals;&gt; &equals;&gt;</title>')
+            self.assertPageTitle(response, 'This Title has Two Arrows => =>')
+
     def test__assertPageTitle__failure(self):
         """
         Tests assertPageTitle() function, in cases when it should fail.
