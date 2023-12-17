@@ -140,16 +140,32 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             # Attempt to access key object. If fails, attempt to generate dict of values.
             try:
                 response_context.keys()
+
             except AttributeError:
                 # Handling for:
                 #     * django.template.context.RequestContext
                 #     * django.template.context.Context
-                # No guarantee this will work for other aribtrary types.
+                # No guarantee this will work for other arbitrary types.
                 # Handle as they come up.
                 temp_dict = {}
                 for context in response_context:
                     temp_dict = {**temp_dict, **context}
                 response_context = temp_dict
+
+            except Exception as err:
+                # Error occurred.
+                # Check if error is due to ContextDict/ContextList object being passed.
+                # Unsure why this happens, but seems to occur in tests that access Django 4.2.7 admin views?
+                # Needs further research. For now, this seems like enough to bypass it
+                # and have no immediately noticeable side effects.
+                from django.test.utils import ContextList
+                if isinstance(response_context, ContextList):
+                    # Skip output.
+                    return
+
+                else:
+                    # Raise original error.
+                    raise err
 
         self._debug_print()
         self._debug_print(
