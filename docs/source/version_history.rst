@@ -1,11 +1,16 @@
 Version History
 ***************
 
-0.6.4 - Correction for Rare Bug in Debug Output Context Parsing
-===============================================================
+
+0.6.5 - Bugfix Update
+=====================
+* Correction for bug in standardization of assertTitle function logic.
+
+
+0.6.4 - Bugfix Update
+=====================
 * Correction for bug in regards to ContextDict/ContextList objects and
   displaying debug output.
-
 
 
 0.6.3 - Minor Test-Failure Debug Output Customization
