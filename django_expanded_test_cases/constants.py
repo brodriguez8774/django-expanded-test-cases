@@ -180,6 +180,14 @@ ETC_DEBUG_PRINT = bool(getattr(
     'DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT',
     True,
 ))
+# A set of regex-matching strings to skip displaying during debug output.
+# Useful such as when importing third-party libraries with front-end elements, if you don't expect to ever
+# need to test for said elements.
+ETC_DEBUG_PRINT__SKIP_DISPLAY = getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT__SKIP_DISPLAY',
+    [],
+)
 # Indicates whether partial matches are allowed for site title assertions.
 # IE: Will pass as long as provided text appears as a subsection of the full site title.
 # Defaults to needing exact match.
