@@ -18,7 +18,7 @@ class UniversalLiveTestMixin:
         driver = self.create_driver()
 
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__window_handling.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__window_handling.html').resolve())
 
         # Verify handle length before test.
         self.assertEqual(1, len(driver.window_handles))
@@ -202,7 +202,7 @@ class UniversalLiveTestMixin:
         Tests find_elements_by_tag() function, in cases when it should succeed.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_elements_by_tag__success.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_elements_by_tag__success.html').resolve())
 
         with self.subTest('When expected element is the only item, with standard element'):
             # Open file and write expected page contents.
@@ -352,7 +352,7 @@ class UniversalLiveTestMixin:
         Tests find_elements_by_tag() function, in cases when it should fail.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_elements_by_tag__failure.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_elements_by_tag__failure.html').resolve())
 
         with self.subTest('When expected element is not present - Blank response'):
             err_msg = (
@@ -456,7 +456,7 @@ class UniversalLiveTestMixin:
         Tests find_element_by_tag() function, in cases when it should succeed.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_element_by_tag__success.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_element_by_tag__success.html').resolve())
 
         with self.subTest('When expected element is the only item, with standard element'):
             # Open file and write expected page contents.
@@ -551,7 +551,7 @@ class UniversalLiveTestMixin:
         Tests find_element_by_tag() function, in cases when it should fail.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_element_by_tag__failure.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_element_by_tag__failure.html').resolve())
 
         with self.subTest('When expected element is not present - Blank response'):
             err_msg = (
@@ -686,7 +686,7 @@ class UniversalLiveTestMixin:
         Tests find_elements_by_id() function, in cases when it should succeed.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_elements_by_id__success.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_elements_by_id__success.html').resolve())
 
         with self.subTest('When expected id is the only item'):
             # As <li> tag.
@@ -798,7 +798,7 @@ class UniversalLiveTestMixin:
         Tests find_elements_by_id() function, in cases when it should fail.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_elements_by_id__failure.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_elements_by_id__failure.html').resolve())
 
         with self.subTest('When expected id is not present - Blank response'):
             # Open file and write expected page contents.
@@ -875,7 +875,7 @@ class UniversalLiveTestMixin:
         Tests find_element_by_id() function, in cases when it should succeed.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_element_by_id__success.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_element_by_id__success.html').resolve())
 
         with self.subTest('When expected id is the only item'):
             # As <li> tag.
@@ -962,7 +962,7 @@ class UniversalLiveTestMixin:
         Tests find_element_by_id() function, in cases when it should fail.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_element_by_id__failure.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_element_by_id__failure.html').resolve())
 
         with self.subTest('When expected id is not present - Blank response'):
             err_msg = (
@@ -1105,7 +1105,7 @@ class UniversalLiveTestMixin:
         Tests find_elements_by_class() function, in cases when it should succeed.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_elements_by_class__success.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_elements_by_class__success.html').resolve())
 
         with self.subTest('When expected class is the only item'):
             # As <li>  tag.
@@ -1214,7 +1214,7 @@ class UniversalLiveTestMixin:
         Tests find_elements_by_class() function, in cases when it should fail.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_elements_by_class__failure.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_elements_by_class__failure.html').resolve())
 
         with self.subTest('When expected class is not present - Blank response'):
             err_msg = (
@@ -1293,7 +1293,7 @@ class UniversalLiveTestMixin:
         Tests find_element_by_class() function, in cases when it should succeed.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_element_by_class__success.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_element_by_class__success.html').resolve())
 
         with self.subTest('When expected class is the only item'):
             # As <li> tag.
@@ -1374,7 +1374,7 @@ class UniversalLiveTestMixin:
         Tests find_element_by_class() function, in cases when it should fail.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_element_by_class__failure.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_element_by_class__failure.html').resolve())
 
         with self.subTest('When expected class is not present - Blank response'):
             err_msg = (
@@ -1494,7 +1494,7 @@ class UniversalLiveTestMixin:
         Tests find_elements_by_css_selector() function, in cases when it should succeed.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_elements_by_css_selector__success.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_elements_by_css_selector__success.html').resolve())
 
         with self.subTest('When expected css_selector is the only item, with standard element'):
             # Open file and write expected page contents.
@@ -1564,7 +1564,7 @@ class UniversalLiveTestMixin:
         Tests find_elements_by_css_selector() function, in cases when it should fail.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_elements_by_css_selector__failure.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_elements_by_css_selector__failure.html').resolve())
 
         with self.subTest('When expected css_selector is not present - Blank response'):
             err_msg = (
@@ -1686,7 +1686,7 @@ class UniversalLiveTestMixin:
         Tests find_element_by_css_selector() function, in cases when it should succeed.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_element_by_css_selector__success.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_element_by_css_selector__success.html').resolve())
 
         with self.subTest('When expected css_selector is the only item, with standard element'):
             # Open file and write expected page contents.
@@ -1731,7 +1731,7 @@ class UniversalLiveTestMixin:
         Tests find_element_by_css_selector() function, in cases when it should fail.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_element_by_css_selector__failure.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_element_by_css_selector__failure.html').resolve())
 
         with self.subTest('When expected css_selector is not present - Blank response'):
             err_msg = (
@@ -1879,7 +1879,7 @@ class UniversalLiveTestMixin:
         Tests find_elements_by_data_attribute() function, in cases when it should succeed.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_elements_by_data_attribute__success.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_elements_by_data_attribute__success.html').resolve())
 
         with self.subTest('When expected data_attribute is the only item, with standard element'):
             # As <li> tag.
@@ -2005,7 +2005,7 @@ class UniversalLiveTestMixin:
         Tests find_elements_by_data_attribute() function, in cases when it should fail.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_elements_by_data_attribute__failure.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_elements_by_data_attribute__failure.html').resolve())
 
         with self.subTest('When expected data_attribute is not present - Blank response'):
             err_msg = (
@@ -2127,7 +2127,7 @@ class UniversalLiveTestMixin:
         Tests find_element_by_data_attribute() function, in cases when it should succeed.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_element_by_data_attribute__success.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_element_by_data_attribute__success.html').resolve())
 
         with self.subTest('When expected data_attribute is the only item, with standard element'):
             # As <li> tag.
@@ -2210,7 +2210,7 @@ class UniversalLiveTestMixin:
         Tests find_element_by_data_attribute() function, in cases when it should fail.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_element_by_data_attribute__failure.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_element_by_data_attribute__failure.html').resolve())
 
         with self.subTest('When expected data_attribute is not present - Blank response'):
             err_msg = (
@@ -2375,7 +2375,7 @@ class UniversalLiveTestMixin:
         Tests find_elements_by_name() function, in cases when it should succeed.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_elements_by_name__success.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_elements_by_name__success.html').resolve())
 
         with self.subTest('When expected name is the only item'):
             # Open file and write expected page contents.
@@ -2498,7 +2498,7 @@ class UniversalLiveTestMixin:
         Tests find_elements_by_name() function, in cases when it should fail.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_elements_by_name__failure.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_elements_by_name__failure.html').resolve())
 
         with self.subTest('When expected name is not present - Blank response'):
             err_msg = (
@@ -2578,7 +2578,7 @@ class UniversalLiveTestMixin:
         Tests find_element_by_name() function, in cases when it should succeed.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_element_by_name__success.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_element_by_name__success.html').resolve())
 
         with self.subTest('When expected name is the only item, with standard element'):
             # As <li> tag.
@@ -2659,7 +2659,7 @@ class UniversalLiveTestMixin:
         Tests find_element_by_name() function, in cases when it should fail.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_element_by_name__failure.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_element_by_name__failure.html').resolve())
 
         with self.subTest('When expected name is not present - Blank response'):
             err_msg = (
@@ -2779,7 +2779,7 @@ class UniversalLiveTestMixin:
         Tests find_elements_by_link_text() function, in cases when it should succeed.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_elements_by_link_text__success.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_elements_by_link_text__success.html').resolve())
 
         with self.subTest('When expected link_text is the only item, with standard element'):
             # Open file and write expected page contents.
@@ -2844,7 +2844,7 @@ class UniversalLiveTestMixin:
         Tests find_elements_by_link_text() function, in cases when it should fail.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_elements_by_link_text__failure.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_elements_by_link_text__failure.html').resolve())
 
         with self.subTest('When expected link_text is not present - Blank response'):
             err_msg = (
@@ -2924,7 +2924,7 @@ class UniversalLiveTestMixin:
         Tests find_element_by_link_text() function, in cases when it should succeed.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_element_by_link_text__success.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_element_by_link_text__success.html').resolve())
 
         with self.subTest('When expected element is the only item, with standard element'):
             # Open file and write expected page contents.
@@ -2967,7 +2967,7 @@ class UniversalLiveTestMixin:
         Tests find_element_by_link_text() function, in cases when it should fail.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_element_by_link_text__failure.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_element_by_link_text__failure.html').resolve())
 
         with self.subTest('When expected link_text is not present - Blank response'):
             err_msg = (
@@ -3067,7 +3067,7 @@ class UniversalLiveTestMixin:
         Tests find_elements_by_text() function, in cases when it should succeed.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_elements_by_text__success.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_elements_by_text__success.html').resolve())
 
         with self.subTest('When expected text is the only item, with standard element'):
             # Open file and write expected page contents.
@@ -3132,7 +3132,7 @@ class UniversalLiveTestMixin:
         Tests find_elements_by_text() function, in cases when it should fail.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_elements_by_text__failure.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_elements_by_text__failure.html').resolve())
 
         with self.subTest('When expected text is not present - Blank response'):
             err_msg = (
@@ -3212,7 +3212,7 @@ class UniversalLiveTestMixin:
         Tests find_element_by_text() function, in cases when it should succeed.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_element_by_text__success.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_element_by_text__success.html').resolve())
 
         with self.subTest('When expected element is the only item, with standard element'):
             # Open file and write expected page contents.
@@ -3255,7 +3255,7 @@ class UniversalLiveTestMixin:
         Tests find_element_by_text() function, in cases when it should fail.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__find_element_by_text__failure.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__find_element_by_text__failure.html').resolve())
 
         with self.subTest('When expected text is not present - Blank response'):
             err_msg = (
@@ -3365,7 +3365,7 @@ class UniversalLiveTestMixin__DriverTests:
         Tests standard create/get/destroy driver functions.
         """
         # Declare file name for all subtests.
-        file_name = str(Path('./tests/mock_pages/test__driver_handling.html').resolve())
+        file_name = str(Path('./etc_tests/mock_pages/test__driver_handling.html').resolve())
 
         with self.subTest('Test driver_create() function'):
             # Open file and write expected page contents.

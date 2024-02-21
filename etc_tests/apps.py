@@ -7,4 +7,4 @@ from django.apps import AppConfig
 
 
 class DjangoExpandedTestCasesConfig(AppConfig):
-    name = 'tests'
+    name = 'etc_tests'

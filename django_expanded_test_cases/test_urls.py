@@ -8,7 +8,7 @@ Mocks being an "app" urls.py file.
 from django.urls import path
 
 # Internal Imports.
-from tests import views
+from etc_tests import views
 
 
 app_name = 'django_expanded_test_cases'
@@ -20,7 +20,6 @@ urlpatterns = [
     path('views/three-messages/', views.view_with_three_messages, name='response-with-three-messages'),
     path('views/repeating-elements/', views.view_with_repeating_elements, name='response-with-repeating-elements'),
     path('views/<int:id>/<str:name>/', views.view_with_args, name='response-with-args'),
-
 
     # Template response views.
     path('template-response/index/', views.template_response_index, name='template-response-index'),

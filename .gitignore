@@ -140,4 +140,4 @@ node_modules/
 
 # Do not track migrations. Uncomment out to explicitly add them.
 */migrations/0*.py
-tests/mock_pages/*
+etc_tests/mock_pages/*
