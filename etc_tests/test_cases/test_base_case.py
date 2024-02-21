@@ -5,12 +5,13 @@ Tests for test_cases/base_test_case.py.
 # System Imports.
 from contextlib import redirect_stdout
 from io import StringIO
+from unittest import skipIf
 from unittest.mock import patch
 
 # Third-Party Imports.
 from django.contrib.auth.models import Group, Permission
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
-from django.test import override_settings
 
 # Internal Imports.
 from django_expanded_test_cases import BaseTestCase
@@ -201,6 +202,7 @@ class BaseClassTest(BaseTestCase):
                 self.assertText(lorem_str, modified_str)
             # self.assertEqual(str(err.exception), exception_msg)
 
+    @skipIf(not settings.DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT, 'Test only works as expected with DEBUG PRINT.')
     def test__assertText_coloring__missing_lines(self):
         """Tests assertText() function color output, when assertion fails due to incorrect line counts.
 
@@ -364,6 +366,7 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[14], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[15], '')
 
+    @skipIf(not settings.DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT, 'Test only works as expected with DEBUG PRINT.')
     def test__assertText_coloring__missing_characters(self):
         """Tests assertText() function color output, when assertion fails due to inccorect character counts.
 
@@ -706,6 +709,7 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[12], '')
 
+    @skipIf(not settings.DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT, 'Test only works as expected with DEBUG PRINT.')
     def test__assertText_coloring__wrong_characters(self):
         """Tests assertText() function color output, when assertion fails due incorrect characters.
 
