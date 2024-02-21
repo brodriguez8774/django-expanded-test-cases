@@ -2,6 +2,14 @@ Version History
 ***************
 
 
+0.7.0 - Minor Project File Restructuring
+========================================
+* Slight change in project file naming, to try to fix an inconsistent issue when
+  trying to access package debugging views.
+  * Shouldn't have any affect on package usage unless a project was directly
+    accessing these debug views.
+
+
 0.6.5 - Bugfix Update
 =====================
 * Correction for bug in standardization of assertTitle function logic.

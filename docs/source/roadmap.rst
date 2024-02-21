@@ -4,13 +4,13 @@ Expected Roadmap
 Below is the minimum viable state for each version release.
 
 
-* v 0.7.x
+* v 0.8.x
 
     * Project is in a viable state to test basic responses, selenium browser
       responses, and has form helper functions.
     * Documentation for LiveServerTestCase is fairly thorough, if not complete.
 
-* v 0.8.x
+* v 0.9.x
 
     * Project is in a viable state to test basic responses, selenium browser
       responses, CSV file downloads, and has form helper functions.
