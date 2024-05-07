@@ -28,8 +28,17 @@ from django_expanded_test_cases.constants import (
     ETC_RESPONSE_DEBUG_USER_INFO_COLOR,
     ETC_OUTPUT_EMPHASIS_COLOR,
     ETC_AUTO_GENERATE_USERS,
-    ETC_DEBUG_PRINT__SKIP_DISPLAY
+    ETC_DEBUG_PRINT__SKIP_DISPLAY,
+
+    ETC_INCLUDE_RESPONSE_DEBUG_CONTENT,
+    ETC_INCLUDE_RESPONSE_DEBUG_CONTEXT,
+    ETC_INCLUDE_RESPONSE_DEBUG_FORMS,
+    ETC_INCLUDE_RESPONSE_DEBUG_HEADER,
+    ETC_INCLUDE_RESPONSE_DEBUG_MESSAGES,
+    ETC_INCLUDE_RESPONSE_DEBUG_SESSION,
+    ETC_INCLUDE_RESPONSE_DEBUG_USER_INFO,
 )
+
 
 
 # Initialize logging.
@@ -50,6 +59,24 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         super().setUpClass(*args, debug_print=debug_print, **kwargs)
 
     # region Debug Output Functions
+
+    def full_debug_print(self, response):
+        """Attempts to display debug output for all of response data."""
+
+        if ETC_INCLUDE_RESPONSE_DEBUG_CONTENT:
+            self.show_debug_content(response)
+        if ETC_INCLUDE_RESPONSE_DEBUG_HEADER:
+            self.show_debug_headers(response)
+        if ETC_INCLUDE_RESPONSE_DEBUG_CONTEXT:
+            self.show_debug_context(response)
+        if ETC_INCLUDE_RESPONSE_DEBUG_SESSION:
+            self.show_debug_session_data(response)
+        if ETC_INCLUDE_RESPONSE_DEBUG_MESSAGES:
+            self.show_debug_messages(response)
+        if ETC_INCLUDE_RESPONSE_DEBUG_FORMS:
+            self.show_debug_form_data(response)
+        if ETC_INCLUDE_RESPONSE_DEBUG_USER_INFO:
+            self.show_debug_user_info(response)
 
     def show_debug_url(self, url):
         """Prints debug url output."""
@@ -134,7 +161,10 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
 
         # Handle for potential param types.
         if isinstance(response_context, HttpResponseBase):
-            response_context = response_context.context or {}
+            if hasattr(response_context, 'context'):
+                response_context = response_context.context or {}
+            else:
+                response_context = {}
 
         if response_context is not None:
             # Attempt to access key object. If fails, attempt to generate dict of values.
@@ -193,7 +223,10 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
 
         # Handle for potential param types.
         if isinstance(client, HttpResponseBase):
-            client = client.client
+            if hasattr(client, 'client'):
+                client = client.client
+            else:
+                client = None
 
         self._debug_print()
         self._debug_print(
@@ -214,7 +247,10 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
 
         # Handle for potential param types.
         if isinstance(response_context, HttpResponseBase):
-            response_context = response_context.context
+            if hasattr(response_context, 'context'):
+                response_context = response_context.context or {}
+            else:
+                response_context = {}
 
         self._debug_print()
         self._debug_print(
@@ -240,7 +276,10 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
 
         # Handle for potential param types.
         if isinstance(response_context, HttpResponseBase):
-            response_context = response_context.context
+            if hasattr(response_context, 'context'):
+                response_context = response_context.context or {}
+            else:
+                response_context = {}
 
         self._debug_print()
         self._debug_print(
@@ -310,6 +349,13 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         # Imported here to prevent potential "Apps aren't loaded yet" error.
         from django.contrib.auth.models import AnonymousUser
 
+        # Handle for potential param types.
+        if isinstance(user, HttpResponseBase):
+            if hasattr(user, 'user'):
+                user = user.user
+            else:
+                user = None
+
         self._debug_print()
         self._debug_print(
             '{0} {1} {0}'.format('=' * 10, 'User Info'),
@@ -343,8 +389,10 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             )
 
         elif isinstance(user, AnonymousUser):
-
             self._debug_print('    Anonymous user. No user is logged in.', fore=ETC_RESPONSE_DEBUG_USER_INFO_COLOR)
+
+        elif user is None:
+            self._debug_print('    User not defined. Was None type.', fore=ETC_RESPONSE_DEBUG_USER_INFO_COLOR)
 
         else:
             self._debug_print('    * Invalid user "{0}" of type "{1}". Expected "{2}".'.format(

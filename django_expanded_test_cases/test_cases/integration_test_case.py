@@ -200,20 +200,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Optionally output all debug info for found response.
         if self._debug_print_bool:
-            if ETC_INCLUDE_RESPONSE_DEBUG_CONTENT:
-                self.show_debug_content(response)
-            if ETC_INCLUDE_RESPONSE_DEBUG_HEADER:
-                self.show_debug_headers(response)
-            if ETC_INCLUDE_RESPONSE_DEBUG_CONTEXT:
-                self.show_debug_context(response)
-            if ETC_INCLUDE_RESPONSE_DEBUG_SESSION:
-                self.show_debug_session_data(response)
-            if ETC_INCLUDE_RESPONSE_DEBUG_MESSAGES:
-                self.show_debug_messages(response)
-            if ETC_INCLUDE_RESPONSE_DEBUG_FORMS:
-                self.show_debug_form_data(response)
-            if ETC_INCLUDE_RESPONSE_DEBUG_USER_INFO:
-                self.show_debug_user_info(response.user)
+            self.full_debug_print(response)
 
         # Optional hook for running custom pre-builtin-test logic.
         self._assertResponse__pre_builtin_tests(
