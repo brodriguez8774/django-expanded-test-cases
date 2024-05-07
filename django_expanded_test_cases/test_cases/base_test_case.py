@@ -95,7 +95,7 @@ class BaseTestCase(TestCase, CoreTestCaseMixin):
         # regardless of order of testing functions.
         # We also skip output such as when the logger is disabled.
         # This is likely due to temporary checks failing, and not a legitimate error/failure.
-        if not self._error_displayed:
+        if not hasattr(self, '_error_displayed') or not self._error_displayed:
             # Print error to both logging and standard console output.
             self._debug_print(
                 '{0} {1} UnitTesting {2} {0}'.format(
