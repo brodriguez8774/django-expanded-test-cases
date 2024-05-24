@@ -3,6 +3,7 @@ Testing logic for views and other multi-part components.
 """
 
 # System Imports.
+import logging
 import re, textwrap
 
 # Third-Party Imports.
@@ -23,6 +24,7 @@ from django_expanded_test_cases.constants import (
     ETC_INCLUDE_RESPONSE_DEBUG_MESSAGES,
     ETC_INCLUDE_RESPONSE_DEBUG_SESSION,
     ETC_INCLUDE_RESPONSE_DEBUG_USER_INFO,
+    ETC_RESPONSE_DEBUG_LOGGING_LEVEL,
     ETC_ALLOW_TITLE_PARTIALS,
     ETC_ALLOW_MESSAGE_PARTIALS,
     ETC_AUTO_GENERATE_USERS,
@@ -126,6 +128,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         expected_content=None, expected_not_content=None,
         auto_login=True, user=None, user_permissions=None, user_groups=None, extra_usergen_kwargs=None,
         ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
+        debug_logging_level=None,
         **kwargs,
     ):
         """Verifies the view response object at given URL matches provided parameters.
@@ -164,7 +167,21 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                                      preceding is stripped out of the "search space" for the expected_content value.
         :param content_ends_before: The HTML that expected_content should occur before. This HTML and everything
                                     following is stripped out of the "search space" for the expected_content value.
+        :param debug_logging_level: Optionally set a logging level. Any logging of this level or lower is disabled.
         """
+
+        # Configure logging for this specific assertion run.
+        # Can be used to disable logging output for views with many logging statements.
+        orig_logging_level = None
+        if debug_logging_level or ETC_RESPONSE_DEBUG_LOGGING_LEVEL:
+            # Try to use the value passed method, use settings value as fallback.
+            logging_level = debug_logging_level or ETC_RESPONSE_DEBUG_LOGGING_LEVEL
+            orig_logging_level = logging.getLevelName(logging.root.level)
+
+            # Set logging level, which configures logging to only show messages of set level or higher.
+            # If CRITICAL is provided, then all logging is effectively disabled.
+            # If NOTSET is provided, then all logging is effectively enabled.
+            logging.disable(getattr(logging, logging_level))
 
         # Handle mutable data defaults.
         data = data or {}
@@ -217,6 +234,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             extra_usergen_kwargs=extra_usergen_kwargs,
             ignore_content_ordering=ignore_content_ordering, content_starts_after=content_starts_after,
             content_ends_before=content_ends_before,
+            debug_logging_level=None,
             **kwargs,
         )
 
@@ -279,8 +297,13 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             extra_usergen_kwargs=extra_usergen_kwargs,
             ignore_content_ordering=ignore_content_ordering, content_starts_after=content_starts_after,
             content_ends_before=content_ends_before,
+            debug_logging_level=None,
             **kwargs,
         )
+
+        # Reset logging level for post-assertion, if it was set earlier.
+        if orig_logging_level:
+            logging.disable(getattr(logging, orig_logging_level))
 
         # All assertions passed so far. Return response in case user wants to do further checks.
         return response
@@ -297,6 +320,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         expected_content=None, expected_not_content=None,
         auto_login=True, user=None, user_permissions=None, user_groups=None, extra_usergen_kwargs=None,
         ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
+        debug_logging_level=None,
         **kwargs,
     ):
         """Verifies a GET response was found at given URL, and matches provided parameters."""
@@ -339,6 +363,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             ignore_content_ordering=ignore_content_ordering,
             content_starts_after=content_starts_after,
             content_ends_before=content_ends_before,
+            debug_logging_level=debug_logging_level,
             **kwargs,
         )
 
@@ -354,6 +379,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         expected_content=None, expected_not_content=None,
         auto_login=True, user=None, user_permissions=None, user_groups=None, extra_usergen_kwargs=None,
         ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
+        debug_logging_level=None,
         **kwargs,
     ):
         """Verifies a GET response was found at given URL, and matches provided parameters."""
@@ -402,6 +428,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             ignore_content_ordering=ignore_content_ordering,
             content_starts_after=content_starts_after,
             content_ends_before=content_ends_before,
+            debug_logging_level=debug_logging_level,
             **kwargs,
         )
 

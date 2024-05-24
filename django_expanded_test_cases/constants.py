@@ -144,6 +144,18 @@ ETC_INCLUDE_RESPONSE_DEBUG_USER_INFO = bool(getattr(
     'DJANGO_EXPANDED_TESTCASES_INCLUDE_RESPONSE_DEBUG_USER_INFO',
     True,
 ))
+# Either set logging to only show provided value (or higher) during tests. Or leave as default logging behavior.
+ETC_RESPONSE_DEBUG_LOGGING_LEVEL = getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_RESPONSE_DEBUG_LOGGING_LEVEL',
+    None,
+)
+if str(ETC_RESPONSE_DEBUG_LOGGING_LEVEL).strip().upper() in ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']:
+    # Known value provided. Sanitize and save to attribute.
+    ETC_RESPONSE_DEBUG_LOGGING_LEVEL = str(ETC_RESPONSE_DEBUG_LOGGING_LEVEL).strip().upper()
+else:
+    # Unrecognized value, or value was not provided. Use default behavior.
+    ETC_RESPONSE_DEBUG_LOGGING_LEVEL = None
 
 # endregion Console Region Show/Hide Options
 
