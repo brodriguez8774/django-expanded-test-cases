@@ -121,7 +121,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         url, *args,
         get=True, data=None, secure=True,
         expected_status=200,
-        expected_redirect_url=None,
+        expected_url=None, expected_redirect_url=None,
         url_args=None, url_kwargs=None, url_query_params=None,
         redirect_args=None, redirect_kwargs=None, redirect_query_params=None,
         expected_title=None, expected_header=None, expected_messages=None,
@@ -144,6 +144,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param get: Bool indicating if response is GET or POST. Defaults to GET.
         :param data: Optional dict of items to pass into response generation.
         :param secure: Bool indicating if request should be retrieved as HTTP or HTTPS.
+        :param expected_url: Expected url, before any redirections.
         :param expected_redirect_url: Expected url, after any redirections.
         :param url_args: Values to provide for URL population, in "arg" format.
         :param url_kwargs: Values to provide for URL population, in "kwarg" format.
@@ -225,7 +226,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             response=response,
             get=get, data=data, secure=secure,
             expected_status=expected_status,
-            expected_redirect_url=expected_redirect_url,
+            expected_url=expected_url, expected_redirect_url=expected_redirect_url,
             url_args=url_args, url_kwargs=url_kwargs, url_query_params=url_query_params,
             redirect_args=redirect_args, redirect_kwargs=redirect_kwargs, redirect_query_params=redirect_query_params,
             expected_title=expected_title, expected_header=expected_header, expected_messages=expected_messages,
@@ -240,6 +241,19 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Verify page status code.
         self.assertStatusCode(response, expected_status)
+
+        # Verify base url.
+        if expected_url is not None and response.url != expected_url:
+            self.fail((
+                'Expected url and actual url do not match. \n'
+                'Expected Url: \n'
+                '"{0}" \n'
+                'Actual Url: \n'
+                '"{1}" \n'
+            ).format(
+                expected_url,
+                response.url,
+            ))
 
         # Verify page redirect.
         if expected_redirect_url is not None:
@@ -288,7 +302,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             response=response,
             get=get, data=data, secure=secure,
             expected_status=expected_status,
-            expected_redirect_url=expected_redirect_url,
+            expected_url=expected_url, expected_redirect_url=expected_redirect_url,
             url_args=url_args, url_kwargs=url_kwargs, url_query_params=url_query_params,
             redirect_args=redirect_args, redirect_kwargs=redirect_kwargs, redirect_query_params=redirect_query_params,
             expected_title=expected_title, expected_header=expected_header, expected_messages=expected_messages,
@@ -313,7 +327,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         url, *args,
         data=None, secure=True,
         expected_status=200,
-        expected_redirect_url=None,
+        expected_url=None, expected_redirect_url=None,
         url_args=None, url_kwargs=None, url_query_params=None,
         redirect_args=None, redirect_kwargs=None, redirect_query_params=None,
         expected_title=None, expected_header=None, expected_messages=None,
@@ -343,6 +357,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             data=data,
             secure=secure,
             expected_status=expected_status,
+            expected_url=expected_url,
             expected_redirect_url=expected_redirect_url,
             url_args=url_args,
             url_kwargs=url_kwargs,
@@ -372,7 +387,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         url, *args,
         data=None, secure=True,
         expected_status=200,
-        expected_redirect_url=None,
+        expected_url=None, expected_redirect_url=None,
         url_args=None, url_kwargs=None, url_query_params=None,
         redirect_args=None, redirect_kwargs=None, redirect_query_params=None,
         expected_title=None, expected_header=None, expected_messages=None,
@@ -408,6 +423,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             data=data,
             secure=secure,
             expected_status=expected_status,
+            expected_url=expected_url,
             expected_redirect_url=expected_redirect_url,
             url_args=url_args,
             url_kwargs=url_kwargs,
