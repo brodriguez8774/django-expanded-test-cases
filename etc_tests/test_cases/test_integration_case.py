@@ -789,6 +789,339 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                 expected_redirect_url='django_expanded_test_cases:index',
             )
 
+        with self.subTest('Verify error on urls that don\'t match'):
+            expected_err_msg = (
+                'Expected Url and actual Url do not match. \n'
+                'Expected Url: \n'
+                '"{0}" \n'
+                'Actual Url: \n'
+                '"{1}" \n'
+            )
+            wrong_url = '/wrong_url/'
+
+            # Test 404 page url.
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse('bad_url', expected_url=wrong_url, expected_status=404)
+            self.assertEqual(expected_err_msg.format(wrong_url, '/bad_url/'), str(err.exception))
+
+            # Test "index" page url.
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse('', expected_url=wrong_url)
+            self.assertEqual(expected_err_msg.format(wrong_url, '/'), str(err.exception))
+
+            # Test "login" page url.
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse('login/', expected_url=wrong_url)
+            self.assertEqual(expected_err_msg.format(wrong_url, '/login/'), str(err.exception))
+
+            # Test "one message" page url.
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse('views/one-message/', expected_url=wrong_url)
+            self.assertEqual(expected_err_msg.format(wrong_url, '/views/one-message/'), str(err.exception))
+
+            # Test "two messages" page url.
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse('views/two-messages/', expected_url=wrong_url)
+            self.assertEqual(expected_err_msg.format(wrong_url, '/views/two-messages/'), str(err.exception))
+
+            # Test "three messages" page url.
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse('views/three-messages/', expected_url=wrong_url)
+            self.assertEqual(expected_err_msg.format(wrong_url, '/views/three-messages/'), str(err.exception))
+
+            # Test "user detail" page url via args.
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse('user/detail/1/', expected_url=wrong_url)
+            self.assertEqual(expected_err_msg.format(wrong_url, '/user/detail/1/'), str(err.exception))
+
+            # Test "user detail" page url via kwargs.
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse('user/detail/2/', expected_url=wrong_url)
+            self.assertEqual(expected_err_msg.format(wrong_url, '/user/detail/2/'), str(err.exception))
+
+    def test__assertResponse__view_should_redirect__success(self):
+        """
+        Tests "expected_url" functionality of assertResponse() function, with assertions that should succeed.
+        """
+
+        with self.subTest('With view that doesn\'t redirect'):
+            # Test 404 page url.
+            response = self.assertResponse(
+                'bad_url',
+                expected_url='/bad_url/',
+                expected_status=404,
+                view_should_redirect=False,
+            )
+            self.assertText('/bad_url/', response.url)
+            self.assertText('127.0.0.1/bad_url/', response.full_url)
+            response = self.assertResponse(
+                'bad_url/', expected_url='/bad_url/',
+                expected_status=404,
+                view_should_redirect=False,
+            )
+            self.assertText('/bad_url/', response.url)
+            self.assertText('127.0.0.1/bad_url/', response.full_url)
+            response = self.assertResponse(
+                '127.0.0.1/bad_url/', expected_url='/bad_url/',
+                expected_status=404,
+                view_should_redirect=False,
+            )
+            self.assertText('/bad_url/', response.url)
+            self.assertText('127.0.0.1/bad_url/', response.full_url)
+            response = self.assertResponse(
+                '///bad_url///', expected_url='/bad_url/',
+                expected_status=404,
+                view_should_redirect=False,
+            )
+            self.assertText('/bad_url/', response.url)
+            self.assertText('127.0.0.1/bad_url/', response.full_url)
+
+            # Test "index" page url.
+            response = self.assertResponse('', expected_url='/', view_should_redirect=False)
+            self.assertText('/', response.url)
+            self.assertText('127.0.0.1/', response.full_url)
+            response = self.assertResponse('/', expected_url='/', view_should_redirect=False)
+            self.assertText('/', response.url)
+            self.assertText('127.0.0.1/', response.full_url)
+            response = self.assertResponse('127.0.0.1/', expected_url='/', view_should_redirect=False)
+            self.assertText('/', response.url)
+            self.assertText('127.0.0.1/', response.full_url)
+
+            # Test "login" page url.
+            response = self.assertResponse('login/', expected_url='/login/', view_should_redirect=False)
+            self.assertText('/login/', response.url)
+            self.assertText('127.0.0.1/login/', response.full_url)
+            response = self.assertResponse('/login/', expected_url='/login/', view_should_redirect=False)
+            self.assertText('/login/', response.url)
+            self.assertText('127.0.0.1/login/', response.full_url)
+            response = self.assertResponse('127.0.0.1/login/', expected_url='/login/', view_should_redirect=False)
+            self.assertText('/login/', response.url)
+            self.assertText('127.0.0.1/login/', response.full_url)
+
+            # Test "one message" page url.
+            response = self.assertResponse(
+                'views/one-message/',
+                expected_url='/views/one-message/',
+                view_should_redirect=False,
+            )
+            self.assertText('/views/one-message/', response.url)
+            self.assertText('127.0.0.1/views/one-message/', response.full_url)
+            response = self.assertResponse(
+                '/views/one-message/',
+                expected_url='/views/one-message/',
+                view_should_redirect=False,
+            )
+            self.assertText('/views/one-message/', response.url)
+            self.assertText('127.0.0.1/views/one-message/', response.full_url)
+            response = self.assertResponse(
+                '127.0.0.1/views/one-message/',
+                expected_url='/views/one-message/',
+                view_should_redirect=False,
+            )
+            self.assertText('/views/one-message/', response.url)
+            self.assertText('127.0.0.1/views/one-message/', response.full_url)
+
+            # Test "two messages" page url.
+            response = self.assertResponse(
+                'views/two-messages/',
+                expected_url='/views/two-messages/',
+                view_should_redirect=False,
+            )
+            self.assertText('/views/two-messages/', response.url)
+            self.assertText('127.0.0.1/views/two-messages/', response.full_url)
+            response = self.assertResponse(
+                '/views/two-messages/',
+                expected_url='/views/two-messages/',
+                view_should_redirect=False,
+            )
+            self.assertText('/views/two-messages/', response.url)
+            self.assertText('127.0.0.1/views/two-messages/', response.full_url)
+            response = self.assertResponse(
+                '127.0.0.1/views/two-messages/',
+                expected_url='/views/two-messages/',
+                view_should_redirect=False,
+            )
+            self.assertText('/views/two-messages/', response.url)
+            self.assertText('127.0.0.1/views/two-messages/', response.full_url)
+
+            # Test "three messages" page url.
+            response = self.assertResponse(
+                'views/three-messages/',
+                expected_url='/views/three-messages/',
+                view_should_redirect=False,
+            )
+            self.assertText('/views/three-messages/', response.url)
+            self.assertText('127.0.0.1/views/three-messages/', response.full_url)
+            response = self.assertResponse(
+                '/views/three-messages/',
+                expected_url='/views/three-messages/',
+                view_should_redirect=False,
+            )
+            self.assertText('/views/three-messages/', response.url)
+            self.assertText('127.0.0.1/views/three-messages/', response.full_url)
+            response = self.assertResponse(
+                '127.0.0.1/views/three-messages/',
+                expected_url='/views/three-messages/',
+                view_should_redirect=False,
+            )
+            self.assertText('/views/three-messages/', response.url)
+            self.assertText('127.0.0.1/views/three-messages/', response.full_url)
+
+            # Test "user detail" page url via args.
+            response = self.assertResponse(
+                'user/detail/1/',
+                expected_url='/user/detail/1/',
+                view_should_redirect=False,
+            )
+            self.assertText('/user/detail/1/', response.url)
+            self.assertText('127.0.0.1/user/detail/1/', response.full_url)
+            response = self.assertResponse(
+                '/user/detail/1/',
+                expected_url='/user/detail/1/',
+                view_should_redirect=False,
+            )
+            self.assertText('/user/detail/1/', response.url)
+            self.assertText('127.0.0.1/user/detail/1/', response.full_url)
+            response = self.assertResponse(
+                '127.0.0.1/user/detail/1/',
+                expected_url='/user/detail/1/',
+                view_should_redirect=False,
+            )
+            self.assertText('/user/detail/1/', response.url)
+            self.assertText('127.0.0.1/user/detail/1/', response.full_url)
+
+            # Test "user detail" page url via kwargs.
+            response = self.assertResponse(
+                'user/detail/2/',
+                expected_url='/user/detail/2/',
+                view_should_redirect=False,
+            )
+            self.assertText('/user/detail/2/', response.url)
+            self.assertText('127.0.0.1/user/detail/2/', response.full_url)
+            response = self.assertResponse(
+                '/user/detail/2/',
+                expected_url='/user/detail/2/',
+                view_should_redirect=False,
+            )
+            self.assertText('/user/detail/2/', response.url)
+            self.assertText('127.0.0.1/user/detail/2/', response.full_url)
+            response = self.assertResponse(
+                '127.0.0.1/user/detail/2/',
+                expected_url='/user/detail/2/',
+                view_should_redirect=False,
+            )
+            self.assertText('/user/detail/2/', response.url)
+            self.assertText('127.0.0.1/user/detail/2/', response.full_url)
+
+        with self.subTest('With view that redirects'):
+            # Using direct url.
+            self.assertResponse(
+                'redirect/index/',
+                expected_url='/redirect/index/',
+                expected_redirect_url='/',
+                view_should_redirect=True,
+            )
+            self.assertResponse(
+                'redirect/index/',
+                expected_url='/redirect/index/',
+                expected_redirect_url='django_expanded_test_cases:index',
+                view_should_redirect=True
+            )
+
+            # Using reverse.
+            self.assertResponse(
+                'django_expanded_test_cases:redirect-to-index',
+                expected_url='/redirect/index/',
+                expected_redirect_url='/',
+                view_should_redirect=True
+            )
+            self.assertResponse(
+                'django_expanded_test_cases:redirect-to-index',
+                expected_url='/redirect/index/',
+                expected_redirect_url='django_expanded_test_cases:index',
+                view_should_redirect=True
+            )
+
+    def test__assertResponse__view_should_redirect__failure(self):
+        """
+        Tests "expected_url" functionality of assertResponse() function, with assertions that should fail.
+        """
+
+        with self.subTest('With view that doesn\'t redirect'):
+            # Test 404 page url.
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse(
+                'bad_url',
+                    expected_url='/bad_url/',
+                    expected_status=404,
+                    view_should_redirect=True,
+                )
+            self.assertEqual(str(err.exception), 'Expected a page redirect, but response did not redirect.')
+
+            # Test "index" page url.
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse('', expected_url='/', view_should_redirect=True)
+            self.assertEqual(str(err.exception), 'Expected a page redirect, but response did not redirect.')
+
+            # Test "login" page url.
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse('login/', expected_url='/login/', view_should_redirect=True)
+            self.assertEqual(str(err.exception), 'Expected a page redirect, but response did not redirect.')
+
+            # Test "one message" page url.
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse(
+                    'views/one-message/',
+                    expected_url='/views/one-message/',
+                    view_should_redirect=True,
+                )
+            self.assertEqual(str(err.exception), 'Expected a page redirect, but response did not redirect.')
+
+            # Test "three messages" page url.
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse(
+                    'views/three-messages/',
+                    expected_url='/views/three-messages/',
+                    view_should_redirect=True,
+                )
+            self.assertEqual(str(err.exception), 'Expected a page redirect, but response did not redirect.')
+
+            # Test "user detail" page url via kwargs.
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse(
+                    'user/detail/2/',
+                    expected_url='/user/detail/2/',
+                    view_should_redirect=True,
+                )
+            self.assertEqual(str(err.exception), 'Expected a page redirect, but response did not redirect.')
+
+        with self.subTest('With view that redirects'):
+            # Using direct url.
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse(
+                    'redirect/index/',
+                    expected_url='/redirect/index/',
+                    expected_redirect_url='/',
+                    view_should_redirect=False,
+                )
+            self.assertEqual(
+                str(err.exception),
+                'Expected no page redirects, but response processed one or more redirects.',
+            )
+
+            # Using reverse.
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse(
+                    'django_expanded_test_cases:redirect-to-index',
+                    expected_url='/redirect/index/',
+                    expected_redirect_url='/',
+                    view_should_redirect=False,
+                )
+            self.assertEqual(
+                str(err.exception),
+                'Expected no page redirects, but response processed one or more redirects.',
+            )
+
     def test__assertResponse__expected_title(self):
         """
         Tests "expected_title" functionality of assertResponse() function.

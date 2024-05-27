@@ -34,6 +34,7 @@ from django_expanded_test_cases.constants import (
     ETC_OUTPUT_RESET_COLOR,
     ETC_OUTPUT_ACTUALS_MATCH_COLOR,
     ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+    ETC_VIEWS_SHOULD_REDIRECT,
     VOID_ELEMENT_LIST,
 )
 from django_expanded_test_cases.mixins import ResponseTestCaseMixin
@@ -122,6 +123,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         get=True, data=None, secure=True,
         expected_status=200,
         expected_url=None, expected_redirect_url=None,
+        view_should_redirect=None,
         url_args=None, url_kwargs=None, url_query_params=None,
         redirect_args=None, redirect_kwargs=None, redirect_query_params=None,
         expected_title=None, expected_header=None, expected_messages=None,
@@ -146,6 +148,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param secure: Bool indicating if request should be retrieved as HTTP or HTTPS.
         :param expected_url: Expected url, before any redirections.
         :param expected_redirect_url: Expected url, after any redirections.
+        :param view_should_redirect: True to make sure view has redirected. False to make sure it didn't. None to skip.
         :param url_args: Values to provide for URL population, in "arg" format.
         :param url_kwargs: Values to provide for URL population, in "kwarg" format.
         :param url_query_params: Query parameter values to provide for URL population.
@@ -227,6 +230,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             get=get, data=data, secure=secure,
             expected_status=expected_status,
             expected_url=expected_url, expected_redirect_url=expected_redirect_url,
+            view_should_redirect=view_should_redirect,
             url_args=url_args, url_kwargs=url_kwargs, url_query_params=url_query_params,
             redirect_args=redirect_args, redirect_kwargs=redirect_kwargs, redirect_query_params=redirect_query_params,
             expected_title=expected_title, expected_header=expected_header, expected_messages=expected_messages,
@@ -245,7 +249,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Verify base url.
         if expected_url is not None and response.url != expected_url:
             self.fail((
-                'Expected url and actual url do not match. \n'
+                'Expected Url and actual Url do not match. \n'
                 'Expected Url: \n'
                 '"{0}" \n'
                 'Actual Url: \n'
@@ -264,6 +268,19 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                 redirect_kwargs=redirect_kwargs,
                 redirect_query_params=redirect_query_params,
             )
+
+        # Verify if redirecting or not.
+        # Set to True to make sure view redirected (accomplishes similar to above expected_redirect_url) logic.
+        # Set to False to make sure view did NOT redirect.
+        # Leave None to skip this assertion.
+        if view_should_redirect is None:
+            # No value provided for this assertion. Fall back to settings value.
+            view_should_redirect = ETC_VIEWS_SHOULD_REDIRECT
+        if view_should_redirect is not None and not (bool(response.redirect_url) == view_should_redirect):
+            if view_should_redirect:
+                self.fail('Expected a page redirect, but response did not redirect.')
+            else:
+                self.fail('Expected no page redirects, but response processed one or more redirects.')
 
         # Verify page title.
         if expected_title is not None:
@@ -303,6 +320,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             get=get, data=data, secure=secure,
             expected_status=expected_status,
             expected_url=expected_url, expected_redirect_url=expected_redirect_url,
+            view_should_redirect=view_should_redirect,
             url_args=url_args, url_kwargs=url_kwargs, url_query_params=url_query_params,
             redirect_args=redirect_args, redirect_kwargs=redirect_kwargs, redirect_query_params=redirect_query_params,
             expected_title=expected_title, expected_header=expected_header, expected_messages=expected_messages,
@@ -328,6 +346,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         data=None, secure=True,
         expected_status=200,
         expected_url=None, expected_redirect_url=None,
+        view_should_redirect=None,
         url_args=None, url_kwargs=None, url_query_params=None,
         redirect_args=None, redirect_kwargs=None, redirect_query_params=None,
         expected_title=None, expected_header=None, expected_messages=None,
@@ -359,6 +378,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             expected_status=expected_status,
             expected_url=expected_url,
             expected_redirect_url=expected_redirect_url,
+            view_should_redirect=view_should_redirect,
             url_args=url_args,
             url_kwargs=url_kwargs,
             url_query_params=url_query_params,
@@ -388,6 +408,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         data=None, secure=True,
         expected_status=200,
         expected_url=None, expected_redirect_url=None,
+        view_should_redirect=None,
         url_args=None, url_kwargs=None, url_query_params=None,
         redirect_args=None, redirect_kwargs=None, redirect_query_params=None,
         expected_title=None, expected_header=None, expected_messages=None,
@@ -425,6 +446,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             expected_status=expected_status,
             expected_url=expected_url,
             expected_redirect_url=expected_redirect_url,
+            view_should_redirect=view_should_redirect,
             url_args=url_args,
             url_kwargs=url_kwargs,
             url_query_params=url_query_params,
@@ -1195,6 +1217,11 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Update response object with additional useful values for further testing/analysis.
         response.url = url
         response.full_url = full_url
+        response.redirect_url = None
+        if hasattr(response, 'redirect_chain') and len(response.redirect_chain) > 0:
+            redirect_data = response.redirect_chain[-1]
+            if redirect_data[1] == 302 or redirect_data[0] != response.url:
+                response.redirect_url = redirect_data[0]
         response.user = user
 
         # Return generated response.
