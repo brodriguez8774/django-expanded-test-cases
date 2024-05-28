@@ -119,17 +119,34 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
     def assertResponse(
         self,
-        url, *args,
-        get=True, data=None, secure=True,
+        url,
+        *args,
+        get=True,
+        data=None,
+        secure=True,
         expected_status=200,
-        expected_url=None, expected_redirect_url=None,
+        expected_url=None,
+        expected_redirect_url=None,
         view_should_redirect=None,
-        url_args=None, url_kwargs=None, url_query_params=None,
-        redirect_args=None, redirect_kwargs=None, redirect_query_params=None,
-        expected_title=None, expected_header=None, expected_messages=None,
-        expected_content=None, expected_not_content=None,
-        auto_login=True, user=None, user_permissions=None, user_groups=None, extra_usergen_kwargs=None,
-        ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
+        url_args=None,
+        url_kwargs=None,
+        url_query_params=None,
+        redirect_args=None,
+        redirect_kwargs=None,
+        redirect_query_params=None,
+        expected_title=None,
+        expected_header=None,
+        expected_messages=None,
+        expected_content=None,
+        expected_not_content=None,
+        auto_login=True,
+        user=None,
+        user_permissions=None,
+        user_groups=None,
+        extra_usergen_kwargs=None,
+        ignore_content_ordering=False,
+        content_starts_after=None,
+        content_ends_before=None,
         debug_logging_level=None,
         **kwargs,
     ):
@@ -225,19 +242,34 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Optional hook for running custom pre-builtin-test logic.
         self._assertResponse__pre_builtin_tests(
-            response.url, *args,
+            response.url,
+            *args,
             response=response,
-            get=get, data=data, secure=secure,
+            get=get,
+            data=data,
+            secure=secure,
             expected_status=expected_status,
-            expected_url=expected_url, expected_redirect_url=expected_redirect_url,
+            expected_url=expected_url,
+            expected_redirect_url=expected_redirect_url,
             view_should_redirect=view_should_redirect,
-            url_args=url_args, url_kwargs=url_kwargs, url_query_params=url_query_params,
-            redirect_args=redirect_args, redirect_kwargs=redirect_kwargs, redirect_query_params=redirect_query_params,
-            expected_title=expected_title, expected_header=expected_header, expected_messages=expected_messages,
-            expected_content=expected_content, expected_not_content=expected_not_content,
-            auto_login=auto_login, user=user, user_permissions=user_permissions, user_groups=user_groups,
+            url_args=url_args,
+            url_kwargs=url_kwargs,
+            url_query_params=url_query_params,
+            redirect_args=redirect_args,
+            redirect_kwargs=redirect_kwargs,
+            redirect_query_params=redirect_query_params,
+            expected_title=expected_title,
+            expected_header=expected_header,
+            expected_messages=expected_messages,
+            expected_content=expected_content,
+            expected_not_content=expected_not_content,
+            auto_login=auto_login,
+            user=user,
+            user_permissions=user_permissions,
+            user_groups=user_groups,
             extra_usergen_kwargs=extra_usergen_kwargs,
-            ignore_content_ordering=ignore_content_ordering, content_starts_after=content_starts_after,
+            ignore_content_ordering=ignore_content_ordering,
+            content_starts_after=content_starts_after,
             content_ends_before=content_ends_before,
             debug_logging_level=None,
             **kwargs,
@@ -248,16 +280,18 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Verify base url.
         if expected_url is not None and response.url != expected_url:
-            self.fail((
-                'Expected Url and actual Url do not match. \n'
-                'Expected Url: \n'
-                '"{0}" \n'
-                'Actual Url: \n'
-                '"{1}" \n'
-            ).format(
-                expected_url,
-                response.url,
-            ))
+            self.fail(
+                (
+                    'Expected Url and actual Url do not match. \n'
+                    'Expected Url: \n'
+                    '"{0}" \n'
+                    'Actual Url: \n'
+                    '"{1}" \n'
+                ).format(
+                    expected_url,
+                    response.url,
+                )
+            )
 
         # Verify page redirect.
         if expected_redirect_url is not None:
@@ -315,19 +349,34 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Optional hook for running custom post-builtin-test logic.
         self._assertResponse__post_builtin_tests(
-            response.url, *args,
+            response.url,
+            *args,
             response=response,
-            get=get, data=data, secure=secure,
+            get=get,
+            data=data,
+            secure=secure,
             expected_status=expected_status,
-            expected_url=expected_url, expected_redirect_url=expected_redirect_url,
+            expected_url=expected_url,
+            expected_redirect_url=expected_redirect_url,
             view_should_redirect=view_should_redirect,
-            url_args=url_args, url_kwargs=url_kwargs, url_query_params=url_query_params,
-            redirect_args=redirect_args, redirect_kwargs=redirect_kwargs, redirect_query_params=redirect_query_params,
-            expected_title=expected_title, expected_header=expected_header, expected_messages=expected_messages,
-            expected_content=expected_content, expected_not_content=expected_not_content,
-            auto_login=auto_login, user=user, user_permissions=user_permissions, user_groups=user_groups,
+            url_args=url_args,
+            url_kwargs=url_kwargs,
+            url_query_params=url_query_params,
+            redirect_args=redirect_args,
+            redirect_kwargs=redirect_kwargs,
+            redirect_query_params=redirect_query_params,
+            expected_title=expected_title,
+            expected_header=expected_header,
+            expected_messages=expected_messages,
+            expected_content=expected_content,
+            expected_not_content=expected_not_content,
+            auto_login=auto_login,
+            user=user,
+            user_permissions=user_permissions,
+            user_groups=user_groups,
             extra_usergen_kwargs=extra_usergen_kwargs,
-            ignore_content_ordering=ignore_content_ordering, content_starts_after=content_starts_after,
+            ignore_content_ordering=ignore_content_ordering,
+            content_starts_after=content_starts_after,
             content_ends_before=content_ends_before,
             debug_logging_level=None,
             **kwargs,
@@ -342,17 +391,33 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
     def assertGetResponse(
         self,
-        url, *args,
-        data=None, secure=True,
+        url,
+        *args,
+        data=None,
+        secure=True,
         expected_status=200,
-        expected_url=None, expected_redirect_url=None,
+        expected_url=None,
+        expected_redirect_url=None,
         view_should_redirect=None,
-        url_args=None, url_kwargs=None, url_query_params=None,
-        redirect_args=None, redirect_kwargs=None, redirect_query_params=None,
-        expected_title=None, expected_header=None, expected_messages=None,
-        expected_content=None, expected_not_content=None,
-        auto_login=True, user=None, user_permissions=None, user_groups=None, extra_usergen_kwargs=None,
-        ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
+        url_args=None,
+        url_kwargs=None,
+        url_query_params=None,
+        redirect_args=None,
+        redirect_kwargs=None,
+        redirect_query_params=None,
+        expected_title=None,
+        expected_header=None,
+        expected_messages=None,
+        expected_content=None,
+        expected_not_content=None,
+        auto_login=True,
+        user=None,
+        user_permissions=None,
+        user_groups=None,
+        extra_usergen_kwargs=None,
+        ignore_content_ordering=False,
+        content_starts_after=None,
+        content_ends_before=None,
         debug_logging_level=None,
         **kwargs,
     ):
@@ -404,17 +469,33 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
     def assertPostResponse(
         self,
-        url, *args,
-        data=None, secure=True,
+        url,
+        *args,
+        data=None,
+        secure=True,
         expected_status=200,
-        expected_url=None, expected_redirect_url=None,
+        expected_url=None,
+        expected_redirect_url=None,
         view_should_redirect=None,
-        url_args=None, url_kwargs=None, url_query_params=None,
-        redirect_args=None, redirect_kwargs=None, redirect_query_params=None,
-        expected_title=None, expected_header=None, expected_messages=None,
-        expected_content=None, expected_not_content=None,
-        auto_login=True, user=None, user_permissions=None, user_groups=None, extra_usergen_kwargs=None,
-        ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
+        url_args=None,
+        url_kwargs=None,
+        url_query_params=None,
+        redirect_args=None,
+        redirect_kwargs=None,
+        redirect_query_params=None,
+        expected_title=None,
+        expected_header=None,
+        expected_messages=None,
+        expected_content=None,
+        expected_not_content=None,
+        auto_login=True,
+        user=None,
+        user_permissions=None,
+        user_groups=None,
+        extra_usergen_kwargs=None,
+        ignore_content_ordering=False,
+        content_starts_after=None,
+        content_ends_before=None,
         debug_logging_level=None,
         **kwargs,
     ):
@@ -472,8 +553,13 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
     def assertRedirects(
         self,
-        response, expected_redirect_url, *args,
-        redirect_args=None, redirect_kwargs=None, redirect_query_params=None, **kwargs,
+        response,
+        expected_redirect_url,
+        *args,
+        redirect_args=None,
+        redirect_kwargs=None,
+        redirect_query_params=None,
+        **kwargs,
     ):
         """Assert that a response redirected to a specific URL and that the redirect URL can be loaded.
 
@@ -508,9 +594,11 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         try:
             return super().assertRedirects(response, expected_redirect_url, *args, **kwargs)
         except AssertionError:
-            self.fail('Response didn\'t redirect as expected. Response code was {0} (expected 302).'.format(
-                response.status_code
-            ))
+            self.fail(
+                'Response didn\'t redirect as expected. Response code was {0} (expected 302).'.format(
+                    response.status_code
+                )
+            )
 
     def assertStatusCode(self, response, expected_status):
         """Verifies the page status code value.
@@ -573,19 +661,23 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         if not allow_partials:
             # Check using exact match.
             if expected_title != actual_title:
-                self.fail(err_msg.format(
-                    expected_title,
-                    'using exact matching',
-                    actual_title,
-                ))
+                self.fail(
+                    err_msg.format(
+                        expected_title,
+                        'using exact matching',
+                        actual_title,
+                    )
+                )
         else:
             # Check using partial match.
             if expected_title not in actual_title:
-                self.fail(err_msg.format(
-                    expected_title,
-                    'using partial matching',
-                    actual_title,
-                ))
+                self.fail(
+                    err_msg.format(
+                        expected_title,
+                        'using partial matching',
+                        actual_title,
+                    )
+                )
 
         # Return title in case user wants to run additional logic on it.
         return actual_title
@@ -610,10 +702,12 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Check element.
         if expected_header != actual_header:
-            self.fail('Expected H1 header HTML contents of "{0}". Actual value was "{1}".'.format(
-                expected_header,
-                actual_header,
-            ))
+            self.fail(
+                'Expected H1 header HTML contents of "{0}". Actual value was "{1}".'.format(
+                    expected_header,
+                    actual_header,
+                )
+            )
 
         # Return header in case user wants to run additional logic on it.
         return actual_header
@@ -690,15 +784,20 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
                 # Raise assertion error if not found.
                 if not message_found:
-                    self.fail('Failed to find message "{0}" in context (using {1} matching).'.format(
-                        expected_message,
-                        'partial' if allow_partials else 'exact'
-                    ))
+                    self.fail(
+                        'Failed to find message "{0}" in context (using {1} matching).'.format(
+                            expected_message, 'partial' if allow_partials else 'exact'
+                        )
+                    )
 
     def assertPageContent(
         self,
-        response, expected_content,
-        ignore_ordering=False, content_starts_after=None, content_ends_before=None, debug_output=True,
+        response,
+        expected_content,
+        ignore_ordering=False,
+        content_starts_after=None,
+        content_ends_before=None,
+        debug_output=True,
     ):
         """Verifies the page content html, similar to the built-in assertContains() function.
         The main difference is that Django templating may create large amounts of whitespace in response html,
@@ -724,10 +823,12 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         main_err_msg = (
             'Could not find expected content value in response. Provided value was:\n'
+            # To prevent Black single-lining this.
             '{0}\n'
         )
         checked_content_str_addon = (
             '\n'
+            # To prevent Black single-lining this.
             '\n'
             'Surrounding Checks:\n'
             '{0}'
@@ -766,31 +867,47 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                 if len(expected_content) > 1:
                     # Update str in event of error.
                     updated_checked_content_str_addon = checked_content_str_addon.format(
-                        '{1}    * {0}{2}\n'.format(
-                            expected_content[index - 2],
-                            ETC_OUTPUT_EXPECTED_MATCH_COLOR,
-                            ETC_OUTPUT_RESET_COLOR,
-                        ) if index >= 2 else '',
-                        '{1}    * {0}{2}\n'.format(
-                            expected_content[index - 1],
-                            ETC_OUTPUT_EXPECTED_MATCH_COLOR,
-                            ETC_OUTPUT_RESET_COLOR,
-                        ) if index >= 1 else '',
+                        (
+                            '{1}    * {0}{2}\n'.format(
+                                expected_content[index - 2],
+                                ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                                ETC_OUTPUT_RESET_COLOR,
+                            )
+                            if index >= 2
+                            else ''
+                        ),
+                        (
+                            '{1}    * {0}{2}\n'.format(
+                                expected_content[index - 1],
+                                ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                                ETC_OUTPUT_RESET_COLOR,
+                            )
+                            if index >= 1
+                            else ''
+                        ),
                         '{1}  > * {0}{2}\n'.format(
                             expected_content[index],
                             ETC_OUTPUT_ERROR_COLOR,
                             ETC_OUTPUT_RESET_COLOR,
                         ),
-                        '{1}    * {0}{2}\n'.format(
-                            expected_content[index + 1],
-                            ETC_OUTPUT_ACTUALS_MATCH_COLOR,
-                            ETC_OUTPUT_RESET_COLOR,
-                        ) if (len(expected_content) - index) > 1 else '',
-                        '{1}    * {0}{2}\n'.format(
-                            expected_content[index + 2],
-                            ETC_OUTPUT_ACTUALS_MATCH_COLOR,
-                            ETC_OUTPUT_RESET_COLOR,
-                        ) if (len(expected_content) - index) > 2 else '',
+                        (
+                            '{1}    * {0}{2}\n'.format(
+                                expected_content[index + 1],
+                                ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                                ETC_OUTPUT_RESET_COLOR,
+                            )
+                            if (len(expected_content) - index) > 1
+                            else ''
+                        ),
+                        (
+                            '{1}    * {0}{2}\n'.format(
+                                expected_content[index + 2],
+                                ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                                ETC_OUTPUT_RESET_COLOR,
+                            )
+                            if (len(expected_content) - index) > 2
+                            else ''
+                        ),
                     )
                 else:
                     updated_checked_content_str_addon = ''
@@ -929,9 +1046,13 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
     def _assertPageContent(
         self,
-        actual_content, minimized_expected, display_expected,
-        strip_actual_start, strip_actual_end,
-        err_msg, checked_content_str_addon,
+        actual_content,
+        minimized_expected,
+        display_expected,
+        strip_actual_start,
+        strip_actual_end,
+        err_msg,
+        checked_content_str_addon,
         additional_error_info='',
     ):
         """Internal sub-assertion for assertPageContent() function."""
@@ -966,7 +1087,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
     def assertNotPageContent(
         self,
-        response, expected_not_content,
+        response,
+        expected_not_content,
         debug_output=True,
     ):
         """Verifies the non-existance of page content html.
@@ -1026,8 +1148,12 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
     def assertRepeatingElement(
         self,
-        response, expected_repeating_element, repeat_count,
-        content_starts_after=None, content_ends_before=None, debug_output=True,
+        response,
+        expected_repeating_element,
+        repeat_count,
+        content_starts_after=None,
+        content_ends_before=None,
+        debug_output=True,
     ):
         """Verifies that a given HTMl element repeats, within a given section of content.
 
@@ -1153,9 +1279,17 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         self,
         url,
         *args,
-        get=True, data=None, secure=True,
-        url_args=None, url_kwargs=None, query_params=None,
-        auto_login=True, user=None, user_permissions=None, user_groups=None, extra_usergen_kwargs=None,
+        get=True,
+        data=None,
+        secure=True,
+        url_args=None,
+        url_kwargs=None,
+        query_params=None,
+        auto_login=True,
+        user=None,
+        user_permissions=None,
+        user_groups=None,
+        extra_usergen_kwargs=None,
         **kwargs,
     ):
         """Helper function for assertResponse().
@@ -1337,14 +1471,18 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             # Check how many title tags were found.
             if len(response_title) > 1:
                 # Multiple headers were found. Raise error and direct user to helper h1 documentation.
-                raise AssertionError(textwrap.dedent(
-                    """
+                raise AssertionError(
+                    textwrap.dedent(
+                        """
                     Found multiple titles ({0} total). There should only be one <title> tag per page.
                     For further reference on <title> tags, consider consulting:
                         * https://www.w3schools.com/tags/tag_title.asp
                         * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title
-                    """.format(len(response_title))
-                ).strip())
+                    """.format(
+                            len(response_title)
+                        )
+                    ).strip()
+                )
 
             elif len(response_title) == 0:
                 # No title text was found. Return empty string.
@@ -1395,14 +1533,18 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             # Check how many header tags were found.
             if len(response_header) > 1:
                 # Multiple headers were found. Raise error and direct user to helper h1 documentation.
-                raise AssertionError(textwrap.dedent(
-                    """
+                raise AssertionError(
+                    textwrap.dedent(
+                        """
                     Found multiple headers ({0} total). There should only be one <h1> tag per page.
                     For further reference on <h1> tags, consider consulting:
                         * https://www.w3schools.com/tags/tag_hn.asp
                         * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements
-                    """.format(len(response_header))
-                ).strip())
+                    """.format(
+                            len(response_header)
+                        )
+                    ).strip()
+                )
 
             elif len(response_header) == 0:
                 # No headers text was found. Return empty string.
@@ -1504,14 +1646,27 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
     def _assertResponse__pre_builtin_tests(
         self,
-        url, *args,
-        get=True, data=None,
+        url,
+        *args,
+        get=True,
+        data=None,
         expected_status=200,
         expected_redirect_url=None,
-        url_args=None, url_kwargs=None, redirect_args=None, redirect_kwargs=None,
-        expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
-        auto_login=True, user=None, user_permissions=None, user_groups=None,
-        ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
+        url_args=None,
+        url_kwargs=None,
+        redirect_args=None,
+        redirect_kwargs=None,
+        expected_title=None,
+        expected_header=None,
+        expected_messages=None,
+        expected_content=None,
+        auto_login=True,
+        user=None,
+        user_permissions=None,
+        user_groups=None,
+        ignore_content_ordering=False,
+        content_starts_after=None,
+        content_ends_before=None,
         **kwargs,
     ):
         """Hook function to allow injecting code prior to running any of the built-in assertResponse() tests.
@@ -1525,14 +1680,27 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
     def _assertResponse__post_builtin_tests(
         self,
-        url, *args,
-        get=True, data=None,
+        url,
+        *args,
+        get=True,
+        data=None,
         expected_status=200,
         expected_redirect_url=None,
-        url_args=None, url_kwargs=None, redirect_args=None, redirect_kwargs=None,
-        expected_title=None, expected_header=None, expected_messages=None, expected_content=None,
-        auto_login=True, user=None, user_permissions=None, user_groups=None,
-        ignore_content_ordering=False, content_starts_after=None, content_ends_before=None,
+        url_args=None,
+        url_kwargs=None,
+        redirect_args=None,
+        redirect_kwargs=None,
+        expected_title=None,
+        expected_header=None,
+        expected_messages=None,
+        expected_content=None,
+        auto_login=True,
+        user=None,
+        user_permissions=None,
+        user_groups=None,
+        ignore_content_ordering=False,
+        content_starts_after=None,
+        content_ends_before=None,
         **kwargs,
     ):
         """Hook function to allow injecting code after running all of the built-in assertResponse() tests.
@@ -1549,7 +1717,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         user,
         *args,
         auto_login=True,
-        user_permissions=None, user_groups=None,
+        user_permissions=None,
+        user_groups=None,
         **kwargs,
     ):
         """Hook function, to allow running extra authentication setup logic on User object.

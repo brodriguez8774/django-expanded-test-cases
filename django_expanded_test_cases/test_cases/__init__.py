@@ -28,6 +28,7 @@ except ModuleNotFoundError:
         For more information, see:
         https://www.selenium.dev/documentation/webdriver/getting_started/
         """
+
         @classmethod
         def setUpClass(cls):
             raise Exception(cls.err_msg)
@@ -58,6 +59,7 @@ except ModuleNotFoundError:
         For more information, see:
         https://www.selenium.dev/documentation/webdriver/getting_started/
         """
+
         @classmethod
         def setUpClass(cls):
             raise Exception(cls.err_msg)

@@ -23,7 +23,7 @@ except ModuleNotFoundError:
     # This is okay, as we don't want this logic as a hard requirement to use this library.
 
     # However, we do want to define a dummy class to give feedback errors.
-    class LiveServerTestCase():
+    class LiveServerTestCase:
         err_msg = """
         Cannot use LiveServer TestCases class without "selenium" package installed.
         To use these TestCases, add the following packages to your project:
@@ -34,6 +34,7 @@ except ModuleNotFoundError:
         For more information, see:
         https://www.selenium.dev/documentation/webdriver/getting_started/
         """
+
         @classmethod
         def setUpClass(cls):
             raise Exception(cls.err_msg)

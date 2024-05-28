@@ -1018,7 +1018,7 @@ class UniversalLiveTestMixin:
             # Open file and write expected page contents.
             with open(file_name, 'w') as file:
                 file.write(
-                """
+                    """
                 <div>
                     <h1>Page Header</h1>
                     <p id="some_value">Some text.</p>
@@ -1962,7 +1962,6 @@ class UniversalLiveTestMixin:
             driver = self.get_driver()
             driver.get('file://{0}'.format(file_name))
 
-
             results = self.find_elements_by_data_attribute(driver, 'my_attr', 'my_val')
             self.assertEqual(len(results), 3)
             self.assertIn('<li my_attr="my_val">\n<p>\n One\n</p>\n</li>', results)
@@ -1992,7 +1991,6 @@ class UniversalLiveTestMixin:
             # Get driver object to open generated file.
             driver = self.get_driver()
             driver.get('file://{0}'.format(file_name))
-
 
             results = self.find_elements_by_data_attribute(driver, 'my_attr', 'my_val')
             self.assertEqual(len(results), 3)

@@ -30,7 +30,6 @@ from django_expanded_test_cases.constants import (
     ETC_OUTPUT_EMPHASIS_COLOR,
     ETC_AUTO_GENERATE_USERS,
     ETC_DEBUG_PRINT__SKIP_DISPLAY,
-
     ETC_INCLUDE_RESPONSE_DEBUG_CONTENT,
     ETC_INCLUDE_RESPONSE_DEBUG_CONTEXT,
     ETC_INCLUDE_RESPONSE_DEBUG_FORMS,
@@ -39,7 +38,6 @@ from django_expanded_test_cases.constants import (
     ETC_INCLUDE_RESPONSE_DEBUG_SESSION,
     ETC_INCLUDE_RESPONSE_DEBUG_USER_INFO,
 )
-
 
 
 # Initialize logging.
@@ -87,9 +85,21 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         message = 'Attempting to access url "{0}"'.format(url)
 
         self._debug_print('\n\n')
-        self._debug_print('{0}'.format('-' * len(message)), fore=ETC_RESPONSE_DEBUG_URL_COLOR, style=ETC_OUTPUT_EMPHASIS_COLOR)
-        self._debug_print(message, fore=ETC_RESPONSE_DEBUG_URL_COLOR, style=ETC_OUTPUT_EMPHASIS_COLOR)
-        self._debug_print('{0}'.format('-' * len(message)), fore=ETC_RESPONSE_DEBUG_URL_COLOR, style=ETC_OUTPUT_EMPHASIS_COLOR)
+        self._debug_print(
+            '{0}'.format('-' * len(message)),
+            fore=ETC_RESPONSE_DEBUG_URL_COLOR,
+            style=ETC_OUTPUT_EMPHASIS_COLOR,
+        )
+        self._debug_print(
+            message,
+            fore=ETC_RESPONSE_DEBUG_URL_COLOR,
+            style=ETC_OUTPUT_EMPHASIS_COLOR,
+        )
+        self._debug_print(
+            '{0}'.format('-' * len(message)),
+            fore=ETC_RESPONSE_DEBUG_URL_COLOR,
+            style=ETC_OUTPUT_EMPHASIS_COLOR,
+        )
 
     def show_debug_content(self, response_content):
         """Prints debug response page output."""
@@ -152,7 +162,10 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         # Print out data, if present.
         if response_headers is not None and len(response_headers) > 0:
             for key, value in response_headers.items():
-                self._debug_print('    * "{0}": "{1}"'.format(key, value), fore=ETC_RESPONSE_DEBUG_HEADER_COLOR)
+                self._debug_print(
+                    '    * "{0}": "{1}"'.format(key, value),
+                    fore=ETC_RESPONSE_DEBUG_HEADER_COLOR,
+                )
         else:
             self._debug_print('    No response headers found.')
         self._debug_print()
@@ -190,6 +203,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                 # Needs further research. For now, this seems like enough to bypass it
                 # and have no immediately noticeable side effects.
                 from django.test.utils import ContextList
+
                 if isinstance(response_context, ContextList):
                     # Skip output.
                     return
@@ -220,7 +234,10 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                     # Truncate display if very long.
                     if len(context_value) > 80:
                         context_value = '"{0}"..."{1}"'.format(context_value[:40], context_value[-40:])
-                    self._debug_print('    * {0}: {1}'.format(key, context_value), fore=ETC_RESPONSE_DEBUG_CONTEXT_COLOR)
+                    self._debug_print(
+                        '    * {0}: {1}'.format(key, context_value),
+                        fore=ETC_RESPONSE_DEBUG_CONTEXT_COLOR,
+                    )
         else:
             self._debug_print('    No context data found.', fore=ETC_RESPONSE_DEBUG_CONTEXT_COLOR)
         self._debug_print()
@@ -309,7 +326,10 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                 self._debug_print('    Provided Form Fields:', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
                 fields_submitted = False
                 for key, value in form.data.items():
-                    self._debug_print('        {0}: {1}'.format(key, value), fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
+                    self._debug_print(
+                        '        {0}: {1}'.format(key, value),
+                        fore=ETC_RESPONSE_DEBUG_FORM_COLOR,
+                    )
                     fields_submitted = True
                 if not fields_submitted:
                     self._debug_print('        No form field data submitted.', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
@@ -318,16 +338,24 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                 if not form.is_valid():
                     self._debug_print()
                     if len(form.errors) > 0 or len(form.non_field_errors()) > 0:
-                        self._debug_print('    Form Invalid:'.format(not form.is_valid()), fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
+                        self._debug_print(
+                            '    Form Invalid:'.format(not form.is_valid()), fore=ETC_RESPONSE_DEBUG_FORM_COLOR
+                        )
                         if len(form.non_field_errors()) > 0:
                             self._debug_print('        Non-field Frrors:', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
                             for error in form.non_field_errors():
-                                self._debug_print('            {0}'.format(error), fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
+                                self._debug_print(
+                                    '            {0}'.format(error),
+                                    fore=ETC_RESPONSE_DEBUG_FORM_COLOR,
+                                )
 
                         if len(form.errors) > 0:
                             self._debug_print('        Field Errors:', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
                             for error in form.errors:
-                                self._debug_print('            {0}'.format(error), fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
+                                self._debug_print(
+                                    '            {0}'.format(error),
+                                    fore=ETC_RESPONSE_DEBUG_FORM_COLOR,
+                                )
 
                 else:
                     self._debug_print('    Form found and valid.', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
@@ -375,8 +403,14 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
 
             # General user information.
             self._debug_print('    * pk: "{0}"'.format(user.pk), fore=ETC_RESPONSE_DEBUG_USER_INFO_COLOR)
-            self._debug_print('    * Username: "{0}"'.format(user.username), fore=ETC_RESPONSE_DEBUG_USER_INFO_COLOR)
-            self._debug_print('    * First: "{0}"'.format(user.first_name), fore=ETC_RESPONSE_DEBUG_USER_INFO_COLOR)
+            self._debug_print(
+                '    * Username: "{0}"'.format(user.username),
+                fore=ETC_RESPONSE_DEBUG_USER_INFO_COLOR,
+            )
+            self._debug_print(
+                '    * First: "{0}"'.format(user.first_name),
+                fore=ETC_RESPONSE_DEBUG_USER_INFO_COLOR,
+            )
             self._debug_print('    * Last: "{0}"'.format(user.last_name), fore=ETC_RESPONSE_DEBUG_USER_INFO_COLOR)
             self._debug_print('    * Email: "{0}"'.format(user.email), fore=ETC_RESPONSE_DEBUG_USER_INFO_COLOR)
 
@@ -387,7 +421,9 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             )
 
             # User groups.
-            self._debug_print('    * User Groups: {0}'.format(user.groups.all()), fore=ETC_RESPONSE_DEBUG_USER_INFO_COLOR)
+            self._debug_print(
+                '    * User Groups: {0}'.format(user.groups.all()), fore=ETC_RESPONSE_DEBUG_USER_INFO_COLOR
+            )
 
             # User permissions.
             self._debug_print(
@@ -402,11 +438,14 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             self._debug_print('    User not defined. Was None type.', fore=ETC_RESPONSE_DEBUG_USER_INFO_COLOR)
 
         else:
-            self._debug_print('    * Invalid user "{0}" of type "{1}". Expected "{2}".'.format(
-                user,
-                type(user),
-                type(get_user_model()),
-            ), fore=ETC_OUTPUT_ERROR_COLOR)
+            self._debug_print(
+                '    * Invalid user "{0}" of type "{1}". Expected "{2}".'.format(
+                    user,
+                    type(user),
+                    type(get_user_model()),
+                ),
+                fore=ETC_OUTPUT_ERROR_COLOR,
+            )
         self._debug_print()
         self._debug_print()
 
@@ -623,7 +662,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             self.fail(
                 f'Found multiple instances of "<{element}>" element. Expected only one instance. '
                 f'Content was:\n{content}'
-             )
+            )
 
         # Return found item.
         return element_list[0]

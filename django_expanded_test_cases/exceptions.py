@@ -11,6 +11,7 @@ class ExpandedTestCasesBaseException(ABC, Exception):
 
     Holds boilerplate logic and should NOT be directly called.
     """
+
     def __init__(self, value):
         # Ensure expected type for exception message.
         if value is None:

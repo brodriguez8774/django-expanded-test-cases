@@ -116,8 +116,8 @@ class BaseClassTest(BaseTestCase):
 
             # Substring match.
             lorem_len = len(lorem_str)
-            self.assertText(lorem_str[:int(lorem_len / 2)], lorem_str[:int(lorem_len / 2)])
-            self.assertText(lorem_str[int(lorem_len / 2):], lorem_str[int(lorem_len / 2):])
+            self.assertText(lorem_str[: int(lorem_len / 2)], lorem_str[: int(lorem_len / 2)])
+            self.assertText(lorem_str[int(lorem_len / 2) :], lorem_str[int(lorem_len / 2) :])
 
     def test__assertText__fail(self):
         """
@@ -141,11 +141,27 @@ class BaseClassTest(BaseTestCase):
         with self.subTest('Whitespace mismatch'):
             with self.assertRaises(AssertionError) as err:
                 self.assertText('a b c', 'abc')
-            self.assertEqual(exception_msg.format('a b c', 'abc', '?  - -\n', ''), str(err.exception))
+            self.assertEqual(
+                exception_msg.format(
+                    'a b c',
+                    'abc',
+                    '?  - -\n',
+                    '',
+                ),
+                str(err.exception),
+            )
 
             with self.assertRaises(AssertionError) as err:
                 self.assertText('abc', 'a b c')
-            self.assertEqual(exception_msg.format('abc', 'a b c', '', '?  + +\n'), str(err.exception))
+            self.assertEqual(
+                exception_msg.format(
+                    'abc',
+                    'a b c',
+                    '',
+                    '?  + +\n',
+                ),
+                str(err.exception),
+            )
 
         with self.subTest('Inner value mismatch'):
             with self.assertRaises(AssertionError) as err:
@@ -163,21 +179,36 @@ class BaseClassTest(BaseTestCase):
             with self.assertRaises(AssertionError) as err:
                 self.assertText('This is a test sentence.', 'This is test sentence.')
             self.assertEqual(
-                exception_msg.format('This is a test sentence.', 'This is test sentence.', '?        --\n', ''),
+                exception_msg.format(
+                    'This is a test sentence.',
+                    'This is test sentence.',
+                    '?        --\n',
+                    '',
+                ),
                 str(err.exception),
             )
 
             with self.assertRaises(AssertionError) as err:
                 self.assertText('This is a test sentence.', 'test sentence.')
             self.assertEqual(
-                exception_msg.format('This is a test sentence.', 'test sentence.', '? ----------\n', ''),
+                exception_msg.format(
+                    'This is a test sentence.',
+                    'test sentence.',
+                    '? ----------\n',
+                    '',
+                ),
                 str(err.exception),
             )
 
             with self.assertRaises(AssertionError) as err:
                 self.assertText('This is a test sentence.', 'This is a test.')
             self.assertEqual(
-                exception_msg.format('This is a test sentence.', 'This is a test.', '?               ---------\n', ''),
+                exception_msg.format(
+                    'This is a test sentence.',
+                    'This is a test.',
+                    '?               ---------\n',
+                    '',
+                ),
                 str(err.exception),
             )
 
@@ -186,19 +217,19 @@ class BaseClassTest(BaseTestCase):
 
             # With character replaced.
             with self.assertRaises(AssertionError) as err:
-                modified_str = lorem_str[:(half_lorem_len - 1)] + 'z' + lorem_str[(half_lorem_len + 1):]
+                modified_str = lorem_str[: (half_lorem_len - 1)] + 'z' + lorem_str[(half_lorem_len + 1) :]
                 self.assertText(lorem_str, modified_str)
             # self.assertEqual(str(err.exception), exception_msg)
 
             # With character added.
             with self.assertRaises(AssertionError) as err:
-                modified_str = lorem_str[:(half_lorem_len)] + 'z' + lorem_str[(half_lorem_len + 1):]
+                modified_str = lorem_str[:(half_lorem_len)] + 'z' + lorem_str[(half_lorem_len + 1) :]
                 self.assertText(lorem_str, modified_str)
             # self.assertEqual(str(err.exception), exception_msg)
 
             # With character removed.
             with self.assertRaises(AssertionError) as err:
-                modified_str = lorem_str[:(half_lorem_len - 1)] + lorem_str[(half_lorem_len + 1):]
+                modified_str = lorem_str[: (half_lorem_len - 1)] + lorem_str[(half_lorem_len + 1) :]
                 self.assertText(lorem_str, modified_str)
             # self.assertEqual(str(err.exception), exception_msg)
 
@@ -220,14 +251,29 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[4],
+                '{0}EXPECTED:{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(std_out_lines[5], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[8],
+                '{0}ACTUAL:{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[9],
-                '{0}Actuals has values here. Expected does not.{1}'.format(ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}Actuals has values here. Expected does not.{1}'.format(
+                    ETC_OUTPUT_ACTUALS_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
@@ -246,15 +292,30 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[4],
+                '{0}EXPECTED:{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[5],
-                '{0}Expected has values here. Actuals does not.{1}'.format(ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}Expected has values here. Actuals does not.{1}'.format(
+                    ETC_OUTPUT_EXPECTED_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[8], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[9], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[9],
+                '{0}ACTUAL:{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[12], ETC_OUTPUT_RESET_COLOR)
@@ -272,16 +333,37 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[4],
+                '{0}EXPECTED:{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(std_out_lines[5], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[8],
+                '{0}ACTUAL:{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[9],
-                '{0}Actuals has values here.{1}'.format(ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}Actuals has values here.{1}'.format(
+                    ETC_OUTPUT_ACTUALS_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
-            self.assertEqual(std_out_lines[10], '{0}Expected does not.{1}'.format(ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[10],
+                '{0}Expected does not.{1}'.format(
+                    ETC_OUTPUT_ACTUALS_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[12], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[13], ETC_OUTPUT_RESET_COLOR)
@@ -299,16 +381,37 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[4],
+                '{0}EXPECTED:{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[5],
-                '{0}Expected has values here.{1}'.format(ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}Expected has values here.{1}'.format(
+                    ETC_OUTPUT_EXPECTED_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
-            self.assertEqual(std_out_lines[6], '{0}Actuals does not.{1}'.format(ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[6],
+                '{0}Actuals does not.{1}'.format(
+                    ETC_OUTPUT_EXPECTED_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[8], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[9], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[10], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[10],
+                '{0}ACTUAL:{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[12], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[13], ETC_OUTPUT_RESET_COLOR)
@@ -328,14 +431,44 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
-            self.assertEqual(std_out_lines[5], '{0}One line.{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[4],
+                '{0}EXPECTED:{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
+            self.assertEqual(
+                std_out_lines[5],
+                '{0}One line.{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[8], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[9], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
-            self.assertEqual(std_out_lines[10], '{0}One line.{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
-            self.assertEqual(std_out_lines[11], '{0}Two line.{1}'.format(ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[9],
+                '{0}ACTUAL:{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
+            self.assertEqual(
+                std_out_lines[10],
+                '{0}One line.{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
+            self.assertEqual(
+                std_out_lines[11],
+                '{0}Two line.{1}'.format(
+                    ETC_OUTPUT_ACTUALS_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(std_out_lines[12], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[13], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[14], ETC_OUTPUT_RESET_COLOR)
@@ -353,14 +486,44 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
-            self.assertEqual(std_out_lines[5], '{0}One line.{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
-            self.assertEqual(std_out_lines[6], '{0}Two line.{1}'.format(ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[4],
+                '{0}EXPECTED:{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
+            self.assertEqual(
+                std_out_lines[5],
+                '{0}One line.{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
+            self.assertEqual(
+                std_out_lines[6],
+                '{0}Two line.{1}'.format(
+                    ETC_OUTPUT_EXPECTED_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[8], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[9], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[10], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
-            self.assertEqual(std_out_lines[11], '{0}One line.{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[10],
+                '{0}ACTUAL:{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
+            self.assertEqual(
+                std_out_lines[11],
+                '{0}One line.{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(std_out_lines[12], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[13], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[14], ETC_OUTPUT_RESET_COLOR)
@@ -385,17 +548,35 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[4],
+                '{0}EXPECTED:{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[5],
-                '{0}esting.{1}'.format(ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}esting.{1}'.format(
+                    ETC_OUTPUT_EXPECTED_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[8],
+                '{0}ACTUAL:{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[9],
-                '{0}Testing.{1}'.format(ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}Testing.{1}'.format(
+                    ETC_OUTPUT_ACTUALS_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
@@ -413,17 +594,35 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[4],
+                '{0}EXPECTED:{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[5],
-                '{0}Testing.{1}'.format(ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}Testing.{1}'.format(
+                    ETC_OUTPUT_EXPECTED_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[8],
+                '{0}ACTUAL:{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[9],
-                '{0}esting.{1}'.format(ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}esting.{1}'.format(
+                    ETC_OUTPUT_ACTUALS_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
@@ -441,17 +640,35 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[4],
+                '{0}EXPECTED:{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[5],
-                '{0}sting.{1}'.format(ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}sting.{1}'.format(
+                    ETC_OUTPUT_EXPECTED_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[8],
+                '{0}ACTUAL:{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[9],
-                '{0}Testing.{1}'.format(ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}Testing.{1}'.format(
+                    ETC_OUTPUT_ACTUALS_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
@@ -469,17 +686,35 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[4],
+                '{0}EXPECTED:{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[5],
-                '{0}Testing.{1}'.format(ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}Testing.{1}'.format(
+                    ETC_OUTPUT_EXPECTED_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[8],
+                '{0}ACTUAL:{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[9],
-                '{0}sting.{1}'.format(ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}sting.{1}'.format(
+                    ETC_OUTPUT_ACTUALS_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
@@ -497,17 +732,37 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[4],
+                '{0}EXPECTED:{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[5],
-                '{0}Tes{1}ing.{2}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}Tes{1}ing.{2}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_EXPECTED_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[8],
+                '{0}ACTUAL:{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[9],
-                '{0}Tes{1}ting.{2}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}Tes{1}ting.{2}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_ACTUALS_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
@@ -525,17 +780,37 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[4],
+                '{0}EXPECTED:{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[5],
-                '{0}Tes{1}ting.{2}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}Tes{1}ting.{2}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_EXPECTED_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[8],
+                '{0}ACTUAL:{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[9],
-                '{0}Tes{1}ing.{2}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}Tes{1}ing.{2}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_ACTUALS_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
@@ -553,17 +828,37 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[4],
+                '{0}EXPECTED:{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[5],
-                '{0}Te{1}ng.{2}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}Te{1}ng.{2}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_EXPECTED_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[8],
+                '{0}ACTUAL:{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[9],
-                '{0}Te{1}sting.{2}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}Te{1}sting.{2}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_ACTUALS_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
@@ -581,17 +876,37 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[4],
+                '{0}EXPECTED:{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[5],
-                '{0}Te{1}sting.{2}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}Te{1}sting.{2}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_EXPECTED_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[8],
+                '{0}ACTUAL:{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[9],
-                '{0}Te{1}ng.{2}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}Te{1}ng.{2}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_ACTUALS_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
@@ -609,17 +924,37 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[4],
+                '{0}EXPECTED:{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[5],
-                '{0}Testing{1}{2}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}Testing{1}{2}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_EXPECTED_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[8],
+                '{0}ACTUAL:{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[9],
-                '{0}Testing{1}.{2}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}Testing{1}.{2}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_ACTUALS_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
@@ -637,17 +972,37 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[4],
+                '{0}EXPECTED:{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[5],
-                '{0}Testing{1}.{2}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}Testing{1}.{2}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_EXPECTED_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[8],
+                '{0}ACTUAL:{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[9],
-                '{0}Testing{1}{2}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}Testing{1}{2}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_ACTUALS_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
@@ -665,17 +1020,37 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[4],
+                '{0}EXPECTED:{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[5],
-                '{0}Test{1}{2}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}Test{1}{2}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_EXPECTED_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[8],
+                '{0}ACTUAL:{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[9],
-                '{0}Test{1}ing.{2}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}Test{1}ing.{2}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_ACTUALS_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
@@ -693,17 +1068,37 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[4],
+                '{0}EXPECTED:{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[5],
-                '{0}Test{1}ing.{2}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_EXPECTED_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}Test{1}ing.{2}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_EXPECTED_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[8],
+                '{0}ACTUAL:{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[9],
-                '{0}Test{1}{2}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_ACTUALS_ERROR_COLOR, ETC_OUTPUT_RESET_COLOR),
+                '{0}Test{1}{2}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_ACTUALS_ERROR_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
             )
             self.assertEqual(std_out_lines[10], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[11], ETC_OUTPUT_RESET_COLOR)
@@ -727,7 +1122,13 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[4],
+                '{0}EXPECTED:{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[5],
                 '{0}a{1}BC{2}'.format(
@@ -738,7 +1139,13 @@ class BaseClassTest(BaseTestCase):
             )
             self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[8],
+                '{0}ACTUAL:{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[9],
                 '{0}A{1}BC{2}'.format(
@@ -763,7 +1170,13 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[4],
+                '{0}EXPECTED:{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[5],
                 '{0}tHIS{1} is a test value.{2}'.format(
@@ -774,7 +1187,13 @@ class BaseClassTest(BaseTestCase):
             )
             self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[8],
+                '{0}ACTUAL:{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[9],
                 '{0}This{1} is a test value.{2}'.format(
@@ -799,7 +1218,13 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[4],
+                '{0}EXPECTED:{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[5],
                 '{0}A{1}b{0}C{2}'.format(
@@ -810,7 +1235,13 @@ class BaseClassTest(BaseTestCase):
             )
             self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[8],
+                '{0}ACTUAL:{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[9],
                 '{0}A{1}B{0}C{2}'.format(
@@ -835,7 +1266,13 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[4],
+                '{0}EXPECTED:{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[5],
                 '{0}This {1}IS{0} {1}A{0} {1}TEST{0} value.{2}'.format(
@@ -846,7 +1283,13 @@ class BaseClassTest(BaseTestCase):
             )
             self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[8],
+                '{0}ACTUAL:{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[9],
                 '{0}This {1}is{0} {1}a{0} {1}test{0} value.{2}'.format(
@@ -871,7 +1314,13 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[4],
+                '{0}EXPECTED:{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[5],
                 '{0}AB{1}c{2}'.format(
@@ -882,7 +1331,13 @@ class BaseClassTest(BaseTestCase):
             )
             self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[8],
+                '{0}ACTUAL:{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[9],
                 '{0}AB{1}C{2}'.format(
@@ -907,7 +1362,13 @@ class BaseClassTest(BaseTestCase):
             self.assertEqual(std_out_lines[1], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[2], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[3], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[4], '{0}EXPECTED:{1}'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[4],
+                '{0}EXPECTED:{1}'.format(
+                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[5],
                 '{0}This is a test {1}VALUE!{2}'.format(
@@ -918,7 +1379,13 @@ class BaseClassTest(BaseTestCase):
             )
             self.assertEqual(std_out_lines[6], ETC_OUTPUT_RESET_COLOR)
             self.assertEqual(std_out_lines[7], ETC_OUTPUT_RESET_COLOR)
-            self.assertEqual(std_out_lines[8], '{0}ACTUAL:{1}'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, ETC_OUTPUT_RESET_COLOR))
+            self.assertEqual(
+                std_out_lines[8],
+                '{0}ACTUAL:{1}'.format(
+                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                    ETC_OUTPUT_RESET_COLOR,
+                ),
+            )
             self.assertEqual(
                 std_out_lines[9],
                 '{0}This is a test {1}value.{2}'.format(
@@ -989,15 +1456,15 @@ class BaseClassTest(BaseTestCase):
 
             # Substring match.
             lorem_len = len(lorem_str)
-            self.assertTextStartsWith(lorem_str[:int(lorem_len - 1)], lorem_str)
-            self.assertTextStartsWith(lorem_str[:int(lorem_len - 2)], lorem_str)
-            self.assertTextStartsWith(lorem_str[:int(lorem_len - 3)], lorem_str)
-            self.assertTextStartsWith(lorem_str[:int(lorem_len - 4)], lorem_str)
-            self.assertTextStartsWith(lorem_str[:int(lorem_len - 5)], lorem_str)
-            self.assertTextStartsWith(lorem_str[:int(lorem_len / 2)], lorem_str)
-            self.assertTextStartsWith(lorem_str[:int(lorem_len / 3)], lorem_str)
-            self.assertTextStartsWith(lorem_str[:int(lorem_len / 4)], lorem_str)
-            self.assertTextStartsWith(lorem_str[:int(lorem_len / 5)], lorem_str)
+            self.assertTextStartsWith(lorem_str[: int(lorem_len - 1)], lorem_str)
+            self.assertTextStartsWith(lorem_str[: int(lorem_len - 2)], lorem_str)
+            self.assertTextStartsWith(lorem_str[: int(lorem_len - 3)], lorem_str)
+            self.assertTextStartsWith(lorem_str[: int(lorem_len - 4)], lorem_str)
+            self.assertTextStartsWith(lorem_str[: int(lorem_len - 5)], lorem_str)
+            self.assertTextStartsWith(lorem_str[: int(lorem_len / 2)], lorem_str)
+            self.assertTextStartsWith(lorem_str[: int(lorem_len / 3)], lorem_str)
+            self.assertTextStartsWith(lorem_str[: int(lorem_len / 4)], lorem_str)
+            self.assertTextStartsWith(lorem_str[: int(lorem_len / 5)], lorem_str)
 
     def test__assertTextStartsWith__fail(self):
         """
@@ -1016,19 +1483,43 @@ class BaseClassTest(BaseTestCase):
 
             with self.assertRaises(AssertionError) as err:
                 self.assertTextStartsWith('a', 1)
-            self.assertEqual( exception_msg.format('a', '1', '', ''), str(err.exception))
+            self.assertEqual(exception_msg.format('a', '1', '', ''), str(err.exception))
 
         with self.subTest('Whitespace mismatch'):
             with self.assertRaises(AssertionError) as err:
                 self.assertTextStartsWith('a b c', 'abc')
-            self.assertEqual(exception_msg.format('a b c', 'abc', '?  - -\n', ''), str(err.exception))
+            self.assertEqual(
+                exception_msg.format(
+                    'a b c',
+                    'abc',
+                    '?  - -\n',
+                    '',
+                ),
+                str(err.exception),
+            )
             with self.assertRaises(AssertionError) as err:
                 self.assertTextStartsWith('a b', 'abc')
-            self.assertEqual(exception_msg.format('a b', 'abc', '?  -\n', '?   +\n'), str(err.exception))
+            self.assertEqual(
+                exception_msg.format(
+                    'a b',
+                    'abc',
+                    '?  -\n',
+                    '?   +\n',
+                ),
+                str(err.exception),
+            )
 
             with self.assertRaises(AssertionError) as err:
                 self.assertTextStartsWith('abc', 'a b c')
-            self.assertEqual(exception_msg.format('abc', 'a b c', '', '?  + +\n'), str(err.exception))
+            self.assertEqual(
+                exception_msg.format(
+                    'abc',
+                    'a b c',
+                    '',
+                    '?  + +\n',
+                ),
+                str(err.exception),
+            )
             with self.assertRaises(AssertionError) as err:
                 self.assertTextStartsWith('ab', 'a b c')
             self.assertEqual(exception_msg.format('ab', 'a b c', '', ''), str(err.exception))
@@ -1037,21 +1528,36 @@ class BaseClassTest(BaseTestCase):
             with self.assertRaises(AssertionError) as err:
                 self.assertTextStartsWith('This is a test sentence.', 'This is test sentence.')
             self.assertEqual(
-                exception_msg.format('This is a test sentence.', 'This is test sentence.', '?        --\n', ''),
+                exception_msg.format(
+                    'This is a test sentence.',
+                    'This is test sentence.',
+                    '?        --\n',
+                    '',
+                ),
                 str(err.exception),
             )
 
             with self.assertRaises(AssertionError) as err:
                 self.assertTextStartsWith('This is a test sentence.', 'test sentence.')
             self.assertEqual(
-                exception_msg.format('This is a test sentence.', 'test sentence.', '? ----------\n', ''),
+                exception_msg.format(
+                    'This is a test sentence.',
+                    'test sentence.',
+                    '? ----------\n',
+                    '',
+                ),
                 str(err.exception),
             )
 
             with self.assertRaises(AssertionError) as err:
                 self.assertTextStartsWith('This is a test sentence.', 'This is a test.')
             self.assertEqual(
-                exception_msg.format('This is a test sentence.', 'This is a test.', '?               ---------\n', ''),
+                exception_msg.format(
+                    'This is a test sentence.',
+                    'This is a test.',
+                    '?               ---------\n',
+                    '',
+                ),
                 str(err.exception),
             )
 
@@ -1060,19 +1566,19 @@ class BaseClassTest(BaseTestCase):
 
             # With character replaced.
             with self.assertRaises(AssertionError) as err:
-                modified_str = lorem_str[:(half_lorem_len - 1)] + 'z' + lorem_str[(half_lorem_len + 1):]
+                modified_str = lorem_str[: (half_lorem_len - 1)] + 'z' + lorem_str[(half_lorem_len + 1) :]
                 self.assertTextStartsWith(lorem_str, modified_str)
             # self.assertEqual(str(err.exception), exception_msg)
 
             # With character added.
             with self.assertRaises(AssertionError) as err:
-                modified_str = lorem_str[:(half_lorem_len)] + 'z' + lorem_str[(half_lorem_len + 1):]
+                modified_str = lorem_str[:(half_lorem_len)] + 'z' + lorem_str[(half_lorem_len + 1) :]
                 self.assertTextStartsWith(lorem_str, modified_str)
             # self.assertEqual(str(err.exception), exception_msg)
 
             # With character removed.
             with self.assertRaises(AssertionError) as err:
-                modified_str = lorem_str[:(half_lorem_len - 1)] + lorem_str[(half_lorem_len + 1):]
+                modified_str = lorem_str[: (half_lorem_len - 1)] + lorem_str[(half_lorem_len + 1) :]
                 self.assertTextStartsWith(lorem_str, modified_str)
             # self.assertEqual(str(err.exception), exception_msg)
 
@@ -1134,15 +1640,15 @@ class BaseClassTest(BaseTestCase):
 
             # Substring match.
             lorem_len = len(lorem_str)
-            self.assertTextEndsWith(lorem_str[int(lorem_len - 1):], lorem_str)
-            self.assertTextEndsWith(lorem_str[int(lorem_len - 2):], lorem_str)
-            self.assertTextEndsWith(lorem_str[int(lorem_len - 3):], lorem_str)
-            self.assertTextEndsWith(lorem_str[int(lorem_len - 4):], lorem_str)
-            self.assertTextEndsWith(lorem_str[int(lorem_len - 5):], lorem_str)
-            self.assertTextEndsWith(lorem_str[int(lorem_len / 2):], lorem_str)
-            self.assertTextEndsWith(lorem_str[int(lorem_len / 3):], lorem_str)
-            self.assertTextEndsWith(lorem_str[int(lorem_len / 4):], lorem_str)
-            self.assertTextEndsWith(lorem_str[int(lorem_len / 5):], lorem_str)
+            self.assertTextEndsWith(lorem_str[int(lorem_len - 1) :], lorem_str)
+            self.assertTextEndsWith(lorem_str[int(lorem_len - 2) :], lorem_str)
+            self.assertTextEndsWith(lorem_str[int(lorem_len - 3) :], lorem_str)
+            self.assertTextEndsWith(lorem_str[int(lorem_len - 4) :], lorem_str)
+            self.assertTextEndsWith(lorem_str[int(lorem_len - 5) :], lorem_str)
+            self.assertTextEndsWith(lorem_str[int(lorem_len / 2) :], lorem_str)
+            self.assertTextEndsWith(lorem_str[int(lorem_len / 3) :], lorem_str)
+            self.assertTextEndsWith(lorem_str[int(lorem_len / 4) :], lorem_str)
+            self.assertTextEndsWith(lorem_str[int(lorem_len / 5) :], lorem_str)
 
     def test__assertTextEndsWith__fail(self):
         """
@@ -1166,11 +1672,27 @@ class BaseClassTest(BaseTestCase):
         with self.subTest('Whitespace mismatch'):
             with self.assertRaises(AssertionError) as err:
                 self.assertTextEndsWith('a b c', 'abc')
-            self.assertEqual(exception_msg.format('a b c', 'abc', '?  - -\n', ''), str(err.exception))
+            self.assertEqual(
+                exception_msg.format(
+                    'a b c',
+                    'abc',
+                    '?  - -\n',
+                    '',
+                ),
+                str(err.exception),
+            )
 
             with self.assertRaises(AssertionError) as err:
                 self.assertTextEndsWith('abc', 'a b c')
-            self.assertEqual(exception_msg.format('abc', 'a b c', '', '?  + +\n'), str(err.exception))
+            self.assertEqual(
+                exception_msg.format(
+                    'abc',
+                    'a b c',
+                    '',
+                    '?  + +\n',
+                ),
+                str(err.exception),
+            )
 
         with self.subTest('Inner value mismatch'):
             with self.assertRaises(AssertionError) as err:
@@ -1188,21 +1710,36 @@ class BaseClassTest(BaseTestCase):
             with self.assertRaises(AssertionError) as err:
                 self.assertTextEndsWith('This is a test sentence.', 'This is test sentence.')
             self.assertEqual(
-                exception_msg.format('This is a test sentence.', 'This is test sentence.', '?        --\n', ''),
+                exception_msg.format(
+                    'This is a test sentence.',
+                    'This is test sentence.',
+                    '?        --\n',
+                    '',
+                ),
                 str(err.exception),
             )
 
             with self.assertRaises(AssertionError) as err:
                 self.assertTextEndsWith('This is a test sentence.', 'test sentence.')
             self.assertEqual(
-                exception_msg.format('This is a test sentence.', 'test sentence.', '? ----------\n', ''),
+                exception_msg.format(
+                    'This is a test sentence.',
+                    'test sentence.',
+                    '? ----------\n',
+                    '',
+                ),
                 str(err.exception),
             )
 
             with self.assertRaises(AssertionError) as err:
                 self.assertTextEndsWith('This is a test sentence.', 'This is a test.')
             self.assertEqual(
-                exception_msg.format('This is a test sentence.', 'This is a test.', '?               ---------\n', ''),
+                exception_msg.format(
+                    'This is a test sentence.',
+                    'This is a test.',
+                    '?               ---------\n',
+                    '',
+                ),
                 str(err.exception),
             )
 
@@ -1211,19 +1748,19 @@ class BaseClassTest(BaseTestCase):
 
             # With character replaced.
             with self.assertRaises(AssertionError) as err:
-                modified_str = lorem_str[:(half_lorem_len - 1)] + 'z' + lorem_str[(half_lorem_len + 1):]
+                modified_str = lorem_str[: (half_lorem_len - 1)] + 'z' + lorem_str[(half_lorem_len + 1) :]
                 self.assertTextEndsWith(lorem_str, modified_str)
             # self.assertEqual(str(err.exception), exception_msg)
 
             # With character added.
             with self.assertRaises(AssertionError) as err:
-                modified_str = lorem_str[:(half_lorem_len)] + 'z' + lorem_str[(half_lorem_len + 1):]
+                modified_str = lorem_str[:(half_lorem_len)] + 'z' + lorem_str[(half_lorem_len + 1) :]
                 self.assertTextEndsWith(lorem_str, modified_str)
             # self.assertEqual(str(err.exception), exception_msg)
 
             # With character removed.
             with self.assertRaises(AssertionError) as err:
-                modified_str = lorem_str[:(half_lorem_len - 1)] + lorem_str[(half_lorem_len + 1):]
+                modified_str = lorem_str[: (half_lorem_len - 1)] + lorem_str[(half_lorem_len + 1) :]
                 self.assertTextEndsWith(lorem_str, modified_str)
             # self.assertEqual(str(err.exception), exception_msg)
 
@@ -1946,7 +2483,8 @@ class BaseClassTest(BaseTestCase):
         with self.subTest('Test closing square bracket'):
             self.assert_symbol_standardization(
                 '&#93; &#x5D; &#x5d; &rbrack; ]',
-                '] ] ] ] ]',)
+                '] ] ] ] ]',
+            )
 
         with self.subTest('Test up arrow'):
             self.assert_symbol_standardization(
@@ -2661,6 +3199,7 @@ class BaseClassTest_WithRealNames(BaseTestCase):
 
     Required as a separate class, since user generation is handled on class initialization.
     """
+
     @classmethod
     @patch('django_expanded_test_cases.mixins.core_mixin.ETC_GENERATE_USERS_WITH_REAL_NAMES', True)
     def setUpTestData(cls):

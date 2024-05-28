@@ -34,8 +34,10 @@ from django_expanded_test_cases.constants import (
 
 # region Debug Print Wrapper Logic
 
+
 def wrapper(method):
     """Wrapper logic to intercept all functions on AssertionError and print error at bottom of output."""
+
     @wraps(method)
     def wrapped(*args, **kwargs):
         try:
@@ -46,11 +48,13 @@ def wrapper(method):
                 print('{0}{1}{2}'.format(ETC_OUTPUT_ERROR_COLOR, err, ETC_OUTPUT_RESET_COLOR))
                 print('')
             raise err
+
     return wrapped
 
 
 class DebugPrintMetaClass(type):
     """Courtesy of https://stackoverflow.com/a/11350487"""
+
     def __new__(meta, classname, bases, classDict):
         newClassDict = {}
         for attributeName, attribute in classDict.items():
@@ -59,6 +63,7 @@ class DebugPrintMetaClass(type):
                 attribute = wrapper(attribute)
             newClassDict[attributeName] = attribute
         return type.__new__(meta, classname, bases, newClassDict)
+
 
 # endregion Debug Print Wrapper Logic
 
@@ -178,8 +183,7 @@ class CoreTestCaseMixin(BaseMixin):
             cls._auto_generate_test_users(extra_usergen_kwargs=extra_usergen_kwargs)
 
     def subTest(self, *args, **kwargs):
-        """Test logic setup run every time we enter a subtest.
-        """
+        """Test logic setup run every time we enter a subtest."""
 
         # Call parent logic.
         super().subTest(*args, **kwargs)
@@ -412,22 +416,30 @@ class CoreTestCaseMixin(BaseMixin):
 
                 if curr_expected_line == curr_actual_line:
                     # Line is full match and correct.
-                    curr_expected_line = '{0}{1}{2}\n'.format(ETC_OUTPUT_EXPECTED_MATCH_COLOR, curr_expected_line, ETC_OUTPUT_RESET_COLOR)
-                    curr_actual_line = '{0}{1}{2}\n'.format(ETC_OUTPUT_ACTUALS_MATCH_COLOR, curr_actual_line, ETC_OUTPUT_RESET_COLOR)
+                    curr_expected_line = '{output_color}{line_output}{reset_color}\n'.format(
+                        output_color=ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                        line_output=curr_expected_line,
+                        reset_color=ETC_OUTPUT_RESET_COLOR,
+                    )
+                    curr_actual_line = '{output_color}{line_output}{reset_color}\n'.format(
+                        output_color=ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                        line_output=curr_actual_line,
+                        reset_color=ETC_OUTPUT_RESET_COLOR,
+                    )
                 elif curr_expected_line is None:
                     # "Actual" output is longer than "expected" output. Impossible to match current line.
                     curr_expected_line = ''
-                    curr_actual_line = '{0}{1}{2}\n'.format(
-                        ETC_OUTPUT_ACTUALS_ERROR_COLOR,
-                        curr_actual_line,
-                        ETC_OUTPUT_RESET_COLOR,
+                    curr_actual_line = '{output_color}{line_output}{reset_color}\n'.format(
+                        output_color=ETC_OUTPUT_ACTUALS_ERROR_COLOR,
+                        line_output=curr_actual_line,
+                        reset_color=ETC_OUTPUT_RESET_COLOR,
                     )
                 elif curr_actual_line is None:
                     # "Expected" output is longer than "actual" output. Impossible to match current line.
-                    curr_expected_line = '{0}{1}{2}\n'.format(
-                        ETC_OUTPUT_EXPECTED_ERROR_COLOR,
-                        curr_expected_line,
-                        ETC_OUTPUT_RESET_COLOR,
+                    curr_expected_line = '{0}{line_output}{reset_color}\n'.format(
+                        output_color=ETC_OUTPUT_EXPECTED_ERROR_COLOR,
+                        line_output=curr_expected_line,
+                        reset_color=ETC_OUTPUT_RESET_COLOR,
                     )
                     curr_actual_line = ''
                 else:
@@ -460,7 +472,7 @@ class CoreTestCaseMixin(BaseMixin):
                                 total_actual_index -= 1
 
                                 # Skip comparison if actual_index is before compare_index.
-                                if total_actual_index > - compare_index:
+                                if total_actual_index > -compare_index:
                                     do_char_compare = False
 
                         # Grab current character.
@@ -769,9 +781,9 @@ class CoreTestCaseMixin(BaseMixin):
 
         # Finally, generate actual url and return.
         get_params = urlencode(kwargs)
-        get_url = '{0}/{1}'.format(
-            url,
-            ('' if get_params == '' else '?' + get_params)
+        get_url = '{url}/{params}'.format(
+            url=url,
+            params=('' if get_params == '' else '?' + get_params),
         )
 
         self._debug_print('URL: {0}'.format(get_url))
@@ -1018,13 +1030,18 @@ class CoreTestCaseMixin(BaseMixin):
     def site_root_url(self):
         """"""
         if (
+            # No url defined.
             self._site_root_url is None
+            # Url is empty.
             or self._site_root_url == ''
         ):
             # No site root populated. Check for "live_server_url", which is auto-populated for Selenium tests.
             if (
+                # Has attribute.
                 hasattr(self, 'live_server_url')
+                # Attribute populated.
                 and self.live_server_url is not None
+                # And non-empty.
                 and self.live_server_url != ''
             ):
                 return self.live_server_url

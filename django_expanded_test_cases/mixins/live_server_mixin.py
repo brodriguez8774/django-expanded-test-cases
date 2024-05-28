@@ -16,11 +16,12 @@ from selenium.webdriver.firefox.service import Service as FireFoxService
 
 # Internal Imports.
 from django_expanded_test_cases.constants import (
+    # Output settings.
     ETC_INCLUDE_RESPONSE_DEBUG_URL,
     ETC_INCLUDE_RESPONSE_DEBUG_CONTENT,
     ETC_RESPONSE_DEBUG_CONTENT_COLOR,
     ETC_OUTPUT_EMPHASIS_COLOR,
-
+    # Selenium handling settings.
     ETC_SELENIUM_BROWSER,
     ETC_SELENIUM_HEADLESS,
     ETC_SELENIUM_DISABLE_CACHE,
@@ -44,6 +45,7 @@ SELENIUM_DEBUG_PORT = ETC_SELENIUM_DEBUG_PORT_START_VALUE
 
 class LiveServerMixin(ResponseTestCaseMixin):
     """Universal logic for all selenium LiveServer test cases."""
+
     @classmethod
     def setUpClass(cls, *args, initial_driver_count=1, debug_print=None, **kwargs):
         """Test logic setup run at the start of class creation.
@@ -379,10 +381,10 @@ class LiveServerMixin(ResponseTestCaseMixin):
         try:
             focus_window = driver.window_handles[window_index]
         except IndexError:
-            err_msg = 'Attempted to switch to window of index "{0}", but driver only has {1} windows open.'.format(
-                window_index,
-                len(driver.window_handles)
-            )
+            err_msg = (
+                'Attempted to switch to window of index "{window_index}", '
+                'but driver only has {window_count} windows open.'
+            ).format(window_index=window_index, window_count=len(driver.window_handles))
             raise IndexError(err_msg)
 
         # Switch window to be focused.

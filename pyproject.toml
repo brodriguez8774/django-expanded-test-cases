@@ -65,3 +65,8 @@ doc = [
 
 [project.urls]
 Homepage = "https://github.com/brodriguez8774/django-expanded-test-cases"
+
+
+[tool.black]
+line-length = 120
+skip-string-normalization = 1

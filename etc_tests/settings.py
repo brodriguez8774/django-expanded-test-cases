@@ -23,7 +23,6 @@ except ModuleNotFoundError:
 
 INSTALLED_APPS = (
     'django_expanded_test_cases',
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
