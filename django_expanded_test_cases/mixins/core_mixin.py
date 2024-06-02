@@ -436,7 +436,7 @@ class CoreTestCaseMixin(BaseMixin):
                     )
                 elif curr_actual_line is None:
                     # "Expected" output is longer than "actual" output. Impossible to match current line.
-                    curr_expected_line = '{0}{line_output}{reset_color}\n'.format(
+                    curr_expected_line = '{output_color}{line_output}{reset_color}\n'.format(
                         output_color=ETC_OUTPUT_EXPECTED_ERROR_COLOR,
                         line_output=curr_expected_line,
                         reset_color=ETC_OUTPUT_RESET_COLOR,

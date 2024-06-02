@@ -4116,6 +4116,512 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                 str(err.exception),
             )
 
+    def test__assertPageContent__edge_case__user_content_has_str_format_syntax__single_assertion(self):
+        """Testing with assertPageContent when user content has string formatting syntax.
+        Such as { or } characters, without the matching equivalent other side.
+
+        When dealing with only a single statement to check for in content.
+        """
+
+        with self.subTest('Success Check - Has { character.'):
+
+            response = HttpResponse('<title>My title has { in it, oops!</title>')
+            self.assertPageContent(response, '<title>My title has { in it, oops!</title>')
+
+        with self.subTest('Success Check - Has } character.'):
+
+            response = HttpResponse('<title>My title has } in it, oops!</title>')
+            self.assertPageContent(response, '<title>My title has } in it, oops!</title>')
+
+        with self.subTest('Success Check - Has { and } characters (standard order).'):
+
+            response = HttpResponse('<title>My title has { and } in it, oops!</title>')
+            self.assertPageContent(response, '<title>My title has { and } in it, oops!</title>')
+
+        with self.subTest('Success Check - Has { and } characters (reverse order).'):
+
+            response = HttpResponse('<title>My title has } and { in it, oops!</title>')
+            self.assertPageContent(response, '<title>My title has } and { in it, oops!</title>')
+
+        with self.subTest('Failure Check - Expected { character.'):
+
+            response = HttpResponse('<title>Test Title</title>')
+
+            # Expecting single character.
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(response, '{')
+            self.assertEqual(
+                (
+                    # So black does not one-line this.
+                    'Could not find expected content value in response. Provided value was:\n'
+                    '{\n'
+                ),
+                str(err.exception),
+            )
+
+            # Expecting single character in tag.
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(response, '<title>{</title>')
+            self.assertEqual(
+                (
+                    # So black does not one-line this.
+                    'Could not find expected content value in response. Provided value was:\n'
+                    '<title>{</title>\n'
+                ),
+                str(err.exception),
+            )
+
+            # Full value.
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(response, '<title>My title has { in it, oops!</title>')
+            self.assertEqual(
+                (
+                    # So black does not one-line this.
+                    'Could not find expected content value in response. Provided value was:\n'
+                    '<title>My title has{in it, oops!</title>\n'
+                ),
+                str(err.exception),
+            )
+
+        with self.subTest('Failure Check - Expected } character.'):
+
+            response = HttpResponse('<title>Test Title</title>')
+
+            # Expecting single character.
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(response, '}')
+            self.assertEqual(
+                (
+                    # So black does not one-line this.
+                    'Could not find expected content value in response. Provided value was:\n'
+                    '}\n'
+                ),
+                str(err.exception),
+            )
+
+            # Expecting single character in tag.
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(response, '<title>}</title>')
+            self.assertEqual(
+                (
+                    # So black does not one-line this.
+                    'Could not find expected content value in response. Provided value was:\n'
+                    '<title>}</title>\n'
+                ),
+                str(err.exception),
+            )
+
+            # Full value.
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(response, '<title>My title has } in it, oops!</title>')
+            self.assertEqual(
+                (
+                    # So black does not one-line this.
+                    'Could not find expected content value in response. Provided value was:\n'
+                    '<title>My title has}in it, oops!</title>\n'
+                ),
+                str(err.exception),
+            )
+
+        with self.subTest('Failure Check - Expected { and } characters (standard order).'):
+
+            response = HttpResponse('<title>Test Title</title>')
+
+            # Expecting single character.
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(response, '{ }')
+            self.assertEqual(
+                (
+                    # So black does not one-line this.
+                    'Could not find expected content value in response. Provided value was:\n'
+                    '{}\n'
+                ),
+                str(err.exception),
+            )
+
+            # Expecting single character in tag.
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(response, '<title>{ }</title>')
+            self.assertEqual(
+                (
+                    # So black does not one-line this.
+                    'Could not find expected content value in response. Provided value was:\n'
+                    '<title>{}</title>\n'
+                ),
+                str(err.exception),
+            )
+
+            # Full value.
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(response, '<title>My title has { and } in it, oops!</title>')
+            self.assertEqual(
+                (
+                    # So black does not one-line this.
+                    'Could not find expected content value in response. Provided value was:\n'
+                    '<title>My title has{and}in it, oops!</title>\n'
+                ),
+                str(err.exception),
+            )
+
+        with self.subTest('Failure Check - Expected { and } characters (reverse order).'):
+
+            response = HttpResponse('<title>Test Title</title>')
+
+            # Expecting single character.
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(response, '} {')
+            self.assertEqual(
+                (
+                    # So black does not one-line this.
+                    'Could not find expected content value in response. Provided value was:\n'
+                    '}{\n'
+                ),
+                str(err.exception),
+            )
+
+            # Expecting single character in tag.
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(response, '<title>} {</title>')
+            self.assertEqual(
+                (
+                    # So black does not one-line this.
+                    'Could not find expected content value in response. Provided value was:\n'
+                    '<title>}{</title>\n'
+                ),
+                str(err.exception),
+            )
+
+            # Full value.
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(response, '<title>My title has } and { in it, oops!</title>')
+            self.assertEqual(
+                (
+                    # So black does not one-line this.
+                    'Could not find expected content value in response. Provided value was:\n'
+                    '<title>My title has}and{in it, oops!</title>\n'
+                ),
+                str(err.exception),
+            )
+
+        with self.subTest('Failure Check - Didn\'t expect { character.'):
+
+            response = HttpResponse('<title>My title has { in it, oops!</title>')
+
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(response, '<title>My title has  in it, oops!</title>')
+            self.assertEqual(
+                (
+                    'Could not find expected content value in response. Provided value was:\n'
+                    '<title>My title has in it, oops!</title>\n'
+                ),
+                str(err.exception),
+            )
+
+        with self.subTest('Failure Check - Didn\'t expect } character.'):
+
+            response = HttpResponse('<title>My title has } in it, oops!</title>')
+
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(response, '<title>My title has  in it, oops!</title>')
+            self.assertEqual(
+                (
+                    'Could not find expected content value in response. Provided value was:\n'
+                    '<title>My title has in it, oops!</title>\n'
+                ),
+                str(err.exception),
+            )
+
+        with self.subTest('Failure Check - Didn\'t expect { and } characters (standard order).'):
+
+            response = HttpResponse('<title>My title has { and } in it, oops!</title>')
+
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(response, '<title>My title has  in it, oops!</title>')
+            self.assertEqual(
+                (
+                    'Could not find expected content value in response. Provided value was:\n'
+                    '<title>My title has in it, oops!</title>\n'
+                ),
+                str(err.exception),
+            )
+
+        with self.subTest('Failure Check - Didn\'t expect { and } characters (reverse order).'):
+
+            response = HttpResponse('<title>My title has } and { in it, oops!</title>')
+
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(response, '<title>My title has  in it, oops!</title>')
+            self.assertEqual(
+                (
+                    'Could not find expected content value in response. Provided value was:\n'
+                    '<title>My title has in it, oops!</title>\n'
+                ),
+                str(err.exception),
+            )
+
+    def test__assertPageContent__edge_case__user_content_has_str_format_syntax__multi_assertion(self):
+        """Testing with assertPageContent when user content has string formatting syntax.
+        Such as { or } characters, without the matching equivalent other side.
+
+        When dealing with multiple statements to check for in content.
+        """
+
+        with self.subTest('Success Check - Has { character.'):
+
+            # Generate response.
+            response = HttpResponse('<title>My title has { in it, oops!</title>')
+
+            self.assertPageContent(
+                response,
+                [
+                    '<title>',
+                    'My',
+                    'title',
+                    'has',
+                    '{',
+                    'in it,',
+                    'oops!',
+                    '</title>',
+                ],
+            )
+
+        with self.subTest('Success Check - Has } character.'):
+
+            # Generate response.
+            response = HttpResponse('<title>My title has } in it, oops!</title>')
+
+            self.assertPageContent(
+                response,
+                [
+                    '<title>',
+                    'My',
+                    'title',
+                    'has',
+                    '}',
+                    'in it,',
+                    'oops!',
+                    '</title>',
+                ],
+            )
+
+        with self.subTest('Success Check - Has { and } characters (standard order).'):
+
+            # Generate response.
+            response = HttpResponse('<title>My title has { and } in it, oops!</title>')
+
+            self.assertPageContent(
+                response,
+                [
+                    '<title>',
+                    'My',
+                    'title',
+                    'has',
+                    '{ and }',
+                    'in it,',
+                    'oops!',
+                    '</title>',
+                ],
+            )
+
+        with self.subTest('Success Check - Has { and } characters (reverse order).'):
+
+            # Generate response.
+            response = HttpResponse('<title>My title has } and { in it, oops!</title>')
+
+            self.assertPageContent(
+                response,
+                [
+                    '<title>',
+                    'My',
+                    'title',
+                    'has',
+                    '} and {',
+                    'in it,',
+                    'oops!',
+                    '</title>',
+                ],
+            )
+
+        with self.subTest('Failure Check - Expected { character.'):
+
+            # Generate response.
+            response = HttpResponse('<title>My title has blah in it, oops!</title>')
+
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(
+                    response,
+                    [
+                        '<title>',
+                        'My',
+                        'title',
+                        'has',
+                        '{',
+                        'in it,',
+                        'oops!',
+                        '</title>',
+                    ],
+                )
+            self.assertTextStartsWith(
+                'Could not find expected content value in response. Provided value was:\n',
+                str(err.exception),
+            )
+
+        with self.subTest('Failure Check - Expected } character.'):
+            # Generate response.
+            response = HttpResponse('<title>My title has blah in it, oops!</title>')
+
+            # Expecting single character.
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(
+                    response,
+                    [
+                        '<title>',
+                        'My',
+                        'title',
+                        'has',
+                        '}',
+                        'in it,',
+                        'oops!',
+                        '</title>',
+                    ],
+                )
+            self.assertTextStartsWith(
+                'Could not find expected content value in response. Provided value was:\n',
+                str(err.exception),
+            )
+
+        with self.subTest('Failure Check - Expected { and } characters (standard order).'):
+            # Generate response.
+            response = HttpResponse('<title>My title has blah in it, oops!</title>')
+
+            # Expecting single character.
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(
+                    response,
+                    [
+                        '<title>',
+                        'My',
+                        'title',
+                        'has',
+                        '{ and }',
+                        'in it,',
+                        'oops!',
+                        '</title>',
+                    ],
+                )
+            self.assertTextStartsWith(
+                'Could not find expected content value in response. Provided value was:\n',
+                str(err.exception),
+            )
+
+        with self.subTest('Failure Check - Expected { and } characters (reverse order).'):
+            # Generate response.
+            response = HttpResponse('<title>My title has blah in it, oops!</title>')
+
+            # Expecting single character.
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(
+                    response,
+                    [
+                        '<title>',
+                        'My',
+                        'title',
+                        'has',
+                        '} and {',
+                        'in it,',
+                        'oops!',
+                        '</title>',
+                    ],
+                )
+            self.assertTextStartsWith(
+                'Could not find expected content value in response. Provided value was:\n',
+                str(err.exception),
+            )
+
+        with self.subTest('Failure Check - Didn\'t expect { character.'):
+
+            response = HttpResponse('<title>My title has { in it, oops!</title>')
+
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(
+                    response,
+                    [
+                        '<title>',
+                        'My',
+                        'title',
+                        'has in it,',
+                        'oops!',
+                        '</title>',
+                    ],
+                )
+            self.assertTextStartsWith(
+                'Could not find expected content value in response. Provided value was:\n',
+                str(err.exception),
+            )
+
+        with self.subTest('Failure Check - Didn\'t expect } character.'):
+
+            response = HttpResponse('<title>My title has } in it, oops!</title>')
+
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(
+                    response,
+                    [
+                        '<title>',
+                        'My',
+                        'title',
+                        'has in it,',
+                        'oops!',
+                        '</title>',
+                    ],
+                )
+            self.assertTextStartsWith(
+                'Could not find expected content value in response. Provided value was:\n',
+                str(err.exception),
+            )
+
+        with self.subTest('Failure Check - Didn\'t expect { and } characters (standard order).'):
+
+            response = HttpResponse('<title>My title has { and } in it, oops!</title>')
+
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(
+                    response,
+                    [
+                        '<title>',
+                        'My',
+                        'title',
+                        'has in it,',
+                        'oops!',
+                        '</title>',
+                    ],
+                )
+            self.assertTextStartsWith(
+                'Could not find expected content value in response. Provided value was:\n',
+                str(err.exception),
+            )
+
+        with self.subTest('Failure Check - Didn\'t expect { and } characters (reverse order).'):
+
+            response = HttpResponse('<title>My title has } and { in it, oops!</title>')
+
+            with self.assertRaises(AssertionError) as err:
+                self.assertPageContent(
+                    response,
+                    [
+                        '<title>',
+                        'My',
+                        'title',
+                        'has in it,',
+                        'oops!',
+                        '</title>',
+                    ],
+                )
+            self.assertTextStartsWith(
+                'Could not find expected content value in response. Provided value was:\n',
+                str(err.exception),
+            )
+
     def test__assertNotPageContent__success(self):
         """
         Tests assertNotPageContent() function, in cases when it should succeed.

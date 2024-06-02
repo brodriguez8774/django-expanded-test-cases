@@ -1079,11 +1079,12 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         else:
             # Content value was physically not present at all. Raise "main" message.
+            updated_err_msg = err_msg.format(display_expected)
             if checked_content_str_addon:
-                err_msg += checked_content_str_addon
+                updated_err_msg += checked_content_str_addon
             if additional_error_info:
-                err_msg += '\n{0}'.format(additional_error_info)
-            self.fail(err_msg.format(display_expected))
+                updated_err_msg += '\n{0}'.format(additional_error_info)
+            self.fail(updated_err_msg)
 
     def assertNotPageContent(
         self,
