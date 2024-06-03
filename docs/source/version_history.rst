@@ -2,6 +2,17 @@ Version History
 ***************
 
 
+0.7.1 - "Debug Output" Quality of Life
+======================================
+* Added debug customization features that have been requested.
+  * Can now use a setting to disable logging output during tests. Either
+    limiting lower logging levels or disabling entirely.
+  * Added visual separator options for test debug output.
+  * Updated assertContent statement to be more informative with contextual
+    output, when providing a single statement with multiple checks.
+* Fixed a few rare bugs and Django depreciation warnings.
+
+
 0.7.0 - Minor Project File Restructuring
 ========================================
 * Slight change in project file naming, to try to fix an inconsistent issue when
