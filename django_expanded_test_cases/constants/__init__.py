@@ -29,6 +29,8 @@ from .general_handling_constants import (
 
 # Constants related to end-user debug/testing output.
 from .debug_output_constants import (
+    COLORAMA_PRESENT,
+    ETC_ASSERT_CONTENT__SURROUNDING_CHECK_OUTPUT_LENGTH,
     ETC_DEBUG_PRINT,
     ETC_DEBUG_PRINT__LOGGING_SEPARATOR,
     ETC_DEBUG_PRINT__RESPONSE_SEPARATOR,

@@ -17,6 +17,13 @@ from django.urls import reverse
 
 # Internal Imports.
 from django_expanded_test_cases import IntegrationTestCase
+from django_expanded_test_cases.constants import (
+    COLORAMA_PRESENT,
+    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+    ETC_OUTPUT_ERROR_COLOR,
+    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+    ETC_OUTPUT_RESET_COLOR,
+)
 
 
 class IntegrationClassTest__Base(IntegrationTestCase):
@@ -30,6 +37,7 @@ class IntegrationClassTest__Base(IntegrationTestCase):
         """
         Tests URL value returned response object in assertResponse() function.
         """
+
         with self.subTest('With no site_root_url value defined - Via literal value'):
             # Test 404 page url.
             response = self.assertResponse('bad_url', expected_status=404)
@@ -4621,6 +4629,515 @@ class IntegrationClassTest__Base(IntegrationTestCase):
                 'Could not find expected content value in response. Provided value was:\n',
                 str(err.exception),
             )
+
+    def test__assertPageContent__verifying_contextual_output__default(self):
+        """Verifies contextual output for assertContent, when multiple values are provided in a single statement.
+        This tests the default setting value.
+        """
+        response = HttpResponse('<span>This is my test span.</span>')
+
+        if COLORAMA_PRESENT:
+            output_color_before = ETC_OUTPUT_EXPECTED_MATCH_COLOR
+            output_color_after = ETC_OUTPUT_ACTUALS_MATCH_COLOR
+            output_color_error = ETC_OUTPUT_ERROR_COLOR
+            output_color_reset = ETC_OUTPUT_RESET_COLOR
+        else:
+            output_color_before = ''
+            output_color_after = ''
+            output_color_error = ''
+            output_color_reset = ''
+
+        # Test with full values.
+        with self.assertRaises(AssertionError) as err:
+            self.assertPageContent(
+                response,
+                [
+                    '<span>',
+                    'This',
+                    'is',
+                    'my',
+                    'testing',
+                    'span',
+                    '.',
+                    '</span>',
+                ]
+            )
+        self.assertText(
+            (
+                'Could not find expected content value in response. Provided value was:\n'
+                'testing\n'
+                '\n'
+                '\n'
+                'Surrounding Checks:\n'
+                '{1}Content Checks Before:{0}\n'
+                '{1}    * is{0}\n'
+                '{1}    * my{0}\n'
+                '{2}Failed Check:{0}\n'
+                '{2}  > * testing{0}\n'
+                '{3}Content Checks After:{0}\n'
+                '{3}    * span{0}\n'
+                '{3}    * .{0}\n'
+            ).format(
+                output_color_reset,
+                output_color_before,
+                output_color_error,
+                output_color_after,
+            ),
+            str(err.exception),
+        )
+
+        # Test missing before.
+        with self.assertRaises(AssertionError) as err:
+            self.assertPageContent(
+                response,
+                [
+                    'testing',
+                    'span',
+                    '.',
+                    '</span>',
+                ]
+            )
+        self.assertText(
+            (
+                'Could not find expected content value in response. Provided value was:\n'
+                'testing\n'
+                '\n'
+                '\n'
+                'Surrounding Checks:\n'
+                '{2}Failed Check:{0}\n'
+                '{2}  > * testing{0}\n'
+                '{3}Content Checks After:{0}\n'
+                '{3}    * span{0}\n'
+                '{3}    * .{0}\n'
+            ).format(
+                output_color_reset,
+                output_color_before,
+                output_color_error,
+                output_color_after,
+            ),
+            str(err.exception),
+        )
+
+        # Test missing after.
+        with self.assertRaises(AssertionError) as err:
+            self.assertPageContent(
+                response,
+                [
+                    '<span>',
+                    'This',
+                    'is',
+                    'my',
+                    'testing',
+                ]
+            )
+        self.assertText(
+            (
+                'Could not find expected content value in response. Provided value was:\n'
+                'testing\n'
+                '\n'
+                '\n'
+                'Surrounding Checks:\n'
+                '{1}Content Checks Before:{0}\n'
+                '{1}    * is{0}\n'
+                '{1}    * my{0}\n'
+                '{2}Failed Check:{0}\n'
+                '{2}  > * testing{0}\n'
+            ).format(
+                output_color_reset,
+                output_color_before,
+                output_color_error,
+                output_color_after,
+            ),
+            str(err.exception),
+        )
+
+        # Test only one per side.
+        with self.assertRaises(AssertionError) as err:
+            self.assertPageContent(
+                response,
+                [
+                    'my',
+                    'testing',
+                    'span',
+                ]
+            )
+        self.assertText(
+            (
+                'Could not find expected content value in response. Provided value was:\n'
+                'testing\n'
+                '\n'
+                '\n'
+                'Surrounding Checks:\n'
+                '{1}Content Checks Before:{0}\n'
+                '{1}    * my{0}\n'
+                '{2}Failed Check:{0}\n'
+                '{2}  > * testing{0}\n'
+                '{3}Content Checks After:{0}\n'
+                '{3}    * span{0}\n'
+            ).format(
+                output_color_reset,
+                output_color_before,
+                output_color_error,
+                output_color_after,
+            ),
+            str(err.exception),
+        )
+
+        # Test missing all.
+        with self.assertRaises(AssertionError) as err:
+            self.assertPageContent(
+                response,
+                [
+                    'testing',
+                ]
+            )
+        self.assertText(
+            (
+                'Could not find expected content value in response. Provided value was:\n'
+                'testing\n'
+            ),
+            str(err.exception),
+        )
+
+    @patch("django_expanded_test_cases.test_cases.integration_test_case.ETC_ASSERT_CONTENT__SURROUNDING_CHECK_OUTPUT_LENGTH", 1)
+    def test__assertPageContent__verifying_contextual_output__one(self):
+        """Verifies contextual output for assertContent, when multiple values are provided in a single statement.
+        This tests settings value of 1 contextual item output.
+        """
+        response = HttpResponse('<span>This is my test span.</span>')
+
+        if COLORAMA_PRESENT:
+            output_color_before = ETC_OUTPUT_EXPECTED_MATCH_COLOR
+            output_color_after = ETC_OUTPUT_ACTUALS_MATCH_COLOR
+            output_color_error = ETC_OUTPUT_ERROR_COLOR
+            output_color_reset = ETC_OUTPUT_RESET_COLOR
+        else:
+            output_color_before = ''
+            output_color_after = ''
+            output_color_error = ''
+            output_color_reset = ''
+
+        # Test with full values.
+        with self.assertRaises(AssertionError) as err:
+            self.assertPageContent(
+                response,
+                [
+                    '<span>',
+                    'This',
+                    'is',
+                    'my',
+                    'testing',
+                    'span',
+                    '.',
+                    '</span>',
+                ]
+            )
+        self.assertText(
+            (
+                'Could not find expected content value in response. Provided value was:\n'
+                'testing\n'
+                '\n'
+                '\n'
+                'Surrounding Checks:\n'
+                '{1}Content Checks Before:{0}\n'
+                '{1}    * my{0}\n'
+                '{2}Failed Check:{0}\n'
+                '{2}  > * testing{0}\n'
+                '{3}Content Checks After:{0}\n'
+                '{3}    * span{0}\n'
+            ).format(
+                output_color_reset,
+                output_color_before,
+                output_color_error,
+                output_color_after,
+            ),
+            str(err.exception),
+        )
+
+        # Test missing before.
+        with self.assertRaises(AssertionError) as err:
+            self.assertPageContent(
+                response,
+                [
+                    'testing',
+                    'span',
+                    '.',
+                    '</span>',
+                ]
+            )
+        self.assertText(
+            (
+                'Could not find expected content value in response. Provided value was:\n'
+                'testing\n'
+                '\n'
+                '\n'
+                'Surrounding Checks:\n'
+                '{2}Failed Check:{0}\n'
+                '{2}  > * testing{0}\n'
+                '{3}Content Checks After:{0}\n'
+                '{3}    * span{0}\n'
+            ).format(
+                output_color_reset,
+                output_color_before,
+                output_color_error,
+                output_color_after,
+            ),
+            str(err.exception),
+        )
+
+        # Test missing after.
+        with self.assertRaises(AssertionError) as err:
+            self.assertPageContent(
+                response,
+                [
+                    '<span>',
+                    'This',
+                    'is',
+                    'my',
+                    'testing',
+                ]
+            )
+        self.assertText(
+            (
+                'Could not find expected content value in response. Provided value was:\n'
+                'testing\n'
+                '\n'
+                '\n'
+                'Surrounding Checks:\n'
+                '{1}Content Checks Before:{0}\n'
+                '{1}    * my{0}\n'
+                '{2}Failed Check:{0}\n'
+                '{2}  > * testing{0}\n'
+            ).format(
+                output_color_reset,
+                output_color_before,
+                output_color_error,
+                output_color_after,
+            ),
+            str(err.exception),
+        )
+
+        # Test only one per side.
+        with self.assertRaises(AssertionError) as err:
+            self.assertPageContent(
+                response,
+                [
+                    'my',
+                    'testing',
+                    'span',
+                ]
+            )
+        self.assertText(
+            (
+                'Could not find expected content value in response. Provided value was:\n'
+                'testing\n'
+                '\n'
+                '\n'
+                'Surrounding Checks:\n'
+                '{1}Content Checks Before:{0}\n'
+                '{1}    * my{0}\n'
+                '{2}Failed Check:{0}\n'
+                '{2}  > * testing{0}\n'
+                '{3}Content Checks After:{0}\n'
+                '{3}    * span{0}\n'
+            ).format(
+                output_color_reset,
+                output_color_before,
+                output_color_error,
+                output_color_after,
+            ),
+            str(err.exception),
+        )
+
+        # Test missing all.
+        with self.assertRaises(AssertionError) as err:
+            self.assertPageContent(
+                response,
+                [
+                    'testing',
+                ]
+            )
+        self.assertText(
+            (
+                'Could not find expected content value in response. Provided value was:\n'
+                'testing\n'
+            ),
+            str(err.exception),
+        )
+
+    @patch("django_expanded_test_cases.test_cases.integration_test_case.ETC_ASSERT_CONTENT__SURROUNDING_CHECK_OUTPUT_LENGTH", 3)
+    def test__assertPageContent__verifying_contextual_output__three(self):
+        """Verifies contextual output for assertContent, when multiple values are provided in a single statement.
+        This tests settings value of 3 contextual item outputs.
+        """
+        response = HttpResponse('<span>This is my test span.</span>')
+
+        if COLORAMA_PRESENT:
+            output_color_before = ETC_OUTPUT_EXPECTED_MATCH_COLOR
+            output_color_after = ETC_OUTPUT_ACTUALS_MATCH_COLOR
+            output_color_error = ETC_OUTPUT_ERROR_COLOR
+            output_color_reset = ETC_OUTPUT_RESET_COLOR
+        else:
+            output_color_before = ''
+            output_color_after = ''
+            output_color_error = ''
+            output_color_reset = ''
+
+        # Test with full values.
+        with self.assertRaises(AssertionError) as err:
+            self.assertPageContent(
+                response,
+                [
+                    '<span>',
+                    'This',
+                    'is',
+                    'my',
+                    'testing',
+                    'span',
+                    '.',
+                    '</span>',
+                ]
+            )
+        self.assertText(
+            (
+                'Could not find expected content value in response. Provided value was:\n'
+                'testing\n'
+                '\n'
+                '\n'
+                'Surrounding Checks:\n'
+                '{1}Content Checks Before:{0}\n'
+                '{1}    * This{0}\n'
+                '{1}    * is{0}\n'
+                '{1}    * my{0}\n'
+                '{2}Failed Check:{0}\n'
+                '{2}  > * testing{0}\n'
+                '{3}Content Checks After:{0}\n'
+                '{3}    * span{0}\n'
+                '{3}    * .{0}\n'
+                '{3}    * </span>{0}\n'
+            ).format(
+                output_color_reset,
+                output_color_before,
+                output_color_error,
+                output_color_after,
+            ),
+            str(err.exception),
+        )
+
+        # Test missing before.
+        with self.assertRaises(AssertionError) as err:
+            self.assertPageContent(
+                response,
+                [
+                    'testing',
+                    'span',
+                    '.',
+                    '</span>',
+                ]
+            )
+        self.assertText(
+            (
+                'Could not find expected content value in response. Provided value was:\n'
+                'testing\n'
+                '\n'
+                '\n'
+                'Surrounding Checks:\n'
+                '{2}Failed Check:{0}\n'
+                '{2}  > * testing{0}\n'
+                '{3}Content Checks After:{0}\n'
+                '{3}    * span{0}\n'
+                '{3}    * .{0}\n'
+                '{3}    * </span>{0}\n'
+            ).format(
+                output_color_reset,
+                output_color_before,
+                output_color_error,
+                output_color_after,
+            ),
+            str(err.exception),
+        )
+
+        # Test missing after.
+        with self.assertRaises(AssertionError) as err:
+            self.assertPageContent(
+                response,
+                [
+                    '<span>',
+                    'This',
+                    'is',
+                    'my',
+                    'testing',
+                ]
+            )
+        self.assertText(
+            (
+                'Could not find expected content value in response. Provided value was:\n'
+                'testing\n'
+                '\n'
+                '\n'
+                'Surrounding Checks:\n'
+                '{1}Content Checks Before:{0}\n'
+                '{1}    * This{0}\n'
+                '{1}    * is{0}\n'
+                '{1}    * my{0}\n'
+                '{2}Failed Check:{0}\n'
+                '{2}  > * testing{0}\n'
+            ).format(
+                output_color_reset,
+                output_color_before,
+                output_color_error,
+                output_color_after,
+            ),
+            str(err.exception),
+        )
+
+        # Test only one per side.
+        with self.assertRaises(AssertionError) as err:
+            self.assertPageContent(
+                response,
+                [
+                    'my',
+                    'testing',
+                    'span',
+                ]
+            )
+        self.assertText(
+            (
+                'Could not find expected content value in response. Provided value was:\n'
+                'testing\n'
+                '\n'
+                '\n'
+                'Surrounding Checks:\n'
+                '{1}Content Checks Before:{0}\n'
+                '{1}    * my{0}\n'
+                '{2}Failed Check:{0}\n'
+                '{2}  > * testing{0}\n'
+                '{3}Content Checks After:{0}\n'
+                '{3}    * span{0}\n'
+            ).format(
+                output_color_reset,
+                output_color_before,
+                output_color_error,
+                output_color_after,
+            ),
+            str(err.exception),
+        )
+
+        # Test missing all.
+        with self.assertRaises(AssertionError) as err:
+            self.assertPageContent(
+                response,
+                [
+                    'testing',
+                ]
+            )
+        self.assertText(
+            (
+                'Could not find expected content value in response. Provided value was:\n'
+                'testing\n'
+            ),
+            str(err.exception),
+        )
 
     def test__assertNotPageContent__success(self):
         """

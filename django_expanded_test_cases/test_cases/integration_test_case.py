@@ -16,18 +16,11 @@ from django.urls.exceptions import NoReverseMatch
 # Internal Imports.
 from .base_test_case import BaseTestCase
 from django_expanded_test_cases.constants import (
+    ETC_ASSERT_CONTENT__SURROUNDING_CHECK_OUTPUT_LENGTH,
     ETC_INCLUDE_RESPONSE_DEBUG_URL,
-    ETC_INCLUDE_RESPONSE_DEBUG_CONTENT,
-    ETC_INCLUDE_RESPONSE_DEBUG_CONTEXT,
-    ETC_INCLUDE_RESPONSE_DEBUG_FORMS,
-    ETC_INCLUDE_RESPONSE_DEBUG_HEADER,
-    ETC_INCLUDE_RESPONSE_DEBUG_MESSAGES,
-    ETC_INCLUDE_RESPONSE_DEBUG_SESSION,
-    ETC_INCLUDE_RESPONSE_DEBUG_USER_INFO,
     ETC_RESPONSE_DEBUG_LOGGING_LEVEL,
     ETC_ALLOW_TITLE_PARTIALS,
     ETC_ALLOW_MESSAGE_PARTIALS,
-    ETC_AUTO_GENERATE_USERS,
     ETC_REQUEST_USER_STRICTNESS,
     ETC_DEFAULT_STANDARD_USER_IDENTIFIER,
     ETC_OUTPUT_ERROR_COLOR,
@@ -822,20 +815,18 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             self.show_debug_content(response)
 
         main_err_msg = (
-            'Could not find expected content value in response. Provided value was:\n'
             # To prevent Black single-lining this.
+            'Could not find expected content value in response. Provided value was:\n'
             '{0}\n'
         )
         checked_content_str_addon = (
-            '\n'
             # To prevent Black single-lining this.
+            '\n'
             '\n'
             'Surrounding Checks:\n'
             '{0}'
             '{1}'
             '{2}'
-            '{3}'
-            '{4}'
         )
         ordering_err_msg = 'Expected content value was found, but ordering of values do not match. Problem value:\n{0}'
         casing_err_msg = (
@@ -866,49 +857,76 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
                 if len(expected_content) > 1:
                     # Update str in event of error.
+                    before_debug_output = ''
+                    before_debug_output_statements = ''
+                    after_debug_output = ''
+                    after_debug_output_statements = ''
+
+                    # Handle "before" output.
+                    if ETC_ASSERT_CONTENT__SURROUNDING_CHECK_OUTPUT_LENGTH > 0:
+                        before_debug_output = '{0}Content Checks Before:{1}\n'.format(
+                            ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                            ETC_OUTPUT_RESET_COLOR,
+                        )
+
+                        for surrounding_check_index in reversed(range(ETC_ASSERT_CONTENT__SURROUNDING_CHECK_OUTPUT_LENGTH + 1)):
+                            if surrounding_check_index == 0:
+                                continue
+
+                            before_debug_output_statements += (
+                                '{1}    * {0}{2}\n'.format(
+                                    expected_content[index - surrounding_check_index],
+                                    ETC_OUTPUT_EXPECTED_MATCH_COLOR,
+                                    ETC_OUTPUT_RESET_COLOR,
+                                )
+                                if 0 < ((index + 1) - surrounding_check_index) < len(expected_content)
+                                else ''
+                            )
+
+                        if before_debug_output_statements != '':
+                            before_debug_output += before_debug_output_statements
+                        else:
+                            before_debug_output = ''
+
+                    # Handle "after" output.
+                    if ETC_ASSERT_CONTENT__SURROUNDING_CHECK_OUTPUT_LENGTH > 0:
+                        after_debug_output = '{0}Content Checks After:{1}\n'.format(
+                            ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                            ETC_OUTPUT_RESET_COLOR,
+                        )
+
+                        for surrounding_check_index in range(ETC_ASSERT_CONTENT__SURROUNDING_CHECK_OUTPUT_LENGTH + 1):
+                            if surrounding_check_index == 0:
+                                continue
+
+                            after_debug_output_statements += (
+                                '{1}    * {0}{2}\n'.format(
+                                    expected_content[index + surrounding_check_index],
+                                    ETC_OUTPUT_ACTUALS_MATCH_COLOR,
+                                    ETC_OUTPUT_RESET_COLOR,
+                                )
+                                if (len(expected_content) - index) > surrounding_check_index
+                                else ''
+                            )
+
+                        if after_debug_output_statements != '':
+                            after_debug_output += after_debug_output_statements
+                        else:
+                            after_debug_output = ''
+
                     updated_checked_content_str_addon = checked_content_str_addon.format(
+                        before_debug_output,
                         (
-                            '{1}    * {0}{2}\n'.format(
-                                expected_content[index - 2],
-                                ETC_OUTPUT_EXPECTED_MATCH_COLOR,
-                                ETC_OUTPUT_RESET_COLOR,
-                            )
-                            if index >= 2
-                            else ''
-                        ),
-                        (
-                            '{1}    * {0}{2}\n'.format(
-                                expected_content[index - 1],
-                                ETC_OUTPUT_EXPECTED_MATCH_COLOR,
-                                ETC_OUTPUT_RESET_COLOR,
-                            )
-                            if index >= 1
-                            else ''
-                        ),
-                        '{1}  > * {0}{2}\n'.format(
+                            '{1}Failed Check:{2}\n'
+                            '{1}  > * {0}{2}\n'
+                        ).format(
                             expected_content[index],
                             ETC_OUTPUT_ERROR_COLOR,
                             ETC_OUTPUT_RESET_COLOR,
                         ),
-                        (
-                            '{1}    * {0}{2}\n'.format(
-                                expected_content[index + 1],
-                                ETC_OUTPUT_ACTUALS_MATCH_COLOR,
-                                ETC_OUTPUT_RESET_COLOR,
-                            )
-                            if (len(expected_content) - index) > 1
-                            else ''
-                        ),
-                        (
-                            '{1}    * {0}{2}\n'.format(
-                                expected_content[index + 2],
-                                ETC_OUTPUT_ACTUALS_MATCH_COLOR,
-                                ETC_OUTPUT_RESET_COLOR,
-                            )
-                            if (len(expected_content) - index) > 2
-                            else ''
-                        ),
+                        after_debug_output,
                     )
+
                 else:
                     updated_checked_content_str_addon = ''
 
