@@ -41,6 +41,41 @@ ETC_DEBUG_PRINT__SKIP_DISPLAY = getattr(
     [],
 )
 
+
+# Optional visual separator between response assertions.
+# Can be used to add extra newlines or other formatting between assertResponse debugging output.
+# Must manually insert newlines at the end of each line where desired.
+# Can optionally also insert color formatting if desired.
+ETC_DEBUG_PRINT__RESPONSE_SEPARATOR = str(
+    getattr(
+        settings,
+        'DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT__RESPONSE_SEPARATOR',
+        '',
+    )
+)
+
+
+# Optional visual separator at end of test std_out (print) output.
+# Handles same as above RESPONSE_SEPARATOR.
+ETC_DEBUG_PRINT__STD_OUT_SEPARATOR = str(
+    getattr(
+        settings,
+        'DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT__STD_OUT_SEPARATOR',
+        '',
+    )
+)
+
+
+# Optional visual separator at end of test logging output. Displays at ERROR level.
+# Handles same as above RESPONSE_SEPARATOR.
+ETC_DEBUG_PRINT__LOGGING_SEPARATOR = str(
+    getattr(
+        settings,
+        'DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT__LOGGING_SEPARATOR',
+        '',
+    )
+)
+
 # endregion General Debug Handling
 
 

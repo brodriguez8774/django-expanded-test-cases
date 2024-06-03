@@ -6,7 +6,12 @@ Testing class for generalized logic.
 from django.test import TestCase
 
 # Internal Imports.
-from django_expanded_test_cases.constants import ETC_OUTPUT_EMPHASIS_COLOR, ETC_OUTPUT_ERROR_COLOR
+from django_expanded_test_cases.constants import (
+    ETC_DEBUG_PRINT__LOGGING_SEPARATOR,
+    ETC_DEBUG_PRINT__STD_OUT_SEPARATOR,
+    ETC_OUTPUT_EMPHASIS_COLOR,
+    ETC_OUTPUT_ERROR_COLOR,
+)
 from django_expanded_test_cases.mixins import CoreTestCaseMixin
 
 
@@ -110,6 +115,16 @@ class BaseTestCase(TestCase, CoreTestCaseMixin):
 
             # Save that we have output error.
             self._error_displayed = True
+
+            # Optionally display custom debug-output separators for additional end-of-test clarity.
+            if len(ETC_DEBUG_PRINT__STD_OUT_SEPARATOR) > 0:
+                # Local std_out separator is defined. Print to console.
+                self._debug_print(ETC_DEBUG_PRINT__STD_OUT_SEPARATOR)
+            if len(ETC_DEBUG_PRINT__LOGGING_SEPARATOR) > 0:
+                # Local std_out separator is defined. Log with logger.
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.error(ETC_DEBUG_PRINT__LOGGING_SEPARATOR)
 
     # region Default Test Function Overrides
 
