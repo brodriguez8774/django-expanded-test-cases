@@ -16,6 +16,28 @@ except ImportError:
     COLORAMA_PRESENT = False
 
 
+# In most projects, there is a set of content (such as header data) at the start of the page,
+# which tests generally won't target. That content can safely be excluded from testing output, similar to
+# the assertContent() content_starts_after value.
+# If the project has a consistent element or string value that defines where content starts being relevant,
+# it can be defined here, to then exclude all start-of-page content above it, for all tests within project.
+# Defining this project can help significantly reduce redundant/"useless" debug output for integration tests,
+# as long as the content is universally not helpful for testing in regards to the project.
+ETC_SKIP_CONTENT_BEFORE = getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_SKIP_CONTENT_BEFORE',
+    None,
+)
+
+
+# Similar to above SKIP_CONTENT_BEFORE, except used to define content at the end-of-page that is to be skipped.
+ETC_SKIP_CONTENT_AFTER = getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_SKIP_CONTENT_AFTER',
+    None,
+)
+
+
 # Indicates whether partial matches are allowed for site title assertions.
 # IE: Will pass as long as provided text appears as a subsection of the full site title.
 # Defaults to needing exact match.

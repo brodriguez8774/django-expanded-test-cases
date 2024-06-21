@@ -27,6 +27,8 @@ from django_expanded_test_cases.constants import (
     ETC_OUTPUT_RESET_COLOR,
     ETC_REQUEST_USER_STRICTNESS,
     ETC_RESPONSE_DEBUG_LOGGING_LEVEL,
+    ETC_SKIP_CONTENT_AFTER,
+    ETC_SKIP_CONTENT_BEFORE,
     ETC_VIEWS_SHOULD_REDIRECT,
     VOID_ELEMENT_LIST,
 )
@@ -836,6 +838,13 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             'Found was:\n'
             '... {1} ...'
         )
+
+        # Handle settings values for content_starts_before/content_starts_after.
+        # TODO: Naming for these is gross, ugh. Must be a better way.
+        if content_starts_after is None and ETC_SKIP_CONTENT_BEFORE:
+            content_starts_after = ETC_SKIP_CONTENT_BEFORE
+        if content_ends_before is None and ETC_SKIP_CONTENT_AFTER:
+            content_ends_before = ETC_SKIP_CONTENT_AFTER
 
         # Extra setup logic, to sanitize and handle if content_starts_after/content_ends_before variables are defined.
         content_dict = self._trim_response_content(
