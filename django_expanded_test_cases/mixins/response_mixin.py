@@ -37,6 +37,8 @@ from django_expanded_test_cases.constants import (
     ETC_RESPONSE_DEBUG_MESSAGE_COLOR,
     ETC_RESPONSE_DEBUG_SESSION_COLOR,
     ETC_RESPONSE_DEBUG_URL_COLOR,
+    ETC_SKIP_CONTENT_AFTER,
+    ETC_SKIP_CONTENT_BEFORE,
 )
 
 
@@ -117,6 +119,55 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         # Standardize output for easier analysis.
         response_content = self.standardize_characters(response_content)
         response_content = self.standardize_newlines(response_content)
+
+        # Optionally attempt to trim content based on SKIP BEFORE/AFTER settings values.
+        if ETC_SKIP_CONTENT_BEFORE is not None and len(ETC_SKIP_CONTENT_BEFORE) > 0:
+            # Content was specified to skip.
+            # Use regex to find and remove output.
+
+            # Standardize provided settings string, so that it's easier to compare against and trim.
+            skip_content_before = self.standardize_characters(ETC_SKIP_CONTENT_BEFORE)
+            skip_content_before = self.standardize_whitespace(skip_content_before)
+
+            # Correct some potential problematic characters specifically for this section of logic.
+            with warnings.catch_warnings(action="ignore"):
+                skip_content_before = skip_content_before.replace('^', '\^')
+                skip_content_before = skip_content_before.replace('$', '\$')
+                skip_content_before = skip_content_before.replace('|', '\|')
+                skip_content_before = skip_content_before.replace('(', '\(')
+                skip_content_before = skip_content_before.replace(')', '\)')
+                skip_content_before = skip_content_before.replace(' ', '\s+')
+
+            # Trim the output.
+            response_content = re.sub(
+                r'^([\s\S]*){0}\s+'.format(skip_content_before),
+                '',
+                response_content,
+            )
+
+        if ETC_SKIP_CONTENT_AFTER is not None and len(ETC_SKIP_CONTENT_AFTER) > 0:
+            # Content was specified to skip.
+            # Use regex to find and remove output.
+
+            # Standardize provided settings string, so that it's easier to compare against and trim.
+            skip_content_after = self.standardize_characters(ETC_SKIP_CONTENT_AFTER)
+            skip_content_after = self.standardize_whitespace(skip_content_after)
+
+            # Correct some potential problematic characters specifically for this section of logic.
+            with warnings.catch_warnings(action="ignore"):
+                skip_content_after = skip_content_after.replace('^', '\^')
+                skip_content_after = skip_content_after.replace('$', '\$')
+                skip_content_after = skip_content_after.replace('|', '\|')
+                skip_content_after = skip_content_after.replace('(', '\(')
+                skip_content_after = skip_content_after.replace(')', '\)')
+                skip_content_after = skip_content_after.replace(' ', '\s+')
+
+            # Trim the output.
+            response_content = re.sub(
+                r'\s+{0}([\s\S]*)$'.format(skip_content_after),
+                '',
+                response_content,
+            )
 
         self._debug_print()
         self._debug_print(
