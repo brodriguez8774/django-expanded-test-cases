@@ -12,7 +12,7 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def runtests():
     """Run Tests"""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'etc_tests.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tests.settings')
     os.environ.setdefault('PYTHONPATH', ROOT_DIR)
 
     argv = ['pytest'] + sys.argv[1:] + ['--asyncio-mode=auto']

@@ -15,7 +15,7 @@ except ImportError:
     from channels.http import AsgiHandler
 
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'etc_tests.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tests.settings')
 django.setup()
 
 

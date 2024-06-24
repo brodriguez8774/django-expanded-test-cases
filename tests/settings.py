@@ -32,7 +32,7 @@ INSTALLED_APPS = (
 )
 if CHANNELS_PACKAGE_INSTALLED:
     INSTALLED_APPS += ('channels', 'daphne')
-ASGI_APPLICATION = 'etc_tests.asgi.application'
+ASGI_APPLICATION = 'tests.asgi.application'
 
 
 DATABASES = {
