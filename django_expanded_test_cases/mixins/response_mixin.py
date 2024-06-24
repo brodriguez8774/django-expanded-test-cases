@@ -136,7 +136,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             skip_content_before = self.standardize_whitespace(skip_content_before)
 
             # Correct some potential problematic characters specifically for this section of logic.
-            with warnings.catch_warnings(action="ignore"):
+            with warnings.catch_warnings(record=True) as warn:
                 skip_content_before = skip_content_before.replace('^', '\^')
                 skip_content_before = skip_content_before.replace('$', '\$')
                 skip_content_before = skip_content_before.replace('|', '\|')
@@ -160,7 +160,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             skip_content_after = self.standardize_whitespace(skip_content_after)
 
             # Correct some potential problematic characters specifically for this section of logic.
-            with warnings.catch_warnings(action="ignore"):
+            with warnings.catch_warnings(record=True) as warn:
                 skip_content_after = skip_content_after.replace('^', '\^')
                 skip_content_after = skip_content_after.replace('$', '\$')
                 skip_content_after = skip_content_after.replace('|', '\|')
@@ -287,7 +287,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             # Fix for
             # RemovedInDjango50Warning: The "default.html" templates for forms and formsets will be removed.
             # Warning, prior to Django 5.0. Seems to trigger due to ETC accessing context in an "unexpected" way.
-            with warnings.catch_warnings(action="ignore"):
+            with warnings.catch_warnings(record=True) as warn:
 
                 # Iterate through context values.
                 for key in response_context.keys():
