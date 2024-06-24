@@ -387,7 +387,7 @@ class IntegrationHelperTestCase:
         Tests get_context_messages() function.
         """
         with self.subTest('No messages'):
-            response = self._get_page_response('django_expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:home')
             messages = self.get_context_messages(response)
             self.assertEqual(len(messages), 0)
 
@@ -463,7 +463,7 @@ class IntegrationHelperTestCase:
             )
 
         with self.subTest('Standard Response - Render() Home Page'):
-            response = self._get_page_response('django_expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:home')
             response = self.get_minimized_response_content(response, strip_newlines=True)
             self.assertText(
                 (
@@ -476,7 +476,7 @@ class IntegrationHelperTestCase:
             )
 
         with self.subTest('Standard Response - TemplateResponse Home Page'):
-            response = self._get_page_response('django_expanded_test_cases:template-response-index')
+            response = self._get_page_response('django_expanded_test_cases:template-response-home')
             response = self.get_minimized_response_content(response, strip_newlines=True)
             self.assertText(
                 (
@@ -541,7 +541,7 @@ class IntegrationHelperTestCase:
             )
 
         with self.subTest('Standard Response - Render() Home Page'):
-            response = self._get_page_response('django_expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:home')
             response = self.get_minimized_response_content(response, strip_newlines=False)
             self.assertText(
                 (
@@ -554,7 +554,7 @@ class IntegrationHelperTestCase:
             )
 
         with self.subTest('Standard Response - TemplateResponse Home Page'):
-            response = self._get_page_response('django_expanded_test_cases:template-response-index')
+            response = self._get_page_response('django_expanded_test_cases:template-response-home')
             response = self.get_minimized_response_content(response, strip_newlines=False)
             self.assertText(
                 (

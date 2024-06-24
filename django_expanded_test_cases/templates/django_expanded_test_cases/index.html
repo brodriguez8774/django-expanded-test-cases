@@ -21,7 +21,7 @@
   {% endif %}
 
   {% if text %}
-    <p>{{ text }}</p>
+    <p>{{ text|safe }}</p>
   {% endif %}
 
   {% if li_set %}

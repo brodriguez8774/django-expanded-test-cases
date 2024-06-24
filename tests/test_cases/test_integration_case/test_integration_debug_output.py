@@ -266,7 +266,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         actual_text = actual_text.replace(expected_text, '')
 
     @unittest.mock.patch('sys.stdout', new_callable=io.StringIO)
-    def test__general_debug_output__different_pages__index_page(self, mock_stdout):
+    def test__general_debug_output__different_pages__home_page(self, mock_stdout):
         """Verifying output of assertResponse, with different pages."""
 
         # Set error output to not truncate text comparison errors for these tests.
@@ -275,7 +275,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         # Force assertion error so we can check debug output.
         with self.assertRaises(AssertionError):
             self.assertGetResponse(
-                'django_expanded_test_cases:template-response-index',
+                'django_expanded_test_cases:template-response-home',
                 expected_title='Testing',
             )
 
@@ -288,9 +288,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         with self.subTest('Test url section'):
             # Check for url section.
             expected_text = (
-                '-------------------------------------------------------------\n'
-                'Attempting to access url "127.0.0.1/template-response/index/"\n'
-                '-------------------------------------------------------------\n'
+                '------------------------------------------------------------\n'
+                'Attempting to access url "127.0.0.1/template-response/home/"\n'
+                '------------------------------------------------------------\n'
                 '\n'
             )
             self.assertTextStartsWith(expected_text, actual_text)
@@ -349,13 +349,13 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             )
             expected_text_2 = (
                 '\n'
-                '    * request: <WSGIRequest: GET \'/template-response/index/\'>\n'
+                '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                 '    * user: AnonymousUser\n'
                 '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
             )
             expected_text_3 = (
                 '>>)"\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/index/\'>>\n'
+                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
                 '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
                 '    * True: True\n'
                 '    * False: False\n'
@@ -627,7 +627,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         """Verifying output of assertResponse, with different failure types.
 
         These tests should effectively run the same as the
-        test__general_debug_output__different_pages__index_page test.
+        test__general_debug_output__different_pages__home_page test.
         The point of these tests is to verify output stays the same.
         """
 
@@ -637,7 +637,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         # Force assertion error so we can check debug output.
         with self.assertRaises(AssertionError):
             self.assertGetResponse(
-                'django_expanded_test_cases:template-response-index',
+                'django_expanded_test_cases:template-response-home',
                 expected_url='Testing',
             )
 
@@ -650,9 +650,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         with self.subTest('Test url section'):
             # Check for url section.
             expected_text = (
-                '-------------------------------------------------------------\n'
-                'Attempting to access url "127.0.0.1/template-response/index/"\n'
-                '-------------------------------------------------------------\n'
+                '------------------------------------------------------------\n'
+                'Attempting to access url "127.0.0.1/template-response/home/"\n'
+                '------------------------------------------------------------\n'
                 '\n'
             )
             self.assertTextStartsWith(expected_text, actual_text)
@@ -710,13 +710,13 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             )
             expected_text_2 = (
                 '\n'
-                '    * request: <WSGIRequest: GET \'/template-response/index/\'>\n'
+                '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                 '    * user: AnonymousUser\n'
                 '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
             )
             expected_text_3 = (
                 '>>)"\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/index/\'>>\n'
+                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
                 '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
                 '    * True: True\n'
                 '    * False: False\n'
@@ -804,7 +804,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         """Verifying output of assertResponse, with different failure types.
 
         These tests should effectively run the same as the
-        test__general_debug_output__different_pages__index_page test.
+        test__general_debug_output__different_pages__home_page test.
         The point of these tests is to verify output stays the same.
         """
 
@@ -814,7 +814,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         # Force assertion error so we can check debug output.
         with self.assertRaises(AssertionError):
             self.assertGetResponse(
-                'django_expanded_test_cases:template-response-index',
+                'django_expanded_test_cases:template-response-home',
                 expected_header='Testing',
             )
 
@@ -827,9 +827,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         with self.subTest('Test url section'):
             # Check for url section.
             expected_text = (
-                '-------------------------------------------------------------\n'
-                'Attempting to access url "127.0.0.1/template-response/index/"\n'
-                '-------------------------------------------------------------\n'
+                '------------------------------------------------------------\n'
+                'Attempting to access url "127.0.0.1/template-response/home/"\n'
+                '------------------------------------------------------------\n'
                 '\n'
             )
             self.assertTextStartsWith(expected_text, actual_text)
@@ -887,13 +887,13 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             )
             expected_text_2 = (
                 '\n'
-                '    * request: <WSGIRequest: GET \'/template-response/index/\'>\n'
+                '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                 '    * user: AnonymousUser\n'
                 '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
             )
             expected_text_3 = (
                 '>>)"\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/index/\'>>\n'
+                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
                 '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
                 '    * True: True\n'
                 '    * False: False\n'
@@ -981,7 +981,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         """Verifying output of assertResponse, with different failure types.
 
         These tests should effectively run the same as the
-        test__general_debug_output__different_pages__index_page test.
+        test__general_debug_output__different_pages__home_page test.
         The point of these tests is to verify output stays the same.
         """
 
@@ -991,7 +991,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         # Force assertion error so we can check debug output.
         with self.assertRaises(AssertionError):
             self.assertGetResponse(
-                'django_expanded_test_cases:template-response-index',
+                'django_expanded_test_cases:template-response-home',
                 expected_messages='Testing',
             )
 
@@ -1004,9 +1004,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         with self.subTest('Test url section'):
             # Check for url section.
             expected_text = (
-                '-------------------------------------------------------------\n'
-                'Attempting to access url "127.0.0.1/template-response/index/"\n'
-                '-------------------------------------------------------------\n'
+                '------------------------------------------------------------\n'
+                'Attempting to access url "127.0.0.1/template-response/home/"\n'
+                '------------------------------------------------------------\n'
                 '\n'
             )
             self.assertTextStartsWith(expected_text, actual_text)
@@ -1064,13 +1064,13 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             )
             expected_text_2 = (
                 '\n'
-                '    * request: <WSGIRequest: GET \'/template-response/index/\'>\n'
+                '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                 '    * user: AnonymousUser\n'
                 '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
             )
             expected_text_3 = (
                 '>>)"\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/index/\'>>\n'
+                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
                 '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
                 '    * True: True\n'
                 '    * False: False\n'
@@ -1158,7 +1158,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         """Verifying output of assertResponse, with different failure types.
 
         These tests should effectively run the same as the
-        test__general_debug_output__different_pages__index_page test.
+        test__general_debug_output__different_pages__home_page test.
         The point of these tests is to verify output stays the same.
         """
 
@@ -1168,7 +1168,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         # Force assertion error so we can check debug output.
         with self.assertRaises(AssertionError):
             self.assertGetResponse(
-                'django_expanded_test_cases:template-response-index',
+                'django_expanded_test_cases:template-response-home',
                 expected_content='Testing',
             )
 
@@ -1181,9 +1181,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         with self.subTest('Test url section'):
             # Check for url section.
             expected_text = (
-                '-------------------------------------------------------------\n'
-                'Attempting to access url "127.0.0.1/template-response/index/"\n'
-                '-------------------------------------------------------------\n'
+                '------------------------------------------------------------\n'
+                'Attempting to access url "127.0.0.1/template-response/home/"\n'
+                '------------------------------------------------------------\n'
                 '\n'
             )
             self.assertTextStartsWith(expected_text, actual_text)
@@ -1241,13 +1241,13 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             )
             expected_text_2 = (
                 '\n'
-                '    * request: <WSGIRequest: GET \'/template-response/index/\'>\n'
+                '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                 '    * user: AnonymousUser\n'
                 '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
             )
             expected_text_3 = (
                 '>>)"\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/index/\'>>\n'
+                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
                 '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
                 '    * True: True\n'
                 '    * False: False\n'
@@ -1344,7 +1344,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         # Force assertion error so we can check debug output.
         with self.assertRaises(AssertionError):
             self.assertGetResponse(
-                'django_expanded_test_cases:template-response-index',
+                'django_expanded_test_cases:template-response-home',
                 user=self.test_superuser,
                 expected_title='Testing',
             )
@@ -1358,9 +1358,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         with self.subTest('Test url section'):
             # Check for url section.
             expected_text = (
-                '-------------------------------------------------------------\n'
-                'Attempting to access url "127.0.0.1/template-response/index/"\n'
-                '-------------------------------------------------------------\n'
+                '------------------------------------------------------------\n'
+                'Attempting to access url "127.0.0.1/template-response/home/"\n'
+                '------------------------------------------------------------\n'
                 '\n'
             )
             self.assertTextStartsWith(expected_text, actual_text)
@@ -1418,10 +1418,10 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             )
             expected_text_2 = (
                 '\n'
-                '    * request: <WSGIRequest: GET \'/template-response/index/\'>\n'
+                '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                 '    * user: test_superuser\n'
                 '    * perms: PermWrapper(<SimpleLazyObject: <User: test_superuser>>)\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/index/\'>>\n'
+                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
                 '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
                 '    * True: True\n'
                 '    * False: False\n'
@@ -1525,7 +1525,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         # Force assertion error so we can check debug output.
         with self.assertRaises(AssertionError):
             self.assertGetResponse(
-                'django_expanded_test_cases:template-response-index',
+                'django_expanded_test_cases:template-response-home',
                 user=self.test_admin,
                 expected_title='Testing',
             )
@@ -1539,9 +1539,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         with self.subTest('Test url section'):
             # Check for url section.
             expected_text = (
-                '-------------------------------------------------------------\n'
-                'Attempting to access url "127.0.0.1/template-response/index/"\n'
-                '-------------------------------------------------------------\n'
+                '------------------------------------------------------------\n'
+                'Attempting to access url "127.0.0.1/template-response/home/"\n'
+                '------------------------------------------------------------\n'
                 '\n'
             )
             self.assertTextStartsWith(expected_text, actual_text)
@@ -1599,10 +1599,10 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             )
             expected_text_2 = (
                 '\n'
-                '    * request: <WSGIRequest: GET \'/template-response/index/\'>\n'
+                '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                 '    * user: test_admin\n'
                 '    * perms: PermWrapper(<SimpleLazyObject: <User: test_admin>>)\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/index/\'>>\n'
+                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
                 '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
                 '    * True: True\n'
                 '    * False: False\n'
@@ -1706,7 +1706,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         # Force assertion error so we can check debug output.
         with self.assertRaises(AssertionError):
             self.assertGetResponse(
-                'django_expanded_test_cases:template-response-index',
+                'django_expanded_test_cases:template-response-home',
                 user=self.test_user,
                 expected_title='Testing',
             )
@@ -1720,9 +1720,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         with self.subTest('Test url section'):
             # Check for url section.
             expected_text = (
-                '-------------------------------------------------------------\n'
-                'Attempting to access url "127.0.0.1/template-response/index/"\n'
-                '-------------------------------------------------------------\n'
+                '------------------------------------------------------------\n'
+                'Attempting to access url "127.0.0.1/template-response/home/"\n'
+                '------------------------------------------------------------\n'
                 '\n'
             )
             self.assertTextStartsWith(expected_text, actual_text)
@@ -1780,10 +1780,10 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             )
             expected_text_2 = (
                 '\n'
-                '    * request: <WSGIRequest: GET \'/template-response/index/\'>\n'
+                '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                 '    * user: test_user\n'
                 '    * perms: PermWrapper(<SimpleLazyObject: <User: test_user>>)\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/index/\'>>\n'
+                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
                 '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
                 '    * True: True\n'
                 '    * False: False\n'

@@ -14,6 +14,7 @@ from . import test_views
 app_name = 'django_expanded_test_cases'
 urlpatterns = [
     # Simple test views.
+    path('home/', test_views.home, name='home'),
     path('login/', test_views.login, name='login'),
     path('views/one-message/', test_views.view_with_one_message, name='response-with-one-message'),
     path('views/two-messages/', test_views.view_with_two_messages, name='response-with-two-messages'),
@@ -21,7 +22,7 @@ urlpatterns = [
     path('views/repeating-elements/', test_views.view_with_repeating_elements, name='response-with-repeating-elements'),
     path('views/<int:id>/<str:name>/', test_views.view_with_args, name='response-with-args'),
     # Template response views.
-    path('template-response/index/', test_views.template_response_index, name='template-response-index'),
+    path('template-response/home/', test_views.template_response_home, name='template-response-home'),
     path(
         'template-response/messages/',
         test_views.template_response_with_three_messages,

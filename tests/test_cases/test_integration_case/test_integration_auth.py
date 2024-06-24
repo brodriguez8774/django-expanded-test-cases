@@ -75,7 +75,7 @@ class TestIntegrationAuth__WithExtraAuthUpdate(IntegrationTestCase, IntegrationA
         """Verify that we can access our extra session data, set as part of the extra_user_auth function."""
 
         # Get arbitrary response that has gone through user authentication logic.
-        response = self.assertGetResponse('django_expanded_test_cases:index', user='test_user')
+        response = self.assertGetResponse('django_expanded_test_cases:home', user='test_user')
 
         # Grab session object from response.
         session = response.client.session
@@ -108,7 +108,7 @@ class TestIntegrationAuth__StrictnessOfAnonymous(IntegrationTestCase):
 
         with self.subTest('Check login using default user'):
             # Default user should be Anonymous, and no actual user is logged in unless explicitly provided.
-            response = self.assertGetResponse('django_expanded_test_cases:index')
+            response = self.assertGetResponse('django_expanded_test_cases:home')
 
             # Various checks, of different ways to ensure expected user is logged in.
             with self.assertRaises(KeyError):
@@ -118,7 +118,7 @@ class TestIntegrationAuth__StrictnessOfAnonymous(IntegrationTestCase):
             self.assertEqual(AnonymousUser(), response.user)
 
         with self.subTest('Check login using super user - Provided as arg'):
-            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_superuser')
+            response = self.assertGetResponse('django_expanded_test_cases:home', user='test_superuser')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_superuser.pk, int(self.client.session['_auth_user_id']))
@@ -127,7 +127,7 @@ class TestIntegrationAuth__StrictnessOfAnonymous(IntegrationTestCase):
             self.assertEqual(self.test_superuser, response.user)
 
         with self.subTest('Check login using admin user - Provided as arg'):
-            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_admin')
+            response = self.assertGetResponse('django_expanded_test_cases:home', user='test_admin')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_admin.pk, int(self.client.session['_auth_user_id']))
@@ -136,7 +136,7 @@ class TestIntegrationAuth__StrictnessOfAnonymous(IntegrationTestCase):
             self.assertEqual(self.test_admin, response.user)
 
         with self.subTest('Check login using inactive user - Provided as arg'):
-            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_inactive')
+            response = self.assertGetResponse('django_expanded_test_cases:home', user='test_inactive')
 
             # Various checks, of different ways to ensure expected user is logged in.
             with self.assertRaises(KeyError):
@@ -148,7 +148,7 @@ class TestIntegrationAuth__StrictnessOfAnonymous(IntegrationTestCase):
             self.assertFalse(isinstance(response.user, get_user_model()))
 
         with self.subTest('Check login using standard user - Provided as arg'):
-            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_user')
+            response = self.assertGetResponse('django_expanded_test_cases:home', user='test_user')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_user.pk, int(self.client.session['_auth_user_id']))
@@ -158,7 +158,7 @@ class TestIntegrationAuth__StrictnessOfAnonymous(IntegrationTestCase):
 
         with self.subTest('Check login using custom new user - Provided as arg'):
             new_user = self.get_user('new_user')
-            response = self.assertGetResponse('django_expanded_test_cases:index', user=new_user)
+            response = self.assertGetResponse('django_expanded_test_cases:home', user=new_user)
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(new_user.pk, int(self.client.session['_auth_user_id']))
@@ -168,7 +168,7 @@ class TestIntegrationAuth__StrictnessOfAnonymous(IntegrationTestCase):
 
         with self.subTest('Check login using super user - Provided as class variable'):
             self.user = self.get_user('test_superuser')
-            response = self.assertGetResponse('django_expanded_test_cases:index')
+            response = self.assertGetResponse('django_expanded_test_cases:home')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_superuser.pk, int(self.client.session['_auth_user_id']))
@@ -178,7 +178,7 @@ class TestIntegrationAuth__StrictnessOfAnonymous(IntegrationTestCase):
 
         with self.subTest('Check login using admin user - Provided as class variable'):
             self.user = self.get_user('test_admin')
-            response = self.assertGetResponse('django_expanded_test_cases:index')
+            response = self.assertGetResponse('django_expanded_test_cases:home')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_admin.pk, int(self.client.session['_auth_user_id']))
@@ -188,7 +188,7 @@ class TestIntegrationAuth__StrictnessOfAnonymous(IntegrationTestCase):
 
         with self.subTest('Check login using inactive user - Provided as class variable'):
             self.user = self.get_user('test_inactive')
-            response = self.assertGetResponse('django_expanded_test_cases:index')
+            response = self.assertGetResponse('django_expanded_test_cases:home')
 
             # Various checks, of different ways to ensure expected user is logged in.
             with self.assertRaises(KeyError):
@@ -201,7 +201,7 @@ class TestIntegrationAuth__StrictnessOfAnonymous(IntegrationTestCase):
 
         with self.subTest('Check login using standard user - Provided as class variable'):
             self.user = self.get_user('test_user')
-            response = self.assertGetResponse('django_expanded_test_cases:index')
+            response = self.assertGetResponse('django_expanded_test_cases:home')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_user.pk, int(self.client.session['_auth_user_id']))
@@ -211,7 +211,7 @@ class TestIntegrationAuth__StrictnessOfAnonymous(IntegrationTestCase):
 
         with self.subTest('Check login using custom new user - Provided as class variable'):
             self.user = self.get_user('new_user')
-            response = self.assertGetResponse('django_expanded_test_cases:index')
+            response = self.assertGetResponse('django_expanded_test_cases:home')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(new_user.pk, int(self.client.session['_auth_user_id']))
@@ -224,7 +224,7 @@ class TestIntegrationAuth__StrictnessOfAnonymous(IntegrationTestCase):
         ):
             self.user = self.get_user('new_user')
             response = self.assertGetResponse(
-                'django_expanded_test_cases:index',
+                'django_expanded_test_cases:home',
                 user='test_superuser',
             )
 
@@ -239,7 +239,7 @@ class TestIntegrationAuth__StrictnessOfAnonymous(IntegrationTestCase):
         ):
             self.user = self.get_user('test_superuser')
             response = self.assertGetResponse(
-                'django_expanded_test_cases:index',
+                'django_expanded_test_cases:home',
                 user='test_admin',
             )
 
@@ -254,7 +254,7 @@ class TestIntegrationAuth__StrictnessOfAnonymous(IntegrationTestCase):
         ):
             self.user = self.get_user('test_admin')
             response = self.assertGetResponse(
-                'django_expanded_test_cases:index',
+                'django_expanded_test_cases:home',
                 user='test_inactive',
             )
 
@@ -272,7 +272,7 @@ class TestIntegrationAuth__StrictnessOfAnonymous(IntegrationTestCase):
         ):
             self.user = self.get_user('test_inactive')
             response = self.assertGetResponse(
-                'django_expanded_test_cases:index',
+                'django_expanded_test_cases:home',
                 user='test_user',
             )
 
@@ -287,7 +287,7 @@ class TestIntegrationAuth__StrictnessOfAnonymous(IntegrationTestCase):
         ):
             self.user = self.get_user('test_user')
             response = self.assertGetResponse(
-                'django_expanded_test_cases:index',
+                'django_expanded_test_cases:home',
                 user='new_user',
             )
 
@@ -384,7 +384,7 @@ class TestIntegrationAuth__StrictnessOfRelaxed(IntegrationTestCase):
         """Verifies that expected user is logged in during assertGetResponse."""
 
         with self.subTest('Check login using default user'):
-            response = self.assertGetResponse('django_expanded_test_cases:index')
+            response = self.assertGetResponse('django_expanded_test_cases:home')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_user.pk, int(self.client.session['_auth_user_id']))
@@ -393,7 +393,7 @@ class TestIntegrationAuth__StrictnessOfRelaxed(IntegrationTestCase):
             self.assertEqual(self.test_user, response.user)
 
         with self.subTest('Check login using super user - Provided as arg'):
-            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_superuser')
+            response = self.assertGetResponse('django_expanded_test_cases:home', user='test_superuser')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_superuser.pk, int(self.client.session['_auth_user_id']))
@@ -402,7 +402,7 @@ class TestIntegrationAuth__StrictnessOfRelaxed(IntegrationTestCase):
             self.assertEqual(self.test_superuser, response.user)
 
         with self.subTest('Check login using admin user - Provided as arg'):
-            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_admin')
+            response = self.assertGetResponse('django_expanded_test_cases:home', user='test_admin')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_admin.pk, int(self.client.session['_auth_user_id']))
@@ -412,7 +412,7 @@ class TestIntegrationAuth__StrictnessOfRelaxed(IntegrationTestCase):
 
         with self.subTest('Check login using inactive user - Provided as arg'):
 
-            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_inactive')
+            response = self.assertGetResponse('django_expanded_test_cases:home', user='test_inactive')
 
             # Various checks, of different ways to ensure expected user is logged in.
             with self.assertRaises(KeyError):
@@ -424,7 +424,7 @@ class TestIntegrationAuth__StrictnessOfRelaxed(IntegrationTestCase):
             self.assertFalse(isinstance(response.user, get_user_model()))
 
         with self.subTest('Check login using standard user - Provided as arg'):
-            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_user')
+            response = self.assertGetResponse('django_expanded_test_cases:home', user='test_user')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_user.pk, int(self.client.session['_auth_user_id']))
@@ -434,7 +434,7 @@ class TestIntegrationAuth__StrictnessOfRelaxed(IntegrationTestCase):
 
         with self.subTest('Check login using custom new user - Provided as arg'):
             new_user = self.get_user('new_user')
-            response = self.assertGetResponse('django_expanded_test_cases:index', user=new_user)
+            response = self.assertGetResponse('django_expanded_test_cases:home', user=new_user)
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(new_user.pk, int(self.client.session['_auth_user_id']))
@@ -444,7 +444,7 @@ class TestIntegrationAuth__StrictnessOfRelaxed(IntegrationTestCase):
 
         with self.subTest('Check login using super user - Provided as class variable'):
             self.user = self.get_user('test_superuser')
-            response = self.assertGetResponse('django_expanded_test_cases:index')
+            response = self.assertGetResponse('django_expanded_test_cases:home')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_superuser.pk, int(self.client.session['_auth_user_id']))
@@ -454,7 +454,7 @@ class TestIntegrationAuth__StrictnessOfRelaxed(IntegrationTestCase):
 
         with self.subTest('Check login using admin user - Provided as class variable'):
             self.user = self.get_user('test_admin')
-            response = self.assertGetResponse('django_expanded_test_cases:index')
+            response = self.assertGetResponse('django_expanded_test_cases:home')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_admin.pk, int(self.client.session['_auth_user_id']))
@@ -464,7 +464,7 @@ class TestIntegrationAuth__StrictnessOfRelaxed(IntegrationTestCase):
 
         with self.subTest('Check login using inactive user - Provided as class variable'):
             self.user = self.get_user('test_inactive')
-            response = self.assertGetResponse('django_expanded_test_cases:index')
+            response = self.assertGetResponse('django_expanded_test_cases:home')
 
             # Various checks, of different ways to ensure expected user is logged in.
             with self.assertRaises(KeyError):
@@ -477,7 +477,7 @@ class TestIntegrationAuth__StrictnessOfRelaxed(IntegrationTestCase):
 
         with self.subTest('Check login using standard user - Provided as class variable'):
             self.user = self.get_user('test_user')
-            response = self.assertGetResponse('django_expanded_test_cases:index')
+            response = self.assertGetResponse('django_expanded_test_cases:home')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_user.pk, int(self.client.session['_auth_user_id']))
@@ -487,7 +487,7 @@ class TestIntegrationAuth__StrictnessOfRelaxed(IntegrationTestCase):
 
         with self.subTest('Check login using custom new user - Provided as class variable'):
             self.user = self.get_user('new_user')
-            response = self.assertGetResponse('django_expanded_test_cases:index')
+            response = self.assertGetResponse('django_expanded_test_cases:home')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(new_user.pk, int(self.client.session['_auth_user_id']))
@@ -499,7 +499,7 @@ class TestIntegrationAuth__StrictnessOfRelaxed(IntegrationTestCase):
             'Check login using super user - Provided with conflicting values (function value should win)'
         ):
             self.user = self.get_user('new_user')
-            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_superuser')
+            response = self.assertGetResponse('django_expanded_test_cases:home', user='test_superuser')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_superuser.pk, int(self.client.session['_auth_user_id']))
@@ -511,7 +511,7 @@ class TestIntegrationAuth__StrictnessOfRelaxed(IntegrationTestCase):
             'Check login using admin user - Provided with conflicting values (function value should win)'
         ):
             self.user = self.get_user('test_superuser')
-            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_admin')
+            response = self.assertGetResponse('django_expanded_test_cases:home', user='test_admin')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_admin.pk, int(self.client.session['_auth_user_id']))
@@ -523,7 +523,7 @@ class TestIntegrationAuth__StrictnessOfRelaxed(IntegrationTestCase):
             'Check login using inactive user - Provided with conflicting values (function value should win)'
         ):
             self.user = self.get_user('test_admin')
-            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_inactive')
+            response = self.assertGetResponse('django_expanded_test_cases:home', user='test_inactive')
 
             # Various checks, of different ways to ensure expected user is logged in.
             with self.assertRaises(KeyError):
@@ -538,7 +538,7 @@ class TestIntegrationAuth__StrictnessOfRelaxed(IntegrationTestCase):
             'Check login using standard user - Provided with conflicting values (function value should win)'
         ):
             self.user = self.get_user('test_inactive')
-            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_user')
+            response = self.assertGetResponse('django_expanded_test_cases:home', user='test_user')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_user.pk, int(self.client.session['_auth_user_id']))
@@ -550,7 +550,7 @@ class TestIntegrationAuth__StrictnessOfRelaxed(IntegrationTestCase):
             'Check login using custom new user - Provided with conflicting values (function value should win)'
         ):
             self.user = self.get_user('test_user')
-            response = self.assertGetResponse('django_expanded_test_cases:index', user='new_user')
+            response = self.assertGetResponse('django_expanded_test_cases:home', user='new_user')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(new_user.pk, int(self.client.session['_auth_user_id']))
@@ -641,10 +641,10 @@ class TestIntegrationAuth__StrictnessOfStrict(IntegrationTestCase):
         with self.subTest('Check login using default user'):
             # No default user provided. Should error.
             with self.assertRaises(ValidationError):
-                self.assertGetResponse('django_expanded_test_cases:index')
+                self.assertGetResponse('django_expanded_test_cases:home')
 
         with self.subTest('Check login using super user - Provided as arg'):
-            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_superuser')
+            response = self.assertGetResponse('django_expanded_test_cases:home', user='test_superuser')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_superuser.pk, int(self.client.session['_auth_user_id']))
@@ -653,7 +653,7 @@ class TestIntegrationAuth__StrictnessOfStrict(IntegrationTestCase):
             self.assertEqual(self.test_superuser, response.user)
 
         with self.subTest('Check login using admin user - Provided as arg'):
-            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_admin')
+            response = self.assertGetResponse('django_expanded_test_cases:home', user='test_admin')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_admin.pk, int(self.client.session['_auth_user_id']))
@@ -662,7 +662,7 @@ class TestIntegrationAuth__StrictnessOfStrict(IntegrationTestCase):
             self.assertEqual(self.test_admin, response.user)
 
         with self.subTest('Check login using inactive user - Provided as arg'):
-            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_inactive')
+            response = self.assertGetResponse('django_expanded_test_cases:home', user='test_inactive')
 
             # Various checks, of different ways to ensure expected user is logged in.
             with self.assertRaises(KeyError):
@@ -674,7 +674,7 @@ class TestIntegrationAuth__StrictnessOfStrict(IntegrationTestCase):
             self.assertFalse(isinstance(response.user, get_user_model()))
 
         with self.subTest('Check login using standard user - Provided as arg'):
-            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_user')
+            response = self.assertGetResponse('django_expanded_test_cases:home', user='test_user')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_user.pk, int(self.client.session['_auth_user_id']))
@@ -684,7 +684,7 @@ class TestIntegrationAuth__StrictnessOfStrict(IntegrationTestCase):
 
         with self.subTest('Check login using custom new user - Provided as arg'):
             new_user = self.get_user('new_user')
-            response = self.assertGetResponse('django_expanded_test_cases:index', user=new_user)
+            response = self.assertGetResponse('django_expanded_test_cases:home', user=new_user)
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(new_user.pk, int(self.client.session['_auth_user_id']))
@@ -694,7 +694,7 @@ class TestIntegrationAuth__StrictnessOfStrict(IntegrationTestCase):
 
         with self.subTest('Check login using super user - Provided as class variable'):
             self.user = self.get_user('test_superuser')
-            response = self.assertGetResponse('django_expanded_test_cases:index')
+            response = self.assertGetResponse('django_expanded_test_cases:home')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_superuser.pk, int(self.client.session['_auth_user_id']))
@@ -704,7 +704,7 @@ class TestIntegrationAuth__StrictnessOfStrict(IntegrationTestCase):
 
         with self.subTest('Check login using admin user - Provided as class variable'):
             self.user = self.get_user('test_admin')
-            response = self.assertGetResponse('django_expanded_test_cases:index')
+            response = self.assertGetResponse('django_expanded_test_cases:home')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_admin.pk, int(self.client.session['_auth_user_id']))
@@ -714,7 +714,7 @@ class TestIntegrationAuth__StrictnessOfStrict(IntegrationTestCase):
 
         with self.subTest('Check login using inactive user - Provided as class variable'):
             self.user = self.get_user('test_inactive')
-            response = self.assertGetResponse('django_expanded_test_cases:index')
+            response = self.assertGetResponse('django_expanded_test_cases:home')
 
             # Various checks, of different ways to ensure expected user is logged in.
             with self.assertRaises(KeyError):
@@ -727,7 +727,7 @@ class TestIntegrationAuth__StrictnessOfStrict(IntegrationTestCase):
 
         with self.subTest('Check login using standard user - Provided as class variable'):
             self.user = self.get_user('test_user')
-            response = self.assertGetResponse('django_expanded_test_cases:index')
+            response = self.assertGetResponse('django_expanded_test_cases:home')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_user.pk, int(self.client.session['_auth_user_id']))
@@ -737,7 +737,7 @@ class TestIntegrationAuth__StrictnessOfStrict(IntegrationTestCase):
 
         with self.subTest('Check login using custom new user - Provided as class variable'):
             self.user = self.get_user('new_user')
-            response = self.assertGetResponse('django_expanded_test_cases:index')
+            response = self.assertGetResponse('django_expanded_test_cases:home')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(new_user.pk, int(self.client.session['_auth_user_id']))
@@ -749,7 +749,7 @@ class TestIntegrationAuth__StrictnessOfStrict(IntegrationTestCase):
             'Check login using super user - Provided with conflicting values (function value should win)'
         ):
             self.user = self.get_user('new_user')
-            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_superuser')
+            response = self.assertGetResponse('django_expanded_test_cases:home', user='test_superuser')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_superuser.pk, int(self.client.session['_auth_user_id']))
@@ -761,7 +761,7 @@ class TestIntegrationAuth__StrictnessOfStrict(IntegrationTestCase):
             'Check login using admin user - Provided with conflicting values (function value should win)'
         ):
             self.user = self.get_user('test_superuser')
-            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_admin')
+            response = self.assertGetResponse('django_expanded_test_cases:home', user='test_admin')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_admin.pk, int(self.client.session['_auth_user_id']))
@@ -773,7 +773,7 @@ class TestIntegrationAuth__StrictnessOfStrict(IntegrationTestCase):
             'Check login using inactive user - Provided with conflicting values (function value should win)'
         ):
             self.user = self.get_user('test_admin')
-            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_inactive')
+            response = self.assertGetResponse('django_expanded_test_cases:home', user='test_inactive')
 
             # Various checks, of different ways to ensure expected user is logged in.
             with self.assertRaises(KeyError):
@@ -788,7 +788,7 @@ class TestIntegrationAuth__StrictnessOfStrict(IntegrationTestCase):
             'Check login using standard user - Provided with conflicting values (function value should win)'
         ):
             self.user = self.get_user('test_inactive')
-            response = self.assertGetResponse('django_expanded_test_cases:index', user='test_user')
+            response = self.assertGetResponse('django_expanded_test_cases:home', user='test_user')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(self.test_user.pk, int(self.client.session['_auth_user_id']))
@@ -800,7 +800,7 @@ class TestIntegrationAuth__StrictnessOfStrict(IntegrationTestCase):
             'Check login using custom new user - Provided with conflicting values (function value should win)'
         ):
             self.user = self.get_user('test_user')
-            response = self.assertGetResponse('django_expanded_test_cases:index', user='new_user')
+            response = self.assertGetResponse('django_expanded_test_cases:home', user='new_user')
 
             # Various checks, of different ways to ensure expected user is logged in.
             self.assertEqual(new_user.pk, int(self.client.session['_auth_user_id']))

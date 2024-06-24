@@ -60,6 +60,17 @@ class IntegrationAssertionTestCase:
             self.assertText('/', response.url)
             self.assertText('127.0.0.1/', response.full_url)
 
+            # Test "home" page url.
+            response = self.assertResponse('home/')
+            self.assertText('/home/', response.url)
+            self.assertText('127.0.0.1/home/', response.full_url)
+            response = self.assertResponse('/home/')
+            self.assertText('/home/', response.url)
+            self.assertText('127.0.0.1/home/', response.full_url)
+            response = self.assertResponse('127.0.0.1/home/')
+            self.assertText('/home/', response.url)
+            self.assertText('127.0.0.1/home/', response.full_url)
+
             # Test "login" page url.
             response = self.assertResponse('login/')
             self.assertText('/login/', response.url)
@@ -132,6 +143,11 @@ class IntegrationAssertionTestCase:
             self.assertText('/', response.url)
             self.assertText('127.0.0.1/', response.full_url)
 
+            # Test "home" page url.
+            response = self.assertResponse('django_expanded_test_cases:home')
+            self.assertText('/home/', response.url)
+            self.assertText('127.0.0.1/home/', response.full_url)
+
             # Test "login" page url.
             response = self.assertResponse('django_expanded_test_cases:login')
             self.assertText('/login/', response.url)
@@ -159,6 +175,11 @@ class IntegrationAssertionTestCase:
             response = self.assertResponse('django_expanded_test_cases:index')
             self.assertText('/', response.url)
             self.assertText('https://my_really_cool_site.com/', response.full_url)
+
+            # Test "home" page url.
+            response = self.assertResponse('django_expanded_test_cases:home')
+            self.assertText('/home/', response.url)
+            self.assertText('https://my_really_cool_site.com/home/', response.full_url)
 
             # Test "login" page url.
             response = self.assertResponse('django_expanded_test_cases:login')
@@ -663,6 +684,17 @@ class IntegrationAssertionTestCase:
             self.assertText('/', response.url)
             self.assertText('127.0.0.1/', response.full_url)
 
+            # Test "home" page url.
+            response = self.assertResponse('home/', expected_url='/home/')
+            self.assertText('/home/', response.url)
+            self.assertText('127.0.0.1/home/', response.full_url)
+            response = self.assertResponse('/home/', expected_url='/home/')
+            self.assertText('/home/', response.url)
+            self.assertText('127.0.0.1/home/', response.full_url)
+            response = self.assertResponse('127.0.0.1/home/', expected_url='/home/')
+            self.assertText('/home/', response.url)
+            self.assertText('127.0.0.1/home/', response.full_url)
+
             # Test "login" page url.
             response = self.assertResponse('login/', expected_url='/login/')
             self.assertText('/login/', response.url)
@@ -735,6 +767,11 @@ class IntegrationAssertionTestCase:
             self.assertText('/', response.url)
             self.assertText('127.0.0.1/', response.full_url)
 
+            # Test "home" page url.
+            response = self.assertResponse('django_expanded_test_cases:home', expected_url='/home/')
+            self.assertText('/home/', response.url)
+            self.assertText('127.0.0.1/home/', response.full_url)
+
             # Test "login" page url.
             response = self.assertResponse('django_expanded_test_cases:login', expected_url='/login/')
             self.assertText('/login/', response.url)
@@ -771,6 +808,11 @@ class IntegrationAssertionTestCase:
             response = self.assertResponse('django_expanded_test_cases:index', expected_url='/')
             self.assertText('/', response.url)
             self.assertText('https://my_really_cool_site.com/', response.full_url)
+
+            # Test "home" page url.
+            response = self.assertResponse('django_expanded_test_cases:home', expected_url='/home/')
+            self.assertText('/home/', response.url)
+            self.assertText('https://my_really_cool_site.com/home/', response.full_url)
 
             # Test "login" page url.
             response = self.assertResponse('django_expanded_test_cases:login', expected_url='/login/')
@@ -844,6 +886,11 @@ class IntegrationAssertionTestCase:
             with self.assertRaises(AssertionError) as err:
                 self.assertResponse('', expected_url=wrong_url)
             self.assertEqual(expected_err_msg.format(wrong_url, '/'), str(err.exception))
+
+            # Test "home" page url.
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse('home/', expected_url=wrong_url)
+            self.assertEqual(expected_err_msg.format(wrong_url, '/home/'), str(err.exception))
 
             # Test "login" page url.
             with self.assertRaises(AssertionError) as err:
@@ -925,6 +972,17 @@ class IntegrationAssertionTestCase:
             response = self.assertResponse('127.0.0.1/', expected_url='/', view_should_redirect=False)
             self.assertText('/', response.url)
             self.assertText('127.0.0.1/', response.full_url)
+
+            # Test "home" page url.
+            response = self.assertResponse('home/', expected_url='/home/', view_should_redirect=False)
+            self.assertText('/home/', response.url)
+            self.assertText('127.0.0.1/home/', response.full_url)
+            response = self.assertResponse('/home/', expected_url='/home/', view_should_redirect=False)
+            self.assertText('/home/', response.url)
+            self.assertText('127.0.0.1/home/', response.full_url)
+            response = self.assertResponse('127.0.0.1/home/', expected_url='/home/', view_should_redirect=False)
+            self.assertText('/home/', response.url)
+            self.assertText('127.0.0.1/home/', response.full_url)
 
             # Test "login" page url.
             response = self.assertResponse('login/', expected_url='/login/', view_should_redirect=False)
@@ -1102,6 +1160,11 @@ class IntegrationAssertionTestCase:
                 self.assertResponse('', expected_url='/', view_should_redirect=True)
             self.assertEqual(str(err.exception), 'Expected a page redirect, but response did not redirect.')
 
+            # Test "home" page url.
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse('home/', expected_url='/home/', view_should_redirect=True)
+            self.assertEqual(str(err.exception), 'Expected a page redirect, but response did not redirect.')
+
             # Test "login" page url.
             with self.assertRaises(AssertionError) as err:
                 self.assertResponse('login/', expected_url='/login/', view_should_redirect=True)
@@ -1171,11 +1234,11 @@ class IntegrationAssertionTestCase:
         )
 
         with self.subTest('Title match'):
-            self.assertResponse('django_expanded_test_cases:index', expected_title='Home Page | Test Views')
+            self.assertResponse('django_expanded_test_cases:home', expected_title='Home Page | Test Views')
 
         with self.subTest('Title mismatch'):
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('django_expanded_test_cases:index', expected_title='Wrong Title')
+                self.assertResponse('django_expanded_test_cases:home', expected_title='Wrong Title')
             self.assertText(exception_msg, str(err.exception))
 
     def test__assertResponse__expected_header(self):
@@ -1185,11 +1248,11 @@ class IntegrationAssertionTestCase:
         exception_msg = 'Expected H1 header HTML contents of "Wrong Header". Actual value was "Home Page Header".'
 
         with self.subTest('Header match'):
-            self.assertResponse('django_expanded_test_cases:index', expected_header='Home Page Header')
+            self.assertResponse('django_expanded_test_cases:home', expected_header='Home Page Header')
 
         with self.subTest('Header mismatch'):
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('django_expanded_test_cases:index', expected_header='Wrong Header')
+                self.assertResponse('django_expanded_test_cases:home', expected_header='Wrong Header')
             self.assertText(exception_msg, str(err.exception))
 
     def test__assertResponse__expected_messages(self):
@@ -1261,7 +1324,7 @@ class IntegrationAssertionTestCase:
         with self.subTest('Content match - With tags'):
             # With non-repeating values.
             self.assertResponse(
-                'django_expanded_test_cases:index',
+                'django_expanded_test_cases:home',
                 expected_content=[
                     '<title>Home Page | Test Views</title>',
                     '<h1>Home Page Header</h1>',
@@ -1272,7 +1335,7 @@ class IntegrationAssertionTestCase:
 
             # With repeated values.
             self.assertResponse(
-                'django_expanded_test_cases:index',
+                'django_expanded_test_cases:home',
                 expected_content=[
                     '<title>Home Page | Test Views</title>',
                     '<h1>Home Page Header</h1>',
@@ -1286,7 +1349,7 @@ class IntegrationAssertionTestCase:
         with self.subTest('Content match - Without tags'):
             # With non-repeating values.
             self.assertResponse(
-                'django_expanded_test_cases:index',
+                'django_expanded_test_cases:home',
                 expected_content=[
                     'Home Page | Test Views',
                     'Home Page Header',
@@ -1297,7 +1360,7 @@ class IntegrationAssertionTestCase:
 
             # With repeated values.
             self.assertResponse(
-                'django_expanded_test_cases:index',
+                'django_expanded_test_cases:home',
                 expected_content=[
                     'Home Page | Test Views',
                     'Home Page Header',
@@ -1310,11 +1373,11 @@ class IntegrationAssertionTestCase:
 
         with self.subTest('Content mismatch'):
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('django_expanded_test_cases:index', expected_content='Wrong value')
+                self.assertResponse('django_expanded_test_cases:home', expected_content='Wrong value')
             self.assertText(exception_msg.format('Wrong value'), str(err.exception))
             with self.assertRaises(AssertionError) as err:
                 self.assertResponse(
-                    'django_expanded_test_cases:index',
+                    'django_expanded_test_cases:home',
                     expected_content=[
                         'Home Page Header',
                         'Pretend this is',
@@ -1326,19 +1389,19 @@ class IntegrationAssertionTestCase:
         with self.subTest('With search subsections'):
             # Strip start.
             self.assertResponse(
-                'django_expanded_test_cases:index',
+                'django_expanded_test_cases:home',
                 expected_content='<p>Pretend this is the project landing page.</p>',
                 content_starts_after='<h1>Home Page Header</h1>',
             )
             # Strip end.
             self.assertResponse(
-                'django_expanded_test_cases:index',
+                'django_expanded_test_cases:home',
                 expected_content='<title>Home Page | Test Views</title>',
                 content_ends_before='<h1>Home Page Header</h1>',
             )
             # Strip both.
             self.assertResponse(
-                'django_expanded_test_cases:index',
+                'django_expanded_test_cases:home',
                 expected_content='<h1>Home Page Header</h1>',
                 content_starts_after='<title>Home Page | Test Views</title>',
                 content_ends_before='<p>Pretend this is the project landing page.</p>',
@@ -1347,7 +1410,7 @@ class IntegrationAssertionTestCase:
         with self.subTest('With content blocks'):
             # Entire page as one block.
             self.assertResponse(
-                'django_expanded_test_cases:index',
+                'django_expanded_test_cases:home',
                 expected_content="""
                 <head>
                     <meta charset="utf-8">
@@ -1361,7 +1424,7 @@ class IntegrationAssertionTestCase:
             )
             # Header and body each a block.
             self.assertResponse(
-                'django_expanded_test_cases:index',
+                'django_expanded_test_cases:home',
                 expected_content=[
                     """
                     <head>
@@ -1379,7 +1442,7 @@ class IntegrationAssertionTestCase:
             )
             # With start stripped.
             self.assertResponse(
-                'django_expanded_test_cases:index',
+                'django_expanded_test_cases:home',
                 expected_content=[
                     """
                     <body>
@@ -1392,7 +1455,7 @@ class IntegrationAssertionTestCase:
             )
             # With end stripped.
             self.assertResponse(
-                'django_expanded_test_cases:index',
+                'django_expanded_test_cases:home',
                 expected_content=[
                     """
                     <head>
@@ -1405,7 +1468,7 @@ class IntegrationAssertionTestCase:
             )
             # With both stripped.
             self.assertResponse(
-                'django_expanded_test_cases:index',
+                'django_expanded_test_cases:home',
                 expected_content=[
                     """
                     <title>Home Page | Test Views</title>
@@ -1461,7 +1524,7 @@ class IntegrationAssertionTestCase:
         exception_msg = 'Found content in response. Expected content to not be present. Content was:\n{0}'
 
         self.assertResponse(
-            'django_expanded_test_cases:index',
+            'django_expanded_test_cases:home',
             expected_not_content=[
                 '<title>HomePage | Test Views</title>',
                 '<h1>Home PageHeader</h1>',
@@ -1472,7 +1535,7 @@ class IntegrationAssertionTestCase:
 
         with self.assertRaises(AssertionError) as err:
             self.assertResponse(
-                'django_expanded_test_cases:index',
+                'django_expanded_test_cases:home',
                 expected_not_content=[
                     '<title>Home Page | Test Views</title>',
                     '<h1>Home Page Header</h1>',
@@ -2309,7 +2372,7 @@ class IntegrationAssertionTestCase:
 
         with self.subTest('Checking for single message, none exist'):
             with self.assertRaises(AssertionError) as err:
-                response = self._get_page_response('django_expanded_test_cases:index')
+                response = self._get_page_response('django_expanded_test_cases:home')
                 self.assertContextMessages(
                     response,
                     'This is a test message.',
@@ -2368,7 +2431,7 @@ class IntegrationAssertionTestCase:
 
         with self.subTest('Checking for two messages, none exist'):
             with self.assertRaises(AssertionError) as err:
-                response = self._get_page_response('django_expanded_test_cases:index')
+                response = self._get_page_response('django_expanded_test_cases:home')
                 self.assertContextMessages(
                     response,
                     ['This is a test message.', 'Another message.'],
@@ -2543,14 +2606,14 @@ class IntegrationAssertionTestCase:
             self.assertPageContent(response, '<p>Pretend this is a login page.</p>')
 
         with self.subTest('Standard Response - Render() Home Page'):
-            response = self._get_page_response('django_expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:home')
             self.assertPageContent(
                 response,
                 '<h1>Home Page Header</h1><p>Pretend this is the project landing page.</p>',
             )
 
         with self.subTest('Standard Response - TemplateResponse Home Page'):
-            response = self._get_page_response('django_expanded_test_cases:template-response-index')
+            response = self._get_page_response('django_expanded_test_cases:template-response-home')
             self.assertPageContent(
                 response,
                 '<h1>Home Page Header</h1><p>Pretend this is the project landing page.</p>',
@@ -2567,8 +2630,8 @@ class IntegrationAssertionTestCase:
                 ),
             )
 
-        with self.subTest('Standard Response - Set of items on index page'):
-            response = self._get_page_response('django_expanded_test_cases:index')
+        with self.subTest('Standard Response - Set of items on home page'):
+            response = self._get_page_response('django_expanded_test_cases:home')
             # Test as list.
             self.assertPageContent(
                 response,
@@ -2705,7 +2768,7 @@ class IntegrationAssertionTestCase:
             This is important for repeated checks against similar/identical values, where the test is maybe testing
             more for value ordering and instance count, rather than just that the value exists at all.
             """
-            response = self._get_page_response('django_expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:home')
             self.assertPageContent(
                 response,
                 [
@@ -2727,7 +2790,7 @@ class IntegrationAssertionTestCase:
 
     def test__assertPageContent__success_with_limited_search_space(self):
         with self.subTest('Standard Response - With "content_starts_after" defined'):
-            response = self._get_page_response('django_expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:home')
 
             # Expected as single value.
             self.assertPageContent(
@@ -2749,7 +2812,7 @@ class IntegrationAssertionTestCase:
         with self.subTest('Standard Response - With multi-lined "content_starts_after" defined'):
             # Can be useful in cases such as where there is no directly-unique element in desired section.
             # But there are groupings of elements together that make a unique desired section to limit by.
-            response = self._get_page_response('django_expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:home')
 
             # Expected as single value.
             self.assertPageContent(
@@ -2778,7 +2841,7 @@ class IntegrationAssertionTestCase:
             )
 
         with self.subTest('Standard Response - With "content_ends_before" defined'):
-            response = self._get_page_response('django_expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:home')
 
             # Expected as single value.
             self.assertPageContent(
@@ -2803,7 +2866,7 @@ class IntegrationAssertionTestCase:
         with self.subTest('Standard Response - With multi-lined "content_ends_before" defined'):
             # Can be useful in cases such as where there is no directly-unique element in desired section.
             # But there are groupings of elements together that make a unique desired section to limit by.
-            response = self._get_page_response('django_expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:home')
 
             # Expected as single value.
             self.assertPageContent(
@@ -2832,7 +2895,7 @@ class IntegrationAssertionTestCase:
             )
 
         with self.subTest('Standard Response - With both content containers defined'):
-            response = self._get_page_response('django_expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:home')
 
             # Expected as single value.
             self.assertPageContent(
@@ -2980,7 +3043,7 @@ class IntegrationAssertionTestCase:
             )
 
         with self.subTest('Standard Response - Set of items with wrong values'):
-            response = self._get_page_response('django_expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:home')
 
             # Test as list.
             with self.assertRaises(AssertionError) as err:
@@ -3215,7 +3278,7 @@ class IntegrationAssertionTestCase:
 
     def test__assertPageContent__failure__with_bad_search_space(self):
         exception_msg = 'Could not find "{0}" value in content response. Provided value was:\n{1}'
-        response = self._get_page_response('django_expanded_test_cases:index')
+        response = self._get_page_response('django_expanded_test_cases:home')
 
         # Bad content_starts_after values.
         with self.subTest('With content_starts_after not found'):
@@ -3289,7 +3352,7 @@ class IntegrationAssertionTestCase:
 
     def test__assertPageContent__fail__with_limited_search_space(self):
         exception_msg = 'Expected content value was found, but occurred in "{0}" section. Expected was:\n{1}'
-        response = self._get_page_response('django_expanded_test_cases:index')
+        response = self._get_page_response('django_expanded_test_cases:home')
 
         with self.subTest('Standard Response - With content_starts_after defined'):
             # Expected as single value.
@@ -3406,7 +3469,7 @@ class IntegrationAssertionTestCase:
             )
 
         with self.subTest('Standard Response - With content_ends_before defined'):
-            response = self._get_page_response('django_expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:home')
 
             # Expected as single value - Exact match.
             with self.assertRaises(AssertionError) as err:
@@ -3511,7 +3574,7 @@ class IntegrationAssertionTestCase:
             )
 
         with self.subTest('Standard Response - With both content containers defined'):
-            response = self._get_page_response('django_expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:home')
 
             # Expected as single value - above search area.
             with self.assertRaises(AssertionError) as err:
@@ -4086,7 +4149,7 @@ class IntegrationAssertionTestCase:
 
         with self.subTest('Standard Response - With response mixed and check upper'):
             with self.assertRaises(AssertionError) as err:
-                response = self._get_page_response('django_expanded_test_cases:index')
+                response = self._get_page_response('django_expanded_test_cases:home')
                 self.assertPageContent(response, '<H1>HOME PAGE HEADER</H1>')
             self.assertText(
                 exception_msg.format(
@@ -4098,7 +4161,7 @@ class IntegrationAssertionTestCase:
 
         with self.subTest('Standard Response - With response mixed and check lower'):
             with self.assertRaises(AssertionError) as err:
-                response = self._get_page_response('django_expanded_test_cases:index')
+                response = self._get_page_response('django_expanded_test_cases:home')
                 self.assertPageContent(response, '<h1>home page header</h1>')
             self.assertText(
                 exception_msg.format(
@@ -4110,7 +4173,7 @@ class IntegrationAssertionTestCase:
 
         with self.subTest('Standard Response - With response mixed and check mixed'):
             with self.assertRaises(AssertionError) as err:
-                response = self._get_page_response('django_expanded_test_cases:index')
+                response = self._get_page_response('django_expanded_test_cases:home')
                 self.assertPageContent(response, '<h1>home Page header</h1>')
             self.assertText(
                 exception_msg.format(
@@ -5175,7 +5238,7 @@ class IntegrationAssertionTestCase:
             )
 
         with self.subTest('Standard Response - Set of items with wrong values'):
-            response = self._get_page_response('django_expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:home')
 
             # Test as list.
             # First verify value we know SHOULD be there.
@@ -5389,7 +5452,7 @@ class IntegrationAssertionTestCase:
         )
 
         with self.subTest('Standard Response - Set of items where one or more items is found (none should be found)'):
-            response = self._get_page_response('django_expanded_test_cases:index')
+            response = self._get_page_response('django_expanded_test_cases:home')
 
             # First item is found.
             with self.assertRaises(AssertionError) as err:

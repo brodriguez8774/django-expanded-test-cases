@@ -5,13 +5,44 @@ Testing views for django-expanded-test-cases project.
 # Third-Party Imports.
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.template.response import TemplateResponse
+from django.urls import reverse
 
 
 def index(request):
     """Page that simulates a site index/home."""
+
+    # Render response.
+    return render(
+        request,
+        'django_expanded_test_cases/index.html',
+        {
+            'header': 'Index Page',
+            'text': (
+                'Links to various testing pages for the ExpandedTestCases (Etc) package.'
+                '<ul>'
+                '  <li><a href="' + reverse('django_expanded_test_cases:home') + '">Home Page</a></li>'
+                '  <li><a href="' + reverse('django_expanded_test_cases:login') + '">Login Page</a></li>'
+                '<br>'
+                '  <li><a href="' + reverse('django_expanded_test_cases:response-with-one-message') + '">One-Message Page</a></li>'
+                '  <li><a href="' + reverse('django_expanded_test_cases:response-with-two-messages') + '">Two-Messages Page</a></li>'
+                '  <li><a href="' + reverse('django_expanded_test_cases:response-with-three-messages') + '">Three-Messages Page</a></li>'
+                '  <li><a href="' + reverse('django_expanded_test_cases:response-with-repeating-elements') + '">Repeating Elements Page</a></li>'
+                '<br>'
+                '  <li><a href="' + reverse('django_expanded_test_cases:response-with-args', args=(5, "Test Name")) + '">Response with Args</a></li>'
+                '  <li><a href="' + reverse('django_expanded_test_cases:user-detail', kwargs={'pk': 1}) + '">Model Detail Page</a></li>'
+                '<br>'
+                '  <li><a href="' + reverse('django_expanded_test_cases:redirect-to-index') + '">Redirect to Index</a></li>'
+                '  <li><a href="' + reverse('django_expanded_test_cases:redirect-with-args', args=(5, "Test Name")) + '">Redirect with Args</a></li>'
+                '</ul>'
+            ),
+        },
+    )
+
+
+def home(request):
+    """Page that simulates a site home page."""
 
     # Render response.
     return render(
@@ -24,8 +55,8 @@ def index(request):
     )
 
 
-def template_response_index(request):
-    """Page that simulates a site index/home. Specifically served as TemplateResponse."""
+def template_response_home(request):
+    """Page that simulates a site home page. Specifically served as TemplateResponse."""
 
     # Render response.
     return TemplateResponse(
