@@ -39,6 +39,7 @@ from django_expanded_test_cases.constants import (
     ETC_RESPONSE_DEBUG_URL_COLOR,
     ETC_SKIP_CONTENT_AFTER,
     ETC_SKIP_CONTENT_BEFORE,
+    ETC_SKIP_CONTENT_HEAD,
 )
 
 
@@ -120,13 +121,18 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         response_content = self.standardize_characters(response_content)
         response_content = self.standardize_newlines(response_content)
 
+        # Handle ETC_SKIP_CONTENT_HEAD variable, if defined.
+        skip_content_before = ETC_SKIP_CONTENT_BEFORE
+        if ETC_SKIP_CONTENT_HEAD and skip_content_before is None:
+            skip_content_before = '</head>'
+
         # Optionally attempt to trim content based on SKIP BEFORE/AFTER settings values.
-        if ETC_SKIP_CONTENT_BEFORE is not None and len(ETC_SKIP_CONTENT_BEFORE) > 0:
+        if skip_content_before is not None and len(skip_content_before) > 0:
             # Content was specified to skip.
             # Use regex to find and remove output.
 
             # Standardize provided settings string, so that it's easier to compare against and trim.
-            skip_content_before = self.standardize_characters(ETC_SKIP_CONTENT_BEFORE)
+            skip_content_before = self.standardize_characters(skip_content_before)
             skip_content_before = self.standardize_whitespace(skip_content_before)
 
             # Correct some potential problematic characters specifically for this section of logic.
