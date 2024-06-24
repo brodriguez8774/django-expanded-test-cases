@@ -57,7 +57,7 @@ MIDDLEWARE = [
 ]
 
 
-ROOT_URLCONF = 'etc_tests.urls'
+ROOT_URLCONF = 'django_expanded_test_cases.urls'
 LOGIN_URL = 'django_expanded_test_cases:login'
 STATIC_URL = '/static/'
 USE_TZ = True
