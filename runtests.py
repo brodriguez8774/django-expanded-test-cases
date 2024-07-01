@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Run Pytest Tests"""
+"""Run Package Django Tests"""
 
 # System Imports.
 import os
@@ -10,11 +10,17 @@ from django.core.management import execute_from_command_line
 
 
 def runtests():
-    """Run Tests"""
+    """Run tests with manage.py format.
+    Has less helpful testing output.
+    """
+
+    # Set environment values.
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tests.settings')
+
+    # Run tests.
     argv = sys.argv[:1] + ['test'] + sys.argv[1:]
-    execute_from_command_line(argv)
+    return execute_from_command_line(argv)
 
 
 if __name__ == '__main__':
-    runtests()
+    sys.exit(runtests())
