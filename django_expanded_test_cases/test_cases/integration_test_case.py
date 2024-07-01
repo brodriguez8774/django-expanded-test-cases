@@ -878,7 +878,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                             ETC_OUTPUT_RESET_COLOR,
                         )
 
-                        for surrounding_check_index in reversed(range(ETC_ASSERT_CONTENT__SURROUNDING_CHECK_OUTPUT_LENGTH + 1)):
+                        for surrounding_check_index in reversed(
+                            range(ETC_ASSERT_CONTENT__SURROUNDING_CHECK_OUTPUT_LENGTH + 1)
+                        ):
                             if surrounding_check_index == 0:
                                 continue
 
@@ -925,10 +927,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
                     updated_checked_content_str_addon = checked_content_str_addon.format(
                         before_debug_output,
-                        (
-                            '{1}Failed Check:{2}\n'
-                            '{1}  > * {0}{2}\n'
-                        ).format(
+                        ('{1}Failed Check:{2}\n' '{1}  > * {0}{2}\n').format(
                             expected_content[index],
                             ETC_OUTPUT_ERROR_COLOR,
                             ETC_OUTPUT_RESET_COLOR,

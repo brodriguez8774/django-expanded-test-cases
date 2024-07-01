@@ -2918,4 +2918,5 @@ class TestIntegrationHelpers(IntegrationTestCase, IntegrationHelperTestCase):
     """Runtime test execution of IntegrationTestCase class "helper function" logic,
     when using default project settings.
     """
+
     pass

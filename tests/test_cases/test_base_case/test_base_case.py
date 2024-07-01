@@ -3114,4 +3114,5 @@ class BaseTestMixin:
 
 class TestBaseClass(BaseTestCase, BaseTestMixin):
     """Runtime test execution of BaseTestCase class logic, when using default project settings."""
+
     pass

@@ -25,16 +25,32 @@ def index(request):
                 '  <li><a href="' + reverse('django_expanded_test_cases:home') + '">Home Page</a></li>'
                 '  <li><a href="' + reverse('django_expanded_test_cases:login') + '">Login Page</a></li>'
                 '<br>'
-                '  <li><a href="' + reverse('django_expanded_test_cases:response-with-one-message') + '">One-Message Page</a></li>'
-                '  <li><a href="' + reverse('django_expanded_test_cases:response-with-two-messages') + '">Two-Messages Page</a></li>'
-                '  <li><a href="' + reverse('django_expanded_test_cases:response-with-three-messages') + '">Three-Messages Page</a></li>'
-                '  <li><a href="' + reverse('django_expanded_test_cases:response-with-repeating-elements') + '">Repeating Elements Page</a></li>'
+                '  <li><a href="'
+                + reverse('django_expanded_test_cases:response-with-one-message')
+                + '">One-Message Page</a></li>'
+                '  <li><a href="'
+                + reverse('django_expanded_test_cases:response-with-two-messages')
+                + '">Two-Messages Page</a></li>'
+                '  <li><a href="'
+                + reverse('django_expanded_test_cases:response-with-three-messages')
+                + '">Three-Messages Page</a></li>'
+                '  <li><a href="'
+                + reverse('django_expanded_test_cases:response-with-repeating-elements')
+                + '">Repeating Elements Page</a></li>'
                 '<br>'
-                '  <li><a href="' + reverse('django_expanded_test_cases:response-with-args', args=(5, "Test Name")) + '">Response with Args</a></li>'
-                '  <li><a href="' + reverse('django_expanded_test_cases:user-detail', kwargs={'pk': 1}) + '">Model Detail Page</a></li>'
+                '  <li><a href="'
+                + reverse('django_expanded_test_cases:response-with-args', args=(5, "Test Name"))
+                + '">Response with Args</a></li>'
+                '  <li><a href="'
+                + reverse('django_expanded_test_cases:user-detail', kwargs={'pk': 1})
+                + '">Model Detail Page</a></li>'
                 '<br>'
-                '  <li><a href="' + reverse('django_expanded_test_cases:redirect-to-index') + '">Redirect to Index</a></li>'
-                '  <li><a href="' + reverse('django_expanded_test_cases:redirect-with-args', args=(5, "Test Name")) + '">Redirect with Args</a></li>'
+                '  <li><a href="'
+                + reverse('django_expanded_test_cases:redirect-to-index')
+                + '">Redirect to Index</a></li>'
+                '  <li><a href="'
+                + reverse('django_expanded_test_cases:redirect-with-args', args=(5, "Test Name"))
+                + '">Redirect with Args</a></li>'
                 '</ul>'
             ),
         },

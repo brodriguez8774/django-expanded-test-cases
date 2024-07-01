@@ -41,11 +41,13 @@ ETC_SKIP_CONTENT_AFTER = getattr(
 # Similar to SKIP_CONTENT_BEFORE, except is a boolean.
 # If true and SKIP_CONTENT_BEFORE is not defined, then automatically skips the site <head></head> tag.
 # If false or if SKIP_CONTENT_BEFORE is defined, then has no effect.
-ETC_SKIP_CONTENT_HEAD = bool(getattr(
-    settings,
-    'DJANGO_EXPANDED_TESTCASES_SKIP_CONTENT_HEAD',
-    False,
-))
+ETC_SKIP_CONTENT_HEAD = bool(
+    getattr(
+        settings,
+        'DJANGO_EXPANDED_TESTCASES_SKIP_CONTENT_HEAD',
+        False,
+    )
+)
 
 
 # Indicates whether partial matches are allowed for site title assertions.

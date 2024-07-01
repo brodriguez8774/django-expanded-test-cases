@@ -123,6 +123,7 @@ class BaseTestCase(TestCase, CoreTestCaseMixin):
             if len(ETC_DEBUG_PRINT__LOGGING_SEPARATOR) > 0:
                 # Local std_out separator is defined. Log with logger.
                 import logging
+
                 logger = logging.getLogger(__name__)
                 logger.error(ETC_DEBUG_PRINT__LOGGING_SEPARATOR)
 

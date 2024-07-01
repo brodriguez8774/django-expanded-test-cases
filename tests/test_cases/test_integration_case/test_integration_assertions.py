@@ -4719,7 +4719,7 @@ class IntegrationAssertionTestCase:
                     'span',
                     '.',
                     '</span>',
-                ]
+                ],
             )
         self.assertText(
             (
@@ -4754,7 +4754,7 @@ class IntegrationAssertionTestCase:
                     'span',
                     '.',
                     '</span>',
-                ]
+                ],
             )
         self.assertText(
             (
@@ -4787,7 +4787,7 @@ class IntegrationAssertionTestCase:
                     'is',
                     'my',
                     'testing',
-                ]
+                ],
             )
         self.assertText(
             (
@@ -4818,7 +4818,7 @@ class IntegrationAssertionTestCase:
                     'my',
                     'testing',
                     'span',
-                ]
+                ],
             )
         self.assertText(
             (
@@ -4848,17 +4848,17 @@ class IntegrationAssertionTestCase:
                 response,
                 [
                     'testing',
-                ]
+                ],
             )
         self.assertText(
-            (
-                'Could not find expected content value in response. Provided value was:\n'
-                'testing\n'
-            ),
+            ('Could not find expected content value in response. Provided value was:\n' 'testing\n'),
             str(err.exception),
         )
 
-    @patch("django_expanded_test_cases.test_cases.integration_test_case.ETC_ASSERT_CONTENT__SURROUNDING_CHECK_OUTPUT_LENGTH", 1)
+    @patch(
+        "django_expanded_test_cases.test_cases.integration_test_case.ETC_ASSERT_CONTENT__SURROUNDING_CHECK_OUTPUT_LENGTH",
+        1,
+    )
     def test__assertPageContent__verifying_contextual_output__one(self):
         """Verifies contextual output for assertContent, when multiple values are provided in a single statement.
         This tests settings value of 1 contextual item output.
@@ -4889,7 +4889,7 @@ class IntegrationAssertionTestCase:
                     'span',
                     '.',
                     '</span>',
-                ]
+                ],
             )
         self.assertText(
             (
@@ -4922,7 +4922,7 @@ class IntegrationAssertionTestCase:
                     'span',
                     '.',
                     '</span>',
-                ]
+                ],
             )
         self.assertText(
             (
@@ -4954,7 +4954,7 @@ class IntegrationAssertionTestCase:
                     'is',
                     'my',
                     'testing',
-                ]
+                ],
             )
         self.assertText(
             (
@@ -4984,7 +4984,7 @@ class IntegrationAssertionTestCase:
                     'my',
                     'testing',
                     'span',
-                ]
+                ],
             )
         self.assertText(
             (
@@ -5014,17 +5014,17 @@ class IntegrationAssertionTestCase:
                 response,
                 [
                     'testing',
-                ]
+                ],
             )
         self.assertText(
-            (
-                'Could not find expected content value in response. Provided value was:\n'
-                'testing\n'
-            ),
+            ('Could not find expected content value in response. Provided value was:\n' 'testing\n'),
             str(err.exception),
         )
 
-    @patch("django_expanded_test_cases.test_cases.integration_test_case.ETC_ASSERT_CONTENT__SURROUNDING_CHECK_OUTPUT_LENGTH", 3)
+    @patch(
+        "django_expanded_test_cases.test_cases.integration_test_case.ETC_ASSERT_CONTENT__SURROUNDING_CHECK_OUTPUT_LENGTH",
+        3,
+    )
     def test__assertPageContent__verifying_contextual_output__three(self):
         """Verifies contextual output for assertContent, when multiple values are provided in a single statement.
         This tests settings value of 3 contextual item outputs.
@@ -5055,7 +5055,7 @@ class IntegrationAssertionTestCase:
                     'span',
                     '.',
                     '</span>',
-                ]
+                ],
             )
         self.assertText(
             (
@@ -5092,7 +5092,7 @@ class IntegrationAssertionTestCase:
                     'span',
                     '.',
                     '</span>',
-                ]
+                ],
             )
         self.assertText(
             (
@@ -5126,7 +5126,7 @@ class IntegrationAssertionTestCase:
                     'is',
                     'my',
                     'testing',
-                ]
+                ],
             )
         self.assertText(
             (
@@ -5158,7 +5158,7 @@ class IntegrationAssertionTestCase:
                     'my',
                     'testing',
                     'span',
-                ]
+                ],
             )
         self.assertText(
             (
@@ -5188,13 +5188,10 @@ class IntegrationAssertionTestCase:
                 response,
                 [
                     'testing',
-                ]
+                ],
             )
         self.assertText(
-            (
-                'Could not find expected content value in response. Provided value was:\n'
-                'testing\n'
-            ),
+            ('Could not find expected content value in response. Provided value was:\n' 'testing\n'),
             str(err.exception),
         )
 
@@ -5916,4 +5913,5 @@ class IntegrationAssertionTestCase:
 
 class TestIntegrationAssertions(IntegrationTestCase, IntegrationAssertionTestCase):
     """Runtime test execution of IntegrationTestCase class custom assertions, when using default project settings."""
+
     pass
