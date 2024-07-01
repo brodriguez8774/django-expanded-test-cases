@@ -4,6 +4,10 @@ Settings for django-expanded-test-cases UnitTesting.
 
 # System Imports.
 import os, sys
+from warnings import filterwarnings
+
+# Third-party Imports.
+import django
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -80,6 +84,8 @@ TEMPLATES = [
 ]
 
 
+# region Package settings for testing
+
 # Suppress or show testcase debug printout, based on UnitTest execution method.
 if 'pytest' in sys.modules:
     # Running Pytest env.
@@ -90,6 +96,18 @@ else:
     # manage.py shows all console output always, even on success.
     # So we want it off to avoid information overload and spam.
     DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT = False
+
+# endregion Package settings for testing
+
+
+# region Django Version Specific Settings
+
+# Check to see if on version greater than 5 and fix / suppress warnings from changes in that version.
+if django.VERSION >= (5, 0):
+    filterwarnings("ignore", "The FORMS_URLFIELD_ASSUME_HTTPS transitional setting is deprecated.")
+    FORMS_URLFIELD_ASSUME_HTTPS = True
+
+# endregion Django Version Specific Settings
 
 
 # Extra definable package settings.
