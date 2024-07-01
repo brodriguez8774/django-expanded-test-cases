@@ -9,13 +9,6 @@ verify_ssl = true
 
 
 ###
- # Python version declaration.
- ##
-[requires]
-python_version = "3.11"
-
-
-###
  # General packages, installed via `pipenv sync`.
  ##
 [packages]
@@ -28,22 +21,18 @@ django = "*"                    # Core Django package.
  ##
 [dev-packages]
 # Syntax-checking dependencies.
-autopep8 = "*"                  # Auto-formats files for pep8 recommendations. See `setup.cfg` for our exceptions.
-flake8 = "*"                    # Wrapper for autopep8 that allows extra configuration, etc.
+black="*"                       # "Uncompromising" Python code formatter.
 pylint = "*"                    # Linter for Python syntax. Must be run in console via "pylint" command.
 pylint-django = "*"             # Improves code analysis for Django projects.
-pylint-plugin-utils = "*"       # Additional pylint functionality for things like Django and Celery.
 
 # Testing/Pytest dependencies.
 beautifulsoup4 = "*"            # Allows easier HTML parsing.
 coverage = "*"                  # Outputs testing coverage data.
 coverage_enable_subprocess = "*"    # Required to run coverage in pytest while muti-threaded.
 pytest = "*"                    # Base Pytest package. Current preferred testing method.
-pytest-asyncio = "*"            # Additional Pytest logic for asyncio support.
 pytest-cov = "*"                # Additional Pytest logic for multithreaded coverage support.
 pytest-django = "*"             # Additional Pytest logic for Django support.
 pytest-subtests = "*"           # Additional Pytest logic for SubTest support.
-pytest-watcher = "*"            # Additional Pytest logic for watching files and running tests on update.
 pytest-xdist = "*"              # Additional Pytest features, such as multithreading and looping.
 
 # Docs build dependencies.
@@ -52,9 +41,8 @@ sphinx-autobuild = "*"          # Additional Sphinx logic to autobuild from proj
 sphinx-rtd-theme = "*"          # Additional Sphinx logic for building with standard ReadTheDocs theme.
 
 # Project pypi dependencies.
-build = "*"                     # For building packages according to PEP 517 standards (for PyPi deployment).
-pip-tools = "*"                 # Management of Package dependencies and building.
-twine = "*"                     # For pushing/publishing packages.
+flit = "*"                        # Simple way to build and put Python packages on PyPI.
+twine = "*"                       # For pushing/publishing packages.
 
 
 ###
