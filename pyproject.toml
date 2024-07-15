@@ -17,6 +17,8 @@ license = { file = "LICENSE" }
 classifiers = [
     "Environment :: Web Environment",
     "Framework :: Django",
+    "Framework :: Django :: 2",
+    "Framework :: Django :: 2.2",
     "Framework :: Django :: 3",
     "Framework :: Django :: 3.0",
     "Framework :: Django :: 3.1",
@@ -25,6 +27,7 @@ classifiers = [
     "Framework :: Django :: 4.0",
     "Framework :: Django :: 4.1",
     "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.0",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
@@ -36,8 +39,10 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Internet :: WWW/HTTP",
     "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Software Development :: Testing",
 ]
 keywords = [
     "django",
@@ -54,14 +59,27 @@ requires-python = ">=3.7"
 
 [project.optional-dependencies]
 dev = [
-    "pip-tools",
+    "black",
+    "coverage",
+    "pylint",
+    "pylint-django",
 ]
 doc = [
+    "doc8",
     "pip-tools",
+    "rstcheck",
     "sphinx",
     "sphinx-autobuild",
     "sphinx-rtd-theme",
 ]
+test = [
+    "coverage",
+    "pytest",
+    "pytest-cov",
+    "pytest-django",
+    "pytest-xdist",
+]
+
 
 [project.urls]
 Homepage = "https://github.com/brodriguez8774/django-expanded-test-cases"

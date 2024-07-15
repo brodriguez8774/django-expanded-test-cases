@@ -4,28 +4,38 @@
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+
 # -- Path setup --------------------------------------------------------------
+
+import datetime
+import os
+import sys
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-import os
-import sys
 sys.path.insert(0, os.path.abspath('../..'))
 
 # Allow reading Django files/syntax, in order to generate docs from them.
 import django
 from django.conf import settings
+from django_expanded_test_cases import __version__
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'Django Expanded Test Cases'
-copyright = '2022, Brandon Rodriguez'
+project = 'Django-Expanded-Test-Cases'
+copyright = f"{datetime.date.today().year}, Brandon Rodriguez"
 author = 'Brandon Rodriguez'
 
-# The full version, including alpha/beta/rc tags
-release = '0.7.2'
+# The version info for the project you're documenting, acts as replacement for
+# |version| and |release|, also used in various other places throughout the
+# built documents.
+#
+# The short X.Y version.
+version = __version__
+# The full version, including alpha/beta/rc tags.
+release = __version__
 
 
 # -- General configuration ---------------------------------------------------
@@ -57,13 +67,16 @@ autosectionlabel_prefix_document = True
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
 html_theme = 'sphinx_rtd_theme'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = []
+
+# Configure autosection so that it will not look any deeper than 3 levels.
+# This should help when we are listing the same files as headings in examples.
+autosectionlabel_maxdepth = 4
 
 
 # -- Django Configuration ----------------------------------------------------
@@ -73,5 +86,6 @@ settings.configure(
         'django.contrib.admin',
         'django.contrib.auth',
         'django.contrib.contenttypes',
-    ])
+    ],
+)
 django.setup()
