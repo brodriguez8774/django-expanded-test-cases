@@ -37,18 +37,14 @@ jobs:
           python -m pip install pipenv tox tox-gh-actions
           rm -f Pipfile.lock
           pipenv install --dev
+
+      - name: Display installed dependencies
+        run: |
           echo "Pipenv installed Django version:"
           pipenv run django-admin --version
+          echo ""
+          echo "Installed dependencies are:"
+          pip list
 
       - name: Test with tox
         run: pipenv run tox
-
-      - name: Rename coverage results
-        run: mv .coverage .coverage.${{ matrix.python-version }}
-
-      - name: Upload coverage results
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-${{ matrix.python-version }}
-          path: .coverage.${{ matrix.python-version }}
-          overwrite: true
