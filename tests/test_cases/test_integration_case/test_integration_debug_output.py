@@ -8,6 +8,7 @@ import unittest.mock
 from unittest.mock import patch
 
 # Third-Party Imports.
+from django import VERSION as django_version
 from django.conf import settings
 from django.test import override_settings
 
@@ -55,7 +56,6 @@ SKIP_AFTER_VALUE__MINIMAL = """
 
 
 class IntegrationDebugOutputTestCase:
-
     def strip_text_colors(self, text):
         """Strip out all potential color values, for easier testing."""
 
@@ -126,7 +126,6 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         actual_text = actual_text.replace(expected_text, '')
 
         with self.subTest('Test content section'):
-
             # Check for content section.
             expected_text = (
                 '========== response.content ==========\n'
@@ -155,10 +154,24 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 '    * "Content-Length": "192"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
-                '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
-                '\n'
-                '\n'
             )
+
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '\n'
+                    '\n'
+                )
+            else:
+                # Handling for all newer Django versions.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
+                    '\n'
+                    '\n'
+                )
             self.assertTextStartsWith(expected_text, actual_text)
 
         # Passed. Strip header section.
@@ -167,28 +180,20 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         with self.subTest('Test context section'):
             # Check for context section.
             # Due to the reference to several dynamic references, we need to split this into multiple checks.
-            # Problematic lines are the `csrf_token` line and the `perms: PermWrapper line`.
+            #
+            # Django v4 or Later - Problematic lines are:
+            #   * The `csrf_token` line
+            #   * The `perms` line.
+            # Django v3 or Earlier - Problematic lines are:
+            #   * The `csrf_token` line.
+            #   * The `perms` line.
+            #   * The `messages` line.
+
             expected_text_1 = (
                 '========== response.context ==========\n'
                 '    * header: Login Page\n'
                 '    * text: Pretend this is a login page.\n'
                 '    * csrf_token: '
-            )
-            expected_text_2 = (
-                '\n'
-                '    * request: <WSGIRequest: GET \'/login/\'>\n'
-                '    * user: AnonymousUser\n'
-                '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
-            )
-            expected_text_3 = (
-                '>>)"\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/login/\'>>\n'
-                '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
-                '    * True: True\n'
-                '    * False: False\n'
-                '    * None: None\n'
-                '\n'
-                '\n'
             )
 
             # Check first subsection.
@@ -199,19 +204,89 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             # Also strip out problematic dynamic characters of csrf text.
             actual_text = actual_text[67:]
 
-            # Check second subsection.
-            self.assertTextStartsWith(expected_text_2, actual_text)
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
 
-            # Passed second check. Strip away.
-            actual_text = actual_text.replace(expected_text_2, '')
-            # Also strip out problematic dynamic characters of PermWrapper text.
-            actual_text = actual_text[14:]
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/login/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                )
 
-            # Check third subsection.
-            self.assertTextStartsWith(expected_text_3, actual_text)
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
 
-        # Passed. Strip context section.
-        actual_text = actual_text.replace(expected_text_3, '')
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    # Comment to prevent "Black" formatting.
+                    '>\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_4 = (
+                    '>"\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check fourth subsection.
+                self.assertTextStartsWith(expected_text_4, actual_text)
+
+                # Passed fourth check. Strip away.
+                actual_text = actual_text.replace(expected_text_4, '')
+
+            else:
+                # Handling for all newer Django versions.
+
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/login/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
+                )
+
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    '>>)"\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/login/\'>>\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
 
         with self.subTest('Test session section'):
             # Check for session section.
@@ -303,7 +378,6 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         actual_text = actual_text.replace(expected_text, '')
 
         with self.subTest('Test content section'):
-
             # Check for content section.
             expected_text = (
                 '========== response.content ==========\n'
@@ -332,10 +406,24 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 '    * "Content-Length": "202"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
-                '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
-                '\n'
-                '\n'
             )
+
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '\n'
+                    '\n'
+                )
+            else:
+                # Handling for all newer Django versions.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
+                    '\n'
+                    '\n'
+                )
             self.assertTextStartsWith(expected_text, actual_text)
 
         # Passed. Strip header section.
@@ -344,28 +432,20 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         with self.subTest('Test context section'):
             # Check for context section.
             # Due to the reference to several dynamic references, we need to split this into multiple checks.
-            # Problematic lines are the `csrf_token` line and the `perms: PermWrapper line`.
+            #
+            # Django v4 or Later - Problematic lines are:
+            #   * The `csrf_token` line
+            #   * The `perms` line.
+            # Django v3 or Earlier - Problematic lines are:
+            #   * The `csrf_token` line.
+            #   * The `perms` line.
+            #   * The `messages` line.
+
             expected_text_1 = (
                 '========== response.context ==========\n'
                 '    * header: Home Page\n'
                 '    * text: Pretend this is the project landing page.\n'
                 '    * csrf_token: '
-            )
-            expected_text_2 = (
-                '\n'
-                '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                '    * user: AnonymousUser\n'
-                '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
-            )
-            expected_text_3 = (
-                '>>)"\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
-                '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
-                '    * True: True\n'
-                '    * False: False\n'
-                '    * None: None\n'
-                '\n'
-                '\n'
             )
 
             # Check first subsection.
@@ -376,19 +456,89 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             # Also strip out problematic dynamic characters of csrf text.
             actual_text = actual_text[67:]
 
-            # Check second subsection.
-            self.assertTextStartsWith(expected_text_2, actual_text)
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
 
-            # Passed second check. Strip away.
-            actual_text = actual_text.replace(expected_text_2, '')
-            # Also strip out problematic dynamic characters of PermWrapper text.
-            actual_text = actual_text[14:]
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                )
 
-            # Check third subsection.
-            self.assertTextStartsWith(expected_text_3, actual_text)
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
 
-        # Passed. Strip context section.
-        actual_text = actual_text.replace(expected_text_3, '')
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    # Comment to prevent "Black" formatting.
+                    '>\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_4 = (
+                    '>"\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check fourth subsection.
+                self.assertTextStartsWith(expected_text_4, actual_text)
+
+                # Passed fourth check. Strip away.
+                actual_text = actual_text.replace(expected_text_4, '')
+
+            else:
+                # Handling for all newer Django versions.
+
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
+                )
+
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    '>>)"\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
 
         with self.subTest('Test session section'):
             # Check for session section.
@@ -519,10 +669,24 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 '    * "Content-Length": "506"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
-                '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
-                '\n'
-                '\n'
             )
+
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '\n'
+                    '\n'
+                )
+            else:
+                # Handling for all newer Django versions.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
+                    '\n'
+                    '\n'
+                )
             self.assertTextStartsWith(expected_text, actual_text)
 
         # Passed. Strip header section.
@@ -531,29 +695,23 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         with self.subTest('Test context section'):
             # Check for context section.
             # Due to the reference to several dynamic references, we need to split this into multiple checks.
-            # Problematic lines are the `csrf_token` line and the `perms: PermWrapper line`.
+            #
+            # Django v4 or Later - Problematic lines are:
+            #   * The `csrf_token` line
+            #   * The `perms` line.
+            # Django v3 or Earlier - Problematic lines are:
+            #   * The `csrf_token` line.
+            #   * The `perms` line.
+            #   * The `messages` line.
+
             expected_text_1 = (
                 '========== response.context ==========\n'
                 '    * header: View with Three Messages\n'
                 '    * text: Pretend useful stuff is displayed here, for three-message render() view.\n'
                 '    * csrf_token: '
             )
-            expected_text_2 = (
-                '\n'
-                '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
-                '    * user: AnonymousUser\n'
-                '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
-            )
-            expected_text_3 = (
-                '>>)"\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
-                '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
-                '    * True: True\n'
-                '    * False: False\n'
-                '    * None: None\n'
-                '\n'
-                '\n'
-            )
+
+            # Check first subsection.
             self.assertTextStartsWith(expected_text_1, actual_text)
 
             # Passed first check. Strip away.
@@ -561,16 +719,89 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             # Also strip out problematic dynamic characters of csrf text.
             actual_text = actual_text[67:]
 
-            # Passed second check. Strip away.
-            actual_text = actual_text.replace(expected_text_2, '')
-            # Also strip out problematic dynamic characters of PermWrapper text.
-            actual_text = actual_text[14:]
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
 
-            # Should be good to verify the rest of the section.
-            self.assertTextStartsWith(expected_text_3, actual_text)
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                )
 
-        # Passed. Strip context section.
-        actual_text = actual_text.replace(expected_text_3, '')
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    # Comment to prevent "Black" formatting.
+                    '>\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_4 = (
+                    '>"\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check fourth subsection.
+                self.assertTextStartsWith(expected_text_4, actual_text)
+
+                # Passed fourth check. Strip away.
+                actual_text = actual_text.replace(expected_text_4, '')
+
+            else:
+                # Handling for all newer Django versions.
+
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
+                )
+
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    '>>)"\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
 
         with self.subTest('Test session section'):
             # Check for session section.
@@ -701,10 +932,24 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 '    * "Content-Length": "202"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
-                '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
-                '\n'
-                '\n'
             )
+
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '\n'
+                    '\n'
+                )
+            else:
+                # Handling for all newer Django versions.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
+                    '\n'
+                    '\n'
+                )
             self.assertTextStartsWith(expected_text, actual_text)
 
         # Passed. Strip header section.
@@ -713,28 +958,20 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         with self.subTest('Test context section'):
             # Check for context section.
             # Due to the reference to several dynamic references, we need to split this into multiple checks.
-            # Problematic lines are the `csrf_token` line and the `perms: PermWrapper line`.
+            #
+            # Django v4 or Later - Problematic lines are:
+            #   * The `csrf_token` line
+            #   * The `perms` line.
+            # Django v3 or Earlier - Problematic lines are:
+            #   * The `csrf_token` line.
+            #   * The `perms` line.
+            #   * The `messages` line.
+
             expected_text_1 = (
                 '========== response.context ==========\n'
                 '    * header: Home Page\n'
                 '    * text: Pretend this is the project landing page.\n'
                 '    * csrf_token: '
-            )
-            expected_text_2 = (
-                '\n'
-                '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                '    * user: AnonymousUser\n'
-                '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
-            )
-            expected_text_3 = (
-                '>>)"\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
-                '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
-                '    * True: True\n'
-                '    * False: False\n'
-                '    * None: None\n'
-                '\n'
-                '\n'
             )
 
             # Check first subsection.
@@ -745,19 +982,89 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             # Also strip out problematic dynamic characters of csrf text.
             actual_text = actual_text[67:]
 
-            # Check second subsection.
-            self.assertTextStartsWith(expected_text_2, actual_text)
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
 
-            # Passed second check. Strip away.
-            actual_text = actual_text.replace(expected_text_2, '')
-            # Also strip out problematic dynamic characters of PermWrapper text.
-            actual_text = actual_text[14:]
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                )
 
-            # Check third subsection.
-            self.assertTextStartsWith(expected_text_3, actual_text)
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
 
-        # Passed. Strip context section.
-        actual_text = actual_text.replace(expected_text_3, '')
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    # Comment to prevent "Black" formatting.
+                    '>\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_4 = (
+                    '>"\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check fourth subsection.
+                self.assertTextStartsWith(expected_text_4, actual_text)
+
+                # Passed fourth check. Strip away.
+                actual_text = actual_text.replace(expected_text_4, '')
+
+            else:
+                # Handling for all newer Django versions.
+
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
+                )
+
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    '>>)"\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
 
         with self.subTest('Test session section'):
             # Check for session section.
@@ -882,10 +1189,24 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 '    * "Content-Length": "202"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
-                '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
-                '\n'
-                '\n'
             )
+
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '\n'
+                    '\n'
+                )
+            else:
+                # Handling for all newer Django versions.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
+                    '\n'
+                    '\n'
+                )
             self.assertTextStartsWith(expected_text, actual_text)
 
         # Passed. Strip header section.
@@ -894,28 +1215,20 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         with self.subTest('Test context section'):
             # Check for context section.
             # Due to the reference to several dynamic references, we need to split this into multiple checks.
-            # Problematic lines are the `csrf_token` line and the `perms: PermWrapper line`.
+            #
+            # Django v4 or Later - Problematic lines are:
+            #   * The `csrf_token` line
+            #   * The `perms` line.
+            # Django v3 or Earlier - Problematic lines are:
+            #   * The `csrf_token` line.
+            #   * The `perms` line.
+            #   * The `messages` line.
+
             expected_text_1 = (
                 '========== response.context ==========\n'
                 '    * header: Home Page\n'
                 '    * text: Pretend this is the project landing page.\n'
                 '    * csrf_token: '
-            )
-            expected_text_2 = (
-                '\n'
-                '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                '    * user: AnonymousUser\n'
-                '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
-            )
-            expected_text_3 = (
-                '>>)"\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
-                '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
-                '    * True: True\n'
-                '    * False: False\n'
-                '    * None: None\n'
-                '\n'
-                '\n'
             )
 
             # Check first subsection.
@@ -926,19 +1239,89 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             # Also strip out problematic dynamic characters of csrf text.
             actual_text = actual_text[67:]
 
-            # Check second subsection.
-            self.assertTextStartsWith(expected_text_2, actual_text)
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
 
-            # Passed second check. Strip away.
-            actual_text = actual_text.replace(expected_text_2, '')
-            # Also strip out problematic dynamic characters of PermWrapper text.
-            actual_text = actual_text[14:]
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                )
 
-            # Check third subsection.
-            self.assertTextStartsWith(expected_text_3, actual_text)
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
 
-        # Passed. Strip context section.
-        actual_text = actual_text.replace(expected_text_3, '')
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    # Comment to prevent "Black" formatting.
+                    '>\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_4 = (
+                    '>"\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check fourth subsection.
+                self.assertTextStartsWith(expected_text_4, actual_text)
+
+                # Passed fourth check. Strip away.
+                actual_text = actual_text.replace(expected_text_4, '')
+
+            else:
+                # Handling for all newer Django versions.
+
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
+                )
+
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    '>>)"\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
 
         with self.subTest('Test session section'):
             # Check for session section.
@@ -1063,10 +1446,24 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 '    * "Content-Length": "202"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
-                '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
-                '\n'
-                '\n'
             )
+
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '\n'
+                    '\n'
+                )
+            else:
+                # Handling for all newer Django versions.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
+                    '\n'
+                    '\n'
+                )
             self.assertTextStartsWith(expected_text, actual_text)
 
         # Passed. Strip header section.
@@ -1075,28 +1472,20 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         with self.subTest('Test context section'):
             # Check for context section.
             # Due to the reference to several dynamic references, we need to split this into multiple checks.
-            # Problematic lines are the `csrf_token` line and the `perms: PermWrapper line`.
+            #
+            # Django v4 or Later - Problematic lines are:
+            #   * The `csrf_token` line
+            #   * The `perms` line.
+            # Django v3 or Earlier - Problematic lines are:
+            #   * The `csrf_token` line.
+            #   * The `perms` line.
+            #   * The `messages` line.
+
             expected_text_1 = (
                 '========== response.context ==========\n'
                 '    * header: Home Page\n'
                 '    * text: Pretend this is the project landing page.\n'
                 '    * csrf_token: '
-            )
-            expected_text_2 = (
-                '\n'
-                '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                '    * user: AnonymousUser\n'
-                '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
-            )
-            expected_text_3 = (
-                '>>)"\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
-                '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
-                '    * True: True\n'
-                '    * False: False\n'
-                '    * None: None\n'
-                '\n'
-                '\n'
             )
 
             # Check first subsection.
@@ -1107,19 +1496,89 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             # Also strip out problematic dynamic characters of csrf text.
             actual_text = actual_text[67:]
 
-            # Check second subsection.
-            self.assertTextStartsWith(expected_text_2, actual_text)
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
 
-            # Passed second check. Strip away.
-            actual_text = actual_text.replace(expected_text_2, '')
-            # Also strip out problematic dynamic characters of PermWrapper text.
-            actual_text = actual_text[14:]
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                )
 
-            # Check third subsection.
-            self.assertTextStartsWith(expected_text_3, actual_text)
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
 
-        # Passed. Strip context section.
-        actual_text = actual_text.replace(expected_text_3, '')
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    # Comment to prevent "Black" formatting.
+                    '>\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_4 = (
+                    '>"\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check fourth subsection.
+                self.assertTextStartsWith(expected_text_4, actual_text)
+
+                # Passed fourth check. Strip away.
+                actual_text = actual_text.replace(expected_text_4, '')
+
+            else:
+                # Handling for all newer Django versions.
+
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
+                )
+
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    '>>)"\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
 
         with self.subTest('Test session section'):
             # Check for session section.
@@ -1244,10 +1703,24 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 '    * "Content-Length": "202"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
-                '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
-                '\n'
-                '\n'
             )
+
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '\n'
+                    '\n'
+                )
+            else:
+                # Handling for all newer Django versions.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
+                    '\n'
+                    '\n'
+                )
             self.assertTextStartsWith(expected_text, actual_text)
 
         # Passed. Strip header section.
@@ -1256,28 +1729,20 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         with self.subTest('Test context section'):
             # Check for context section.
             # Due to the reference to several dynamic references, we need to split this into multiple checks.
-            # Problematic lines are the `csrf_token` line and the `perms: PermWrapper line`.
+            #
+            # Django v4 or Later - Problematic lines are:
+            #   * The `csrf_token` line
+            #   * The `perms` line.
+            # Django v3 or Earlier - Problematic lines are:
+            #   * The `csrf_token` line.
+            #   * The `perms` line.
+            #   * The `messages` line.
+
             expected_text_1 = (
                 '========== response.context ==========\n'
                 '    * header: Home Page\n'
                 '    * text: Pretend this is the project landing page.\n'
                 '    * csrf_token: '
-            )
-            expected_text_2 = (
-                '\n'
-                '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                '    * user: AnonymousUser\n'
-                '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
-            )
-            expected_text_3 = (
-                '>>)"\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
-                '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
-                '    * True: True\n'
-                '    * False: False\n'
-                '    * None: None\n'
-                '\n'
-                '\n'
             )
 
             # Check first subsection.
@@ -1288,19 +1753,89 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             # Also strip out problematic dynamic characters of csrf text.
             actual_text = actual_text[67:]
 
-            # Check second subsection.
-            self.assertTextStartsWith(expected_text_2, actual_text)
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
 
-            # Passed second check. Strip away.
-            actual_text = actual_text.replace(expected_text_2, '')
-            # Also strip out problematic dynamic characters of PermWrapper text.
-            actual_text = actual_text[14:]
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                )
 
-            # Check third subsection.
-            self.assertTextStartsWith(expected_text_3, actual_text)
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
 
-        # Passed. Strip context section.
-        actual_text = actual_text.replace(expected_text_3, '')
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    # Comment to prevent "Black" formatting.
+                    '>\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_4 = (
+                    '>"\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check fourth subsection.
+                self.assertTextStartsWith(expected_text_4, actual_text)
+
+                # Passed fourth check. Strip away.
+                actual_text = actual_text.replace(expected_text_4, '')
+
+            else:
+                # Handling for all newer Django versions.
+
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
+                )
+
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    '>>)"\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
 
         with self.subTest('Test session section'):
             # Check for session section.
@@ -1425,10 +1960,24 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 '    * "Content-Length": "202"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
-                '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
-                '\n'
-                '\n'
             )
+
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '\n'
+                    '\n'
+                )
+            else:
+                # Handling for all newer Django versions.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
+                    '\n'
+                    '\n'
+                )
             self.assertTextStartsWith(expected_text, actual_text)
 
         # Passed. Strip header section.
@@ -1437,25 +1986,20 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         with self.subTest('Test context section'):
             # Check for context section.
             # Due to the reference to several dynamic references, we need to split this into multiple checks.
-            # Problematic lines are the `csrf_token` line and the `perms: PermWrapper line`.
+            #
+            # Django v4 or Later - Problematic lines are:
+            #   * The `csrf_token` line
+            #   * The `perms` line.
+            # Django v3 or Earlier - Problematic lines are:
+            #   * The `csrf_token` line.
+            #   * The `perms` line.
+            #   * The `messages` line.
+
             expected_text_1 = (
                 '========== response.context ==========\n'
                 '    * header: Home Page\n'
                 '    * text: Pretend this is the project landing page.\n'
                 '    * csrf_token: '
-            )
-            expected_text_2 = (
-                '\n'
-                '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                '    * user: test_superuser\n'
-                '    * perms: PermWrapper(<SimpleLazyObject: <User: test_superuser>>)\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
-                '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
-                '    * True: True\n'
-                '    * False: False\n'
-                '    * None: None\n'
-                '\n'
-                '\n'
             )
 
             # Check first subsection.
@@ -1466,11 +2010,77 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             # Also strip out problematic dynamic characters of csrf text.
             actual_text = actual_text[67:]
 
-            # Check second subsection.
-            self.assertTextStartsWith(expected_text_2, actual_text)
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
 
-        # Passed. Strip context section.
-        actual_text = actual_text.replace(expected_text_2, '')
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * user: test_superuser\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                )
+
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    # Comment to prevent "Black" formatting.
+                    '>\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_4 = (
+                    '>"\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check fourth subsection.
+                self.assertTextStartsWith(expected_text_4, actual_text)
+
+                # Passed fourth check. Strip away.
+                actual_text = actual_text.replace(expected_text_4, '')
+
+            else:
+                # Handling for all newer Django versions.
+
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * user: test_superuser\n'
+                    '    * perms: PermWrapper(<SimpleLazyObject: <User: test_superuser>>)\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed. Strip context section.
+                actual_text = actual_text.replace(expected_text_2, '')
 
         with self.subTest('Test session section'):
             # Check for session section.
@@ -1611,10 +2221,24 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 '    * "Content-Length": "202"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
-                '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
-                '\n'
-                '\n'
             )
+
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '\n'
+                    '\n'
+                )
+            else:
+                # Handling for all newer Django versions.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
+                    '\n'
+                    '\n'
+                )
             self.assertTextStartsWith(expected_text, actual_text)
 
         # Passed. Strip header section.
@@ -1623,25 +2247,20 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         with self.subTest('Test context section'):
             # Check for context section.
             # Due to the reference to several dynamic references, we need to split this into multiple checks.
-            # Problematic lines are the `csrf_token` line and the `perms: PermWrapper line`.
+            #
+            # Django v4 or Later - Problematic lines are:
+            #   * The `csrf_token` line
+            #   * The `perms` line.
+            # Django v3 or Earlier - Problematic lines are:
+            #   * The `csrf_token` line.
+            #   * The `perms` line.
+            #   * The `messages` line.
+
             expected_text_1 = (
                 '========== response.context ==========\n'
                 '    * header: Home Page\n'
                 '    * text: Pretend this is the project landing page.\n'
                 '    * csrf_token: '
-            )
-            expected_text_2 = (
-                '\n'
-                '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                '    * user: test_admin\n'
-                '    * perms: PermWrapper(<SimpleLazyObject: <User: test_admin>>)\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
-                '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
-                '    * True: True\n'
-                '    * False: False\n'
-                '    * None: None\n'
-                '\n'
-                '\n'
             )
 
             # Check first subsection.
@@ -1652,11 +2271,77 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             # Also strip out problematic dynamic characters of csrf text.
             actual_text = actual_text[67:]
 
-            # Check second subsection.
-            self.assertTextStartsWith(expected_text_2, actual_text)
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
 
-        # Passed. Strip context section.
-        actual_text = actual_text.replace(expected_text_2, '')
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * user: test_admin\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                )
+
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    # Comment to prevent "Black" formatting.
+                    '>\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_4 = (
+                    '>"\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check fourth subsection.
+                self.assertTextStartsWith(expected_text_4, actual_text)
+
+                # Passed fourth check. Strip away.
+                actual_text = actual_text.replace(expected_text_4, '')
+
+            else:
+                # Handling for all newer Django versions.
+
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * user: test_admin\n'
+                    '    * perms: PermWrapper(<SimpleLazyObject: <User: test_admin>>)\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed. Strip context section.
+                actual_text = actual_text.replace(expected_text_2, '')
 
         with self.subTest('Test session section'):
             # Check for session section.
@@ -1797,10 +2482,24 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 '    * "Content-Length": "202"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
-                '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
-                '\n'
-                '\n'
             )
+
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '\n'
+                    '\n'
+                )
+            else:
+                # Handling for all newer Django versions.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
+                    '\n'
+                    '\n'
+                )
             self.assertTextStartsWith(expected_text, actual_text)
 
         # Passed. Strip header section.
@@ -1809,25 +2508,20 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         with self.subTest('Test context section'):
             # Check for context section.
             # Due to the reference to several dynamic references, we need to split this into multiple checks.
-            # Problematic lines are the `csrf_token` line and the `perms: PermWrapper line`.
+            #
+            # Django v4 or Later - Problematic lines are:
+            #   * The `csrf_token` line
+            #   * The `perms` line.
+            # Django v3 or Earlier - Problematic lines are:
+            #   * The `csrf_token` line.
+            #   * The `perms` line.
+            #   * The `messages` line.
+
             expected_text_1 = (
                 '========== response.context ==========\n'
                 '    * header: Home Page\n'
                 '    * text: Pretend this is the project landing page.\n'
                 '    * csrf_token: '
-            )
-            expected_text_2 = (
-                '\n'
-                '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                '    * user: test_user\n'
-                '    * perms: PermWrapper(<SimpleLazyObject: <User: test_user>>)\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
-                '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
-                '    * True: True\n'
-                '    * False: False\n'
-                '    * None: None\n'
-                '\n'
-                '\n'
             )
 
             # Check first subsection.
@@ -1838,11 +2532,77 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             # Also strip out problematic dynamic characters of csrf text.
             actual_text = actual_text[67:]
 
-            # Check second subsection.
-            self.assertTextStartsWith(expected_text_2, actual_text)
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
 
-        # Passed. Strip context section.
-        actual_text = actual_text.replace(expected_text_2, '')
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * user: test_user\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                )
+
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    # Comment to prevent "Black" formatting.
+                    '>\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_4 = (
+                    '>"\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check fourth subsection.
+                self.assertTextStartsWith(expected_text_4, actual_text)
+
+                # Passed fourth check. Strip away.
+                actual_text = actual_text.replace(expected_text_4, '')
+
+            else:
+                # Handling for all newer Django versions.
+
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * user: test_user\n'
+                    '    * perms: PermWrapper(<SimpleLazyObject: <User: test_user>>)\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed. Strip context section.
+                actual_text = actual_text.replace(expected_text_2, '')
 
         with self.subTest('Test session section'):
             # Check for session section.
@@ -2024,10 +2784,24 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
                 '    * "Content-Length": "506"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
-                '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
-                '\n'
-                '\n'
             )
+
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '\n'
+                    '\n'
+                )
+            else:
+                # Handling for all newer Django versions.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
+                    '\n'
+                    '\n'
+                )
             self.assertTextStartsWith(expected_text, actual_text)
 
         # Passed. Strip header section.
@@ -2036,29 +2810,23 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
         with self.subTest('Test context section'):
             # Check for context section.
             # Due to the reference to several dynamic references, we need to split this into multiple checks.
-            # Problematic lines are the `csrf_token` line and the `perms: PermWrapper line`.
+            #
+            # Django v4 or Later - Problematic lines are:
+            #   * The `csrf_token` line
+            #   * The `perms` line.
+            # Django v3 or Earlier - Problematic lines are:
+            #   * The `csrf_token` line.
+            #   * The `perms` line.
+            #   * The `messages` line.
+
             expected_text_1 = (
                 '========== response.context ==========\n'
                 '    * header: View with Three Messages\n'
                 '    * text: Pretend useful stuff is displayed here, for three-message render() view.\n'
                 '    * csrf_token: '
             )
-            expected_text_2 = (
-                '\n'
-                '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
-                '    * user: AnonymousUser\n'
-                '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
-            )
-            expected_text_3 = (
-                '>>)"\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
-                '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
-                '    * True: True\n'
-                '    * False: False\n'
-                '    * None: None\n'
-                '\n'
-                '\n'
-            )
+
+            # Check first subsection.
             self.assertTextStartsWith(expected_text_1, actual_text)
 
             # Passed first check. Strip away.
@@ -2066,16 +2834,89 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
             # Also strip out problematic dynamic characters of csrf text.
             actual_text = actual_text[67:]
 
-            # Passed second check. Strip away.
-            actual_text = actual_text.replace(expected_text_2, '')
-            # Also strip out problematic dynamic characters of PermWrapper text.
-            actual_text = actual_text[14:]
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
 
-            # Should be good to verify the rest of the section.
-            self.assertTextStartsWith(expected_text_3, actual_text)
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                )
 
-        # Passed. Strip context section.
-        actual_text = actual_text.replace(expected_text_3, '')
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    # Comment to prevent "Black" formatting.
+                    '>\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_4 = (
+                    '>"\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check fourth subsection.
+                self.assertTextStartsWith(expected_text_4, actual_text)
+
+                # Passed fourth check. Strip away.
+                actual_text = actual_text.replace(expected_text_4, '')
+
+            else:
+                # Handling for all newer Django versions.
+
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
+                )
+
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    '>>)"\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
 
         with self.subTest('Test session section'):
             # Check for session section.
@@ -2220,10 +3061,24 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
                 '    * "Content-Length": "506"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
-                '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
-                '\n'
-                '\n'
             )
+
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '\n'
+                    '\n'
+                )
+            else:
+                # Handling for all newer Django versions.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
+                    '\n'
+                    '\n'
+                )
             self.assertTextStartsWith(expected_text, actual_text)
 
         # Passed. Strip header section.
@@ -2232,29 +3087,23 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
         with self.subTest('Test context section'):
             # Check for context section.
             # Due to the reference to several dynamic references, we need to split this into multiple checks.
-            # Problematic lines are the `csrf_token` line and the `perms: PermWrapper line`.
+            #
+            # Django v4 or Later - Problematic lines are:
+            #   * The `csrf_token` line
+            #   * The `perms` line.
+            # Django v3 or Earlier - Problematic lines are:
+            #   * The `csrf_token` line.
+            #   * The `perms` line.
+            #   * The `messages` line.
+
             expected_text_1 = (
                 '========== response.context ==========\n'
                 '    * header: View with Three Messages\n'
                 '    * text: Pretend useful stuff is displayed here, for three-message render() view.\n'
                 '    * csrf_token: '
             )
-            expected_text_2 = (
-                '\n'
-                '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
-                '    * user: AnonymousUser\n'
-                '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
-            )
-            expected_text_3 = (
-                '>>)"\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
-                '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
-                '    * True: True\n'
-                '    * False: False\n'
-                '    * None: None\n'
-                '\n'
-                '\n'
-            )
+
+            # Check first subsection.
             self.assertTextStartsWith(expected_text_1, actual_text)
 
             # Passed first check. Strip away.
@@ -2262,16 +3111,89 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
             # Also strip out problematic dynamic characters of csrf text.
             actual_text = actual_text[67:]
 
-            # Passed second check. Strip away.
-            actual_text = actual_text.replace(expected_text_2, '')
-            # Also strip out problematic dynamic characters of PermWrapper text.
-            actual_text = actual_text[14:]
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
 
-            # Should be good to verify the rest of the section.
-            self.assertTextStartsWith(expected_text_3, actual_text)
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                )
 
-        # Passed. Strip context section.
-        actual_text = actual_text.replace(expected_text_3, '')
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    # Comment to prevent "Black" formatting.
+                    '>\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_4 = (
+                    '>"\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check fourth subsection.
+                self.assertTextStartsWith(expected_text_4, actual_text)
+
+                # Passed fourth check. Strip away.
+                actual_text = actual_text.replace(expected_text_4, '')
+
+            else:
+                # Handling for all newer Django versions.
+
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
+                )
+
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    '>>)"\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
 
         with self.subTest('Test session section'):
             # Check for session section.
@@ -2418,10 +3340,24 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
                 '    * "Content-Length": "506"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
-                '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
-                '\n'
-                '\n'
             )
+
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '\n'
+                    '\n'
+                )
+            else:
+                # Handling for all newer Django versions.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
+                    '\n'
+                    '\n'
+                )
             self.assertTextStartsWith(expected_text, actual_text)
 
         # Passed. Strip header section.
@@ -2430,29 +3366,23 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
         with self.subTest('Test context section'):
             # Check for context section.
             # Due to the reference to several dynamic references, we need to split this into multiple checks.
-            # Problematic lines are the `csrf_token` line and the `perms: PermWrapper line`.
+            #
+            # Django v4 or Later - Problematic lines are:
+            #   * The `csrf_token` line
+            #   * The `perms` line.
+            # Django v3 or Earlier - Problematic lines are:
+            #   * The `csrf_token` line.
+            #   * The `perms` line.
+            #   * The `messages` line.
+
             expected_text_1 = (
                 '========== response.context ==========\n'
                 '    * header: View with Three Messages\n'
                 '    * text: Pretend useful stuff is displayed here, for three-message render() view.\n'
                 '    * csrf_token: '
             )
-            expected_text_2 = (
-                '\n'
-                '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
-                '    * user: AnonymousUser\n'
-                '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
-            )
-            expected_text_3 = (
-                '>>)"\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
-                '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
-                '    * True: True\n'
-                '    * False: False\n'
-                '    * None: None\n'
-                '\n'
-                '\n'
-            )
+
+            # Check first subsection.
             self.assertTextStartsWith(expected_text_1, actual_text)
 
             # Passed first check. Strip away.
@@ -2460,16 +3390,89 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
             # Also strip out problematic dynamic characters of csrf text.
             actual_text = actual_text[67:]
 
-            # Passed second check. Strip away.
-            actual_text = actual_text.replace(expected_text_2, '')
-            # Also strip out problematic dynamic characters of PermWrapper text.
-            actual_text = actual_text[14:]
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
 
-            # Should be good to verify the rest of the section.
-            self.assertTextStartsWith(expected_text_3, actual_text)
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                )
 
-        # Passed. Strip context section.
-        actual_text = actual_text.replace(expected_text_3, '')
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    # Comment to prevent "Black" formatting.
+                    '>\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_4 = (
+                    '>"\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check fourth subsection.
+                self.assertTextStartsWith(expected_text_4, actual_text)
+
+                # Passed fourth check. Strip away.
+                actual_text = actual_text.replace(expected_text_4, '')
+
+            else:
+                # Handling for all newer Django versions.
+
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
+                )
+
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    '>>)"\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
 
         with self.subTest('Test session section'):
             # Check for session section.
@@ -2616,10 +3619,24 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
                 '    * "Content-Length": "506"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
-                '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
-                '\n'
-                '\n'
             )
+
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '\n'
+                    '\n'
+                )
+            else:
+                # Handling for all newer Django versions.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
+                    '\n'
+                    '\n'
+                )
             self.assertTextStartsWith(expected_text, actual_text)
 
         # Passed. Strip header section.
@@ -2628,29 +3645,23 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
         with self.subTest('Test context section'):
             # Check for context section.
             # Due to the reference to several dynamic references, we need to split this into multiple checks.
-            # Problematic lines are the `csrf_token` line and the `perms: PermWrapper line`.
+            #
+            # Django v4 or Later - Problematic lines are:
+            #   * The `csrf_token` line
+            #   * The `perms` line.
+            # Django v3 or Earlier - Problematic lines are:
+            #   * The `csrf_token` line.
+            #   * The `perms` line.
+            #   * The `messages` line.
+
             expected_text_1 = (
                 '========== response.context ==========\n'
                 '    * header: View with Three Messages\n'
                 '    * text: Pretend useful stuff is displayed here, for three-message render() view.\n'
                 '    * csrf_token: '
             )
-            expected_text_2 = (
-                '\n'
-                '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
-                '    * user: AnonymousUser\n'
-                '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
-            )
-            expected_text_3 = (
-                '>>)"\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
-                '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
-                '    * True: True\n'
-                '    * False: False\n'
-                '    * None: None\n'
-                '\n'
-                '\n'
-            )
+
+            # Check first subsection.
             self.assertTextStartsWith(expected_text_1, actual_text)
 
             # Passed first check. Strip away.
@@ -2658,16 +3669,89 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
             # Also strip out problematic dynamic characters of csrf text.
             actual_text = actual_text[67:]
 
-            # Passed second check. Strip away.
-            actual_text = actual_text.replace(expected_text_2, '')
-            # Also strip out problematic dynamic characters of PermWrapper text.
-            actual_text = actual_text[14:]
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
 
-            # Should be good to verify the rest of the section.
-            self.assertTextStartsWith(expected_text_3, actual_text)
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                )
 
-        # Passed. Strip context section.
-        actual_text = actual_text.replace(expected_text_3, '')
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    # Comment to prevent "Black" formatting.
+                    '>\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_4 = (
+                    '>"\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check fourth subsection.
+                self.assertTextStartsWith(expected_text_4, actual_text)
+
+                # Passed fourth check. Strip away.
+                actual_text = actual_text.replace(expected_text_4, '')
+
+            else:
+                # Handling for all newer Django versions.
+
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
+                )
+
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    '>>)"\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
 
         with self.subTest('Test session section'):
             # Check for session section.
@@ -2834,10 +3918,24 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
                 '    * "Content-Length": "506"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
-                '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
-                '\n'
-                '\n'
             )
+
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '\n'
+                    '\n'
+                )
+            else:
+                # Handling for all newer Django versions.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
+                    '\n'
+                    '\n'
+                )
             self.assertTextStartsWith(expected_text, actual_text)
 
         # Passed. Strip header section.
@@ -2846,29 +3944,23 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
         with self.subTest('Test context section'):
             # Check for context section.
             # Due to the reference to several dynamic references, we need to split this into multiple checks.
-            # Problematic lines are the `csrf_token` line and the `perms: PermWrapper line`.
+            #
+            # Django v4 or Later - Problematic lines are:
+            #   * The `csrf_token` line
+            #   * The `perms` line.
+            # Django v3 or Earlier - Problematic lines are:
+            #   * The `csrf_token` line.
+            #   * The `perms` line.
+            #   * The `messages` line.
+
             expected_text_1 = (
                 '========== response.context ==========\n'
                 '    * header: View with Three Messages\n'
                 '    * text: Pretend useful stuff is displayed here, for three-message render() view.\n'
                 '    * csrf_token: '
             )
-            expected_text_2 = (
-                '\n'
-                '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
-                '    * user: AnonymousUser\n'
-                '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
-            )
-            expected_text_3 = (
-                '>>)"\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
-                '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
-                '    * True: True\n'
-                '    * False: False\n'
-                '    * None: None\n'
-                '\n'
-                '\n'
-            )
+
+            # Check first subsection.
             self.assertTextStartsWith(expected_text_1, actual_text)
 
             # Passed first check. Strip away.
@@ -2876,16 +3968,89 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
             # Also strip out problematic dynamic characters of csrf text.
             actual_text = actual_text[67:]
 
-            # Passed second check. Strip away.
-            actual_text = actual_text.replace(expected_text_2, '')
-            # Also strip out problematic dynamic characters of PermWrapper text.
-            actual_text = actual_text[14:]
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
 
-            # Should be good to verify the rest of the section.
-            self.assertTextStartsWith(expected_text_3, actual_text)
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                )
 
-        # Passed. Strip context section.
-        actual_text = actual_text.replace(expected_text_3, '')
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    # Comment to prevent "Black" formatting.
+                    '>\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_4 = (
+                    '>"\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check fourth subsection.
+                self.assertTextStartsWith(expected_text_4, actual_text)
+
+                # Passed fourth check. Strip away.
+                actual_text = actual_text.replace(expected_text_4, '')
+
+            else:
+                # Handling for all newer Django versions.
+
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
+                )
+
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    '>>)"\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
 
         with self.subTest('Test session section'):
             # Check for session section.
@@ -3041,10 +4206,24 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
                 '    * "Content-Length": "506"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
-                '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
-                '\n'
-                '\n'
             )
+
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '\n'
+                    '\n'
+                )
+            else:
+                # Handling for all newer Django versions.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
+                    '\n'
+                    '\n'
+                )
             self.assertTextStartsWith(expected_text, actual_text)
 
         # Passed. Strip header section.
@@ -3053,29 +4232,23 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
         with self.subTest('Test context section'):
             # Check for context section.
             # Due to the reference to several dynamic references, we need to split this into multiple checks.
-            # Problematic lines are the `csrf_token` line and the `perms: PermWrapper line`.
+            #
+            # Django v4 or Later - Problematic lines are:
+            #   * The `csrf_token` line
+            #   * The `perms` line.
+            # Django v3 or Earlier - Problematic lines are:
+            #   * The `csrf_token` line.
+            #   * The `perms` line.
+            #   * The `messages` line.
+
             expected_text_1 = (
                 '========== response.context ==========\n'
                 '    * header: View with Three Messages\n'
                 '    * text: Pretend useful stuff is displayed here, for three-message render() view.\n'
                 '    * csrf_token: '
             )
-            expected_text_2 = (
-                '\n'
-                '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
-                '    * user: AnonymousUser\n'
-                '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
-            )
-            expected_text_3 = (
-                '>>)"\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
-                '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
-                '    * True: True\n'
-                '    * False: False\n'
-                '    * None: None\n'
-                '\n'
-                '\n'
-            )
+
+            # Check first subsection.
             self.assertTextStartsWith(expected_text_1, actual_text)
 
             # Passed first check. Strip away.
@@ -3083,16 +4256,89 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
             # Also strip out problematic dynamic characters of csrf text.
             actual_text = actual_text[67:]
 
-            # Passed second check. Strip away.
-            actual_text = actual_text.replace(expected_text_2, '')
-            # Also strip out problematic dynamic characters of PermWrapper text.
-            actual_text = actual_text[14:]
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
 
-            # Should be good to verify the rest of the section.
-            self.assertTextStartsWith(expected_text_3, actual_text)
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                )
 
-        # Passed. Strip context section.
-        actual_text = actual_text.replace(expected_text_3, '')
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    # Comment to prevent "Black" formatting.
+                    '>\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_4 = (
+                    '>"\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check fourth subsection.
+                self.assertTextStartsWith(expected_text_4, actual_text)
+
+                # Passed fourth check. Strip away.
+                actual_text = actual_text.replace(expected_text_4, '')
+
+            else:
+                # Handling for all newer Django versions.
+
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
+                )
+
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    '>>)"\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
 
         with self.subTest('Test session section'):
             # Check for session section.
@@ -3240,10 +4486,24 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
                 '    * "Content-Length": "506"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
-                '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
-                '\n'
-                '\n'
             )
+
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '\n'
+                    '\n'
+                )
+            else:
+                # Handling for all newer Django versions.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
+                    '\n'
+                    '\n'
+                )
             self.assertTextStartsWith(expected_text, actual_text)
 
         # Passed. Strip header section.
@@ -3252,29 +4512,23 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
         with self.subTest('Test context section'):
             # Check for context section.
             # Due to the reference to several dynamic references, we need to split this into multiple checks.
-            # Problematic lines are the `csrf_token` line and the `perms: PermWrapper line`.
+            #
+            # Django v4 or Later - Problematic lines are:
+            #   * The `csrf_token` line
+            #   * The `perms` line.
+            # Django v3 or Earlier - Problematic lines are:
+            #   * The `csrf_token` line.
+            #   * The `perms` line.
+            #   * The `messages` line.
+
             expected_text_1 = (
                 '========== response.context ==========\n'
                 '    * header: View with Three Messages\n'
                 '    * text: Pretend useful stuff is displayed here, for three-message render() view.\n'
                 '    * csrf_token: '
             )
-            expected_text_2 = (
-                '\n'
-                '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
-                '    * user: AnonymousUser\n'
-                '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
-            )
-            expected_text_3 = (
-                '>>)"\n'
-                '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
-                '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
-                '    * True: True\n'
-                '    * False: False\n'
-                '    * None: None\n'
-                '\n'
-                '\n'
-            )
+
+            # Check first subsection.
             self.assertTextStartsWith(expected_text_1, actual_text)
 
             # Passed first check. Strip away.
@@ -3282,16 +4536,89 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
             # Also strip out problematic dynamic characters of csrf text.
             actual_text = actual_text[67:]
 
-            # Passed second check. Strip away.
-            actual_text = actual_text.replace(expected_text_2, '')
-            # Also strip out problematic dynamic characters of PermWrapper text.
-            actual_text = actual_text[14:]
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
 
-            # Should be good to verify the rest of the section.
-            self.assertTextStartsWith(expected_text_3, actual_text)
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                )
 
-        # Passed. Strip context section.
-        actual_text = actual_text.replace(expected_text_3, '')
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    # Comment to prevent "Black" formatting.
+                    '>\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_4 = (
+                    '>"\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check fourth subsection.
+                self.assertTextStartsWith(expected_text_4, actual_text)
+
+                # Passed fourth check. Strip away.
+                actual_text = actual_text.replace(expected_text_4, '')
+
+            else:
+                # Handling for all newer Django versions.
+
+                expected_text_2 = (
+                    '\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
+                    '    * user: AnonymousUser\n'
+                    '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
+                )
+
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    '>>)"\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * True: True\n'
+                    '    * False: False\n'
+                    '    * None: None\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
 
         with self.subTest('Test session section'):
             # Check for session section.
