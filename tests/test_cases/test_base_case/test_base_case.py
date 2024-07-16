@@ -3,6 +3,7 @@ Tests for test_cases/base_test_case.py general logic.
 """
 
 # System Imports.
+import sys
 from contextlib import redirect_stdout
 from io import StringIO
 from unittest import skipIf
@@ -247,7 +248,16 @@ class BaseTestMixin:
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
                     self.assertText('', 'Actuals has values here. Expected does not.')
-            std_out_lines = std_out.getvalue().split('\n')[3:]
+
+            if sys.version_info[0] == 3 and sys.version_info[1] >= 12:
+                # Python 3.12 and higher has very minorly adjusted failure output.
+                # We don't care about that here other than making tests pass.
+                start_index = 4
+            else:
+                # Start point for older python versions.
+                start_index = 3
+
+            std_out_lines = std_out.getvalue().split('\n')[start_index:]
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
@@ -288,7 +298,16 @@ class BaseTestMixin:
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
                     self.assertText('Expected has values here. Actuals does not.', '')
-            std_out_lines = std_out.getvalue().split('\n')[5:]
+
+            if sys.version_info[0] == 3 and sys.version_info[1] >= 12:
+                # Python 3.12 and higher has very minorly adjusted failure output.
+                # We don't care about that here other than making tests pass.
+                start_index = 4
+            else:
+                # Start point for older python versions.
+                start_index = 5
+
+            std_out_lines = std_out.getvalue().split('\n')[start_index:]
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
@@ -329,7 +348,16 @@ class BaseTestMixin:
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
                     self.assertText('', 'Actuals has values here.\nExpected does not.')
-            std_out_lines = std_out.getvalue().split('\n')[4:]
+
+            if sys.version_info[0] == 3 and sys.version_info[1] >= 12:
+                # Python 3.12 and higher has very minorly adjusted failure output.
+                # We don't care about that here other than making tests pass.
+                start_index = 5
+            else:
+                # Start point for older python versions.
+                start_index = 4
+
+            std_out_lines = std_out.getvalue().split('\n')[start_index:]
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
@@ -377,7 +405,16 @@ class BaseTestMixin:
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
                     self.assertText('Expected has values here.\nActuals does not.', '')
-            std_out_lines = std_out.getvalue().split('\n')[4:]
+
+            if sys.version_info[0] == 3 and sys.version_info[1] >= 12:
+                # Python 3.12 and higher has very minorly adjusted failure output.
+                # We don't care about that here other than making tests pass.
+                start_index = 5
+            else:
+                # Start point for older python versions.
+                start_index = 4
+
+            std_out_lines = std_out.getvalue().split('\n')[start_index:]
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
@@ -425,9 +462,16 @@ class BaseTestMixin:
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
                     self.assertText('One line.', 'One line.\nTwo line.')
-            print('std_out.getvalue():')
-            print(std_out.getvalue())
-            std_out_lines = std_out.getvalue().split('\n')[6:]
+
+            if sys.version_info[0] == 3 and sys.version_info[1] >= 12:
+                # Python 3.12 and higher has very minorly adjusted failure output.
+                # We don't care about that here other than making tests pass.
+                start_index = 5
+            else:
+                # Start point for older python versions.
+                start_index = 6
+
+            std_out_lines = std_out.getvalue().split('\n')[start_index:]
 
             # Test all line values.
             self.assertEqual(std_out_lines[0], '')
@@ -482,6 +526,7 @@ class BaseTestMixin:
             with redirect_stdout(std_out):
                 with self.assertRaises(AssertionError):
                     self.assertText('One line.\nTwo line.', 'One line.')
+
             std_out_lines = std_out.getvalue().split('\n')[5:]
 
             # Test all line values.
