@@ -1,5 +1,5 @@
 name: Run Tests
-run-name: Run tests on ${{ github.event.repository.updated_at}}
+run-name: Tests run on ${{ github.event.repository.updated_at}}
 on:
   push:
   pull_request:
