@@ -44,7 +44,7 @@ jobs:
           pipenv run django-admin --version
           echo ""
           echo "Installed dependencies are:"
-          pip list
+          pipenv run pip list
 
       - name: Test with tox
         run: pipenv run tox
