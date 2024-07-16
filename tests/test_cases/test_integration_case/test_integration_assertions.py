@@ -17,6 +17,7 @@ from django_expanded_test_cases.constants import (
     ETC_OUTPUT_ERROR_COLOR,
     ETC_OUTPUT_EXPECTED_MATCH_COLOR,
     ETC_OUTPUT_RESET_COLOR,
+    UNDERLINE_RESET as ETC_UNDERLINE_RESET,
 )
 
 
@@ -4704,7 +4705,7 @@ class IntegrationAssertionTestCase:
             output_color_before = ''
             output_color_after = ''
             output_color_error = ''
-            output_color_reset = ''
+            output_color_reset = ETC_UNDERLINE_RESET
 
         # Test with full values.
         with self.assertRaises(AssertionError) as err:
@@ -4874,7 +4875,7 @@ class IntegrationAssertionTestCase:
             output_color_before = ''
             output_color_after = ''
             output_color_error = ''
-            output_color_reset = ''
+            output_color_reset = ETC_UNDERLINE_RESET
 
         # Test with full values.
         with self.assertRaises(AssertionError) as err:
@@ -5040,7 +5041,7 @@ class IntegrationAssertionTestCase:
             output_color_before = ''
             output_color_after = ''
             output_color_error = ''
-            output_color_reset = ''
+            output_color_reset = ETC_UNDERLINE_RESET
 
         # Test with full values.
         with self.assertRaises(AssertionError) as err:
