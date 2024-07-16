@@ -136,13 +136,13 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             skip_content_before = self.standardize_whitespace(skip_content_before)
 
             # Correct some potential problematic characters specifically for this section of logic.
-            with warnings.catch_warnings(record=True) as warn:
-                skip_content_before = skip_content_before.replace('^', '\^')
-                skip_content_before = skip_content_before.replace('$', '\$')
-                skip_content_before = skip_content_before.replace('|', '\|')
-                skip_content_before = skip_content_before.replace('(', '\(')
-                skip_content_before = skip_content_before.replace(')', '\)')
-                skip_content_before = skip_content_before.replace(' ', '\s+')
+            with warnings.catch_warnings() as warn:
+                skip_content_before = skip_content_before.replace('^', '\\^')
+                skip_content_before = skip_content_before.replace('$', '\\$')
+                skip_content_before = skip_content_before.replace('|', '\\|')
+                skip_content_before = skip_content_before.replace('(', '\\(')
+                skip_content_before = skip_content_before.replace(')', '\\)')
+                skip_content_before = skip_content_before.replace(' ', '\\s+')
 
             # Trim the output.
             response_content = re.sub(
@@ -160,13 +160,13 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             skip_content_after = self.standardize_whitespace(skip_content_after)
 
             # Correct some potential problematic characters specifically for this section of logic.
-            with warnings.catch_warnings(record=True) as warn:
-                skip_content_after = skip_content_after.replace('^', '\^')
-                skip_content_after = skip_content_after.replace('$', '\$')
-                skip_content_after = skip_content_after.replace('|', '\|')
-                skip_content_after = skip_content_after.replace('(', '\(')
-                skip_content_after = skip_content_after.replace(')', '\)')
-                skip_content_after = skip_content_after.replace(' ', '\s+')
+            with warnings.catch_warnings() as warn:
+                skip_content_after = skip_content_after.replace('^', '\\^')
+                skip_content_after = skip_content_after.replace('$', '\\$')
+                skip_content_after = skip_content_after.replace('|', '\\|')
+                skip_content_after = skip_content_after.replace('(', '\\(')
+                skip_content_after = skip_content_after.replace(')', '\\)')
+                skip_content_after = skip_content_after.replace(' ', '\\s+')
 
             # Trim the output.
             response_content = re.sub(
