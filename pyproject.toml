@@ -5,7 +5,6 @@ build-backend = 'setuptools.build_meta:__legacy__'
 
 [project]
 name = "django-expanded-test-cases"
-version = "0.7.2"
 description = "Expands the existing Django TestCase class with extra functionality."
 readme = "readme.md"
 authors = [
@@ -52,11 +51,12 @@ keywords = [
     "unittest",
     "unittesting",
 ]
+requires-python = ">=3.7"
 dependencies = [
     "django >= 2.2.0",
-    "beautifulsoup4 >= 4.11.0"
+    "beautifulsoup4 >= 4.11.0",
 ]
-requires-python = ">=3.7"
+dynamic = ["version"]
 
 
 [project.optional-dependencies]
