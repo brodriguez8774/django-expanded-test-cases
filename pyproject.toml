@@ -1,9 +1,10 @@
 [build-system]
-requires = ["flit_core >=3.2,<4"]
-build-backend = "flit_core.buildapi"
+requires = ['setuptools>=40.8.0', 'wheel']
+build-backend = 'setuptools.build_meta:__legacy__'
 
 [project]
 name = "django-expanded-test-cases"
+version = "0.7.2"
 description = "Expands the existing Django TestCase class with extra functionality."
 readme = "readme.md"
 authors = [
@@ -55,11 +56,6 @@ dependencies = [
     "beautifulsoup4 >= 4.11.0"
 ]
 requires-python = ">=3.7"
-dependencies = [
-    "django >= 2.2.0",
-    "beautifulsoup4>=4.0.0"
-]
-dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = [
@@ -87,13 +83,7 @@ test = [
 
 [project.urls]
 Homepage = "https://github.com/brodriguez8774/django-expanded-test-cases"
-Documentation = "https://django-expanded-test-cases.readthedocs.io/en/latest/"
-"Bug Tracker" = "https://github.com/brodriguez8774/django-expanded-test-cases/issues"
-"Source Code" = "https://github.com/brodriguez8774/django-expanded-test-cases"
 
-
-[tool.coverage.run]
-relative_files = true
 
 [tool.black]
 line-length = 120
