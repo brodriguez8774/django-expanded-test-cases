@@ -12,6 +12,14 @@ django\_expanded\_test\_cases.mixins.core\_mixin module
    :undoc-members:
    :show-inheritance:
 
+django\_expanded\_test\_cases.mixins.live\_server\_mixin module
+---------------------------------------------------------------
+
+.. automodule:: django_expanded_test_cases.mixins.live_server_mixin
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 django\_expanded\_test\_cases.mixins.response\_mixin module
 -----------------------------------------------------------
 

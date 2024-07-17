@@ -4,7 +4,13 @@ Allows simplified importing, for use as a third-party package.
 """
 
 # Import TestCase classes.
-from .test_cases import *
+try:
+    from .test_cases import *
+except:
+    # Docs need to access this file to get project version.
+    # But this import statement fails on docs build.
+    # In that case, it's fine, ignore.
+    pass
 
 
 """Version declaration"""
@@ -37,4 +43,5 @@ __all__ = [
     'LiveServerTestCase',
     'ChannelsLiveServerTestCase',
     'VERSION',
+    '__version__',
 ]
