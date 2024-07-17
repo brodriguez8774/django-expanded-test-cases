@@ -1,0 +1,19 @@
+###
+ # Python Package Declarations.
+ ##
+
+
+###
+ # General packages.
+ # These are used/required for package to run at all.
+ ##
+django                      # Core Django package.
+beautifulsoup4              # Allows easier HTML parsing.
+
+
+###
+ # Development and testing packages.
+ ##
+# Testing/Pytest dependencies.
+coverage                    # Outputs testing coverage data.
+coverage_enable_subprocess  # Required to run coverage in pytest while muti-threaded.

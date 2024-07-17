@@ -1,0 +1,36 @@
+###
+ # Python Package Declarations.
+ ##
+
+
+###
+ # General packages.
+ # These are used/required for package to run at all.
+ ##
+django                      # Core Django package.
+beautifulsoup4              # Allows easier HTML parsing.
+
+
+###
+ # Optional packages.
+ # These are dependencies that this package can take advantage of, but are not required for use.
+ # When not present, certain functionality will be disabled, but the project as a whole should still be functional.
+ ##
+# General dependencies.
+colorama                    # Console coloring package.
+# Selenium dependencies.
+channels                    # Django websocket/background-task dependencies.
+daphne                      # Django websocket/background-task dependencies.
+selenium                    # Allows using Django to launch selenium live-server browser instances.
+
+
+###
+ # Development and testing packages.
+ ##
+# Testing/Pytest dependencies.
+coverage                    # Outputs testing coverage data.
+coverage_enable_subprocess  # Required to run coverage in pytest while muti-threaded.
+pytest                      # Base Pytest package. Current preferred testing method.
+pytest-cov                  # Additional Pytest logic for multithreaded coverage support.
+pytest-django               # Additional Pytest logic for Django support.
+pytest-xdist                # Additional Pytest features, such as multithreading and looping.
