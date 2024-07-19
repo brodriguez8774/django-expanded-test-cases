@@ -1,7 +1,10 @@
+# Build properties for deployment.
 [build-system]
 requires = ['setuptools>=40.8.0', 'wheel']
 build-backend = 'setuptools.build_meta:__legacy__'
 
+
+# region Core Project Settings and Metadata
 
 [project]
 name = "django-expanded-test-cases"
@@ -90,7 +93,60 @@ Documentation = "https://django-expanded-test-cases.readthedocs.io/en/latest/"
 "Bug Tracker" = "https://github.com/brodriguez8774/django-expanded-test-cases/issues"
 "Source Code" = "https://github.com/brodriguez8774/django-expanded-test-cases"
 
+# endregion Core Project Settings and Metadata
 
+
+# region Third-Party Package Settings
+
+# "Black" formatter settings.
 [tool.black]
 line-length = 120
 skip-string-normalization = 1
+
+# endregion Third-Party Package Settings
+
+
+# region Testing Settings
+
+[tool.pytest.ini_options]
+python_files = ["tests.py", "tests/test_*.py"]
+
+DJANGO_SETTINGS_MODULE = "tests.settings"
+pythonpath = "."
+# Constructed as
+#   {action}:{message}:{category}:{module}:{lineno}
+#
+# For more details, see:
+#   https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+#   https://docs.python.org/3/library/warnings.html#warning-filter
+#   https://stackoverflow.com/questions/57925071/how-do-i-avoid-getting-deprecationwarning-from-inside-dependencies-with-pytest
+filterwarnings = ""
+
+
+[tool.coverage.run]
+branch = true
+omit = [
+    # Omit the virtual environment.
+    "./.venv/*",
+    # Omit the test folders.
+    "*/tests/*",
+    "*/tests.py",
+    # Omit the migration folders.
+    "*/migrations/*",
+    # Omit django files.
+    "*/manage.py",
+    "*/wsgi.py",
+    "*/settings.py",
+    "*/asgi.py",
+    # Omit management commands.
+    "*/management/commands/*.py",
+    # Omit init files.
+    "*/__init__.py",
+    # Omit setup files.
+    "./setup.py",
+    # Omit Testing Scripts.
+    "./runpytests.py",
+    "./runtests.py",
+]
+
+# endregion Testing Settings

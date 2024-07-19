@@ -15,7 +15,7 @@ beautifulsoup4              # Allows easier HTML parsing.
  # Development and testing packages.
  ##
 # Testing/Pytest dependencies.
-coverage                    # Outputs testing coverage data.
+coverage[toml]              # Outputs testing coverage data.
 coverage_enable_subprocess  # Required to run coverage in pytest while muti-threaded.
 pytest                      # Base Pytest package. Current preferred testing method.
 pytest-cov                  # Additional Pytest logic for multithreaded coverage support.

@@ -12,6 +12,7 @@ try:
 
     COLORAMA_PRESENT = True
 except ImportError:
+    # If we got this far, colorama package is not provided in environment.
     COLORAMA_PRESENT = False
 
 

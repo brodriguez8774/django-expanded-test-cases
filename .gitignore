@@ -110,9 +110,13 @@ pip-delete-this-directory.txt
 # Ignore UnitTesting and test coverage files.
 .pytest_cache/
 htmlcov/
+.tox/
 .coverage
 .coverage.*
 coverage.xml
+coverage.lcov
+coverage.json
+.django_expanded_test_cases_coverage_html_report/
 
 
 # Ignore Django development files.
