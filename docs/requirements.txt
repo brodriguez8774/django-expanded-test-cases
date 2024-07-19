@@ -1,6 +1,13 @@
 # Minimal requirements file to build docs.
 
+# Core packages.
 django
 sphinx
 sphinx-autobuild
 sphinx-rtd-theme
+
+# Packages for "optional" package logic.
+# Required to fully build docs without warnings/errors.
+channels
+daphne
+selenium
