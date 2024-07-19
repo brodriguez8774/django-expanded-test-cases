@@ -8,5 +8,42 @@ on:
 jobs:
   test-py36:
     uses: ./.github/workflows/test_3.6.yaml
+
   test-py38:
     uses: ./.github/workflows/test_3.8.yaml
+
+  coverage:
+    name: Upload coverage results to Coveralls
+    runs-on: ubuntu-latest
+    environment:
+      name: test
+    # Need to run this after tests succeed so that coverage reflects test runs with all django and python combinations.
+    needs:
+      - test-py36
+      - test-py38
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Retrieve coverage results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: coverage-*
+          merge-multiple: true
+
+      - name: Combine coverage files
+        run: |
+          python -m pip install coverage
+          coverage --version
+          coverage combine
+
+      - name: Create coverage report
+        run: coverage lcov
+
+      - name: Upload Coverage to Coveralls
+        uses: coverallsapp/github-action@v2
