@@ -1,9 +1,12 @@
 # Django Expanded Test Cases
 
-[![Documentation Status](https://readthedocs.org/projects/django-expanded-test-cases/badge/?version=latest)](https://django-expanded-test-cases.readthedocs.io/en/latest/?badge=latest)
+
 [![PyPI](https://img.shields.io/pypi/v/django-expanded-test-cases?color=blue)](https://img.shields.io/pypi/v/django-expanded-test-cases?color=blue)
-[![Python Versions](https://img.shields.io/badge/python-%3E%3D3.7-brightgreen)](https://img.shields.io/badge/python-%3E%3D3.7-brightgreen)
-[![Django Versions](https://img.shields.io/badge/django-%3E%3D3-brightgreen)](https://img.shields.io/badge/django-%3E%3D3-brightgreen)
+[![Python Versions](https://img.shields.io/badge/python-%3E%3D3.6-brightgreen)](https://img.shields.io/badge/python-%3E%3D3.6-brightgreen)
+[![Django Versions](https://img.shields.io/badge/django-%3E%3D2.2-brightgreen)](https://img.shields.io/badge/django-%3E%3D2.2-brightgreen)
+[![Run Tests](https://github.com/brodriguez8774/django-expanded-test-cases/actions/workflows/test.yaml/badge.svg)](https://github.com/brodriguez8774/django-expanded-test-cases/actions/workflows/test.yaml)
+[![Coverage Status](https://coveralls.io/repos/github/brodriguez8774/django-expanded-test-cases/badge.svg?branch=main)](https://coveralls.io/github/brodriguez8774/django-expanded-test-cases?branch=main)
+[![Documentation Status](https://readthedocs.org/projects/django-expanded-test-cases/badge/?version=latest)](https://django-expanded-test-cases.readthedocs.io/en/latest/?badge=latest)
 [![GitHub](https://img.shields.io/github/license/brodriguez8774/django-expanded-test-cases)](https://img.shields.io/github/license/brodriguez8774/django-expanded-test-cases)
 [![PyPI Downloads per Month](https://img.shields.io/pypi/dm/django-expanded-test-cases.svg)](https://pypi.python.org/pypi/django-expanded-test-cases)
 
