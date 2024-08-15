@@ -33,6 +33,8 @@ urlpatterns = [
         test_views.template_response_with_args,
         name='template-response-with-args',
     ),
+    # Json response views.
+    path('json/index/', test_views.json_response_index, name='json-response-index'),
     # Model test views.
     path('user/detail/<int:pk>/', test_views.user_detail, name='user-detail'),
     # Redirect views.

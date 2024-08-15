@@ -3,8 +3,10 @@ Testing logic for views and other multi-part components.
 """
 
 # System Imports.
+import json
 import logging
-import re, textwrap
+import re
+import textwrap
 
 # Third-Party Imports.
 from django.conf import settings
@@ -119,6 +121,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         get=True,
         data=None,
         secure=True,
+        return_format='html',
+        headers=None,
         expected_status=200,
         expected_url=None,
         expected_redirect_url=None,
@@ -134,6 +138,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         expected_messages=None,
         expected_content=None,
         expected_not_content=None,
+        expected_json=None,
         auto_login=True,
         user=None,
         user_permissions=None,
@@ -158,6 +163,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param get: Bool indicating if response is GET or POST. Defaults to GET.
         :param data: Optional dict of items to pass into response generation.
         :param secure: Bool indicating if request should be retrieved as HTTP or HTTPS.
+        :param return_format: Format to parse for assertion checks. `Html` for standard webpage. `Json` for json.
+        :param headers: Additional test client headers, if any.
         :param expected_url: Expected url, before any redirections.
         :param expected_redirect_url: Expected url, after any redirections.
         :param view_should_redirect: True to make sure view has redirected. False to make sure it didn't. None to skip.
@@ -173,6 +180,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param expected_messages: Expected context messages to verify. Skips message test if left as None.
         :param expected_content: Expected page content elements to verify. Skips content test if left as None.
         :param expected_not_content: Inverse of expected_content. Skips test if left as None.
+        :param expected_json: If expecting JSON formatted response, then the JSON value to check for.
+                              Currently requires the full JSON value. Does not do partials.
         :param auto_login: Bool indicating if user should be auto-logged-in.
         :param user: User to log in with, if auto_login is True. Defaults to `test_user`.
         :param user_permissions: Optional permissions to provide to login user.
@@ -201,6 +210,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Handle mutable data defaults.
         data = data or {}
+        headers = headers or {}
         url_args = (*args, *kwargs.pop('args', []), *(url_args or []))
         url_query_params = url_query_params or {}
         redirect_args = (*args, *(redirect_args or []))
@@ -208,6 +218,13 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         redirect_query_params = redirect_query_params or {}
         url_kwargs = {**kwargs.pop('kwargs', {}), **(url_kwargs or {}), **kwargs}
         extra_usergen_kwargs = extra_usergen_kwargs or {}
+
+        # Sanitize required values.
+        return_format = str(return_format).lower().strip()
+        if return_format not in ['html', 'json']:
+            raise ValueError(
+                'Invalid return_format arg. Currently supported return_format values are `html` or `json`.'
+            )
 
         # Reset client "user login" state for new response generation.
         self.client.logout()
@@ -221,6 +238,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             get=get,
             data=data,
             secure=secure,
+            headers=headers,
             url_args=url_args,
             url_kwargs=url_kwargs,
             query_params=url_query_params,
@@ -231,9 +249,23 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             extra_usergen_kwargs=extra_usergen_kwargs,
         )
 
+        # If response is json format, then save actual python-i-fied json data to response as well.
+        # Note: Django seems to have built-in processing for `response.content`, so we have to save to
+        #   a different variable. This has the added benefit that tests can see what the original json output was,
+        #   as well as the python-i-fied version.
+        if return_format == 'json':
+            response.json_content = json.loads(response.content.decode('utf-8'))
+        else:
+            # Handle for any return format that is NOT json.
+            if expected_json is not None:
+                raise ValueError(
+                    'Assertion was not expecting a JSON return object, yet expected_json arg was provided. '
+                    'Either provide a return_format arg of `json`, or consider using the assertJsonResponse assertion.'
+                )
+
         # Optionally output all debug info for found response.
         if self._debug_print_bool:
-            self.full_debug_print(response)
+            self.full_debug_print(response, return_format=return_format)
 
         # Optional hook for running custom pre-builtin-test logic.
         self._assertResponse__pre_builtin_tests(
@@ -243,6 +275,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             get=get,
             data=data,
             secure=secure,
+            return_format=return_format,
+            headers=headers,
             expected_status=expected_status,
             expected_url=expected_url,
             expected_redirect_url=expected_redirect_url,
@@ -342,6 +376,14 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                 # debug_output=False,
             )
 
+        if expected_json is not None:
+            if expected_json != response.json_content:
+                self.fail(
+                    'Could not find expected json value in response. Provided value was:\n{0}'.format(
+                        expected_json,
+                    )
+                )
+
         # Optional hook for running custom post-builtin-test logic.
         self._assertResponse__post_builtin_tests(
             response.url,
@@ -350,6 +392,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             get=get,
             data=data,
             secure=secure,
+            headers=headers,
+            return_format=return_format,
             expected_status=expected_status,
             expected_url=expected_url,
             expected_redirect_url=expected_redirect_url,
@@ -390,6 +434,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         *args,
         data=None,
         secure=True,
+        headers=None,
         expected_status=200,
         expected_url=None,
         expected_redirect_url=None,
@@ -420,6 +465,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Handle mutable data defaults.
         data = data or {}
+        headers = headers or {}
         url_args = url_args or []
         url_kwargs = url_kwargs or {}
         url_query_params = url_query_params or []
@@ -435,6 +481,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             get=True,
             data=data,
             secure=secure,
+            headers=headers,
             expected_status=expected_status,
             expected_url=expected_url,
             expected_redirect_url=expected_redirect_url,
@@ -450,6 +497,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             expected_messages=expected_messages,
             expected_content=expected_content,
             expected_not_content=expected_not_content,
+            expected_json=None,
             auto_login=auto_login,
             user=user,
             user_permissions=user_permissions,
@@ -468,6 +516,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         *args,
         data=None,
         secure=True,
+        headers=None,
         expected_status=200,
         expected_url=None,
         expected_redirect_url=None,
@@ -498,6 +547,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Handle mutable data defaults.
         data = data or {}
+        headers = headers or {}
         url_args = url_args or []
         url_kwargs = url_kwargs or {}
         url_query_params = url_query_params or {}
@@ -519,6 +569,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             get=False,
             data=data,
             secure=secure,
+            headers=headers,
             expected_status=expected_status,
             expected_url=expected_url,
             expected_redirect_url=expected_redirect_url,
@@ -534,6 +585,121 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             expected_messages=expected_messages,
             expected_content=expected_content,
             expected_not_content=expected_not_content,
+            expected_json=None,
+            auto_login=auto_login,
+            user=user,
+            user_permissions=user_permissions,
+            user_groups=user_groups,
+            extra_usergen_kwargs=extra_usergen_kwargs,
+            ignore_content_ordering=ignore_content_ordering,
+            content_starts_after=content_starts_after,
+            content_ends_before=content_ends_before,
+            debug_logging_level=debug_logging_level,
+            **kwargs,
+        )
+
+    def assertJsonResponse(
+        self,
+        url,
+        *args,
+        data=None,
+        secure=True,
+        return_format='json',
+        headers=None,
+        expected_status=200,
+        expected_url=None,
+        expected_redirect_url=None,
+        view_should_redirect=None,
+        url_args=None,
+        url_kwargs=None,
+        url_query_params=None,
+        redirect_args=None,
+        redirect_kwargs=None,
+        redirect_query_params=None,
+        expected_title=None,
+        expected_messages=None,
+        expected_content=None,
+        expected_not_content=None,
+        expected_json=None,
+        auto_login=True,
+        user=None,
+        user_permissions=None,
+        user_groups=None,
+        extra_usergen_kwargs=None,
+        ignore_content_ordering=False,
+        content_starts_after=None,
+        content_ends_before=None,
+        debug_logging_level=None,
+        **kwargs,
+    ):
+        """Verifies a JSON response was found at given URL, and matches provided parameters."""
+
+        # Handle mutable data defaults.
+        data = data or {}
+        headers = headers or {}
+        url_args = url_args or []
+        url_kwargs = url_kwargs or {}
+        url_query_params = url_query_params or {}
+        redirect_args = redirect_args or []
+        redirect_kwargs = redirect_kwargs or {}
+        redirect_query_params = redirect_query_params or {}
+        extra_usergen_kwargs = extra_usergen_kwargs or {}
+
+        # Forcibly add values to "headers" dict, so that we indicate it's a JSON request as per world web standards.
+        # NOTE: This logic will only define the corresponding header values if they are not already defined.
+        #       If they are defined, then the user provided value takes priority.
+        content_type_header_defined = False
+        accept_header_defined = False
+        try:
+            # Reminder: `Content-Type` indicates the format of the request sent from the client to the server.
+            #   A value of `application/json` indicates that it should be interpreted as a JsonRequest.
+            content_type_header = str(headers['Content-Type']).strip()
+            if content_type_header != '':
+                content_type_header_defined = True
+        except KeyError:
+            # Not defined. Prevent error and continue.
+            pass
+
+        try:
+            # Reminder: `Accept` indicates the format of the response that is expected by the client.
+            #   A value of `application/json` indicates that it sent as a JsonRequest.
+            accept_header = str(headers['Accept']).strip()
+            if accept_header != '':
+                accept_header_defined = True
+        except KeyError:
+            # Not defined. Prevent error and continue.
+            pass
+
+        if not content_type_header_defined:
+            headers['Content-Type'] = 'application/json'
+        if not accept_header_defined:
+            headers['Accept'] = 'application/json'
+
+        # Call base function to handle actual logic.
+        return self.assertResponse(
+            url,
+            *args,
+            get=True,
+            data=data,
+            secure=secure,
+            headers=headers,
+            return_format=return_format,
+            expected_status=expected_status,
+            expected_url=expected_url,
+            expected_redirect_url=expected_redirect_url,
+            view_should_redirect=view_should_redirect,
+            url_args=url_args,
+            url_kwargs=url_kwargs,
+            url_query_params=url_query_params,
+            redirect_args=redirect_args,
+            redirect_kwargs=redirect_kwargs,
+            redirect_query_params=redirect_query_params,
+            expected_title=expected_title,
+            expected_header=None,
+            expected_messages=expected_messages,
+            expected_content=expected_content,
+            expected_not_content=expected_not_content,
+            expected_json=expected_json,
             auto_login=auto_login,
             user=user,
             user_permissions=user_permissions,
@@ -1118,7 +1284,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         expected_not_content,
         debug_output=True,
     ):
-        """Verifies the non-existance of page content html.
+        """Verifies the non-existence of page content html.
         Django templating may create large amounts of whitespace in response html, often in places where we wouldn't
         intuitively expect it, when running tests. This converts output to a more normalized/predictable format,
         and then verifies the normalized content is not present. Results in more consistent and predictable testing.
@@ -1309,6 +1475,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         get=True,
         data=None,
         secure=True,
+        headers=None,
         url_args=None,
         url_kwargs=None,
         query_params=None,
@@ -1327,6 +1494,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param get: Bool indicating if response is GET or POST. Defaults to GET.
         :param data: Optional dict of items to pass into response generation.
         :param secure: Bool indicating if request should be retrieved as HTTP or HTTPS.
+        :param headers: Additional test client headers, if any.
         :param url_args: Values to provide for URL population, in "arg" format.
         :param url_kwargs: Values to provide for URL population, in "kwarg" format.
         :param auto_login: Bool indicating if User should be "logged in" to client or not.
@@ -1337,6 +1505,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         """
         # Handle mutable data defaults.
         data = data or {}
+        headers = headers or {}
         url_args = (*args, *kwargs.pop('args', []), *(url_args or []))
         url_kwargs = {**kwargs.pop('kwargs', {}), **(url_kwargs or {}), **kwargs}
         query_params = query_params or {}
@@ -1371,9 +1540,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Get response object.
         if bool(get):
-            response = self.client.get(url, data=data, secure=secure, follow=True)
+            response = self.client.get(url, data=data, secure=secure, follow=True, headers=headers)
         else:
-            response = self.client.post(url, data=data, secure=secure, follow=True)
+            response = self.client.post(url, data=data, secure=secure, follow=True, headers=headers)
 
         # Update response object with additional useful values for further testing/analysis.
         response.url = url

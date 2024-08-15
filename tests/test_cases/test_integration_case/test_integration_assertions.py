@@ -1547,8 +1547,7 @@ class IntegrationAssertionTestCase:
         self.assertText(exception_msg.format('<title>Home Page | Test Views</title>'), str(err.exception))
 
     def test__assertGetResponse(self):
-        """
-        Tests assertGetResponse() function.
+        """Tests assertGetResponse() function.
         Note: Most logic in here passes into the assertResponse() function.
             Thus we just do basic checks here and do most of the heavy-testing in assertResponse().
         """
@@ -1628,8 +1627,7 @@ class IntegrationAssertionTestCase:
             self.assertText('127.0.0.1/user/detail/2/', response.full_url)
 
     def test__assertPostResponse(self):
-        """
-        Tests assertPostResponse() function.
+        """Tests assertPostResponse() function.
         Note: Most logic in here passes into the assertResponse() function.
             Thus we just do basic checks here and do most of the heavy-testing in assertResponse().
         """
@@ -1707,6 +1705,307 @@ class IntegrationAssertionTestCase:
             )
             self.assertText('/user/detail/2/', response.url)
             self.assertText('127.0.0.1/user/detail/2/', response.full_url)
+
+    def test__assertJsonResponse(self):
+        """Tests assertJsonResponse() function.
+        Note: Most logic in here passes into the assertResponse() function.
+            Thus we just do basic checks here and do most of the heavy-testing in assertResponse().
+        """
+
+        with self.subTest('Basic response test'):
+            response = self.assertJsonResponse('django_expanded_test_cases:json-response-index')
+
+            self.assertText('/json/index/', response.url)
+            self.assertText('127.0.0.1/json/index/', response.full_url)
+            self.assertEqual(response.status_code, 200)
+            self.assertText(
+                (
+                    '{'
+                    '"success": "This is a test Json response.", '
+                    '"request_headers": {'
+                    '"Cookie": "", '
+                    '"Content-Type": "application/json", '
+                    '"Accept": "application/json"'
+                    '}'
+                    '}'
+                ),
+                response.content.decode('utf-8'),
+            )
+            self.assertEqual(
+                {
+                    "success": "This is a test Json response.",
+                    "request_headers": {
+                        "Cookie": "",
+                        "Content-Type": "application/json",
+                        "Accept": "application/json",
+                    }
+                },
+                response.json_content,
+            )
+
+        with self.subTest('Verify Content-Type header can override.'):
+            response = self.assertJsonResponse(
+                'django_expanded_test_cases:json-response-index',
+                headers={'Content-Type': "text/testing"}
+            )
+
+            self.assertText('/json/index/', response.url)
+            self.assertText('127.0.0.1/json/index/', response.full_url)
+            self.assertEqual(response.status_code, 200)
+            self.assertText(
+                (
+                    '{'
+                    '"success": "This is a test Json response.", '
+                    '"request_headers": {'
+                    '"Cookie": "", '
+                    '"Content-Type": "text/testing", '
+                    '"Accept": "application/json"'
+                    '}'
+                    '}'
+                ),
+                response.content.decode('utf-8'),
+            )
+            self.assertEqual(
+                {
+                    "success": "This is a test Json response.",
+                    "request_headers": {
+                        "Cookie": "",
+                        "Content-Type": "text/testing",
+                        "Accept": "application/json",
+                    }
+                },
+                response.json_content,
+            )
+
+        with self.subTest('Verify Accept header can override'):
+            response = self.assertJsonResponse(
+                'django_expanded_test_cases:json-response-index',
+                headers={'Accept': 'text/testing'}
+            )
+
+            self.assertText('/json/index/', response.url)
+            self.assertText('127.0.0.1/json/index/', response.full_url)
+            self.assertEqual(response.status_code, 200)
+            self.assertText(
+                (
+                    '{'
+                    '"success": "This is a test Json response.", '
+                    '"request_headers": {'
+                    '"Cookie": "", '
+                    '"Accept": "text/testing", '
+                    '"Content-Type": "application/json"'
+                    '}'
+                    '}'
+                ),
+                response.content.decode('utf-8'),
+            )
+            self.assertEqual(
+                {
+                    "success": "This is a test Json response.",
+                    "request_headers": {
+                        "Cookie": "",
+                        "Accept": "text/testing",
+                        "Content-Type": "application/json",
+                    }
+                },
+                response.json_content,
+            )
+
+        with self.subTest('Verify can add additional headers'):
+            response = self.assertJsonResponse(
+                'django_expanded_test_cases:json-response-index',
+                headers={"Test Header": "Testing!"}
+            )
+
+            self.assertText('/json/index/', response.url)
+            self.assertText('127.0.0.1/json/index/', response.full_url)
+            self.assertEqual(response.status_code, 200)
+            self.assertText(
+                (
+                    '{'
+                    '"success": "This is a test Json response.", '
+                    '"request_headers": {'
+                    '"Cookie": "", '
+                    '"Test Header": "Testing!", '
+                    '"Content-Type": "application/json", '
+                    '"Accept": "application/json"'
+                    '}'
+                    '}'
+                ),
+                response.content.decode('utf-8'),
+            )
+            self.assertEqual(
+                {
+                    "success": "This is a test Json response.",
+                    "request_headers": {
+                        "Cookie": "",
+                        "Test Header": "Testing!",
+                        "Content-Type": "application/json",
+                        "Accept": "application/json",
+                    }
+                },
+                response.json_content,
+            )
+
+        with self.subTest('Verify changing return_format does not error and removes json_content variable'):
+            response = self.assertJsonResponse(
+                'django_expanded_test_cases:json-response-index',
+                return_format='html',
+            )
+
+            self.assertText('/json/index/', response.url)
+            self.assertText('127.0.0.1/json/index/', response.full_url)
+            self.assertEqual(response.status_code, 200)
+            self.assertText(
+                (
+                    '{'
+                    '"success": "This is a test Json response.", '
+                    '"request_headers": {'
+                    '"Cookie": "", '
+                    '"Content-Type": "application/json", '
+                    '"Accept": "application/json"'
+                    '}'
+                    '}'
+                ),
+                response.content.decode('utf-8'),
+            )
+            self.assertFalse(hasattr(response, 'json_content'))
+
+        with self.subTest('Verify setting bad return_format causes error'):
+
+            with self.assertRaises(ValueError) as err:
+                response = self.assertJsonResponse(
+                    'django_expanded_test_cases:json-response-index',
+                    return_format='unsupported',
+                )
+            self.assertText(
+                'Invalid return_format arg. Currently supported return_format values are `html` or `json`.',
+                str(err.exception),
+            )
+
+        with self.subTest('Basic response test, merged into one assertion'):
+            response = self.assertJsonResponse(
+                'django_expanded_test_cases:json-response-index',
+                expected_url='/json/index/',
+                expected_content=(
+                    '{'
+                    '"success": "This is a test Json response.", '
+                    '"request_headers": {'
+                    '"Cookie": "", '
+                    '"Content-Type": "application/json", '
+                    '"Accept": "application/json"'
+                    '}'
+                    '}'
+                ),
+                expected_json={
+                    "success": "This is a test Json response.",
+                    "request_headers": {
+                        "Cookie": "",
+                        "Content-Type": "application/json",
+                        "Accept": "application/json",
+                    }
+                },
+            )
+
+        with self.subTest('Basic response test, merged into one assertion - Content fails when wrong'):
+            with self.assertRaises(AssertionError) as err:
+                response = self.assertJsonResponse(
+                    'django_expanded_test_cases:json-response-index',
+                    expected_url='/json/index/',
+                    expected_content=(
+                        '{'
+                        '"success": "This is a test Json response.", '
+                        '"request_headers": {'
+                        '"Cookie": "", '
+                        '"Content-Type": "text/html", '
+                        '"Accept": "text/html"'
+                        '}'
+                        '}'
+                    ),
+                    expected_json={
+                        "success": "This is a test Json response.",
+                        "request_headers": {
+                            "Cookie": "",
+                            "Content-Type": "application/json",
+                            "Accept": "application/json",
+                        }
+                    },
+                )
+            self.assertText(
+                (
+                'Could not find expected content value in response. Provided value was:\n'
+                '{"success": "This is a test Json response.", '
+                '"request_headers":{"Cookie": "", "Content-Type": "text/html", "Accept": "text/html"}'
+                '}'
+                ),
+                str(err.exception),
+            )
+
+        with self.subTest('Basic response test, merged into one assertion - Json fails when wrong'):
+            with self.assertRaises(AssertionError) as err:
+                response = self.assertJsonResponse(
+                    'django_expanded_test_cases:json-response-index',
+                    expected_url='/json/index/',
+                    expected_content=(
+                        '{'
+                        '"success": "This is a test Json response.", '
+                        '"request_headers": {'
+                        '"Cookie": "", '
+                        '"Content-Type": "application/json", '
+                        '"Accept": "application/json"'
+                        '}'
+                        '}'
+                    ),
+                    expected_json={
+                        "success": "This is a test Json response.",
+                        "request_headers": {
+                            "Cookie": "",
+                            "Content-Type": "text/html",
+                            "Accept": "text/html",
+                        }
+                    },
+                )
+            self.assertText(
+                (
+                    'Could not find expected json value in response. Provided value was:\n'
+                    "{'success': 'This is a test Json response.', "
+                    "'request_headers': {'Cookie': '', 'Content-Type': 'text/html', 'Accept': 'text/html'}"
+                    '}'
+                ),
+                str(err.exception),
+            )
+
+        with self.subTest('Basic response test, raises error if expected_json is provided but return_type is not json'):
+            with self.assertRaises(ValueError) as err:
+                response = self.assertResponse(
+                    'django_expanded_test_cases:json-response-index',
+                    expected_url='/json/index/',
+                    expected_content=(
+                        '{'
+                        '"success": "This is a test Json response.", '
+                        '"request_headers": {'
+                        '"Cookie": "", '
+                        '"Content-Type": "application/json", '
+                        '"Accept": "application/json"'
+                        '}'
+                        '}'
+                    ),
+                    expected_json={
+                        "success": "This is a test Json response.",
+                        "request_headers": {
+                            "Cookie": "",
+                            "Content-Type": "application/json",
+                            "Accept": "application/json",
+                        }
+                    },
+                )
+            self.assertText(
+                (
+                    'Assertion was not expecting a JSON return object, yet expected_json arg was provided. '
+                    'Either provide a return_format arg of `json`, or consider using the assertJsonResponse assertion.'
+                ),
+                str(err.exception)
+            )
 
     # endregion Response Assertion Tests
 

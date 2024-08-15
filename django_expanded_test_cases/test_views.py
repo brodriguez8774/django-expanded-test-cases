@@ -5,6 +5,7 @@ Testing views for django-expanded-test-cases project.
 # Third-Party Imports.
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.template.response import TemplateResponse
 from django.urls import reverse
@@ -37,10 +38,14 @@ def index(request):
                 '  <li><a href="'
                 + reverse('django_expanded_test_cases:response-with-repeating-elements')
                 + '">Repeating Elements Page</a></li>'
-                '<br>'
                 '  <li><a href="'
                 + reverse('django_expanded_test_cases:response-with-args', args=(5, "Test Name"))
                 + '">Response with Args</a></li>'
+                '<br>'
+              '  <li><a href="'
+                + reverse('django_expanded_test_cases:json-response-index')
+                + '">Json Response</a></li>'
+                '<br>'
                 '  <li><a href="'
                 + reverse('django_expanded_test_cases:user-detail', kwargs={'pk': 1})
                 + '">Model Detail Page</a></li>'
@@ -228,6 +233,16 @@ def template_response_with_args(request, id, name):
                 'name: "{0}"'.format(name),
             ),
         },
+    )
+
+
+def json_response_index(request):
+    request_headers = dict(request.headers)
+    return JsonResponse(
+        {
+            'success': 'This is a test Json response.',
+            'request_headers': request_headers,
+        }
     )
 
 

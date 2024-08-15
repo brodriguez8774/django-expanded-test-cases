@@ -1893,6 +1893,164 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
         # Passed. Strip user section.
         actual_text = actual_text.replace(expected_text, '')
 
+    @unittest.mock.patch('sys.stdout', new_callable=io.StringIO)
+    def test__general_debug_output__json_response(self, mock_stdout):
+        """Verifying output of assertResponse, with different failure types.
+
+        This one tests the JSON output for assertJsonResponse.
+        """
+
+        # Set error output to not truncate text comparison errors for these tests.
+        self.maxDiff = None
+
+        # Force assertion error so we can check debug output.
+        with self.assertRaises(AssertionError):
+            self.assertJsonResponse(
+                'django_expanded_test_cases:json-response-index',
+                expected_url='Testing',
+            )
+
+        # Stdout (aka console debug print out) is being captured by above unittest.mock.
+        # Here we also trim away any potential included text coloring, just for ease of UnitTesting.
+        # We maybe could test for text coloring here too. But that would make tests much more annoying,
+        # for something that is both optional, and should be exceedingly obvious if it stops working.
+        actual_text = self.strip_text_colors(mock_stdout.getvalue())
+
+        with self.subTest('Test url section'):
+            # Check for url section.
+            expected_text = (
+                '------------------------------------------------\n'
+                'Attempting to access url "127.0.0.1/json/index/"\n'
+                '------------------------------------------------\n'
+                '\n'
+            )
+            self.assertTextStartsWith(expected_text, actual_text)
+
+        # Passed. Strip url section.
+        actual_text = actual_text.replace(expected_text, '')
+
+        with self.subTest('Test content section'):
+            # Check for content section.
+            expected_text = (
+                '========== response.content ==========\n'
+                '{\n'
+                '  "success": "This is a test Json response.",\n'
+                '  "request_headers":\n'
+                '  {\n'
+                '    "Cookie": "",\n'
+                '    "Content-Type": "application/json",\n'
+                '    "Accept": "application/json",\n'
+                '  }\n'
+                '}\n'
+            )
+            self.assertTextStartsWith(expected_text, actual_text)
+
+        # Passed. Strip content section.
+        actual_text = actual_text.replace(expected_text, '')
+
+        with self.subTest('Test header section'):
+            # Check for header section.
+            expected_text = (
+                '========== response.headers ==========\n'
+                '    * "Content-Type": "application/json"\n'
+                '    * "X-Frame-Options": "DENY"\n'
+                '    * "Content-Length": "145"\n'
+                '    * "X-Content-Type-Options": "nosniff"\n'
+                '    * "Referrer-Policy": "same-origin"\n'
+            )
+
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '\n'
+                    '\n'
+                )
+            else:
+                # Handling for all newer Django versions.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
+                    '\n'
+                    '\n'
+                )
+            self.assertTextStartsWith(expected_text, actual_text)
+
+        # Passed. Strip header section.
+        actual_text = actual_text.replace(expected_text, '')
+
+        with self.subTest('Test context section'):
+            # Check for context section.
+
+            expected_text = (
+                # Comment to prevent "Black" formatting.
+                '========== response.context ==========\n'
+                '    No context data found.\n'
+                '\n'
+                '\n'
+            )
+            self.assertTextStartsWith(expected_text, actual_text)
+
+        # Passed. Strip Context section.
+        actual_text = actual_text.replace(expected_text, '')
+
+        with self.subTest('Test session section'):
+            # Check for session section.
+            expected_text = (
+                # Comment to prevent "Black" formatting.
+                '========== client.session ==========\n'
+                '    No session data found.\n'
+                '\n'
+                '\n'
+            )
+            self.assertTextStartsWith(expected_text, actual_text)
+
+        # Passed. Strip session section.
+        actual_text = actual_text.replace(expected_text, '')
+
+        with self.subTest('Test message section'):
+            # Check for message section.
+            expected_text = (
+                # Comment to prevent "Black" formatting.
+                '========== response.context["messages"] ==========\n'
+                '    No context messages found.\n'
+                '\n'
+                '\n'
+            )
+            self.assertTextStartsWith(expected_text, actual_text)
+
+        # Passed. Strip message section.
+        actual_text = actual_text.replace(expected_text, '')
+
+        with self.subTest('Test form section'):
+            # Check for form section.
+            expected_text = (
+                # Comment to prevent "Black" formatting.
+                '========== Form Data ==========\n'
+                '    No form data found.\n'
+                '\n'
+                '\n'
+            )
+            self.assertTextStartsWith(expected_text, actual_text)
+
+        # Passed. Strip url section.
+        actual_text = actual_text.replace(expected_text, '')
+
+        with self.subTest('Test user section'):
+            # Check for user section.
+            expected_text = (
+                # Comment to prevent "Black" formatting.
+                '========== User Info ==========\n'
+                '    Anonymous user. No user is logged in.\n'
+                '\n'
+                '\n'
+            )
+            self.assertTextStartsWith(expected_text, actual_text)
+
+        # Passed. Strip user section.
+        actual_text = actual_text.replace(expected_text, '')
+
     # endregion Different Assertions
 
     # region Different Users

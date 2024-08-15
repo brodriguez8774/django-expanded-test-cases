@@ -3,8 +3,10 @@ Core testing logic that pertains to handling Response objects.
 """
 
 # System Imports.
+import json
+import logging
+import re
 import warnings
-import logging, re
 from urllib.parse import parse_qs
 
 # Third-Party Imports.
@@ -62,11 +64,16 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
 
     # region Debug Output Functions
 
-    def full_debug_print(self, response):
+    def full_debug_print(self, response, return_format='html'):
         """Attempts to display debug output for all of response data."""
 
         if ETC_INCLUDE_RESPONSE_DEBUG_CONTENT:
-            self.show_debug_content(response)
+            if return_format == 'html':
+                self.show_debug_content(response)
+            elif return_format == 'json':
+                self.show_debug_json_content(response)
+            else:
+                raise ValueError('Currently supported return_format values are `html` or `json`.')
         if ETC_INCLUDE_RESPONSE_DEBUG_HEADER:
             self.show_debug_headers(response)
         if ETC_INCLUDE_RESPONSE_DEBUG_CONTEXT:
@@ -197,6 +204,120 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             # Display content to console (only shows up on test error).
             self._debug_print(response_content)
             self._debug_print()
+
+    def show_debug_json_content(self, response_content):
+        """Prints debug json response page output."""
+
+        # Handle for potential param types.
+        if isinstance(response_content, HttpResponseBase):
+            # Try to get json_content variable, if present.
+            if hasattr(response_content, 'json_content'):
+                response_content = response_content.json_content
+            else:
+                # Attempt to parse from original content value.
+                try:
+                    response_content = json.loads(response_content.content.decode('utf-8'))
+                except:
+                    # Failed to parse original content value as Pythonic json object.
+                    # Fall back to original content display method.
+                    return self.show_debug_content(response_content.content.decode('utf-8'))
+        elif isinstance(response_content, bytes):
+            # Attempt to parse from original content value.
+            try:
+                response_content = json.loads(response_content.decode('utf-8'))
+            except:
+                # Failed to parse original content value as Pythonic json object.
+                # Fall back to original content display method.
+                return self.show_debug_content(response_content.decode('utf-8'))
+
+        # If we made it this far, we should have a pythonic version of our json object.
+        self._debug_print()
+        self._debug_print(
+            '{0} {1} {0}'.format('=' * 10, 'response.content'),
+            fore=ETC_RESPONSE_DEBUG_CONTENT_COLOR,
+            style=ETC_OUTPUT_EMPHASIS_COLOR,
+        )
+        self._recurse_show_debug_json_content(response_content)
+        self._debug_print()
+
+    def _recurse_show_debug_json_content(self, data, indentation_level=1):
+        """Recursive function to display full json data."""
+
+        # Determine indentation formatting.
+        if indentation_level == 1:
+            prior_indentation = ''
+        else:
+            prior_indentation = '  ' * (indentation_level - 1)
+        indentation = '  ' * indentation_level
+
+        # Output values based on variable type.
+        if isinstance(data, dict):
+            # Dictionary type handling.
+
+            self._debug_print(
+                '{0}{1}'.format(prior_indentation, '{'),
+            )
+
+            for key, value in data.items():
+                if isinstance(value, dict) or isinstance(value, list) or isinstance(value, tuple):
+                    # Recursively call function to handle more complicated types.
+                    self._debug_print(
+                        '{0}"{1}":'.format(indentation, key),
+                    )
+                    self._recurse_show_debug_json_content(value, indentation_level=(indentation_level + 1))
+                else:
+                    # Simple types.
+                    if isinstance(value, str):
+                        # Add quotes for strings.
+                        self._debug_print(
+                            '{0}"{1}": "{2}",'.format(indentation, key, value),
+                        )
+                    else:
+                        self._debug_print(
+                            '{0}"{1}": {2},'.format(indentation, key, value),
+                        )
+
+            self._debug_print(
+                '{0}{1}'.format(prior_indentation, '}'),
+            )
+
+        elif isinstance(data, list) or isinstance(data, tuple):
+            # Array type handling.
+            self._debug_print(
+                '{0}{1}'.format(prior_indentation, '['),
+            )
+
+            for value in data:
+                if isinstance(value, dict) or isinstance(value, list) or isinstance(value, tuple):
+                    # Recursively call function to handle more complicated types.
+                    return self._recurse_show_debug_json_content(value, indentation_level=(indentation_level + 1))
+                else:
+                    # Simple types.
+                    if isinstance(value, str):
+                        # Add quotes for strings.
+                        self._debug_print(
+                            '{0}"{1}",'.format(indentation, value),
+                        )
+                    else:
+                        self._debug_print(
+                            '{0}{1},'.format(indentation, value),
+                        )
+
+            self._debug_print(
+                '{0}{1}'.format(prior_indentation, ']'),
+            )
+
+        else:
+            # All others.
+            if isinstance(data, str):
+                # Add quotes for strings.
+                self._debug_print(
+                    '{0}"{1}"'.format(indentation, data),
+                )
+            else:
+                self._debug_print(
+                    '{0}{1}'.format(indentation, data),
+                )
 
     def show_debug_headers(self, response_headers):
         """Prints debug response header data."""
