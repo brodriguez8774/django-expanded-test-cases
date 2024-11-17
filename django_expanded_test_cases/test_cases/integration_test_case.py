@@ -136,6 +136,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         expected_title=None,
         expected_header=None,
         expected_messages=None,
+        expected_not_messages=None,
         expected_content=None,
         expected_not_content=None,
         expected_json=None,
@@ -178,6 +179,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param expected_title: Expected page title to verify. Skips title test if left as None.
         :param expected_header: Expected page h1 to verify. Skips header test if left as None.
         :param expected_messages: Expected context messages to verify. Skips message test if left as None.
+        :param expected_not_messages: Inverse of expected_messages. Skips test if left as None.
         :param expected_content: Expected page content elements to verify. Skips content test if left as None.
         :param expected_not_content: Inverse of expected_content. Skips test if left as None.
         :param expected_json: If expecting JSON formatted response, then the JSON value to check for.
@@ -290,6 +292,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             expected_title=expected_title,
             expected_header=expected_header,
             expected_messages=expected_messages,
+            expected_not_messages=expected_not_messages,
             expected_content=expected_content,
             expected_not_content=expected_not_content,
             auto_login=auto_login,
@@ -357,6 +360,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         if expected_messages is not None:
             self.assertContextMessages(response, expected_messages, debug_output=False)
 
+        if expected_not_messages is not None:
+            self.assertNotContextMessages(response, expected_not_messages, debug_output=False)
+
         # Verify page content.
         if expected_content is not None:
             self.assertPageContent(
@@ -407,6 +413,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             expected_title=expected_title,
             expected_header=expected_header,
             expected_messages=expected_messages,
+            expected_not_messages=expected_not_messages,
             expected_content=expected_content,
             expected_not_content=expected_not_content,
             auto_login=auto_login,
@@ -448,6 +455,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         expected_title=None,
         expected_header=None,
         expected_messages=None,
+        expected_not_messages=None,
         expected_content=None,
         expected_not_content=None,
         auto_login=True,
@@ -495,6 +503,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             expected_title=expected_title,
             expected_header=expected_header,
             expected_messages=expected_messages,
+            expected_not_messages=expected_not_messages,
             expected_content=expected_content,
             expected_not_content=expected_not_content,
             expected_json=None,
@@ -530,6 +539,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         expected_title=None,
         expected_header=None,
         expected_messages=None,
+        expected_not_messages=None,
         expected_content=None,
         expected_not_content=None,
         auto_login=True,
@@ -583,6 +593,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             expected_title=expected_title,
             expected_header=expected_header,
             expected_messages=expected_messages,
+            expected_not_messages=expected_not_messages,
             expected_content=expected_content,
             expected_not_content=expected_not_content,
             expected_json=None,
@@ -618,6 +629,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         redirect_query_params=None,
         expected_title=None,
         expected_messages=None,
+        expected_not_messages=None,
         expected_content=None,
         expected_not_content=None,
         expected_json=None,
@@ -697,6 +709,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             expected_title=expected_title,
             expected_header=None,
             expected_messages=expected_messages,
+            expected_not_messages=expected_not_messages,
             expected_content=expected_content,
             expected_not_content=expected_not_content,
             expected_json=expected_json,
@@ -877,7 +890,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         """Verifies the context messages.
 
         :param response: Response object to check against.
-        :param expected_messages: Expected string for message data.
+        :param expected_messages: Expected message(s) to be found in response.
         :param allow_partials: Bool indicating if messages should fully match or allow partial matches.
         :param debug_output: Bool indicating if debug output should be shown or not. Used for debugging test failures.
         :return: Parsed out header string.
@@ -947,7 +960,82 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                 if not message_found:
                     self.fail(
                         'Failed to find message "{0}" in context (using {1} matching).'.format(
-                            expected_message, 'partial' if allow_partials else 'exact'
+                            expected_message, 'partial' if allow_partials else 'exact',
+                        )
+                    )
+
+    def assertNotContextMessages(self, response, expected_not_messages, allow_partials=None, debug_output=True):
+        """Verifies the non-existence context messages.
+
+        :param response: Response object to check against.
+        :param expected_not_messages: Expected message(s) to not be present in response.
+        :param allow_partials: Bool indicating if messages should fully match or allow partial matches.
+        :param debug_output: Bool indicating if debug output should be shown or not. Used for debugging test failures.
+        :return: Parsed out header string.
+        """
+
+        if debug_output:
+            # Print out actual messages, for debug output.
+            self.show_debug_messages(response)
+
+        # Parse out settings values.
+        if allow_partials is None:
+            allow_partials = ETC_ALLOW_MESSAGE_PARTIALS
+        else:
+            allow_partials = bool(allow_partials)
+
+        # Parse out message data from response.
+        actual_messages = self.get_context_messages(response)
+
+        # Check format of expected value.
+        if isinstance(expected_not_messages, list) or isinstance(expected_not_messages, tuple):
+            # Array of messages passed. Verify each inner value is a str.
+            temp_messages = []
+            for message in expected_not_messages:
+                message = str(message).strip()
+                if len(message) > 0:
+                    temp_messages.append(message)
+            expected_not_messages = temp_messages
+
+        elif expected_not_messages is None:
+            # Handle for none type. Not sure why anyone would pass this into the test though.
+            expected_not_messages = []
+
+        elif isinstance(expected_not_messages, str):
+            # For everything else, assume is intended to be a single message.
+            message = str(expected_not_messages).strip()
+            expected_not_messages = []
+            if len(message) > 0:
+                expected_not_messages.append(message)
+
+        if len(expected_not_messages) > 0:
+            # One or more messages are expected to not be present. Verify they do not exist.
+            for expected_not_message in expected_not_messages:
+                message_found = False
+
+                # Handle based on partials allowed or not.
+                if allow_partials:
+                    # Partial message matching is allowed.
+                    # Expected value must match or be a substring of a message in context.
+                    index = 0
+                    while message_found is False and index < len(actual_messages):
+                        if expected_not_message in actual_messages[index]:
+                            message_found = True
+                        index += 1
+
+                else:
+                    # Partial message matching is NOT allowed.
+                    # Expected value must exactly match message in context.
+
+                    # Loop through all context messages until found, or all are checked.
+                    if expected_not_message in actual_messages:
+                        message_found = True
+
+                # Raise assertion error if found.
+                if message_found:
+                    self.fail(
+                        'Expected to not find message. Found message "{0}" in context (using {1} matching).'.format(
+                            expected_not_message, 'partial' if allow_partials else 'exact',
                         )
                     )
 
@@ -1855,7 +1943,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         expected_title=None,
         expected_header=None,
         expected_messages=None,
+        expected_not_messages=None,
         expected_content=None,
+        expected_not_content=None,
         auto_login=True,
         user=None,
         user_permissions=None,
@@ -1889,7 +1979,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         expected_title=None,
         expected_header=None,
         expected_messages=None,
+        expected_not_messages=None,
         expected_content=None,
+        expected_not_content=None,
         auto_login=True,
         user=None,
         user_permissions=None,
