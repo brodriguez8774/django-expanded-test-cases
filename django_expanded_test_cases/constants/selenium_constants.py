@@ -26,7 +26,7 @@ ETC_SELENIUM_BROWSER = str(
     )
 )
 # Run Selenium tests in "headless" mode.
-# Default is to visually show browser. "Headless" will skipp visually rendering the browser while still running tests.
+# Default is to visually show browser. "Headless" will skip visually rendering the browser while still running tests.
 # Good for speed but bad for debugging issues.
 ETC_SELENIUM_HEADLESS = bool(
     getattr(
@@ -56,7 +56,7 @@ ETC_SELENIUM_DEBUG_PORT_START_VALUE = int(
 )
 # A list of lists, comprised of desired (x, y) window positions to spawn selenium browsers at.
 # If not provided, then defaults to however the OS spawns windows in.
-# Ex: [(0, 0), (960, 0)] for a standard 1920 x 1080 landscape display.
+# Ex: [(0, 0), (960, 0)] for two window positions in a standard 1920 x 1080 landscape display.
 ETC_SELENIUM_WINDOW_POSITIONS = getattr(
     settings,
     'DJANGO_EXPANDED_TESTCASES_SELENIUM_WINDOW_POSITIONS',

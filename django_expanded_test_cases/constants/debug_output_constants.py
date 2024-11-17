@@ -81,7 +81,7 @@ ETC_DEBUG_PRINT__LOGGING_SEPARATOR = str(
 # Controls how many "contextual values" are shown on assertContent test error,
 # when said assertion is given multiple values to test for in a single assertion.
 # The default (of 2) shows the two statements before and the two after, if possible.
-# Setting to 3 will attmpt to show 3 statements before and after. 0 will skip context.
+# Setting to 3 will attempt to show 3 statements before and after. 0 will skip context.
 ETC_ASSERT_CONTENT__SURROUNDING_CHECK_OUTPUT_LENGTH = int(
     getattr(
         settings,
@@ -97,7 +97,7 @@ if ETC_ASSERT_CONTENT__SURROUNDING_CHECK_OUTPUT_LENGTH < 0:
 
 # region Console Region Show/Hide Options
 
-# Enabling/disabling output of specific sections.
+# Enabling/disabling output of specific debug sections.
 ETC_INCLUDE_RESPONSE_DEBUG_URL = bool(
     getattr(
         settings,
