@@ -1801,7 +1801,7 @@ class IntegrationAssertionTestCase:
                         "Cookie": "",
                         "Content-Type": "application/json",
                         "Accept": "application/json",
-                    }
+                    },
                 },
                 response.json_content,
             )
@@ -1809,7 +1809,7 @@ class IntegrationAssertionTestCase:
         with self.subTest('Verify Content-Type header can override.'):
             response = self.assertJsonResponse(
                 'django_expanded_test_cases:json-response-index',
-                headers={'Content-Type': "text/testing"}
+                headers={'Content-Type': "text/testing"},
             )
 
             self.assertText('/json/index/', response.url)
@@ -1835,7 +1835,7 @@ class IntegrationAssertionTestCase:
                         "Cookie": "",
                         "Content-Type": "text/testing",
                         "Accept": "application/json",
-                    }
+                    },
                 },
                 response.json_content,
             )
@@ -1843,7 +1843,7 @@ class IntegrationAssertionTestCase:
         with self.subTest('Verify Accept header can override'):
             response = self.assertJsonResponse(
                 'django_expanded_test_cases:json-response-index',
-                headers={'Accept': 'text/testing'}
+                headers={'Accept': 'text/testing'},
             )
 
             self.assertText('/json/index/', response.url)
@@ -1869,7 +1869,7 @@ class IntegrationAssertionTestCase:
                         "Cookie": "",
                         "Accept": "text/testing",
                         "Content-Type": "application/json",
-                    }
+                    },
                 },
                 response.json_content,
             )
@@ -1877,7 +1877,7 @@ class IntegrationAssertionTestCase:
         with self.subTest('Verify can add additional headers'):
             response = self.assertJsonResponse(
                 'django_expanded_test_cases:json-response-index',
-                headers={"Test Header": "Testing!"}
+                headers={"Test Header": "Testing!"},
             )
 
             self.assertText('/json/index/', response.url)
@@ -1905,7 +1905,7 @@ class IntegrationAssertionTestCase:
                         "Test Header": "Testing!",
                         "Content-Type": "application/json",
                         "Accept": "application/json",
-                    }
+                    },
                 },
                 response.json_content,
             )
@@ -1966,7 +1966,7 @@ class IntegrationAssertionTestCase:
                         "Cookie": "",
                         "Content-Type": "application/json",
                         "Accept": "application/json",
-                    }
+                    },
                 },
             )
 
@@ -1991,15 +1991,15 @@ class IntegrationAssertionTestCase:
                             "Cookie": "",
                             "Content-Type": "application/json",
                             "Accept": "application/json",
-                        }
+                        },
                     },
                 )
             self.assertText(
                 (
-                'Could not find expected content value in response. Provided value was:\n'
-                '{"success": "This is a test Json response.", '
-                '"request_headers":{"Cookie": "", "Content-Type": "text/html", "Accept": "text/html"}'
-                '}'
+                    'Could not find expected content value in response. Provided value was:\n'
+                    '{"success": "This is a test Json response.", '
+                    '"request_headers":{"Cookie": "", "Content-Type": "text/html", "Accept": "text/html"}'
+                    '}'
                 ),
                 str(err.exception),
             )
@@ -2025,7 +2025,7 @@ class IntegrationAssertionTestCase:
                             "Cookie": "",
                             "Content-Type": "text/html",
                             "Accept": "text/html",
-                        }
+                        },
                     },
                 )
             self.assertText(
@@ -2059,7 +2059,7 @@ class IntegrationAssertionTestCase:
                             "Cookie": "",
                             "Content-Type": "application/json",
                             "Accept": "application/json",
-                        }
+                        },
                     },
                 )
             self.assertText(
@@ -2067,7 +2067,7 @@ class IntegrationAssertionTestCase:
                     'Assertion was not expecting a JSON return object, yet expected_json arg was provided. '
                     'Either provide a return_format arg of `json`, or consider using the assertJsonResponse assertion.'
                 ),
-                str(err.exception)
+                str(err.exception),
             )
 
     # endregion Response Assertion Tests

@@ -42,7 +42,7 @@ def index(request):
                 + reverse('django_expanded_test_cases:response-with-args', args=(5, "Test Name"))
                 + '">Response with Args</a></li>'
                 '<br>'
-              '  <li><a href="'
+                '  <li><a href="'
                 + reverse('django_expanded_test_cases:json-response-index')
                 + '">Json Response</a></li>'
                 '<br>'

@@ -960,7 +960,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                 if not message_found:
                     self.fail(
                         'Failed to find message "{0}" in context (using {1} matching).'.format(
-                            expected_message, 'partial' if allow_partials else 'exact',
+                            expected_message,
+                            'partial' if allow_partials else 'exact',
                         )
                     )
 
@@ -1035,7 +1036,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                 if message_found:
                     self.fail(
                         'Expected to not find message. Found message "{0}" in context (using {1} matching).'.format(
-                            expected_not_message, 'partial' if allow_partials else 'exact',
+                            expected_not_message,
+                            'partial' if allow_partials else 'exact',
                         )
                     )
 
