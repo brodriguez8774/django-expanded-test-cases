@@ -405,6 +405,8 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         # and it allows .keys() but not .values(). Thus, iterate on keys only and pull respective value.
         if response_context is not None and len(response_context.keys()) > 0:
 
+            context_list = []
+
             # Fix for
             # RemovedInDjango50Warning: The "default.html" templates for forms and formsets will be removed.
             # Warning, prior to Django 5.0. Seems to trigger due to ETC accessing context in an "unexpected" way.
@@ -413,13 +415,27 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                 # Iterate through context values.
                 for key in response_context.keys():
                     context_value = str(response_context.get(key))
+
+                    # Sanitize display if newlines are in value.
+                    context_value = self.standardize_whitespace(context_value)
+
                     # Truncate display if very long.
                     if len(context_value) > 80:
                         context_value = '"{0}"..."{1}"'.format(context_value[:40], context_value[-40:])
-                    self._debug_print(
-                        '    * {0}: {1}'.format(key, context_value),
-                        fore=ETC_RESPONSE_DEBUG_CONTEXT_COLOR,
-                    )
+
+                    # Append to context list.
+                    context_list.append([key, context_value])
+
+            # Sort context list for consistent output.
+            sorted_list = sorted(context_list, key=lambda x: str(x[0]).lower())
+
+            # Output sorted context list.
+            for item in sorted_list:
+                self._debug_print(
+                    '    * {0}: {1}'.format(item[0], item[1]),
+                    fore=ETC_RESPONSE_DEBUG_CONTEXT_COLOR,
+                )
+
         else:
             self._debug_print('    No context data found.', fore=ETC_RESPONSE_DEBUG_CONTEXT_COLOR)
         self._debug_print()

@@ -56,6 +56,7 @@ SKIP_AFTER_VALUE__MINIMAL = """
 
 
 class IntegrationDebugOutputTestCase:
+
     def strip_text_colors(self, text):
         """Strip out all potential color values, for easier testing."""
 
@@ -190,9 +191,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             #   * The `messages` line.
 
             expected_text_1 = (
+                # Comment to prevent "Black" formatting.
                 '========== response.context ==========\n'
-                '    * header: Login Page\n'
-                '    * text: Pretend this is a login page.\n'
                 '    * csrf_token: '
             )
 
@@ -258,8 +258,11 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/login/\'>\n'
-                    '    * user: AnonymousUser\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * header: Login Page\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/login/\'>>\n'
+                    '    * None: None\n'
                     '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
                 )
 
@@ -273,11 +276,10 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_3 = (
                     '>>)"\n'
-                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/login/\'>>\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/login/\'>\n'
+                    '    * text: Pretend this is a login page.\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -327,7 +329,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             )
             self.assertTextStartsWith(expected_text, actual_text)
 
-        # Passed. Strip url section.
+        # Passed. Strip form section.
         actual_text = actual_text.replace(expected_text, '')
 
         with self.subTest('Test user section'):
@@ -442,9 +444,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             #   * The `messages` line.
 
             expected_text_1 = (
+                # Comment to prevent "Black" formatting.
                 '========== response.context ==========\n'
-                '    * header: Home Page\n'
-                '    * text: Pretend this is the project landing page.\n'
                 '    * csrf_token: '
             )
 
@@ -510,8 +511,11 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: AnonymousUser\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * header: Home Page\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
+                    '    * None: None\n'
                     '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
                 )
 
@@ -525,11 +529,10 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_3 = (
                     '>>)"\n'
-                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * text: Pretend this is the project landing page.\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -579,7 +582,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             )
             self.assertTextStartsWith(expected_text, actual_text)
 
-        # Passed. Strip url section.
+        # Passed. Strip form section.
         actual_text = actual_text.replace(expected_text, '')
 
         with self.subTest('Test user section'):
@@ -705,9 +708,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             #   * The `messages` line.
 
             expected_text_1 = (
+                # Comment to prevent "Black" formatting.
                 '========== response.context ==========\n'
-                '    * header: View with Three Messages\n'
-                '    * text: Pretend useful stuff is displayed here, for three-message render() view.\n'
                 '    * csrf_token: '
             )
 
@@ -773,8 +775,11 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
-                    '    * user: AnonymousUser\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * header: View with Three Messages\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
+                    '    * None: None\n'
                     '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
                 )
 
@@ -788,11 +793,10 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_3 = (
                     '>>)"\n'
-                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
+                    '    * text: Pretend useful stuff is displayed here, for three-message render() view.\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -844,7 +848,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             )
             self.assertTextStartsWith(expected_text, actual_text)
 
-        # Passed. Strip url section.
+        # Passed. Strip form section.
         actual_text = actual_text.replace(expected_text, '')
 
         with self.subTest('Test user section'):
@@ -968,9 +972,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             #   * The `messages` line.
 
             expected_text_1 = (
+                # Comment to prevent "Black" formatting.
                 '========== response.context ==========\n'
-                '    * header: Home Page\n'
-                '    * text: Pretend this is the project landing page.\n'
                 '    * csrf_token: '
             )
 
@@ -1036,8 +1039,11 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: AnonymousUser\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * header: Home Page\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
+                    '    * None: None\n'
                     '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
                 )
 
@@ -1051,11 +1057,10 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_3 = (
                     '>>)"\n'
-                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * text: Pretend this is the project landing page.\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -1105,7 +1110,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             )
             self.assertTextStartsWith(expected_text, actual_text)
 
-        # Passed. Strip url section.
+        # Passed. Strip form section.
         actual_text = actual_text.replace(expected_text, '')
 
         with self.subTest('Test user section'):
@@ -1225,9 +1230,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             #   * The `messages` line.
 
             expected_text_1 = (
+                # Comment to prevent "Black" formatting.
                 '========== response.context ==========\n'
-                '    * header: Home Page\n'
-                '    * text: Pretend this is the project landing page.\n'
                 '    * csrf_token: '
             )
 
@@ -1293,8 +1297,11 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: AnonymousUser\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * header: Home Page\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
+                    '    * None: None\n'
                     '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
                 )
 
@@ -1308,11 +1315,10 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_3 = (
                     '>>)"\n'
-                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * text: Pretend this is the project landing page.\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -1362,7 +1368,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             )
             self.assertTextStartsWith(expected_text, actual_text)
 
-        # Passed. Strip url section.
+        # Passed. Strip form section.
         actual_text = actual_text.replace(expected_text, '')
 
         with self.subTest('Test user section'):
@@ -1482,9 +1488,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             #   * The `messages` line.
 
             expected_text_1 = (
+                # Comment to prevent "Black" formatting.
                 '========== response.context ==========\n'
-                '    * header: Home Page\n'
-                '    * text: Pretend this is the project landing page.\n'
                 '    * csrf_token: '
             )
 
@@ -1550,8 +1555,11 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: AnonymousUser\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * header: Home Page\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
+                    '    * None: None\n'
                     '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
                 )
 
@@ -1565,11 +1573,10 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_3 = (
                     '>>)"\n'
-                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * text: Pretend this is the project landing page.\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -1619,7 +1626,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             )
             self.assertTextStartsWith(expected_text, actual_text)
 
-        # Passed. Strip url section.
+        # Passed. Strip form section.
         actual_text = actual_text.replace(expected_text, '')
 
         with self.subTest('Test user section'):
@@ -1739,9 +1746,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             #   * The `messages` line.
 
             expected_text_1 = (
+                # Comment to prevent "Black" formatting.
                 '========== response.context ==========\n'
-                '    * header: Home Page\n'
-                '    * text: Pretend this is the project landing page.\n'
                 '    * csrf_token: '
             )
 
@@ -1807,8 +1813,11 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: AnonymousUser\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * header: Home Page\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
+                    '    * None: None\n'
                     '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
                 )
 
@@ -1822,11 +1831,10 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_3 = (
                     '>>)"\n'
-                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * text: Pretend this is the project landing page.\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -1876,7 +1884,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             )
             self.assertTextStartsWith(expected_text, actual_text)
 
-        # Passed. Strip url section.
+        # Passed. Strip form section.
         actual_text = actual_text.replace(expected_text, '')
 
         with self.subTest('Test user section'):
@@ -2034,7 +2042,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             )
             self.assertTextStartsWith(expected_text, actual_text)
 
-        # Passed. Strip url section.
+        # Passed. Strip form section.
         actual_text = actual_text.replace(expected_text, '')
 
         with self.subTest('Test user section'):
@@ -2154,9 +2162,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             #   * The `messages` line.
 
             expected_text_1 = (
+                # Comment to prevent "Black" formatting.
                 '========== response.context ==========\n'
-                '    * header: Home Page\n'
-                '    * text: Pretend this is the project landing page.\n'
                 '    * csrf_token: '
             )
 
@@ -2222,14 +2229,16 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: test_superuser\n'
-                    '    * perms: PermWrapper(<SimpleLazyObject: <User: test_superuser>>)\n'
-                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
                     '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
-                    '    * True: True\n'
                     '    * False: False\n'
+                    '    * header: Home Page\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
                     '    * None: None\n'
+                    '    * perms: PermWrapper(<SimpleLazyObject: <User: test_superuser>>)\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * text: Pretend this is the project landing page.\n'
+                    '    * True: True\n'
+                    '    * user: test_superuser\n'
                     '\n'
                     '\n'
                 )
@@ -2292,7 +2301,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             )
             self.assertTextStartsWith(expected_text, actual_text)
 
-        # Passed. Strip url section.
+        # Passed. Strip form section.
         actual_text = actual_text.replace(expected_text, '')
 
         with self.subTest('Test user section'):
@@ -2415,9 +2424,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             #   * The `messages` line.
 
             expected_text_1 = (
+                # Comment to prevent "Black" formatting.
                 '========== response.context ==========\n'
-                '    * header: Home Page\n'
-                '    * text: Pretend this is the project landing page.\n'
                 '    * csrf_token: '
             )
 
@@ -2483,14 +2491,16 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: test_admin\n'
-                    '    * perms: PermWrapper(<SimpleLazyObject: <User: test_admin>>)\n'
-                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
                     '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
-                    '    * True: True\n'
                     '    * False: False\n'
+                    '    * header: Home Page\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
                     '    * None: None\n'
+                    '    * perms: PermWrapper(<SimpleLazyObject: <User: test_admin>>)\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * text: Pretend this is the project landing page.\n'
+                    '    * True: True\n'
+                    '    * user: test_admin\n'
                     '\n'
                     '\n'
                 )
@@ -2553,7 +2563,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             )
             self.assertTextStartsWith(expected_text, actual_text)
 
-        # Passed. Strip url section.
+        # Passed. Strip form section.
         actual_text = actual_text.replace(expected_text, '')
 
         with self.subTest('Test user section'):
@@ -2676,9 +2686,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             #   * The `messages` line.
 
             expected_text_1 = (
+                # Comment to prevent "Black" formatting.
                 '========== response.context ==========\n'
-                '    * header: Home Page\n'
-                '    * text: Pretend this is the project landing page.\n'
                 '    * csrf_token: '
             )
 
@@ -2744,14 +2753,16 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: test_user\n'
-                    '    * perms: PermWrapper(<SimpleLazyObject: <User: test_user>>)\n'
-                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
                     '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
-                    '    * True: True\n'
                     '    * False: False\n'
+                    '    * header: Home Page\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
                     '    * None: None\n'
+                    '    * perms: PermWrapper(<SimpleLazyObject: <User: test_user>>)\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * text: Pretend this is the project landing page.\n'
+                    '    * True: True\n'
+                    '    * user: test_user\n'
                     '\n'
                     '\n'
                 )
@@ -2814,7 +2825,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             )
             self.assertTextStartsWith(expected_text, actual_text)
 
-        # Passed. Strip url section.
+        # Passed. Strip form section.
         actual_text = actual_text.replace(expected_text, '')
 
         with self.subTest('Test user section'):
@@ -2978,9 +2989,8 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
             #   * The `messages` line.
 
             expected_text_1 = (
+                # Comment to prevent "Black" formatting.
                 '========== response.context ==========\n'
-                '    * header: View with Three Messages\n'
-                '    * text: Pretend useful stuff is displayed here, for three-message render() view.\n'
                 '    * csrf_token: '
             )
 
@@ -3046,8 +3056,11 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
-                    '    * user: AnonymousUser\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * header: View with Three Messages\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
+                    '    * None: None\n'
                     '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
                 )
 
@@ -3061,11 +3074,10 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_3 = (
                     '>>)"\n'
-                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
+                    '    * text: Pretend useful stuff is displayed here, for three-message render() view.\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -3117,7 +3129,7 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
             )
             self.assertTextStartsWith(expected_text, actual_text)
 
-        # Passed. Strip url section.
+        # Passed. Strip form section.
         actual_text = actual_text.replace(expected_text, '')
 
         with self.subTest('Test user section'):
@@ -3255,9 +3267,8 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
             #   * The `messages` line.
 
             expected_text_1 = (
+                # Comment to prevent "Black" formatting.
                 '========== response.context ==========\n'
-                '    * header: View with Three Messages\n'
-                '    * text: Pretend useful stuff is displayed here, for three-message render() view.\n'
                 '    * csrf_token: '
             )
 
@@ -3323,8 +3334,11 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
-                    '    * user: AnonymousUser\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * header: View with Three Messages\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
+                    '    * None: None\n'
                     '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
                 )
 
@@ -3338,11 +3352,10 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_3 = (
                     '>>)"\n'
-                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
+                    '    * text: Pretend useful stuff is displayed here, for three-message render() view.\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -3394,7 +3407,7 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
             )
             self.assertTextStartsWith(expected_text, actual_text)
 
-        # Passed. Strip url section.
+        # Passed. Strip form section.
         actual_text = actual_text.replace(expected_text, '')
 
         with self.subTest('Test user section'):
@@ -3534,9 +3547,8 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
             #   * The `messages` line.
 
             expected_text_1 = (
+                # Comment to prevent "Black" formatting.
                 '========== response.context ==========\n'
-                '    * header: View with Three Messages\n'
-                '    * text: Pretend useful stuff is displayed here, for three-message render() view.\n'
                 '    * csrf_token: '
             )
 
@@ -3602,8 +3614,11 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
-                    '    * user: AnonymousUser\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * header: View with Three Messages\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
+                    '    * None: None\n'
                     '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
                 )
 
@@ -3617,11 +3632,10 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_3 = (
                     '>>)"\n'
-                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
+                    '    * text: Pretend useful stuff is displayed here, for three-message render() view.\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -3673,7 +3687,7 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
             )
             self.assertTextStartsWith(expected_text, actual_text)
 
-        # Passed. Strip url section.
+        # Passed. Strip form section.
         actual_text = actual_text.replace(expected_text, '')
 
         with self.subTest('Test user section'):
@@ -3813,9 +3827,8 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
             #   * The `messages` line.
 
             expected_text_1 = (
+                # Comment to prevent "Black" formatting.
                 '========== response.context ==========\n'
-                '    * header: View with Three Messages\n'
-                '    * text: Pretend useful stuff is displayed here, for three-message render() view.\n'
                 '    * csrf_token: '
             )
 
@@ -3881,8 +3894,11 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
-                    '    * user: AnonymousUser\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * header: View with Three Messages\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
+                    '    * None: None\n'
                     '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
                 )
 
@@ -3896,11 +3912,10 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_3 = (
                     '>>)"\n'
-                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
+                    '    * text: Pretend useful stuff is displayed here, for three-message render() view.\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -3952,7 +3967,7 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
             )
             self.assertTextStartsWith(expected_text, actual_text)
 
-        # Passed. Strip url section.
+        # Passed. Strip form section.
         actual_text = actual_text.replace(expected_text, '')
 
         with self.subTest('Test user section'):
@@ -4112,9 +4127,8 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
             #   * The `messages` line.
 
             expected_text_1 = (
+                # Comment to prevent "Black" formatting.
                 '========== response.context ==========\n'
-                '    * header: View with Three Messages\n'
-                '    * text: Pretend useful stuff is displayed here, for three-message render() view.\n'
                 '    * csrf_token: '
             )
 
@@ -4180,8 +4194,11 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
-                    '    * user: AnonymousUser\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * header: View with Three Messages\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
+                    '    * None: None\n'
                     '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
                 )
 
@@ -4195,11 +4212,10 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_3 = (
                     '>>)"\n'
-                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
+                    '    * text: Pretend useful stuff is displayed here, for three-message render() view.\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -4251,7 +4267,7 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
             )
             self.assertTextStartsWith(expected_text, actual_text)
 
-        # Passed. Strip url section.
+        # Passed. Strip form section.
         actual_text = actual_text.replace(expected_text, '')
 
         with self.subTest('Test user section'):
@@ -4400,9 +4416,8 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
             #   * The `messages` line.
 
             expected_text_1 = (
+                # Comment to prevent "Black" formatting.
                 '========== response.context ==========\n'
-                '    * header: View with Three Messages\n'
-                '    * text: Pretend useful stuff is displayed here, for three-message render() view.\n'
                 '    * csrf_token: '
             )
 
@@ -4468,8 +4483,11 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
-                    '    * user: AnonymousUser\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * header: View with Three Messages\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
+                    '    * None: None\n'
                     '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
                 )
 
@@ -4483,11 +4501,10 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_3 = (
                     '>>)"\n'
-                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
+                    '    * text: Pretend useful stuff is displayed here, for three-message render() view.\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -4539,7 +4556,7 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
             )
             self.assertTextStartsWith(expected_text, actual_text)
 
-        # Passed. Strip url section.
+        # Passed. Strip form section.
         actual_text = actual_text.replace(expected_text, '')
 
         with self.subTest('Test user section'):
@@ -4680,9 +4697,8 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
             #   * The `messages` line.
 
             expected_text_1 = (
+                # Comment to prevent "Black" formatting.
                 '========== response.context ==========\n'
-                '    * header: View with Three Messages\n'
-                '    * text: Pretend useful stuff is displayed here, for three-message render() view.\n'
                 '    * csrf_token: '
             )
 
@@ -4748,8 +4764,11 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
-                    '    * user: AnonymousUser\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * header: View with Three Messages\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
+                    '    * None: None\n'
                     '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
                 )
 
@@ -4763,11 +4782,10 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_3 = (
                     '>>)"\n'
-                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/views/three-messages/\'>>\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
+                    '    * text: Pretend useful stuff is displayed here, for three-message render() view.\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -4819,7 +4837,7 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
             )
             self.assertTextStartsWith(expected_text, actual_text)
 
-        # Passed. Strip url section.
+        # Passed. Strip form section.
         actual_text = actual_text.replace(expected_text, '')
 
         with self.subTest('Test user section'):
