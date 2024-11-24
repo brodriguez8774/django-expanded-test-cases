@@ -40,6 +40,8 @@ urlpatterns = [
     # Redirect views.
     path('redirect/index/', test_views.redirect_to_index, name='redirect-to-index'),
     path('redirect/with_args/<int:id>/<str:name>/', test_views.redirect_with_args, name='redirect-with-args'),
+    # Form views.
+    path('forms/basic-form/', test_views.view_with_basic_form, name='response-with-basic-form'),
     # Index view.
     path('', test_views.index, name='index'),
 ]

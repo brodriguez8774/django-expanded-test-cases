@@ -267,7 +267,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Optionally output all debug info for found response.
         if self._debug_print_bool:
-            self.full_debug_print(response, return_format=return_format)
+            self.full_debug_print(response, return_format=return_format, post_data=data)
 
         # Optional hook for running custom pre-builtin-test logic.
         self._assertResponse__pre_builtin_tests(

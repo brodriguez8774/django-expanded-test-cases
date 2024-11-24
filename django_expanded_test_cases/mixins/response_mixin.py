@@ -64,9 +64,13 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
 
     # region Debug Output Functions
 
-    def full_debug_print(self, response, return_format='html'):
+    def full_debug_print(self, response, return_format='html', post_data=None):
         """Attempts to display debug output for all of response data."""
 
+        # Handle mutable data defaults.
+        post_data = post_data or {}
+
+        # Parse out different debug types.
         if ETC_INCLUDE_RESPONSE_DEBUG_CONTENT:
             if return_format == 'html':
                 self.show_debug_content(response)
@@ -83,7 +87,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         if ETC_INCLUDE_RESPONSE_DEBUG_MESSAGES:
             self.show_debug_messages(response)
         if ETC_INCLUDE_RESPONSE_DEBUG_FORMS:
-            self.show_debug_form_data(response)
+            self.show_debug_form_data(response, post_data)
         if ETC_INCLUDE_RESPONSE_DEBUG_USER_INFO:
             self.show_debug_user_info(response)
 
@@ -493,7 +497,83 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             self._debug_print('    No context messages found.', fore=ETC_RESPONSE_DEBUG_MESSAGE_COLOR)
         self._debug_print()
 
-    def show_debug_form_data(self, response_context):
+    # def show_debug_form_data(self, response_context):
+    #     """Prints debug response form data."""
+    #
+    #     self._debug_print()
+    #     self._debug_print(
+    #         '{0} {1} {0}'.format('=' * 10, 'Form Data'),
+    #         fore=ETC_RESPONSE_DEBUG_FORM_COLOR,
+    #         style=ETC_OUTPUT_EMPHASIS_COLOR,
+    #     )
+    #
+    #     # print('\n\n\n\n')
+    #     # print('response_context: {0}'.format(response_context))
+    #
+    #     # Handle for potential param types.
+    #     if isinstance(response_context, HttpResponseBase):
+    #         if hasattr(response_context, 'context'):
+    #             response_context = response_context.context or {}
+    #         else:
+    #             response_context = {}
+    #
+    #     if isinstance(response_context, list) and len(response_context) > 0:
+    #         response_context = response_context[0]
+    #
+    #     # print('\n\n\n\n')
+    #     # print('response_context: {0}'.format(response_context))
+    #     # print('\n\n\n\n')
+    #
+    #     # print('response_context: '.format(response_context))
+    #     form_present = False
+    #     formset_present = False
+    #     for outer_item in response_context:
+    #         print('    * {0}'.format(outer_item))
+    #         for key, value in outer_item.items():
+    #             if key == 'form':
+    #                 form_present = True
+    #
+    #                 self._debug_print_form_info(value)
+    #                 # print('    * {0}:'.format(key, value))
+    #                 # print(dir(value))
+    #
+    #             elif key == 'formset':
+    #                 if form_present:
+    #                     self._debug_print()
+    #
+    #                 formset = response_context['formset']
+    #
+    #                 for form in formset:
+    #                     self._debug_print('Form(set) Errors:')
+    #                     for error in form.non_field_errors():
+    #                         self._debug_print('    {0}'.format(error), fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
+    #                     for error in form.errors:
+    #                         self._debug_print('    {0}'.format(error), fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
+    #
+    #     if not form_present and not formset_present:
+    #         # No identifiable form or formset data present on page.
+    #         self._debug_print('    No form data found.', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
+    #
+    #     print('\n\n\n\n')
+    #
+    #     # # Check if form or formset data is actually present.
+    #     # if response_context is not None and ('form' in response_context or 'formset' in response_context):
+    #     #     # Form or formset present on page.
+    #     #
+    #     #     # Attempt to get form data.
+    #     #     form_present = False
+    #     #     if 'form' in response_context:
+    #     #
+    #     #     # Attempt to get formset data.
+    #     #     if 'formset' in response_context:
+    #     #
+    #     # else:
+    #     #     # No identifiable form or formset data present on page.
+    #     #     self._debug_print('    No form data found.', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
+    #
+    #     self._debug_print()
+
+    def show_debug_form_data(self, response_context, post_data):
         """Prints debug response form data."""
 
         # Handle for potential param types.
@@ -503,6 +583,38 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             else:
                 response_context = {}
 
+        if response_context is not None:
+            # Attempt to access key object. If fails, attempt to generate dict of values.
+            try:
+                response_context.keys()
+
+            except AttributeError:
+                # Handling for:
+                #     * django.template.context.RequestContext
+                #     * django.template.context.Context
+                # No guarantee this will work for other arbitrary types.
+                # Handle as they come up.
+                temp_dict = {}
+                for context in response_context:
+                    temp_dict = {**temp_dict, **context}
+                response_context = temp_dict
+
+            except Exception as err:
+                # Error occurred.
+                # Check if error is due to ContextDict/ContextList object being passed.
+                # Unsure why this happens, but seems to occur in tests that access Django 4.2.7 admin views?
+                # Needs further research. For now, this seems like enough to bypass it
+                # and have no immediately noticeable side effects.
+                from django.test.utils import ContextList
+
+                if isinstance(response_context, ContextList):
+                    # Skip output.
+                    return
+
+                else:
+                    # Raise original error.
+                    raise err
+
         self._debug_print()
         self._debug_print(
             '{0} {1} {0}'.format('=' * 10, 'Form Data'),
@@ -510,71 +622,143 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             style=ETC_OUTPUT_EMPHASIS_COLOR,
         )
 
-        # Check if form or formset data is actually present.
-        if response_context is not None and ('form' in response_context or 'formset' in response_context):
-            # Form or formset present on page.
+        form_present = False
+        formset_present = False
 
-            # Attempt to get form data.
-            form_present = False
-            if 'form' in response_context:
-                form_present = True
-                form = response_context['form']
+        # print('\n\n\n\n')
+        # print('response_context: {0}'.format(response_context))
 
-                # Print general form data.
-                self._debug_print('    Provided Form Fields:', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
-                fields_submitted = False
-                for key, value in form.data.items():
-                    self._debug_print(
-                        '        {0}: {1}'.format(key, value),
-                        fore=ETC_RESPONSE_DEBUG_FORM_COLOR,
-                    )
-                    fields_submitted = True
-                if not fields_submitted:
-                    self._debug_print('        No form field data submitted.', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
+        # NOTE: Response context object is strange, in that it's basically a dictionary,
+        # and it allows .keys() but not .values(). Thus, iterate on keys only and pull respective value.
+        if response_context is not None and len(response_context.keys()) > 0:
 
-                # Print form data errors if present.
-                if not form.is_valid():
-                    self._debug_print()
-                    if len(form.errors) > 0 or len(form.non_field_errors()) > 0:
-                        self._debug_print(
-                            '    Form Invalid:'.format(not form.is_valid()), fore=ETC_RESPONSE_DEBUG_FORM_COLOR
-                        )
-                        if len(form.non_field_errors()) > 0:
-                            self._debug_print('        Non-field Frrors:', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
-                            for error in form.non_field_errors():
-                                self._debug_print(
-                                    '            {0}'.format(error),
-                                    fore=ETC_RESPONSE_DEBUG_FORM_COLOR,
-                                )
+            # print('\n\n')
+            # print('response_context: {0}'.format(response_context))
+            # print('\n\n')
 
-                        if len(form.errors) > 0:
-                            self._debug_print('        Field Errors:', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
-                            for error in form.errors:
-                                self._debug_print(
-                                    '            {0}'.format(error),
-                                    fore=ETC_RESPONSE_DEBUG_FORM_COLOR,
-                                )
+            # print('response_context: '.format(response_context))
 
-                else:
-                    self._debug_print('    Form found and valid.', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
+            # Iterate through context values.
+            for key in response_context.keys():
+                if key == 'form':
+                    form_present = True
+                    context_value = response_context.get(key)
+                    self._debug_print_form_info(context_value, post_data)
+                    # print('    * {0}:'.format(key, value))
+                    # print(dir(value))
 
-            # Attempt to get formset data.
-            if 'formset' in response_context:
-                if form_present:
-                    self._debug_print()
-                formset = response_context['formset']
+                elif key == 'formset':
+                    if form_present:
+                        self._debug_print()
 
-                for form in formset:
-                    self._debug_print('Form(set) Errors:')
-                    for error in form.non_field_errors():
-                        self._debug_print('    {0}'.format(error), fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
-                    for error in form.errors:
-                        self._debug_print('    {0}'.format(error), fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
-        else:
+                    formset = response_context['formset']
+
+                    for form in formset:
+                        self._debug_print('Form(set) Errors:')
+                        for error in form.non_field_errors():
+                            self._debug_print('    {0}'.format(error), fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
+                        for error in form.errors:
+                            self._debug_print('    {0}'.format(error), fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
+
+        if not form_present and not formset_present:
             # No identifiable form or formset data present on page.
             self._debug_print('    No form data found.', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
 
+            # print('\n\n\n\n')
+
+        # # Check if form or formset data is actually present.
+        # if response_context is not None and ('form' in response_context or 'formset' in response_context):
+        #     # Form or formset present on page.
+        #
+        #     # Attempt to get form data.
+        #     form_present = False
+        #     if 'form' in response_context:
+        #
+        #     # Attempt to get formset data.
+        #     if 'formset' in response_context:
+        #
+        # else:
+        #     # No identifiable form or formset data present on page.
+        #     self._debug_print('    No form data found.', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
+
         self._debug_print()
+
+    def _debug_print_form_info(self, form, post_data):
+        """"""
+
+        # print('\n\n\n\n')
+        # print('Parsing form info')
+        # print('\n\n')
+        # print('dir(form): {0}'.format(dir(form)))
+        # print('')
+        # print(' * post_data: {0}'.format(post_data))
+        # print(' * form.fields: {0}'.format(form.fields))
+        # print(' * form.data: {0}'.format(form.data))
+        # print(' * form.is_valid(): {0}'.format(form.is_valid()))
+        # print(' * form.changed_data: {0}'.format(form.changed_data))
+        # # print(' * form.has_error(): {0}'.format(form.has_error()))
+        # print(' * form.errors: {0}'.format(form.errors))
+        # print(' * form.non_field_errors(): {0}'.format(form.non_field_errors()))
+        # print('\n\n')
+
+        # Print general form data.
+        self._debug_print('    Provided Form Fields:', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
+        fields_submitted = False
+        for key in form.fields.keys():
+
+            # Check if form field was provided as part of page POST.
+            if key in post_data.keys():
+                fields_submitted = True
+
+            # Get actual form field data, according to form.
+            if key in form.data.keys():
+                self._debug_print(
+                    '        * {0}: {1}'.format(key, form.data[key]),
+                    fore=ETC_RESPONSE_DEBUG_FORM_COLOR,
+                )
+
+        # Handle if could not output form field data.
+        if fields_submitted and len(form.data) == 0:
+            # Handle if can't read form data, despite being in POST.
+            self._debug_print(
+                '        Form field data found in POST, but not present in form. Is your view configured correctly?',
+                fore=ETC_RESPONSE_DEBUG_FORM_COLOR,
+            )
+        if not fields_submitted:
+            # Handle if no data was submitted.
+            self._debug_print('        No form field data submitted.', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
+
+        # Print form data errors if present.
+        if not form.is_valid():
+            self._debug_print()
+            if len(form.errors) > 0 or len(form.non_field_errors()) > 0:
+                self._debug_print('    Form Invalid:'.format(not form.is_valid()), fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
+                if len(form.non_field_errors()) > 0:
+                    self._debug_print('        Non-field Errors:', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
+                    for error in form.non_field_errors():
+                        self._debug_print(
+                            '            * "{0}"'.format(error),
+                            fore=ETC_RESPONSE_DEBUG_FORM_COLOR,
+                        )
+
+                if len(form.errors) > 0:
+                    self._debug_print('        Field Errors:', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
+
+                    for error_field, error_text in form.errors.items():
+
+                        # Get actual error text value, minus surrounding html.
+                        error_text = error_text.data[0].message
+
+                        # Display field value.
+                        self._debug_print(
+                            '            * {0}: "{1}"'.format(error_field, error_text),
+                            fore=ETC_RESPONSE_DEBUG_FORM_COLOR,
+                        )
+
+        else:
+            self._debug_print('\n    Form validated successfully.', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
+
+    # print('\n\n\n\n')
 
     def show_debug_user_info(self, user):
         """Prints debug user data."""

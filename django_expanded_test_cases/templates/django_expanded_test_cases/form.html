@@ -1,0 +1,30 @@
+
+<head>
+  <meta charset="utf-8">
+  <title>{{ header }} | Test Views</title>
+</head>
+
+
+<body>
+  {% if messages %}
+    <ul>
+      {% for message in messages %}
+        <li><p>
+          {{ message }}
+        </p></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if header %}
+    <h1>{{ header }} Header</h1>
+  {% endif %}
+
+  {% if form %}
+    <form method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input type="submit" value="Submit">
+    </form>
+  {% endif %}
+</body>

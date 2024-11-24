@@ -10,6 +10,9 @@ from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.template.response import TemplateResponse
 from django.urls import reverse
 
+# Internal Imports.
+from .test_forms import BasicForm
+
 
 def index(request):
     """Page that simulates a site index/home."""
@@ -56,6 +59,10 @@ def index(request):
                 '  <li><a href="'
                 + reverse('django_expanded_test_cases:redirect-with-args', args=(5, "Test Name"))
                 + '">Redirect with Args</a></li>'
+                '<br>'
+                '  <li><a href="'
+                + reverse('django_expanded_test_cases:response-with-basic-form')
+                + '">Basic Form</a></li>'
                 '</ul>'
             ),
         },
@@ -287,4 +294,35 @@ def redirect_with_args(request, id, name):
             'django_expanded_test_cases:template-response-with-args',
             args=(id, name),
         )
+    )
+
+
+def view_with_basic_form(request):
+    """Page that simulates a form page."""
+
+    # Get initial form data.
+    form = BasicForm()
+
+    # Handle if POST.
+    if request.POST:
+        form = BasicForm(request.POST)
+
+        # Handle form validation.
+        if form.is_valid():
+            messages.info(request, 'Form submitted successfully.')
+
+            # Optional logic to simulate resetting a form prior to page render.
+            reset_form_on_success = request.POST.get('reset_form_on_success', False)
+            if reset_form_on_success:
+                # Reset form data.
+                form = BasicForm()
+
+    # Render response.
+    return render(
+        request,
+        'django_expanded_test_cases/form.html',
+        {
+            'header': 'Basic Form Page',
+            'form': form,
+        },
     )
