@@ -2917,6 +2917,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             # Check for content section.
             expected_text_2 = (
                 '">\n'
+                ' <hr>\n'
                 ' <p>\n'
                 ' <label for="id_required_charfield">CharField - Required:</label>\n'
                 ' <input type="text" name="required_charfield" value="Testing" maxlength="100" required id="id_required_charfield">\n'
@@ -2933,6 +2934,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 ' <label for="id_optional_intfield">IntField - Optional:</label>\n'
                 ' <input type="number" name="optional_intfield" id="id_optional_intfield">\n'
                 ' </p>\n'
+                ' <hr>\n'
                 ' <input type="submit" value="Submit">\n'
                 ' </form>\n'
                 '</body>\n'
@@ -2953,7 +2955,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 '    * "Content-Type": "text/html; charset=utf-8"\n'
                 '    * "X-Frame-Options": "DENY"\n'
                 '    * "Vary": "Cookie"\n'
-                '    * "Content-Length": "1250"\n'
+                '    * "Content-Length": "1277"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
             )
@@ -3239,6 +3241,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             # Check for content section.
             expected_text_2 = (
                 '">\n'
+                ' <hr>\n'
                 ' <p>\n'
                 ' <label for="id_required_charfield">CharField - Required:</label>\n'
                 ' <input type="text" name="required_charfield" maxlength="100" required id="id_required_charfield">\n'
@@ -3255,6 +3258,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 ' <label for="id_optional_intfield">IntField - Optional:</label>\n'
                 ' <input type="number" name="optional_intfield" id="id_optional_intfield">\n'
                 ' </p>\n'
+                ' <hr>\n'
                 ' <input type="submit" value="Submit">\n'
                 ' </form>\n'
                 '</body>\n'
@@ -3275,7 +3279,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 '    * "Content-Type": "text/html; charset=utf-8"\n'
                 '    * "X-Frame-Options": "DENY"\n'
                 '    * "Vary": "Cookie"\n'
-                '    * "Content-Length": "1224"\n'
+                '    * "Content-Length": "1251"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
             )
@@ -3549,6 +3553,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             # Check for content section.
             expected_text_2 = (
                 '">\n'
+                ' <hr>\n'
                 ' <ul class="errorlist"><li>This field is required.</li></ul>\n'
                 ' <p>\n'
                 ' <label for="id_required_charfield">CharField - Required:</label>\n'
@@ -3567,6 +3572,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 ' <label for="id_optional_intfield">IntField - Optional:</label>\n'
                 ' <input type="number" name="optional_intfield" value="5" id="id_optional_intfield">\n'
                 ' </p>\n'
+                ' <hr>\n'
                 ' <input type="submit" value="Submit">\n'
                 ' </form>\n'
                 '</body>\n'
@@ -3587,7 +3593,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 '    * "Content-Type": "text/html; charset=utf-8"\n'
                 '    * "X-Frame-Options": "DENY"\n'
                 '    * "Vary": "Cookie"\n'
-                '    * "Content-Length": "1302"\n'
+                '    * "Content-Length": "1329"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
             )
@@ -3870,6 +3876,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             # Check for content section.
             expected_text_2 = (
                 '">\n'
+                ' <hr>\n'
                 ' <ul class="errorlist nonfield"><li>Invalid values. IntFields cannot add up to above 100.</li></ul>\n'
                 ' <p>\n'
                 ' <label for="id_required_charfield">CharField - Required:</label>\n'
@@ -3887,6 +3894,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 ' <label for="id_optional_intfield">IntField - Optional:</label>\n'
                 ' <input type="number" name="optional_intfield" value="21" id="id_optional_intfield">\n'
                 ' </p>\n'
+                ' <hr>\n'
                 ' <input type="submit" value="Submit">\n'
                 ' </form>\n'
                 '</body>\n'
@@ -3907,7 +3915,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 '    * "Content-Type": "text/html; charset=utf-8"\n'
                 '    * "X-Frame-Options": "DENY"\n'
                 '    * "Vary": "Cookie"\n'
-                '    * "Content-Length": "1259"\n'
+                '    * "Content-Length": "1286"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
             )
@@ -4192,6 +4200,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
             # Check for content section.
             expected_text_2 = (
                 '">\n'
+                ' <hr>\n'
                 ' <p>\n'
                 ' <label for="id_required_charfield">CharField - Required:</label>\n'
                 ' <input type="text" name="required_charfield" value="Testing" maxlength="100" required id="id_required_charfield">\n'
@@ -4210,6 +4219,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 ' <label for="id_optional_intfield">IntField - Optional:</label>\n'
                 ' <input type="number" name="optional_intfield" value="-5" aria-invalid="true" id="id_optional_intfield">\n'
                 ' </p>\n'
+                ' <hr>\n'
                 ' <input type="submit" value="Submit">\n'
                 ' </form>\n'
                 '</body>\n'
@@ -4230,7 +4240,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 '    * "Content-Type": "text/html; charset=utf-8"\n'
                 '    * "X-Frame-Options": "DENY"\n'
                 '    * "Vary": "Cookie"\n'
-                '    * "Content-Length": "1391"\n'
+                '    * "Content-Length": "1418"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
             )
@@ -4578,7 +4588,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 '    * "Content-Type": "text/html; charset=utf-8"\n'
                 '    * "X-Frame-Options": "DENY"\n'
                 '    * "Vary": "Cookie"\n'
-                '    * "Content-Length": "2554"\n'
+                '    * "Content-Length": "2559"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
             )
@@ -4936,7 +4946,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 '    * "Content-Type": "text/html; charset=utf-8"\n'
                 '    * "X-Frame-Options": "DENY"\n'
                 '    * "Vary": "Cookie"\n'
-                '    * "Content-Length": "2574"\n'
+                '    * "Content-Length": "2579"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
             )
@@ -5302,7 +5312,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 '    * "Content-Type": "text/html; charset=utf-8"\n'
                 '    * "X-Frame-Options": "DENY"\n'
                 '    * "Vary": "Cookie"\n'
-                '    * "Content-Length": "2676"\n'
+                '    * "Content-Length": "2681"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
             )
@@ -5678,7 +5688,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 '    * "Content-Type": "text/html; charset=utf-8"\n'
                 '    * "X-Frame-Options": "DENY"\n'
                 '    * "Vary": "Cookie"\n'
-                '    * "Content-Length": "2940"\n'
+                '    * "Content-Length": "2945"\n'
                 '    * "X-Content-Type-Options": "nosniff"\n'
                 '    * "Referrer-Policy": "same-origin"\n'
             )

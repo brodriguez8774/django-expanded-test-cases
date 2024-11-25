@@ -298,7 +298,7 @@ def redirect_with_args(request, id, name):
 
 
 def view_with_basic_form(request):
-    """Page that simulates a form page."""
+    """View that simulates a form page."""
 
     # Get initial form data.
     form = BasicForm()
@@ -329,7 +329,7 @@ def view_with_basic_form(request):
 
 
 def view_with_basic_formset(request):
-    """Page that simulates a formset page."""
+    """View that simulates a formset page."""
 
     # Get initial form data.
     formset = BasicFormset()

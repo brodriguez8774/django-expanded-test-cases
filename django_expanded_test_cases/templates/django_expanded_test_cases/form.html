@@ -20,22 +20,25 @@
     <h1>{{ header }} Header</h1>
   {% endif %}
 
-  {% if form %}
-    <form method="POST">
-      {% csrf_token %}
+  <form method="POST">
+    {% csrf_token %}
+
+    {% if form %}
+      <hr>
       {{ form.as_p }}
-      <input type="submit" value="Submit">
-    </form>
-  {% elif formset %}
-    <form method="POST">
-      {% csrf_token %}
+      <hr>
+    {% endif %}
+
+    {% if formset %}
       {{ formset.management_form }}
       {% for form in formset %}
         <hr>
         {{ form.as_p }}
       {% endfor %}
       <hr>
-      <input type="submit" value="Submit">
-    </form>
-  {% endif %}
+    {% endif %}
+
+    <input type="submit" value="Submit">
+
+  </form>
 </body>
