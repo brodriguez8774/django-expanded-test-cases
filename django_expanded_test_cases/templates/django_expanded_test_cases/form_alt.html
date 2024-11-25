@@ -1,0 +1,44 @@
+
+<head>
+  <meta charset="utf-8">
+  <title>{{ header }} | Test Views</title>
+</head>
+
+
+<body>
+  {% if messages %}
+    <ul>
+      {% for message in messages %}
+        <li><p>
+          {{ message }}
+        </p></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if header %}
+    <h1>{{ header }} Header</h1>
+  {% endif %}
+
+  <form method="POST">
+    {% csrf_token %}
+
+    {% if my_alt_form %}
+      <hr>
+      {{ my_alt_form.as_p }}
+      <hr>
+    {% endif %}
+
+    {% if my_alt_formset %}
+      {{ my_alt_formset.management_form }}
+      {% for form in my_alt_formset %}
+        <hr>
+        {{ form.as_p }}
+      {% endfor %}
+      <hr>
+    {% endif %}
+
+    <input type="submit" value="Submit">
+
+  </form>
+</body>

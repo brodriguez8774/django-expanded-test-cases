@@ -43,6 +43,8 @@ urlpatterns = [
     # Form views.
     path('forms/basic-form/', test_views.view_with_basic_form, name='response-with-basic-form'),
     path('forms/basic-formset/', test_views.view_with_basic_formset, name='response-with-basic-formset'),
+    path('forms/alt-form/', test_views.view_with_alt_form_name, name='response-with-alt-form-name'),
+    path('forms/alt-formset/', test_views.view_with_alt_formset_name, name='response-with-alt-formset-name'),
     # Index view.
     path('', test_views.index, name='index'),
 ]

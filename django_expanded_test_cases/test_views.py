@@ -63,6 +63,15 @@ def index(request):
                 '  <li><a href="'
                 + reverse('django_expanded_test_cases:response-with-basic-form')
                 + '">Basic Form</a></li>'
+                '  <li><a href="'
+                + reverse('django_expanded_test_cases:response-with-basic-formset')
+                + '">Basic Formset</a></li>'
+                '  <li><a href="'
+                + reverse('django_expanded_test_cases:response-with-alt-form-name')
+                + '">Alternate Form Name</a></li>'
+                '  <li><a href="'
+                + reverse('django_expanded_test_cases:response-with-alt-formset-name')
+                + '">Alternate Formset Name</a></li>'
                 '</ul>'
             ),
         },
@@ -357,4 +366,74 @@ def view_with_basic_formset(request):
             'header': 'Basic Formset Page',
             'formset': formset,
         },
+    )
+
+
+def view_with_alt_form_name(request):
+    """View that simulates a form page using a different name."""
+
+    # Get initial form data.
+    form = BasicForm()
+
+    # Handle if POST.
+    if request.POST:
+        form = BasicForm(request.POST)
+
+        # Handle form validation.
+        if form.is_valid():
+            messages.info(request, 'Form submitted successfully.')
+
+            # Optional logic to simulate resetting a form prior to page render.
+            reset_form_on_success = request.POST.get('reset_form_on_success', False)
+            if reset_form_on_success:
+                # Reset form data.
+                form = BasicForm()
+
+    # Render response.
+    return render(
+        request,
+        'django_expanded_test_cases/form_alt.html',
+        {
+            'header': 'Alt Form Name Page',
+            'my_alt_form': form,
+        },
+    )
+
+
+def view_with_alt_formset_name(request):
+    """View that simulates a formset page."""
+
+    collide_with_manager_form = False
+
+    # Get initial form data.
+    formset = BasicFormset()
+
+    # Handle if POST.
+    if request.POST:
+        formset = BasicFormset(request.POST)
+        collide_with_manager_form = request.POST.get('collide_with_manager_form', False)
+
+        # Handle form validation.
+        if formset.is_valid():
+
+            messages.info(request, 'Formset submitted successfully.')
+
+            # Optional logic to simulate resetting a form prior to page render.
+            reset_form_on_success = request.POST.get('reset_form_on_success', False)
+            if reset_form_on_success:
+                # Reset form data.
+                formset = BasicFormset()
+
+    context = {
+        'header': 'Alt Formset Name Page',
+        'my_alt_formset': formset,
+    }
+    if collide_with_manager_form:
+        context['form'] = ''
+
+    # Render response.
+    return render(
+        request,
+        'django_expanded_test_cases/form_alt.html',
+        context,
     )

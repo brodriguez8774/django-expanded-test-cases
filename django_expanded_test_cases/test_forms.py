@@ -42,22 +42,9 @@ class BasicForm(forms.Form):
         return cleaned_data
 
 
-# class BasicFormsetClass(BaseFormSet):
-#
-#     def clean(self):
-#
-#         for form in self.forms:
-#             if not form.is_valid():
-#                 self.add_error(None, 'Aaa')
-#
-#         # if any(self.errors):
-#         #     return
-
-
 # Create a formset from above BasicForm class.
 BasicFormset = formset_factory(
     BasicForm,
-    # formset=BasicFormsetClass,
     extra=2,
     min_num=2,
     max_num=2,

@@ -13,6 +13,7 @@ from urllib.parse import parse_qs
 from bs4 import BeautifulSoup
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.forms import BaseForm, BaseFormSet
 from django.forms.formsets import ManagementForm
 from django.http.response import HttpResponseBase
 
@@ -501,82 +502,6 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             self._debug_print('    No context messages found.', fore=ETC_RESPONSE_DEBUG_MESSAGE_COLOR)
         self._debug_print()
 
-    # def show_debug_form_data(self, response_context):
-    #     """Prints debug response form data."""
-    #
-    #     self._debug_print()
-    #     self._debug_print(
-    #         '{0} {1} {0}'.format('=' * 10, 'Form Data'),
-    #         fore=ETC_RESPONSE_DEBUG_FORM_COLOR,
-    #         style=ETC_OUTPUT_EMPHASIS_COLOR,
-    #     )
-    #
-    #     # print('\n\n\n\n')
-    #     # print('response_context: {0}'.format(response_context))
-    #
-    #     # Handle for potential param types.
-    #     if isinstance(response_context, HttpResponseBase):
-    #         if hasattr(response_context, 'context'):
-    #             response_context = response_context.context or {}
-    #         else:
-    #             response_context = {}
-    #
-    #     if isinstance(response_context, list) and len(response_context) > 0:
-    #         response_context = response_context[0]
-    #
-    #     # print('\n\n\n\n')
-    #     # print('response_context: {0}'.format(response_context))
-    #     # print('\n\n\n\n')
-    #
-    #     # print('response_context: '.format(response_context))
-    #     form_present = False
-    #     formset_present = False
-    #     for outer_item in response_context:
-    #         print('    * {0}'.format(outer_item))
-    #         for key, value in outer_item.items():
-    #             if key == 'form':
-    #                 form_present = True
-    #
-    #                 self._debug_print_form_info(value)
-    #                 # print('    * {0}:'.format(key, value))
-    #                 # print(dir(value))
-    #
-    #             elif key == 'formset':
-    #                 if form_present:
-    #                     self._debug_print()
-    #
-    #                 formset = response_context['formset']
-    #
-    #                 for form in formset:
-    #                     self._debug_print('Form(set) Errors:')
-    #                     for error in form.non_field_errors():
-    #                         self._debug_print('    {0}'.format(error), fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
-    #                     for error in form.errors:
-    #                         self._debug_print('    {0}'.format(error), fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
-    #
-    #     if not form_present and not formset_present:
-    #         # No identifiable form or formset data present on page.
-    #         self._debug_print('    No form data found.', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
-    #
-    #     print('\n\n\n\n')
-    #
-    #     # # Check if form or formset data is actually present.
-    #     # if response_context is not None and ('form' in response_context or 'formset' in response_context):
-    #     #     # Form or formset present on page.
-    #     #
-    #     #     # Attempt to get form data.
-    #     #     form_present = False
-    #     #     if 'form' in response_context:
-    #     #
-    #     #     # Attempt to get formset data.
-    #     #     if 'formset' in response_context:
-    #     #
-    #     # else:
-    #     #     # No identifiable form or formset data present on page.
-    #     #     self._debug_print('    No form data found.', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
-    #
-    #     self._debug_print()
-
     def show_debug_form_data(self, response_context, post_data):
         """Prints debug response form data."""
 
@@ -629,46 +554,34 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             style=ETC_OUTPUT_EMPHASIS_COLOR,
         )
 
-        form_present = False
-        formset_present = False
-        found_forms = []
+        found_forms = {}
         found_formsets = {}
         found_formset_forms = []
         found_formset_management_forms = {}
-
-        # print('\n\n\n\n')
-        # print('response_context: {0}'.format(response_context))
 
         # NOTE: Response context object is strange, in that it's basically a dictionary,
         # and it allows .keys() but not .values(). Thus, iterate on keys only and pull respective value.
         if response_context is not None and len(response_context.keys()) > 0:
 
-            # print('\n\n')
-            # print('response_context: {0}'.format(response_context))
-            # print('\n\n')
-
-            # print('response_context: '.format(response_context))
-
-            # Iterate through context values.
-
             for key in response_context.keys():
                 # Determine any forms/formsets in context.
 
-                # Handle finding all forms in context.
-                if key == 'form':
-                    context_value = response_context.get(key)
+                # Grab context value.
+                context_value = response_context.get(key)
 
-                    # Make sure is not a "management form". If so, it belongs to a formset.
-                    if isinstance(context_value, ManagementForm):
-                        # Is a management form. Belongs to formset. Handle separately.
-                        found_formset_management_forms[context_value.prefix] = context_value
-                    else:
-                        # Is a standard form. Save to list of known forms.
-                        found_forms.append(context_value)
+                # Handle finding a "management form". This helps manage formsets.
+                if isinstance(context_value, ManagementForm):
+                    # Save to list of known management forms.
+                    found_formset_management_forms[context_value.prefix] = context_value
 
-                # Handle finding all formsets in context.
-                if key == 'formset':
-                    context_value = response_context.get(key)
+                # Handle finding of forms in context.
+                elif isinstance(context_value, BaseForm):
+
+                    # Save to list of known forms.
+                    found_forms[key] = context_value
+
+                # Handle finding of formsets in context.
+                elif isinstance(context_value, BaseFormSet):
 
                     # Save to list of known formsets.
                     found_formsets[key] = context_value
@@ -676,102 +589,71 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                     # Save to list of forms that are known part of the formset.
                     found_formset_forms.append(context_value.forms)
 
-            # print('\n\n\n\n')
-            # print('found_forms:')
-            # print('    * {0}'.format(found_forms))
-            # for form in found_forms:
-            #     print('        * type: {0}'.format(type(form)))
-            # print('\n\n')
-            # print('found_formsets:')
-            # print('    * {0}'.format(found_formsets))
-            # print('\n\n')
-            # print('found_formset_management_forms:')
-            # print('    * {0}'.format(found_formset_management_forms))
-            # for form in found_formset_management_forms:
-            #     print('        * type: {0}'.format(type(form)))
-            # print('\n\n')
-            # print('found_formset_forms:')
-            # print('    * {0}'.format(found_formset_forms))
-            # for form in found_formset_forms:
-            #     print('        * type: {0}'.format(type(form)))
-            # print('\n\n\n\n')
+            # Do some extra pre-processing.
+            # TODO: This seems to be due to Django always creating a "form" context value,
+            #   even if the actual passed value is named different?
+            #   Leads to duplicate instances of the form, with potential namespace clashing.
+            #   Also seems to affect handling of formset "management form" logic. Bleh.
+            #   Need to research why this is.
+            has_duplicate = False
+            if 'form' in found_forms.keys():
+                for form_id, possible_duplicate in found_forms.items():
+                    if form_id != 'form' and found_forms['form'] == possible_duplicate:
+                        has_duplicate = True
+                        break
+            if has_duplicate:
+                del found_forms['form']
 
             # Process found forms from context, if any.
-            for form in found_forms:
+            for form_name, form in found_forms.items():
                 # Only debug output if form is not part of formset.
                 if form not in found_formset_forms:
+
+                    self._debug_print(
+                        '\nForm (Context Id: "{0}")\n'.format(form_name),
+                        fore=ETC_RESPONSE_DEBUG_FORM_COLOR,
+                    )
+
                     self._debug_print_form_info(form, post_data)
-
-                # print('\n\n')
-                # print('Form Data:')
-                # print('    * {0}:'.format(key, context_value))
-                # print(dir(context_value))
-                # print('\n\n')
-
-            # for form in found_formset_management_forms:
-            #     print('\n')
-            #     print('management form:')
-            #     print('{0}'.format(form))
-            #     print('\n')
-            #     print('    dir(form): {0}'.format(dir(form)))
-            #     print('\n')
 
             # Process found formsets from context, if any.
             for formset_name, formset in found_formsets.items():
-                if len(found_forms) > 0:
-                    self._debug_print()
 
                 self._debug_print(
-                    '\nFormset (Context Id: "{0}")\n'.format(formset_name), fore=ETC_RESPONSE_DEBUG_FORM_COLOR
+                    '\nFormset (Context Id: "{0}")\n'.format(formset_name),
+                    fore=ETC_RESPONSE_DEBUG_FORM_COLOR,
                 )
 
-                # formset = response_context['formset']
-
-                # print('\n\n')
-                # print('Formset Data:')
-                # print('    * {0}:'.format(key, context_value))
-                # print(dir(context_value))
-                # print('\n\n')
-
                 # Handle management form for formset.
+                found_manager_form = False
                 for management_prefix, management_form in found_formset_management_forms.items():
                     if management_prefix == formset.prefix:
+                        found_manager_form = True
                         self._debug_print_form_info(management_form, post_data, formset_identifier='management')
+
+                # Handle if failed to find manager form.
+                if not found_manager_form:
+                    self._debug_print(
+                        (
+                            '    '
+                            'Could not locate formset manager form. '
+                            'Is the view having namespace collisions with the value "form"?'
+                        ),
+                        fore=ETC_RESPONSE_DEBUG_FORM_COLOR,
+                    )
 
                 # Handle associated sub-forms for formset.
                 for index, form in enumerate(formset):
                     self._debug_print_form_info(form, post_data, formset_identifier=index)
-                #     self._debug_print('Form(set) Errors:')
-                #     for error in form.non_field_errors():
-                #         self._debug_print('    {0}'.format(error), fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
-                #     for error in form.errors:
-                #         self._debug_print('    {0}'.format(error), fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
 
         if not found_forms and not found_formsets:
             # No identifiable form or formset data present on page.
             self._debug_print('    No form data found.', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
 
-            # print('\n\n\n\n')
-
-        # # Check if form or formset data is actually present.
-        # if response_context is not None and ('form' in response_context or 'formset' in response_context):
-        #     # Form or formset present on page.
-        #
-        #     # Attempt to get form data.
-        #     form_present = False
-        #     if 'form' in response_context:
-        #
-        #     # Attempt to get formset data.
-        #     if 'formset' in response_context:
-        #
-        # else:
-        #     # No identifiable form or formset data present on page.
-        #     self._debug_print('    No form data found.', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
-
         self._debug_print()
 
     def _debug_print_form_info(self, form, post_data, formset_identifier=None):
-        """"""
+        """Inner logic to print main debug info for each processed form."""
 
         # Add extra indentation if displaying formset.
         if formset_identifier is not None:
@@ -784,27 +666,14 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                     fore=ETC_RESPONSE_DEBUG_FORM_COLOR,
                 )
             else:
+                self._debug_print()
+
                 self._debug_print(
                     '    Sub-Form #{0}:\n'.format(formset_identifier + 1),
                     fore=ETC_RESPONSE_DEBUG_FORM_COLOR,
                 )
         else:
             extra_indent = ''
-
-        # print('\n\n\n\n')
-        # print('Parsing form info')
-        # print('\n\n')
-        # print('dir(form): {0}'.format(dir(form)))
-        # print('')
-        # print(' * post_data: {0}'.format(post_data))
-        # print(' * form.fields: {0}'.format(form.fields))
-        # print(' * form.data: {0}'.format(form.data))
-        # print(' * form.is_valid(): {0}'.format(form.is_valid()))
-        # print(' * form.changed_data: {0}'.format(form.changed_data))
-        # # print(' * form.has_error(): {0}'.format(form.has_error()))
-        # print(' * form.errors: {0}'.format(form.errors))
-        # print(' * form.non_field_errors(): {0}'.format(form.non_field_errors()))
-        # print('\n\n')
 
         # Print general form data.
         self._debug_print(
@@ -816,23 +685,10 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
 
             if formset_identifier == 'management':
                 # Handling for management form fields.
-                # print('form: {0}'.format(dir(form)))
-                # print('form.data: {0}'.format(form.data))
-                # try:
-                #     print()
-                # except:
-                #     pass
-                # print('form.data[key]: {0}'.format(dir(form.data[key])))
-                # print('form.fields[key]: {0}'.format(dir(form.fields[key])))
-                # print('form.fields[key]: {0}'.format(form.fields[key].initial))
-                # print('form.fields[key]: {0}'.format(form.fields[key].bound_data()))
-                # print('form.fields[key]: {0}'.format(form.fields[key].prepare_value()))
-                # print('form.fields[key]: {0}'.format(form.fields[key].validate()))
                 try:
                     updated_key = 'form-{0}'.format(key)
                     self._debug_print(
-                        '            * {1}: {2}'.format(
-                            extra_indent,
+                        '            * {0}: {1}'.format(
                             updated_key,
                             form.data[updated_key],
                         ),
@@ -924,25 +780,21 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                             fore=ETC_RESPONSE_DEBUG_FORM_COLOR,
                         )
 
-                self._debug_print('', fore=ETC_RESPONSE_DEBUG_FORM_COLOR)
-
         else:
             # No errors found in form.
 
             if formset_identifier is None:
                 # Output for standard form.
                 self._debug_print(
-                    '\n    Form validated successfully.\n',
+                    '    Form validated successfully.',
                     fore=ETC_RESPONSE_DEBUG_FORM_COLOR,
                 )
             else:
                 # Output for formset form.
                 self._debug_print(
-                    '        Formset sub-form validated successfully.\n',
+                    '        Formset sub-form validated successfully.',
                     fore=ETC_RESPONSE_DEBUG_FORM_COLOR,
                 )
-
-    # print('\n\n\n\n')
 
     def show_debug_user_info(self, user):
         """Prints debug user data."""
