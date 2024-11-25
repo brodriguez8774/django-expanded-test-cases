@@ -11,7 +11,7 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 
 # Internal Imports.
-from .test_forms import BasicForm
+from .test_forms import BasicForm, BasicFormset
 
 
 def index(request):
@@ -324,5 +324,37 @@ def view_with_basic_form(request):
         {
             'header': 'Basic Form Page',
             'form': form,
+        },
+    )
+
+
+def view_with_basic_formset(request):
+    """Page that simulates a formset page."""
+
+    # Get initial form data.
+    formset = BasicFormset()
+
+    # Handle if POST.
+    if request.POST:
+        formset = BasicFormset(request.POST)
+
+        # Handle form validation.
+        if formset.is_valid():
+
+            messages.info(request, 'Formset submitted successfully.')
+
+            # Optional logic to simulate resetting a form prior to page render.
+            reset_form_on_success = request.POST.get('reset_form_on_success', False)
+            if reset_form_on_success:
+                # Reset form data.
+                formset = BasicFormset()
+
+    # Render response.
+    return render(
+        request,
+        'django_expanded_test_cases/form.html',
+        {
+            'header': 'Basic Formset Page',
+            'formset': formset,
         },
     )

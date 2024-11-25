@@ -4,6 +4,7 @@ Testing forms for django-expanded-test-cases project.
 
 # Third-Party Imports.
 from django import forms
+from django.forms import BaseFormSet, formset_factory
 
 
 class BasicForm(forms.Form):
@@ -39,3 +40,25 @@ class BasicForm(forms.Form):
             pass
 
         return cleaned_data
+
+
+# class BasicFormsetClass(BaseFormSet):
+#
+#     def clean(self):
+#
+#         for form in self.forms:
+#             if not form.is_valid():
+#                 self.add_error(None, 'Aaa')
+#
+#         # if any(self.errors):
+#         #     return
+
+
+# Create a formset from above BasicForm class.
+BasicFormset = formset_factory(
+    BasicForm,
+    # formset=BasicFormsetClass,
+    extra=2,
+    min_num=2,
+    max_num=2,
+)

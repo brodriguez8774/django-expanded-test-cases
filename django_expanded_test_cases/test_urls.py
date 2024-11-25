@@ -42,6 +42,7 @@ urlpatterns = [
     path('redirect/with_args/<int:id>/<str:name>/', test_views.redirect_with_args, name='redirect-with-args'),
     # Form views.
     path('forms/basic-form/', test_views.view_with_basic_form, name='response-with-basic-form'),
+    path('forms/basic-formset/', test_views.view_with_basic_formset, name='response-with-basic-formset'),
     # Index view.
     path('', test_views.index, name='index'),
 ]

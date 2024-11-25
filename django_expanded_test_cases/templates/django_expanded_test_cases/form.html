@@ -26,5 +26,16 @@
       {{ form.as_p }}
       <input type="submit" value="Submit">
     </form>
+  {% elif formset %}
+    <form method="POST">
+      {% csrf_token %}
+      {{ formset.management_form }}
+      {% for form in formset %}
+        <hr>
+        {{ form.as_p }}
+      {% endfor %}
+      <hr>
+      <input type="submit" value="Submit">
+    </form>
   {% endif %}
 </body>
