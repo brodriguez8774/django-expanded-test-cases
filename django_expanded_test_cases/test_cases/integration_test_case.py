@@ -1623,6 +1623,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             url_kwargs=url_kwargs,
             url_query_params=query_params,
             append_root=False,
+            display_warning=True,
         )
         full_url = '{0}{1}'.format(self.site_root_url, url)
         if ETC_INCLUDE_RESPONSE_DEBUG_URL:

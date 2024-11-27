@@ -6,8 +6,11 @@ Tests for test_cases/integration_test_case.py custom assertions and testing chec
 from unittest.mock import patch
 
 # Third-Party Imports.
+from django.conf import settings
 from django.http import HttpResponse
+from django.test import override_settings
 from django.urls import reverse
+from pytest import warns
 
 # Internal Imports.
 from django_expanded_test_cases import IntegrationTestCase
@@ -35,10 +38,20 @@ class IntegrationAssertionTestCase:
         Tests URL value returned response object in assertResponse() function.
         """
 
+        expected_warn_msg = (
+            'Django setting APPEND_SLASH is set to True, '
+            'but provided url does not contain a trailing slash. '
+            'This may cause UnitTests with ETC to fail. '
+            'Consider appending a url slash. '
+            'Url was: {0}'
+        )
+
         with self.subTest('With no site_root_url value defined - Via literal value'):
             # Test 404 page url.
-            response = self.assertResponse('bad_url', expected_status=404)
-            self.assertText('/bad_url/', response.url)
+            with warns(Warning) as warning_info:
+                response = self.assertResponse('bad_url', expected_status=404)
+                self.assertText('/bad_url/', response.url)
+            self.assertText(expected_warn_msg.format('bad_url'), warning_info[0].message.args[0])
             self.assertText('127.0.0.1/bad_url/', response.full_url)
             response = self.assertResponse('bad_url/', expected_status=404)
             self.assertText('/bad_url/', response.url)
@@ -62,6 +75,10 @@ class IntegrationAssertionTestCase:
             self.assertText('127.0.0.1/', response.full_url)
 
             # Test "home" page url.
+            with warns(Warning) as warning_info:
+                response = self.assertResponse('home')
+                self.assertText('/home/', response.url)
+            self.assertText(expected_warn_msg.format('home'), warning_info[0].message.args[0])
             response = self.assertResponse('home/')
             self.assertText('/home/', response.url)
             self.assertText('127.0.0.1/home/', response.full_url)
@@ -73,6 +90,10 @@ class IntegrationAssertionTestCase:
             self.assertText('127.0.0.1/home/', response.full_url)
 
             # Test "login" page url.
+            with warns(Warning) as warning_info:
+                response = self.assertResponse('login')
+                self.assertText('/login/', response.url)
+            self.assertText(expected_warn_msg.format('login'), warning_info[0].message.args[0])
             response = self.assertResponse('login/')
             self.assertText('/login/', response.url)
             self.assertText('127.0.0.1/login/', response.full_url)
@@ -337,58 +358,102 @@ class IntegrationAssertionTestCase:
         """
         Tests URL value returned response object in assertResponse() function.
         """
+
+        expected_warn_msg = (
+            'Django setting APPEND_SLASH is set to True, '
+            'but provided url does not contain a trailing slash. '
+            'This may cause UnitTests with ETC to fail. '
+            'Consider appending a url slash. '
+            'Url was: {0}'
+        )
+
+        # with warns(Warning) as warning_info:
+        # self.assertText(expected_warn_msg.format(''), warning_info[0].message.args[0])
+
         with self.subTest('Login page with "next" built into url - No ending slash'):
             # Test base url.
-            response = self.assertResponse('/login?next=%2Fhome_page%2F')
+            with warns(Warning) as warning_info:
+                response = self.assertResponse('/login?next=%2Fhome_page%2F')
+            self.assertText(
+                expected_warn_msg.format('/login?next=%2Fhome_page%2F'),
+                warning_info[0].message.args[0],
+            )
             self.assertText('/login/?next=%2Fhome_page%2F', response.url)
             self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
 
             # Test with site root.
-            response = self.assertResponse('127.0.0.1/login?next=%2Fhome_page%2F')
+            with warns(Warning) as warning_info:
+                response = self.assertResponse('127.0.0.1/login?next=%2Fhome_page%2F')
+            self.assertText(
+                expected_warn_msg.format('127.0.0.1/login?next=%2Fhome_page%2F'),
+                warning_info[0].message.args[0],
+            )
             self.assertText('/login/?next=%2Fhome_page%2F', response.url)
             self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
 
         with self.subTest('Login page with "next" built into url - With ending slash'):
             # Test base url.
-            response = self.assertResponse('/login/?next=%2Fhome_page%2F')
+            response = self.assertResponse('/login/?next=%2Fhome_page%2F/')
             self.assertText('/login/?next=%2Fhome_page%2F', response.url)
             self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
 
             # Test with site root.
-            response = self.assertResponse('127.0.0.1/login/?next=%2Fhome_page%2F')
+            response = self.assertResponse('127.0.0.1/login/?next=%2Fhome_page%2F/')
             self.assertText('/login/?next=%2Fhome_page%2F', response.url)
             self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
 
         with self.subTest('Login page with "next" built via generate_get_url() function - No ending slash'):
             # Test base url.
-            response = self.assertResponse(self.generate_get_url('/login', next='/home_page/'))
+            with warns(Warning) as warning_info:
+                response = self.assertResponse(self.generate_get_url('/login', next='/home_page/'))
+            self.assertText(
+                expected_warn_msg.format('/login/?next=%2Fhome_page%2F'),
+                warning_info[0].message.args[0],
+            )
             self.assertText('/login/?next=%2Fhome_page%2F', response.url)
             self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
 
             # Test with site root.
-            response = self.assertResponse(self.generate_get_url('/login', next='/home_page/'))
+            with warns(Warning) as warning_info:
+                response = self.assertResponse(self.generate_get_url('127.0.0.1/login', next='/home_page/'))
+            self.assertText(
+                expected_warn_msg.format('127.0.0.1/login/?next=%2Fhome_page%2F'),
+                warning_info[0].message.args[0],
+            )
             self.assertText('/login/?next=%2Fhome_page%2F', response.url)
             self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
 
         with self.subTest('Login page with "next" built via generate_get_url() function - With ending slash'):
-            # Test base url.
-            response = self.assertResponse(self.generate_get_url('/login/', next='/home_page/'))
-            self.assertText('/login/?next=%2Fhome_page%2F', response.url)
-            self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
+            # TODO: Erroneously includes the query param for parsing if slash warning should be displayed.
+            with warns(Warning) as warning_info:
+                # Test base url.
+                response = self.assertResponse(self.generate_get_url('/login/', next='/home_page/'))
+                self.assertText('/login/?next=%2Fhome_page%2F', response.url)
+                self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
 
-            # Test with site root.
-            response = self.assertResponse(self.generate_get_url('/login/', next='/home_page/'))
-            self.assertText('/login/?next=%2Fhome_page%2F', response.url)
-            self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
+                # Test with site root.
+                response = self.assertResponse(self.generate_get_url('/login/', next='/home_page/'))
+                self.assertText('/login/?next=%2Fhome_page%2F', response.url)
+                self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
 
         with self.subTest('Login page with "next" provided as query_param kwarg - No ending slash'):
             # Test base url.
-            response = self.assertResponse('/login', url_query_params={'next': '/home_page/'})
+            with warns(Warning) as warning_info:
+                response = self.assertResponse('/login', url_query_params={'next': '/home_page/'})
+            self.assertText(
+                expected_warn_msg.format('/login'),
+                warning_info[0].message.args[0],
+            )
             self.assertText('/login/?next=%2Fhome_page%2F', response.url)
             self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
 
             # Test with site root.
-            response = self.assertResponse('127.0.0.1/login', url_query_params={'next': '/home_page/'})
+            with warns(Warning) as warning_info:
+                response = self.assertResponse('127.0.0.1/login', url_query_params={'next': '/home_page/'})
+            self.assertText(
+                expected_warn_msg.format('127.0.0.1/login'),
+                warning_info[0].message.args[0],
+            )
             self.assertText('/login/?next=%2Fhome_page%2F', response.url)
             self.assertText('127.0.0.1/login/?next=%2Fhome_page%2F', response.full_url)
 
@@ -590,11 +655,247 @@ class IntegrationAssertionTestCase:
                 ],
             )
 
+    @override_settings(APPEND_SLASH=True)
+    def test__assertResponse__url_trailing_slash__with_append_slash_true(self):
+
+        with self.subTest('Verify Patch Settings'):
+            """Sanity check tests, to make sure settings are set as intended, even if other tests fail."""
+
+            # Verify actual project settings values.
+            self.assertTrue(getattr(settings, "APPEND_SLASH"))
+
+        with self.subTest('Url provided as reverse, has trailing slash'):
+
+            # Verify we get the expected page.
+            self.assertResponse(
+                'django_expanded_test_cases:home',
+                expected_status=200,
+                expected_title='Home Page | Test Views',
+                expected_header='Home Page Header',
+                expected_url='/home/',
+            )
+
+        with self.subTest('Url provided as reverse, no trailing slash'):
+
+            # Verify we get the expected page.
+            with warns(Warning) as warning_info:
+                self.assertResponse(
+                    'django_expanded_test_cases:home-no-trailing-slash',
+                    expected_status=200,
+                    expected_title='Home Page | Test Views',
+                    expected_header='Home Page Header',
+                    expected_url='/home-no-slash',
+                )
+
+            # Define expected warnings that should have occurred.
+            expected_warns = (
+                'Django setting APPEND_SLASH is set to True, '
+                'but url reverse did not resolve with trailing slash. '
+                'This may cause UnitTests with ETC to fail. '
+                'Consider appending a url slash. '
+                'Url was: /home-no-slash'
+            )
+
+            # Assert warnings match.
+            self.assertText(expected_warns, warning_info[0].message.args[0])
+
+        with self.subTest('Url provided as literal url, has trailing slash'):
+
+            # Verify we get the expected page.
+            self.assertResponse(
+                '/home/',
+                expected_status=200,
+                expected_title='Home Page | Test Views',
+                expected_header='Home Page Header',
+                expected_url='/home/',
+            )
+
+        with self.subTest('Url provided as literal url, no trailing slash'):
+
+            # Verify we get the expected page.
+            with warns(Warning) as warning_info:
+                self.assertResponse(
+                    '/home-no-slash',
+                    expected_status=404,
+                    expected_title='Not Found',
+                    expected_header='Not Found',
+                    expected_url='/home-no-slash/',
+                )
+
+            # Define expected warnings that should have occurred.
+            expected_warns = (
+                'Django setting APPEND_SLASH is set to True, '
+                'but provided url does not contain a trailing slash. '
+                'This may cause UnitTests with ETC to fail. '
+                'Consider appending a url slash. '
+                'Url was: /home-no-slash'
+            )
+
+            # Assert warnings match.
+            self.assertText(expected_warns, warning_info[0].message.args[0])
+
+        with self.subTest('Url provided as literal full url (127.0.0.1), has trailing slash'):
+
+            # Verify we get the expected page.
+            self.assertResponse(
+                '127.0.0.1/home/',
+                expected_status=200,
+                expected_title='Home Page | Test Views',
+                expected_header='Home Page Header',
+                expected_url='/home/',
+            )
+
+        with self.subTest('Url provided as literal full url (127.0.0.1), no trailing slash'):
+
+            #  Verify we get the expected page.
+            with warns(Warning) as warning_info:
+                self.assertResponse(
+                    '127.0.0.1/home-no-slash',
+                    expected_status=404,
+                    expected_title='Not Found',
+                    expected_header='Not Found',
+                    expected_url='/home-no-slash/',
+                )
+
+            # Define expected warnings that should have occurred.
+            expected_warns = (
+                'Django setting APPEND_SLASH is set to True, '
+                'but provided url does not contain a trailing slash. '
+                'This may cause UnitTests with ETC to fail. '
+                'Consider appending a url slash. '
+                'Url was: 127.0.0.1/home-no-slash'
+            )
+
+            # Assert warnings match.
+            self.assertText(expected_warns, warning_info[0].message.args[0])
+
+    @override_settings(APPEND_SLASH=False)
+    def test__assertResponse__url_trailing_slash__with_append_slash_false(self):
+
+        with self.subTest('Verify Patch Settings'):
+            """Sanity check tests, to make sure settings are set as intended, even if other tests fail."""
+
+            # Verify actual project settings values.
+            self.assertFalse(getattr(settings, "APPEND_SLASH"))
+
+        with self.subTest('Url provided as reverse, has trailing slash'):
+
+            # Verify we get the expected page.
+            with warns(Warning) as warning_info:
+                self.assertResponse(
+                    'django_expanded_test_cases:home',
+                    expected_status=200,
+                    expected_title='Home Page | Test Views',
+                    expected_header='Home Page Header',
+                    expected_url='/home/',
+                )
+
+            # Define expected warnings that should have occurred.
+            expected_warns = (
+                'Django setting APPEND_SLASH is set to False, '
+                'but url reverse resolved with a trailing slash. '
+                'This may cause UnitTests with ETC to fail. '
+                'Consider removing the trailing url slash. '
+                'Url was: /home/'
+            )
+
+            # Assert warnings match.
+            self.assertText(expected_warns, warning_info[0].message.args[0])
+
+        with self.subTest('Url provided as reverse, no trailing slash'):
+
+            # Verify we get the expected page.
+            self.assertResponse(
+                'django_expanded_test_cases:home-no-trailing-slash',
+                expected_status=200,
+                expected_title='Home Page | Test Views',
+                expected_header='Home Page Header',
+                expected_url='/home-no-slash',
+            )
+
+        with self.subTest('Url provided as literal url, has trailing slash'):
+
+            # Verify we get the expected page.
+            with warns(Warning) as warning_info:
+                self.assertResponse(
+                    '/home/',
+                    expected_status=404,
+                    expected_title='Not Found',
+                    expected_header='Not Found',
+                    expected_url='/home',
+                )
+
+            # Define expected warnings that should have occurred.
+            expected_warns = (
+                'Django setting APPEND_SLASH is set to False, '
+                'but provided url contained a trailing slash. '
+                'This may cause UnitTests with ETC to fail. '
+                'Consider removing the trailing url slash. '
+                'Url was: /home/'
+            )
+
+            # Assert warnings match.
+            self.assertText(expected_warns, warning_info[0].message.args[0])
+
+        with self.subTest('Url provided as literal url, no trailing slash'):
+
+            # Verify we get the expected page.
+            self.assertResponse(
+                '/home-no-slash',
+                expected_status=200,
+                expected_title='Home Page | Test Views',
+                expected_header='Home Page Header',
+                expected_url='/home-no-slash',
+            )
+
+        with self.subTest('Url provided as literal full url (127.0.0.1), has trailing slash'):
+
+            # Verify we get the expected page.
+            with warns(Warning) as warning_info:
+                self.assertResponse(
+                    '127.0.0.1/home/',
+                    expected_status=404,
+                    expected_title='Not Found',
+                    expected_header='Not Found',
+                    expected_url='/home',
+                )
+
+            # Define expected warnings that should have occurred.
+            expected_warns = (
+                'Django setting APPEND_SLASH is set to False, '
+                'but provided url contained a trailing slash. '
+                'This may cause UnitTests with ETC to fail. '
+                'Consider removing the trailing url slash. '
+                'Url was: 127.0.0.1/home/'
+            )
+
+            # Assert warnings match.
+            self.assertText(expected_warns, warning_info[0].message.args[0])
+
+        with self.subTest('Url provided as literal full url (127.0.0.1), no trailing slash'):
+
+            #  Verify we get the expected page.
+            self.assertResponse(
+                '127.0.0.1/home-no-slash',
+                expected_status=200,
+                expected_title='Home Page | Test Views',
+                expected_header='Home Page Header',
+                expected_url='/home-no-slash',
+            )
+
     def test__assertResponse__status_code(self):
         """
         Tests "status_code" functionality of assertResponse() function.
         """
         exception_msg = '{0} != {1} : Expected status code (after potential redirects) of "{1}". Actual code was "{0}".'
+
+        expected_warn_msg = (
+            'Django setting APPEND_SLASH is set to True, '
+            'but provided url does not contain a trailing slash. '
+            'This may cause UnitTests with ETC to fail. '
+            'Consider appending a url slash. '
+            'Url was: {0}'
+        )
 
         with self.subTest('With status_code=200 - Basic view'):
             # Test 200 in direct url.
@@ -630,7 +931,9 @@ class IntegrationAssertionTestCase:
 
         with self.subTest('With status_code=404'):
             # Test 404 in direct url.
-            response = self.assertResponse('bad_url', expected_status=404)
+            with warns(Warning) as warning_info:
+                response = self.assertResponse('bad_url', expected_status=404)
+            self.assertText(expected_warn_msg.format('bad_url'), warning_info[0].message.args[0])
             self.assertEqual(response.status_code, 404)
 
             # Test 404 in reverse() url, via args.
@@ -651,7 +954,9 @@ class IntegrationAssertionTestCase:
 
             # With non-404 code provided.
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('bad_url', expected_status=200)
+                with warns(Warning) as warning_info:
+                    self.assertResponse('bad_url', expected_status=200)
+            self.assertText(expected_warn_msg.format('bad_url'), warning_info[0].message.args[0])
             self.assertText(exception_msg.format(404, 200), str(err.exception))
 
     def test__assertResponse__expected_url(self):
@@ -659,9 +964,19 @@ class IntegrationAssertionTestCase:
         Tests "expected_url" functionality of assertResponse() function.
         """
 
+        expected_warn_msg = (
+            'Django setting APPEND_SLASH is set to True, '
+            'but provided url does not contain a trailing slash. '
+            'This may cause UnitTests with ETC to fail. '
+            'Consider appending a url slash. '
+            'Url was: {0}'
+        )
+
         with self.subTest('With no site_root_url value defined - Via literal value'):
             # Test 404 page url.
-            response = self.assertResponse('bad_url', expected_url='/bad_url/', expected_status=404)
+            with warns(Warning) as warning_info:
+                response = self.assertResponse('bad_url', expected_url='/bad_url/', expected_status=404)
+            self.assertText(expected_warn_msg.format('bad_url'), warning_info[0].message.args[0])
             self.assertText('/bad_url/', response.url)
             self.assertText('127.0.0.1/bad_url/', response.full_url)
             response = self.assertResponse('bad_url/', expected_url='/bad_url/', expected_status=404)
@@ -686,6 +1001,11 @@ class IntegrationAssertionTestCase:
             self.assertText('127.0.0.1/', response.full_url)
 
             # Test "home" page url.
+            with warns(Warning) as warning_info:
+                response = self.assertResponse('home', expected_url='/home/')
+            self.assertText(expected_warn_msg.format('home'), warning_info[0].message.args[0])
+            self.assertText('/home/', response.url)
+            self.assertText('127.0.0.1/home/', response.full_url)
             response = self.assertResponse('home/', expected_url='/home/')
             self.assertText('/home/', response.url)
             self.assertText('127.0.0.1/home/', response.full_url)
@@ -697,6 +1017,11 @@ class IntegrationAssertionTestCase:
             self.assertText('127.0.0.1/home/', response.full_url)
 
             # Test "login" page url.
+            with warns(Warning) as warning_info:
+                response = self.assertResponse('login', expected_url='/login/')
+            self.assertText(expected_warn_msg.format('login'), warning_info[0].message.args[0])
+            self.assertText('/login/', response.url)
+            self.assertText('127.0.0.1/login/', response.full_url)
             response = self.assertResponse('login/', expected_url='/login/')
             self.assertText('/login/', response.url)
             self.assertText('127.0.0.1/login/', response.full_url)
@@ -880,7 +1205,9 @@ class IntegrationAssertionTestCase:
 
             # Test 404 page url.
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('bad_url', expected_url=wrong_url, expected_status=404)
+                with warns(Warning) as warning_info:
+                    self.assertResponse('bad_url', expected_url=wrong_url, expected_status=404)
+            self.assertText(expected_warn_msg.format('bad_url'), warning_info[0].message.args[0])
             self.assertEqual(expected_err_msg.format(wrong_url, '/bad_url/'), str(err.exception))
 
             # Test "index" page url.
@@ -928,14 +1255,25 @@ class IntegrationAssertionTestCase:
         Tests "expected_url" functionality of assertResponse() function, with assertions that should succeed.
         """
 
+        expected_warn_msg = (
+            'Django setting APPEND_SLASH is set to True, '
+            'but provided url does not contain a trailing slash. '
+            'This may cause UnitTests with ETC to fail. '
+            'Consider appending a url slash. '
+            'Url was: {0}'
+        )
+
         with self.subTest('With view that doesn\'t redirect'):
+
             # Test 404 page url.
-            response = self.assertResponse(
-                'bad_url',
-                expected_url='/bad_url/',
-                expected_status=404,
-                view_should_redirect=False,
-            )
+            with warns(Warning) as warning_info:
+                response = self.assertResponse(
+                    'bad_url',
+                    expected_url='/bad_url/',
+                    expected_status=404,
+                    view_should_redirect=False,
+                )
+            self.assertText(expected_warn_msg.format('bad_url'), warning_info[0].message.args[0])
             self.assertText('/bad_url/', response.url)
             self.assertText('127.0.0.1/bad_url/', response.full_url)
             response = self.assertResponse(
@@ -1145,15 +1483,26 @@ class IntegrationAssertionTestCase:
         Tests "expected_url" functionality of assertResponse() function, with assertions that should fail.
         """
 
+        expected_warn_msg = (
+            'Django setting APPEND_SLASH is set to True, '
+            'but provided url does not contain a trailing slash. '
+            'This may cause UnitTests with ETC to fail. '
+            'Consider appending a url slash. '
+            'Url was: {0}'
+        )
+
         with self.subTest('With view that doesn\'t redirect'):
+
             # Test 404 page url.
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse(
-                    'bad_url',
-                    expected_url='/bad_url/',
-                    expected_status=404,
-                    view_should_redirect=True,
-                )
+                with warns(Warning) as warning_info:
+                    self.assertResponse(
+                        'bad_url',
+                        expected_url='/bad_url/',
+                        expected_status=404,
+                        view_should_redirect=True,
+                    )
+            self.assertText(expected_warn_msg.format('bad_url'), warning_info[0].message.args[0])
             self.assertEqual(str(err.exception), 'Expected a page redirect, but response did not redirect.')
 
             # Test "index" page url.

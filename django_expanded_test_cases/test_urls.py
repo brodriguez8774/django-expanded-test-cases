@@ -15,6 +15,7 @@ app_name = 'django_expanded_test_cases'
 urlpatterns = [
     # Simple test views.
     path('home/', test_views.home, name='home'),
+    path('home-no-slash', test_views.home, name='home-no-trailing-slash'),
     path('login/', test_views.login, name='login'),
     path('views/one-message/', test_views.view_with_one_message, name='response-with-one-message'),
     path('views/two-messages/', test_views.view_with_two_messages, name='response-with-two-messages'),
