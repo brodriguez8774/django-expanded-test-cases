@@ -8,6 +8,7 @@ from functools import wraps
 from types import FunctionType
 
 # Third-Party Imports.
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils.http import urlencode
 
@@ -754,6 +755,7 @@ class CoreTestCaseMixin(BaseMixin):
         :param kwargs: The set of <key: value> pairs to append to end of GET url string.
         :return: Full GET request url string.
         """
+
         # Validate url to generate from.
         if url is None:
             # No arg provided. Default to class "self.url" value.
@@ -780,8 +782,13 @@ class CoreTestCaseMixin(BaseMixin):
             url = url[:-1]
 
         # Finally, generate actual url and return.
+        # Actual generation depends on the Django setting `APPEND_SLASH`.
+        if settings.APPEND_SLASH:
+            get_url = '{url}/{params}'
+        else:
+            get_url = '{url}{params}'
         get_params = urlencode(kwargs)
-        get_url = '{url}/{params}'.format(
+        get_url = get_url.format(
             url=url,
             params=('' if get_params == '' else '?' + get_params),
         )

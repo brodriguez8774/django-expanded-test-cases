@@ -883,6 +883,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
         :param url: Url value to attempt to parse and standardize.
         :param url_args: Additional "args" to pass for reverse() function, if applicable.
         :param url_kwargs: Additional "kwargs" to pass for reverse() function, if applicable.
+        :param url_query_params: The set of <key: value> pairs to append to end of GET url string.
         :param append_root: Bool indicating if "site root" should be included in url (if not already).
         :param display_warning: Indicates if warning for APPEND_SLASH should be shown or not.
         :return: Attempt at fully-formatted url.
@@ -957,9 +958,14 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                 if not is_probably_reverse:
                     # Is most likely not a reverse string. Display applicable warnings.
 
+                    # Get the url portion that does NOT include potential url get params.
+                    url_check = url.split('?')
+                    if len(url_check) > 0:
+                        url_check = url_check[0]
+
                     if settings.APPEND_SLASH:
                         # As per project Django settings, url should have a trailing slash.
-                        if len(url) > 0 and url[-1] != '/':
+                        if len(url_check) > 0 and url_check[-1] != '/':
                             warn_msg = (
                                 'Django setting APPEND_SLASH is set to True, '
                                 'but provided url does not contain a trailing slash. '
@@ -974,7 +980,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
 
                     else:
                         # As per project Django settings, url should NOT have a trailing slash.
-                        if len(url) > 0 and url[-1] == '/':
+                        if len(url_check) > 0 and url_check[-1] == '/':
                             warn_msg = (
                                 'Django setting APPEND_SLASH is set to False, '
                                 'but provided url contained a trailing slash. '
