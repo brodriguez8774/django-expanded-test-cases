@@ -16,6 +16,20 @@ except ImportError:
     COLORAMA_PRESENT = False
 
 
+# Toggles if the Django test client should be "reset" before each assertResponse assertion.
+# If True, this ensures no user is logged in, prior to each test started. By extension, this has
+# the side-effect of also clearing session data between each assertion.
+#
+# Defaults to True, to reduce potential artefacts and leftover data between assertions.
+# However, if dealing with session data this needs to be False. Can be set to False here, or by
+# setting the `self._reset_client_state_on_request` class variable to False on a per-test basis.
+ETC_RESET_CLIENT_STATE_ON_REQUEST = getattr(
+    settings,
+    'DJANGO_EXPANDED_TESTCASES_RESET_CLIENT_STATE_ON_REQUEST',
+    True,
+)
+
+
 # In most projects, there is a set of content (such as header data) at the start of the page,
 # which tests generally won't target. That content can safely be excluded from testing output, similar to
 # the assertContent() content_starts_after value.

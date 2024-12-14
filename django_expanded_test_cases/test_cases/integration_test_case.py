@@ -28,6 +28,7 @@ from django_expanded_test_cases.constants import (
     ETC_OUTPUT_EXPECTED_MATCH_COLOR,
     ETC_OUTPUT_RESET_COLOR,
     ETC_REQUEST_USER_STRICTNESS,
+    ETC_RESET_CLIENT_STATE_ON_REQUEST,
     ETC_RESPONSE_DEBUG_LOGGING_LEVEL,
     ETC_SKIP_CONTENT_AFTER,
     ETC_SKIP_CONTENT_BEFORE,
@@ -76,6 +77,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         return_val = super().setUp()
 
         self._error_displayed = False
+        self._reset_client_state_on_request = ETC_RESET_CLIENT_STATE_ON_REQUEST
 
         # Return original python class value, if any.
         # ETC setup/teardown functions never contain a return value.
@@ -228,8 +230,11 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                 'Invalid return_format arg. Currently supported return_format values are `html` or `json`.'
             )
 
-        # Reset client "user login" state for new response generation.
-        self.client.logout()
+        if self._reset_client_state_on_request:
+            # Reset client "user login" state for new response generation.
+            # Note that this also clears out the current session.
+            # If wanting to retain session across requests, then this should be set to False first.
+            self.client.logout()
 
         # Handle getting user.
         user = self._get_default_request_user(user, auto_login)
