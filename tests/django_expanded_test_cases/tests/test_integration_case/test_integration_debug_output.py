@@ -148,6 +148,7 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
         with self.subTest('Test header section'):
             # Check for header section.
+
             expected_text = (
                 '========== response.headers ==========\n'
                 '    * "Content-Type": "text/html; charset=utf-8"\n'
@@ -210,9 +211,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/login/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -226,7 +227,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -239,10 +241,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/login/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -463,9 +464,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -479,7 +480,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -492,10 +494,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -727,9 +728,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -743,7 +744,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -756,10 +758,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -991,9 +992,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -1007,7 +1008,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -1020,10 +1022,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -1249,9 +1250,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -1265,7 +1266,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -1278,10 +1280,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -1507,9 +1508,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -1523,7 +1524,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -1536,10 +1538,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -1765,9 +1766,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -1781,7 +1782,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -1794,10 +1796,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -2181,9 +2182,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: test_superuser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -2197,7 +2198,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -2210,10 +2212,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: test_superuser\n'
                     '\n'
                     '\n'
                 )
@@ -2443,9 +2444,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: test_admin\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -2459,7 +2460,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -2472,10 +2474,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: test_admin\n'
                     '\n'
                     '\n'
                 )
@@ -2705,9 +2706,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: test_user\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -2721,7 +2722,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -2734,10 +2736,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: test_user\n'
                     '\n'
                     '\n'
                 )
@@ -3014,9 +3015,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -3030,7 +3031,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -3043,10 +3045,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -3340,9 +3341,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -3356,7 +3357,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -3369,10 +3371,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -3657,9 +3658,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -3673,7 +3674,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -3686,10 +3688,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -3982,9 +3983,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -3998,7 +3999,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -4011,10 +4013,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -4310,9 +4311,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -4326,7 +4327,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -4339,10 +4341,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -4661,9 +4662,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -4677,7 +4678,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -4690,10 +4692,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -5026,9 +5027,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -5042,7 +5043,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -5055,10 +5057,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -5380,9 +5381,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -5396,7 +5397,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -5409,10 +5411,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -5746,9 +5747,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -5762,7 +5763,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -5775,10 +5777,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -6122,9 +6123,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -6138,7 +6139,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -6151,10 +6153,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -6471,9 +6472,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -6487,7 +6488,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -6500,10 +6502,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -6819,9 +6820,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -6835,7 +6836,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -6848,10 +6850,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -7187,9 +7188,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -7203,7 +7204,8 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -7216,10 +7218,9 @@ class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutput
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -7519,9 +7520,9 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -7535,7 +7536,8 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -7548,10 +7550,9 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -7797,9 +7798,9 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -7813,7 +7814,8 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -7826,10 +7828,9 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -8077,9 +8078,9 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -8093,7 +8094,8 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -8106,10 +8108,9 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -8357,9 +8358,9 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -8373,7 +8374,8 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -8386,10 +8388,9 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -8657,9 +8658,9 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -8673,7 +8674,8 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -8686,10 +8688,9 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -8946,9 +8947,9 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -8962,7 +8963,8 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -8975,10 +8977,9 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
@@ -9227,9 +9228,9 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_2 = (
                     '\n'
-                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
-                    '    * user: AnonymousUser\n'
-                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
                 )
 
                 # Check second subsection.
@@ -9243,7 +9244,8 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
                 expected_text_3 = (
                     # Comment to prevent "Black" formatting.
                     '>\n'
-                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
                 )
 
                 # Check third subsection.
@@ -9256,10 +9258,9 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
                 expected_text_4 = (
                     '>"\n'
-                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * request: <WSGIRequest: GET \'/views/three-messages/\'>\n'
                     '    * True: True\n'
-                    '    * False: False\n'
-                    '    * None: None\n'
+                    '    * user: AnonymousUser\n'
                     '\n'
                     '\n'
                 )
