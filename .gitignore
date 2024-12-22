@@ -148,4 +148,4 @@ Pipfile.lock
 
 # Do not track migrations. Uncomment out to explicitly add them.
 */migrations/0*.py
-tests/mock_pages/*
+tests/django_expanded_test_cases/tests/mock_pages/*

@@ -33,6 +33,7 @@ class ChannelsLiveServerClassTest(ChannelsLiveServerTestCase, UniversalLiveTestM
     def setUpClass(cls):
         # Run parent setup logic.
         super().setUpClass()
+        UniversalLiveTestMixin.setUpClass()
 
     @unittest.skipIf(skip_if_channels_not_installed(), 'Requires "selenium" and "channels" packages.')
     def setUp(self):
@@ -85,6 +86,7 @@ class ChannelsLiveServerClassTest__DriverTests(ChannelsLiveServerTestCase, Unive
     def setUpClass(cls):
         # Run parent setup logic.
         super().setUpClass()
+        UniversalLiveTestMixin__DriverTests.setUpClass()
 
     @unittest.skipIf(skip_if_channels_not_installed(), 'Requires "selenium" and "channels" packages.')
     def setUp(self):

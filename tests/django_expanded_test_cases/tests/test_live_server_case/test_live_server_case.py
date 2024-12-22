@@ -32,6 +32,7 @@ class LiveServerClassTest(LiveServerTestCase, UniversalLiveTestMixin):
     def setUpClass(cls):
         # Run parent setup logic.
         super().setUpClass()
+        UniversalLiveTestMixin.setUpClass()
 
     @unittest.skipIf(skip_if_selenium_not_installed(), 'Requires "selenium" package.')
     def setUp(self):
@@ -84,6 +85,7 @@ class LiveServerClassTest__DriverTests(LiveServerTestCase, UniversalLiveTestMixi
     def setUpClass(cls):
         # Run parent setup logic.
         super().setUpClass()
+        UniversalLiveTestMixin__DriverTests.setUpClass()
 
     @unittest.skipIf(skip_if_selenium_not_installed(), 'Requires "selenium" package.')
     def setUp(self):
