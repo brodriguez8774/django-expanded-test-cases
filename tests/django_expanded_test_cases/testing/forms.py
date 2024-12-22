@@ -1,14 +1,14 @@
 """
-Testing forms for django-expanded-test-cases project.
+Forms for django-expanded-test-cases project UnitTests.
 """
 
 # Third-Party Imports.
 from django import forms
-from django.forms import BaseFormSet, formset_factory
+from django.forms import formset_factory
 
 
 class BasicForm(forms.Form):
-    """"""
+    """A base form with trivial fields, to test basic pack logic when handling forms."""
 
     required_charfield = forms.CharField(label='CharField - Required', required=True, max_length=100)
     optional_charfield = forms.CharField(label='CharField - Optional', required=False, max_length=100)

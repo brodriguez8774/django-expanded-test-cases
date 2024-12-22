@@ -6,7 +6,6 @@ Tests for tests/base_test_case.py under different project authentication setting
 from unittest.mock import patch
 
 # Internal Imports.
-from .test_base_case import BaseTestMixin
 from django_expanded_test_cases import BaseTestCase
 
 

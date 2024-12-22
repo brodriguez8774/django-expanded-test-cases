@@ -1,5 +1,5 @@
 """
-Testing URL configuration for django-expanded-test-cases project.
+Root URL configuration for django-expanded-test-cases project UnitTests.
 
 Mocks being the "project settings root" urls.py file.
 """
@@ -9,5 +9,5 @@ from django.urls import include, path
 
 
 urlpatterns = [
-    path('', (include('tests.django_expanded_test_cases.testing.test_urls', namespace='django_expanded_test_cases'))),
+    path('', (include('tests.django_expanded_test_cases.testing.app_urls', namespace='django_expanded_test_cases'))),
 ]

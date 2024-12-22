@@ -1,4 +1,6 @@
-"""Mixin class for all tests which apply to all LiveServerTestCase classes."""
+"""
+Mixin class for all tests which apply to all LiveServerTestCase classes.
+"""
 
 # System Imports.
 import logging

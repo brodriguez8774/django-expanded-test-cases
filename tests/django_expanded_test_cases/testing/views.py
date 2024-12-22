@@ -1,5 +1,5 @@
 """
-Testing views for django-expanded-test-cases project.
+Views for django-expanded-test-cases project UnitTests.
 """
 
 # Third-Party Imports.
@@ -11,7 +11,7 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 
 # Internal Imports.
-from tests.django_expanded_test_cases.testing.test_forms import BasicForm, BasicFormset
+from tests.django_expanded_test_cases.testing.forms import BasicForm, BasicFormset
 
 
 def index(request):
