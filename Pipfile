@@ -43,6 +43,7 @@ sphinx-rtd-theme = "*"          # Additional Sphinx logic for building with stan
 # Project pypi dependencies.
 flit = "*"                      # Simple way to build and put Python packages on PyPI.
 twine = "*"                     # For pushing/publishing packages.
+tox = "*"                       # For automated testing after pushing.
 
 
 ###
