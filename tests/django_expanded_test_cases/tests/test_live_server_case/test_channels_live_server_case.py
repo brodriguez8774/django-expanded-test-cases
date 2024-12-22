@@ -1,5 +1,5 @@
 """
-Tests for test_cases/live_server_test_case.py.
+Tests for tests/channels_live_server_test_case.py.
 """
 
 # System Imports.
@@ -7,38 +7,39 @@ import unittest
 
 # Internal Imports.
 from .universal_live_test_mixin import UniversalLiveTestMixin, UniversalLiveTestMixin__DriverTests
-from django_expanded_test_cases import LiveServerTestCase
+from django_expanded_test_cases import ChannelsLiveServerTestCase
 
 
-def skip_if_selenium_not_installed():
+def skip_if_channels_not_installed():
     """Skip decorator, to handle when selenium package is not installed."""
     try:
         from selenium import webdriver
         from selenium.webdriver.chrome.service import Service as ChromeService
         from selenium.webdriver.firefox.service import Service as FireFoxService
+        from channels.testing import ChannelsLiveServerTestCase as DjangoChannelsLiveServerTestCase
 
-        # If we made it this far, selenium is installed. Proceed with test.
+        # If we made it this far, selenium + channels is installed. Proceed with test.
         return False
     except ModuleNotFoundError:
         # Failed to import channels. Skip test.
         return True
 
 
-class LiveServerClassTest(LiveServerTestCase, UniversalLiveTestMixin):
+class ChannelsLiveServerClassTest(ChannelsLiveServerTestCase, UniversalLiveTestMixin):
     """Tests for LiveServerTestCase class."""
 
     @classmethod
-    @unittest.skipIf(skip_if_selenium_not_installed(), 'Requires "selenium" package.')
+    @unittest.skipIf(skip_if_channels_not_installed(), 'Requires "selenium" and "channels" packages.')
     def setUpClass(cls):
         # Run parent setup logic.
         super().setUpClass()
 
-    @unittest.skipIf(skip_if_selenium_not_installed(), 'Requires "selenium" package.')
+    @unittest.skipIf(skip_if_channels_not_installed(), 'Requires "selenium" and "channels" packages.')
     def setUp(self):
         # Run parent setup logic.
         super().setUp()
 
-    @unittest.skipIf(skip_if_selenium_not_installed(), 'Requires "selenium" package.')
+    @unittest.skipIf(skip_if_channels_not_installed(), 'Requires "selenium" and "channels" packages.')
     def __int__(self, *args, **kwargs):
         # Run parent setup logic.
         super().__init__(*args, **kwargs)
@@ -76,21 +77,21 @@ class LiveServerClassTest(LiveServerTestCase, UniversalLiveTestMixin):
     #     self.assertFalse(True)
 
 
-class LiveServerClassTest__DriverTests(LiveServerTestCase, UniversalLiveTestMixin__DriverTests):
+class ChannelsLiveServerClassTest__DriverTests(ChannelsLiveServerTestCase, UniversalLiveTestMixin__DriverTests):
     """Tests for LiveServerTestCase class."""
 
     @classmethod
-    @unittest.skipIf(skip_if_selenium_not_installed(), 'Requires "selenium" package.')
+    @unittest.skipIf(skip_if_channels_not_installed(), 'Requires "selenium" and "channels" packages.')
     def setUpClass(cls):
         # Run parent setup logic.
         super().setUpClass()
 
-    @unittest.skipIf(skip_if_selenium_not_installed(), 'Requires "selenium" package.')
+    @unittest.skipIf(skip_if_channels_not_installed(), 'Requires "selenium" and "channels" packages.')
     def setUp(self):
         # Run parent setup logic.
         super().setUp()
 
-    @unittest.skipIf(skip_if_selenium_not_installed(), 'Requires "selenium" package.')
+    @unittest.skipIf(skip_if_channels_not_installed(), 'Requires "selenium" and "channels" packages.')
     def __int__(self, *args, **kwargs):
         # Run parent setup logic.
         super().__init__(*args, **kwargs)

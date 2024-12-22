@@ -1,5 +1,5 @@
 """
-Tests for test_cases/integration_test_case.py "helper function" utilities and logic.
+Tests for tests/integration_test_case.py "helper function" utilities and logic.
 """
 
 # System Imports.

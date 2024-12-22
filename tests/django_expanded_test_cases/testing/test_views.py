@@ -6,12 +6,12 @@ Testing views for django-expanded-test-cases project.
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, redirect, render, reverse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template.response import TemplateResponse
 from django.urls import reverse
 
 # Internal Imports.
-from .test_forms import BasicForm, BasicFormset
+from tests.django_expanded_test_cases.testing.test_forms import BasicForm, BasicFormset
 
 
 def index(request):

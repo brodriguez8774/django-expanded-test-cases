@@ -1,5 +1,5 @@
 """
-Tests for test_cases/base_test_case.py general logic.
+Tests for tests/base_test_case.py general logic.
 """
 
 # System Imports.

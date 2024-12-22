@@ -1,5 +1,5 @@
 """
-Tests for test_cases/integration_test_case.py custom assertions and testing checks.
+Tests for tests/integration_test_case.py custom assertions and testing checks.
 """
 
 # System Imports.

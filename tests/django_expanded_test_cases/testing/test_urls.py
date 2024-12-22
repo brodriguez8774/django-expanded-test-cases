@@ -8,8 +8,7 @@ Mocks being an "app" urls.py file.
 from django.urls import path
 
 # Internal Imports.
-from . import test_views
-
+from tests.django_expanded_test_cases.testing import test_views
 
 app_name = 'django_expanded_test_cases'
 urlpatterns = [

@@ -1,5 +1,5 @@
 """
-Tests for test_cases/base_test_case.py under different project authentication settings.
+Tests for tests/base_test_case.py under different project authentication settings.
 """
 
 # System Imports.

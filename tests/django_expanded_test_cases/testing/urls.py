@@ -9,5 +9,5 @@ from django.urls import include, path
 
 
 urlpatterns = [
-    path('', (include('django_expanded_test_cases.test_urls', namespace='django_expanded_test_cases'))),
+    path('', (include('tests.django_expanded_test_cases.testing.test_urls', namespace='django_expanded_test_cases'))),
 ]

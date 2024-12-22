@@ -36,7 +36,7 @@ INSTALLED_APPS = (
 )
 if CHANNELS_PACKAGE_INSTALLED:
     INSTALLED_APPS += ('channels', 'daphne')
-ASGI_APPLICATION = 'tests.asgi.application'
+ASGI_APPLICATION = 'tests.django_expanded_test_cases.testing.asgi.application'
 
 
 DATABASES = {
@@ -61,7 +61,7 @@ MIDDLEWARE = [
 ]
 
 
-ROOT_URLCONF = 'django_expanded_test_cases.urls'
+ROOT_URLCONF = 'tests.django_expanded_test_cases.testing.urls'
 LOGIN_URL = 'django_expanded_test_cases:login'
 STATIC_URL = '/static/'
 USE_TZ = True
