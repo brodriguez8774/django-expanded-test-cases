@@ -215,12 +215,12 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Handle mutable data defaults.
         data = data or {}
         headers = headers or {}
-        url_args = (*args, *kwargs.pop('args', []), *(url_args or []))
+        url_args = (*kwargs.pop('args', []), *(url_args or []))
         url_query_params = url_query_params or {}
-        redirect_args = (*args, *(redirect_args or []))
-        redirect_kwargs = {**kwargs, **(redirect_kwargs or {})}
+        redirect_args = (*(redirect_args or []),)
+        redirect_kwargs = {**(redirect_kwargs or {}),}
         redirect_query_params = redirect_query_params or {}
-        url_kwargs = {**kwargs.pop('kwargs', {}), **(url_kwargs or {}), **kwargs}
+        url_kwargs = {**kwargs.pop('kwargs', {}), **(url_kwargs or {})}
         extra_usergen_kwargs = extra_usergen_kwargs or {}
 
         # Sanitize required values.
@@ -771,7 +771,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Run assertion on provided value.
         try:
-            return super().assertRedirects(response, expected_redirect_url, *args, **kwargs)
+            return super().assertRedirects(response, expected_redirect_url)
         except AssertionError:
             self.fail(
                 'Response didn\'t redirect as expected. Response code was {0} (expected 302).'.format(
@@ -1601,10 +1601,10 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Handle mutable data defaults.
         data = data or {}
         headers = headers or {}
-        url_args = (*args, *kwargs.pop('args', []), *(url_args or []))
-        url_kwargs = {**kwargs.pop('kwargs', {}), **(url_kwargs or {}), **kwargs}
+        url_args = (*kwargs.pop('args', []), *(url_args or []))
+        url_kwargs = {**kwargs.pop('kwargs', {}), **(url_kwargs or {})}
         query_params = query_params or {}
-        extra_usergen_kwargs = {**kwargs, **(extra_usergen_kwargs or {})}
+        extra_usergen_kwargs = {**(extra_usergen_kwargs or {}),}
 
         # Validate data types.
         if not isinstance(data, dict):

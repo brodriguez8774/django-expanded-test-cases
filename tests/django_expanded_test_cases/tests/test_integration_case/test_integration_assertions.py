@@ -569,6 +569,8 @@ class IntegrationAssertionTestCase:
             )
 
         with self.subTest('Provide via individually passed values'):
+            # As of version 0.8, this should no longer be considered for args.
+            # Ensure redirects to 404 instead, as technically no args are provided.
 
             # As args.
             self.assertResponse(
@@ -577,15 +579,13 @@ class IntegrationAssertionTestCase:
                 # Individual args to use for url.
                 3,
                 'As passed args',
-                # Url we expect to end up at.
-                expected_redirect_url=reverse(
-                    'django_expanded_test_cases:template-response-with-args',
-                    args=(3, 'As passed args'),
-                ),
+                # Expect to fail to find page.
+                expected_status=404,
                 # Expected content on final page.
                 expected_content=[
-                    'id: "3"',
-                    'name: "As passed args"',
+                    '<title>Not Found</title>',
+                    '<h1>Not Found</h1>',
+                    '<p>The requested resource was not found on this server.</p>',
                 ],
             )
 
@@ -593,18 +593,16 @@ class IntegrationAssertionTestCase:
             self.assertResponse(
                 # Desired url, as standard reverse string.
                 'django_expanded_test_cases:redirect-with-args',
-                # Url we expect to end up at.
-                expected_redirect_url=reverse(
-                    'django_expanded_test_cases:template-response-with-args',
-                    args=(6, 'As individually passed kwargs'),
-                ),
                 # Individual args to use for url.
                 id=6,
                 name='As individually passed kwargs',
+                # Expect to fail to find page.
+                expected_status=404,
                 # Expected content on final page.
                 expected_content=[
-                    'id: "6"',
-                    'name: "As individually passed kwargs"',
+                    '<title>Not Found</title>',
+                    '<h1>Not Found</h1>',
+                    '<p>The requested resource was not found on this server.</p>',
                 ],
             )
 

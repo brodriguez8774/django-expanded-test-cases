@@ -952,7 +952,8 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                 is_probably_reverse = False
                 url_check = url.lstrip('http:').lstrip('https:')
                 url_check = url_check.split(':')
-                if len(url_check) == 2 and len(url_check[0] > 0) and len(url_check[1] > 0):
+
+                if len(url_check) == 2 and len(url_check[0]) > 0 and len(url_check[1]) > 0:
                     is_probably_reverse = True
 
                 if not is_probably_reverse:
