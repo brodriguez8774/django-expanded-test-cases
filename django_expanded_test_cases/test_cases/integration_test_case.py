@@ -38,6 +38,54 @@ from django_expanded_test_cases.constants import (
 from django_expanded_test_cases.mixins import ResponseTestCaseMixin
 
 
+class ProvidedUrlData:
+    """Helper class to hold url data that was input to generate response."""
+
+    def __init__(self, base_url, url_args, url_kwargs, url_query_params):
+
+        # Url value that was initially provided to calulate url.
+        self.url = base_url
+
+        # Additional url args that were provided to calculate url.
+        self.args = url_args
+
+        # Additional url kwargs that were provided to calculate url.
+        self.kwargs = url_kwargs
+
+        # Additional url query params that were provided to calculate url.
+        self.query_params = url_query_params
+
+
+class ComputedUrlData:
+    """Helper class to hold url data that was computed during processing of response."""
+
+    # Initial computed url, prior to any redirects and view processing.
+    initial_url = None
+    full_initial_url = None
+
+    # Final computed url at end of response.
+    final_url = None
+    full_final_url = None
+
+    # If redirect occurred, url of such.
+    redirect_url = None
+    full_redirect_url = None
+
+
+class ResponseUrlData:
+    """Helper class to hold and maintain url information, for easier debugging."""
+
+    def __init__(self, base_url, url_args, url_kwargs, url_query_params):
+
+        self.provided = ProvidedUrlData(
+            base_url,
+            url_args,
+            url_kwargs,
+            url_query_params,
+        )
+        self.computed = ComputedUrlData()
+
+
 class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
     """Testing functionality for views and other multi-part components."""
 
@@ -276,7 +324,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Optional hook for running custom pre-builtin-test logic.
         self._assertResponse__pre_builtin_tests(
-            response.url,
+            url,
             *args,
             response=response,
             get=get,
@@ -316,7 +364,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         self.assertStatusCode(response, expected_status)
 
         # Verify base url.
-        if expected_url is not None and response.url != expected_url:
+        if expected_url is not None and response.urls.computed.final_url != expected_url:
             self.fail(
                 (
                     'Expected Url and actual Url do not match. \n'
@@ -326,7 +374,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                     '"{1}" \n'
                 ).format(
                     expected_url,
-                    response.url,
+                    response.urls.computed.final_url,
                 )
             )
 
@@ -347,7 +395,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         if view_should_redirect is None:
             # No value provided for this assertion. Fall back to settings value.
             view_should_redirect = ETC_VIEWS_SHOULD_REDIRECT
-        if view_should_redirect is not None and not (bool(response.redirect_url) == view_should_redirect):
+        if view_should_redirect is not None and not (bool(response.urls.computed.redirect_url) == view_should_redirect):
             if view_should_redirect:
                 self.fail('Expected a page redirect, but response did not redirect.')
             else:
@@ -397,7 +445,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Optional hook for running custom post-builtin-test logic.
         self._assertResponse__post_builtin_tests(
-            response.url,
+            url,
             *args,
             response=response,
             get=get,
@@ -1598,6 +1646,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param extra_usergen_kwargs: Optional dictionary of values to pass to _get_login_user__extra_user_auth_setup().
         :return: Django response object for provided url.
         """
+
         # Handle mutable data defaults.
         data = data or {}
         headers = headers or {}
@@ -1605,6 +1654,14 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         url_kwargs = {**kwargs.pop('kwargs', {}), **(url_kwargs or {})}
         query_params = query_params or {}
         extra_usergen_kwargs = {**(extra_usergen_kwargs or {}),}
+
+        # Save provided values for user post-test debugging.
+        response_url_data = ResponseUrlData(
+            url,
+            url_args,
+            url_kwargs,
+            query_params,
+        )
 
         # Validate data types.
         if not isinstance(data, dict):
@@ -1641,13 +1698,31 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             response = self.client.post(url, data=data, secure=secure, follow=True, headers=headers)
 
         # Update response object with additional useful values for further testing/analysis.
-        response.url = url
-        response.full_url = full_url
-        response.redirect_url = None
+
+        # The fully computed url after standardizing with provided args/kwargs/query params.
+        # But before actually attempting to get response and process in any way.
+        response_url_data.computed.initial_url = url
+        # The same as above, but with an attempt to prepend the project site root to it.
+        response_url_data.computed.full_initial_url = full_url
+
+        # The fully computed url after processing all view data.
+        # Usually the same as the initial_url value, but not always.
+        final_url = url
+        response_url_data.computed.final_url = final_url
+        response_url_data.computed.full_final_url = '{0}{1}'.format(self.site_root_url, final_url)
+
+        # If redirects occurred, then the final url at the end of the chain.
+        # Might be redundant with above `final_url` value?
         if hasattr(response, 'redirect_chain') and len(response.redirect_chain) > 0:
             redirect_data = response.redirect_chain[-1]
-            if redirect_data[1] == 302 or redirect_data[0] != response.url:
-                response.redirect_url = redirect_data[0]
+            if redirect_data[1] == 302 or redirect_data[0] != response.urls.computed._initial_url:
+                redirect_url = redirect_data[0]
+                response_url_data.computed.redirect_url = redirect_url
+                response_url_data.computed.full_redirect_url = '{0}{1}'.format(self.site_root_url, redirect_url)
+
+        # Save calculated set of url data to response.
+        response.urls = response_url_data
+        # Save user data to response.
         response.user = user
 
         # Return generated response.
