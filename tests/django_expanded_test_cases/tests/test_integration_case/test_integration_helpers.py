@@ -755,6 +755,40 @@ class IntegrationHelperTestCase:
             )
             self.assertText('127.0.0.1/views/22/kwargs_test_2/', url)
 
+        with self.subTest('Custom site root - http + localhost'):
+            # With a "custom" root that is localhost with http in front.
+            default_site_root = self.site_root_url
+            self.site_root_url = 'http://localhost'
+            url = self.standardize_url(
+                '/my/cool/url/',
+                append_root=False,
+            )
+            self.assertText('/my/cool/url/', url)
+            url = self.standardize_url(
+                'http://localhost/my/cool/url/',
+                append_root=True,
+            )
+            self.assertText('http://localhost/my/cool/url/', url)
+            self.site_root_url = default_site_root
+
+        with self.subTest('Custom site root - custom garbage root that should overlap'):
+            # With an unrealistic really gross root that has every letter of the alphabet.
+            # Intentionally designed to check if there is any overlap problems with string.strip() functions
+            # (which removes all instances of provided characters, in any order).
+            default_site_root = self.site_root_url
+            self.site_root_url = 'https://abcd.efghijk/lmnop/qrs.tuv.wx/yz/'
+            url = self.standardize_url(
+                '/my/cool/url/',
+                append_root=False,
+            )
+            self.assertText('/my/cool/url/', url)
+            url = self.standardize_url(
+                'https://abcd.efghijk/lmnop/qrs.tuv.wx/yz/my/cool/url/',
+                append_root=True,
+            )
+            self.assertText('https://abcd.efghijk/lmnop/qrs.tuv.wx/yz/my/cool/url/', url)
+            self.site_root_url = default_site_root
+
     def test__standardize_url__failure(self):
         """
         Tests standardize_url() function, in situations when it should fail.

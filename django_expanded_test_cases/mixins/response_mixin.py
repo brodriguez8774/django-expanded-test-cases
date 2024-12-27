@@ -995,11 +995,24 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                             logging.warning(warn_msg)
 
             # Trim any known extra values on literal url str.
+            # Remove http prefix, if present.
+            if url.startswith('http'):
+                url = url.lstrip('https:')
+            # Remove any extra slashes on either side.
             url = str(url).strip().lstrip('/').rstrip('/')
-            if url.startswith(self.site_root_url):
-                url = url.lstrip(self.site_root_url)
+            # Remove any custom url prefix domain.
+            site_root_check = str(self.site_root_url).strip()
+            if site_root_check.startswith('http'):
+                site_root_check = site_root_check.lstrip('https:')
+            site_root_check = site_root_check.lstrip('/').rstrip('/')
+            if url.startswith(site_root_check):
+                url = url[len(site_root_check):]
+            # Remove standard 127 url prefix domain.
             elif url.startswith('127.0.0.1'):
                 url = url.lstrip('127.0.0.1')
+            # Remove standard localhost url prefix domain.
+            elif url.startswith('localhost'):
+                url = url.lstrip('localhost')
 
             # Check if empty url.
             if len(url) == 0:
