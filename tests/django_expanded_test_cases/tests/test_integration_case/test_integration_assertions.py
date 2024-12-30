@@ -1689,48 +1689,48 @@ class IntegrationAssertionTestCase:
                 self.assertText('/', response.urls.computed.redirect_url)
                 self.assertText('127.0.0.1/', response.urls.computed.full_redirect_url)
 
-            with self.subTest('With view that does not redirect'):
-                # Using direct url.
-                self.assertResponse('')
-                with self.assertRaises(AssertionError) as err:
-                    self.assertResponse(
-                        '',
-                        expected_redirect_url='/',
-                    )
-                self.assertText(exception_msg, str(err.exception))
-                with self.assertRaises(AssertionError) as err:
-                    self.assertResponse(
-                        '',
-                        expected_redirect_url='django_expanded_test_cases:index',
-                    )
-                self.assertText(exception_msg, str(err.exception))
-                with self.assertRaises(AssertionError) as err:
-                    self.assertResponse(
-                        'login/',
-                        expected_redirect_url='django_expanded_test_cases:index',
-                    )
-                self.assertText(exception_msg, str(err.exception))
+        with self.subTest('With view that does not redirect'):
+            # Using direct url.
+            self.assertResponse('')
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse(
+                    '',
+                    expected_redirect_url='/',
+                )
+            self.assertText(exception_msg, str(err.exception))
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse(
+                    '',
+                    expected_redirect_url='django_expanded_test_cases:index',
+                )
+            self.assertText(exception_msg, str(err.exception))
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse(
+                    'login/',
+                    expected_redirect_url='django_expanded_test_cases:index',
+                )
+            self.assertText(exception_msg, str(err.exception))
 
-                # Using reverse.
-                self.assertResponse('django_expanded_test_cases:index')
-                with self.assertRaises(AssertionError) as err:
-                    self.assertResponse(
-                        'django_expanded_test_cases:index',
-                        expected_redirect_url='/',
-                    )
-                self.assertText(exception_msg, str(err.exception))
-                with self.assertRaises(AssertionError) as err:
-                    self.assertResponse(
-                        'django_expanded_test_cases:index',
-                        expected_redirect_url='django_expanded_test_cases:index',
-                    )
-                self.assertText(exception_msg, str(err.exception))
-                with self.assertRaises(AssertionError) as err:
-                    self.assertResponse(
-                        'django_expanded_test_cases:login',
-                        expected_redirect_url='django_expanded_test_cases:index',
-                    )
-                self.assertText(exception_msg, str(err.exception))
+            # Using reverse.
+            self.assertResponse('django_expanded_test_cases:index')
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse(
+                    'django_expanded_test_cases:index',
+                    expected_redirect_url='/',
+                )
+            self.assertText(exception_msg, str(err.exception))
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse(
+                    'django_expanded_test_cases:index',
+                    expected_redirect_url='django_expanded_test_cases:index',
+                )
+            self.assertText(exception_msg, str(err.exception))
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse(
+                    'django_expanded_test_cases:login',
+                    expected_redirect_url='django_expanded_test_cases:index',
+                )
+            self.assertText(exception_msg, str(err.exception))
 
     def test__assertResponse__url_redirect__with_args(self):
         """
