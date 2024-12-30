@@ -363,8 +363,10 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Verify page status code.
         self.assertStatusCode(response, expected_status)
 
-        # Verify base url.
-        if expected_url is not None and response.urls.computed.final_url != expected_url:
+        # Verify initial url.
+        # TODO: Inconsistent expected_x_url handling.
+        #  See project issue 22 (https://github.com/brodriguez8774/django-expanded-test-cases/issues/22).
+        if expected_url is not None and response.url_data.computed.initial_url != expected_url:
             self.fail(
                 (
                     'Expected Url and actual Url do not match. \n'
@@ -374,7 +376,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                     '"{1}" \n'
                 ).format(
                     expected_url,
-                    response.urls.computed.final_url,
+                    response.url_data.computed.initial_url,
                 )
             )
 
@@ -387,7 +389,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         if view_should_redirect is None:
             # No value provided for this assertion. Fall back to settings value.
             view_should_redirect = ETC_VIEWS_SHOULD_REDIRECT
-        if view_should_redirect is not None and not (bool(response.urls.computed.redirect_url) == view_should_redirect):
+        if view_should_redirect is not None and not (bool(response.url_data.computed.redirect_url) == view_should_redirect):
             if view_should_redirect:
                 self.fail('Expected a page redirect, but response did not redirect.')
             else:
@@ -395,6 +397,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Verify page redirect.
         # This is more specific than the above "view_should_redirect" assertion, so intentionally done second.
+        # TODO: Inconsistent expected_x_url handling.
+        #  See project issue 22 (https://github.com/brodriguez8774/django-expanded-test-cases/issues/22).
         if expected_redirect_url is not None:
             self.assertRedirects(
                 response,
@@ -837,7 +841,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                         'Expected url was "{0}". Actual url was "{1}".'
                     ).format(
                         expected_redirect_url,
-                        response.urls.computed.redirect_url,
+                        response.url_data.computed.redirect_url,
                     )
                 )
             else:
@@ -1725,23 +1729,27 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # The same as above, but with an attempt to prepend the project site root to it.
         response_url_data.computed.full_initial_url = full_url
 
-        # The fully computed url after processing all view data.
-        # Usually the same as the initial_url value, but not always.
-        final_url = url
-        response_url_data.computed.final_url = final_url
-        response_url_data.computed.full_final_url = '{0}{1}'.format(self.site_root_url, final_url)
-
-        # If redirects occurred, then the final url at the end of the chain.
-        # Might be redundant with above `final_url` value?
+        # If redirects occurred, then the final url at the end of the redirect chain.
+        redirect_url = None
         if hasattr(response, 'redirect_chain') and len(response.redirect_chain) > 0:
             redirect_data = response.redirect_chain[-1]
-            if redirect_data[1] == 302 or redirect_data[0] != response.urls.computed._initial_url:
+            if redirect_data[1] == 302 and redirect_data[0] != response_url_data.computed.initial_url:
                 redirect_url = redirect_data[0]
                 response_url_data.computed.redirect_url = redirect_url
                 response_url_data.computed.full_redirect_url = '{0}{1}'.format(self.site_root_url, redirect_url)
 
+        # The fully computed url after processing all view data.
+        # The same as the `initial_url` value, unless a redirect occurs.
+        # In most instances, will match `initial_url` unless the project is very redirect-heavy.
+        if redirect_url is not None:
+            final_url = redirect_url
+        else:
+            final_url = url
+        response_url_data.computed.final_url = final_url
+        response_url_data.computed.full_final_url = '{0}{1}'.format(self.site_root_url, final_url)
+
         # Save calculated set of url data to response.
-        response.urls = response_url_data
+        response.url_data = response_url_data
         # Save user data to response.
         response.user = user
 
