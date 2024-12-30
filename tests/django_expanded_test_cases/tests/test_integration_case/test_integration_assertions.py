@@ -2975,31 +2975,65 @@ class IntegrationAssertionTestCase:
             self.assertEqual(str(err.exception), 'Expected a page redirect, but response did not redirect.')
 
         with self.subTest('With view that redirects'):
-            # Using direct url.
-            with self.assertRaises(AssertionError) as err:
-                self.assertResponse(
-                    'redirect/index/',
-                    expected_url='/redirect/index/',
-                    expected_redirect_url='/',
-                    view_should_redirect=False,
-                )
-            self.assertEqual(
-                str(err.exception),
-                'Expected no page redirects, but response processed one or more redirects.',
-            )
 
-            # Using reverse.
-            with self.assertRaises(AssertionError) as err:
-                self.assertResponse(
-                    'django_expanded_test_cases:redirect-to-index',
-                    expected_url='/redirect/index/',
-                    expected_redirect_url='/',
-                    view_should_redirect=False,
+            with self.subTest('Fails using direct url'):
+                with self.assertRaises(AssertionError) as err:
+                    self.assertResponse(
+                        'redirect/index/',
+                        expected_url='/redirect/index/',
+                        expected_redirect_url='/',
+                        view_should_redirect=False,
+                    )
+                self.assertEqual(
+                    'Expected no page redirects, but response processed one or more redirects.',
+                    str(err.exception),
                 )
-            self.assertEqual(
-                str(err.exception),
-                'Expected no page redirects, but response processed one or more redirects.',
-            )
+
+            with self.subTest('Fails using reverse'):
+                with self.assertRaises(AssertionError) as err:
+                    self.assertResponse(
+                        'django_expanded_test_cases:redirect-to-index',
+                        expected_url='django_expanded_test_cases:redirect-to-index',
+                        expected_redirect_url='django_expanded_test_cases:index',
+                        view_should_redirect=False,
+                    )
+                self.assertEqual(
+                    'Expected no page redirects, but response processed one or more redirects.',
+                    str(err.exception),
+                )
+
+            with self.subTest('Fails due to wrong redirect url provided'):
+                with self.assertRaises(AssertionError) as err:
+                    self.assertResponse(
+                        'django_expanded_test_cases:redirect-to-one-message',
+                        expected_url='django_expanded_test_cases:redirect-to-one-message',
+                        expected_redirect_url='django_expanded_test_cases:response-with-basic-form',
+                        expected_message='Redirecting to one-message view.',
+                        view_should_redirect=True,
+                    )
+                self.assertEqual(
+                    (
+                        'Response expected_redirect_url didn\'t match. '
+                        'Expected url was "{0}". Actual url was "{1}".'
+                    ).format(
+                        reverse('django_expanded_test_cases:response-with-basic-form'),
+                        reverse('django_expanded_test_cases:response-with-one-message'),
+                    ),
+                    str(err.exception),
+                )
+
+            with self.subTest('Verify generic redirect check happens first'):
+                with self.assertRaises(AssertionError) as err:
+                    self.assertResponse(
+                        'django_expanded_test_cases:redirect-to-one-message',
+                        expected_url='django_expanded_test_cases:redirect-to-one-message',
+                        expected_redirect_url='django_expanded_test_cases:response-with-basic-form',
+                        view_should_redirect=False,
+                    )
+                self.assertEqual(
+                    'Expected no page redirects, but response processed one or more redirects.',
+                    str(err.exception),
+                )
 
     def test__assertResponse__expected_title(self):
         """
@@ -3879,52 +3913,114 @@ class IntegrationAssertionTestCase:
         """
         Tests assertResponseRedirects() function, in cases when it should fail.
         """
-        exception_msg = 'Response didn\'t redirect as expected. Response code was {0} (expected 302).'
+        exception_msg__incorrect_code = 'Response didn\'t redirect as expected. Response code was {0} (expected 302).'
+        exception_msg__incorrect_url = (
+            'Response expected_redirect_url didn\'t match. Expected url was "{0}". Actual url was "{1}".'
+        )
 
         with self.subTest('With view that does not redirect - Invalid page'):
+
             request = self._get_page_response('bad_page/')
             with self.assertRaises(AssertionError) as err:
                 self.assertRedirects(
                     request,
                     expected_redirect_url='/',
                 )
-            self.assertText(exception_msg.format(request.status_code), str(err.exception))
+            self.assertText(exception_msg__incorrect_code.format(request.status_code), str(err.exception))
             with self.assertRaises(AssertionError) as err:
                 self.assertRedirects(
                     request,
                     expected_redirect_url='django_expanded_test_cases:invalid',
                 )
-            self.assertText(exception_msg.format(request.status_code), str(err.exception))
+            self.assertText(exception_msg__incorrect_code.format(request.status_code), str(err.exception))
 
         with self.subTest('With view that does not redirect - Index page'):
+
             request = self._get_page_response('')
             with self.assertRaises(AssertionError) as err:
                 self.assertRedirects(
                     request,
                     expected_redirect_url='/',
                 )
-            self.assertText(exception_msg.format(request.status_code), str(err.exception))
+            self.assertText(exception_msg__incorrect_code.format(request.status_code), str(err.exception))
             with self.assertRaises(AssertionError) as err:
                 self.assertRedirects(
                     request,
                     expected_redirect_url='django_expanded_test_cases:index',
                 )
-            self.assertText(exception_msg.format(request.status_code), str(err.exception))
+            self.assertText(exception_msg__incorrect_code.format(request.status_code), str(err.exception))
 
         with self.subTest('With view that does not redirect - Non-index page'):
+
             request = self._get_page_response('login/')
             with self.assertRaises(AssertionError) as err:
                 self.assertRedirects(
                     request,
                     expected_redirect_url='/',
                 )
-            self.assertText(exception_msg.format(request.status_code), str(err.exception))
+            self.assertText(exception_msg__incorrect_code.format(request.status_code), str(err.exception))
             with self.assertRaises(AssertionError) as err:
                 self.assertRedirects(
                     request,
                     expected_redirect_url='django_expanded_test_cases:login',
                 )
-            self.assertText(exception_msg.format(request.status_code), str(err.exception))
+            self.assertText(exception_msg__incorrect_code.format(request.status_code), str(err.exception))
+
+        with self.subTest('With incorrect view'):
+
+            # Redirect to "one message" view, but expecting redirect to other pages.
+            request = self._get_page_response('django_expanded_test_cases:redirect-to-index')
+            with self.assertRaises(AssertionError) as err:
+                self.assertRedirects(
+                    request,
+                    expected_redirect_url='django_expanded_test_cases:redirect-to-one-message',
+                )
+            self.assertText(
+                exception_msg__incorrect_url.format(
+                    reverse('django_expanded_test_cases:redirect-to-one-message'),
+                    request.urls.computed.redirect_url,
+                ),
+                str(err.exception),
+            )
+            with self.assertRaises(AssertionError) as err:
+                self.assertRedirects(
+                    request,
+                    expected_redirect_url='django_expanded_test_cases:redirect-to-basic-form',
+                )
+            self.assertText(
+                exception_msg__incorrect_url.format(
+                    reverse('django_expanded_test_cases:redirect-to-basic-form'),
+                    request.urls.computed.redirect_url,
+                ),
+                str(err.exception),
+            )
+
+            # Redirect to "basic form" view, but expecting redirect to other pages.
+            request = self._get_page_response('django_expanded_test_cases:redirect-to-basic-form')
+            with self.assertRaises(AssertionError) as err:
+                self.assertRedirects(
+                    request,
+                    expected_redirect_url='django_expanded_test_cases:redirect-to-index',
+                )
+            self.assertText(
+                exception_msg__incorrect_url.format(
+                    reverse('django_expanded_test_cases:redirect-to-index'),
+                    request.urls.computed.redirect_url,
+                ),
+                str(err.exception),
+            )
+            with self.assertRaises(AssertionError) as err:
+                self.assertRedirects(
+                    request,
+                    expected_redirect_url='django_expanded_test_cases:redirect-to-one-message',
+                )
+            self.assertText(
+                exception_msg__incorrect_url.format(
+                    reverse('django_expanded_test_cases:redirect-to-one-message'),
+                    request.urls.computed.redirect_url,
+                ),
+                str(err.exception),
+            )
 
     def test__assertStatusCode__success(self):
         """

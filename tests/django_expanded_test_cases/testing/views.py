@@ -290,8 +290,31 @@ def user_detail(request, pk):
 def redirect_to_index(request):
     """Page that simulates a redirect."""
 
+    # Generate response messages.
+    messages.info(request, 'Redirecting to index.')
+
     # Redirect to intended view.
     return redirect('django_expanded_test_cases:index')
+
+
+def redirect_to_one_message(request):
+    """Page that simulates a redirect."""
+
+    # Generate response messages.
+    messages.info(request, 'Redirecting to one-message view.')
+
+    # Redirect to intended view.
+    return redirect('django_expanded_test_cases:response-with-one-message')
+
+
+def redirect_to_basic_form(request):
+    """Page that simulates a redirect."""
+
+    # Generate response messages.
+    messages.info(request, 'Redirecting to basic form view.')
+
+    # Redirect to intended view.
+    return redirect('django_expanded_test_cases:response-with-basic-form')
 
 
 def redirect_with_args(request, id, name):

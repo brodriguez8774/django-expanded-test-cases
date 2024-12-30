@@ -40,6 +40,8 @@ urlpatterns = [
     path('user/detail/<int:pk>/', views.user_detail, name='user-detail'),
     # Redirect views.
     path('redirect/index/', views.redirect_to_index, name='redirect-to-index'),
+    path('redirect/one-message/', views.redirect_to_one_message, name='redirect-to-one-message'),
+    path('redirect/basic-form/', views.redirect_to_basic_form, name='redirect-to-basic-form'),
     path('redirect/with_args/<int:id>/<str:name>/', views.redirect_with_args, name='redirect-with-args'),
     # Form views.
     path('forms/basic-form/', views.view_with_basic_form, name='response-with-basic-form'),

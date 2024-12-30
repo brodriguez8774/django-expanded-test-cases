@@ -378,17 +378,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                 )
             )
 
-        # Verify page redirect.
-        if expected_redirect_url is not None:
-            self.assertRedirects(
-                response,
-                expected_redirect_url,
-                redirect_args=redirect_args,
-                redirect_kwargs=redirect_kwargs,
-                redirect_query_params=redirect_query_params,
-            )
-
-        # Verify if redirecting or not.
+        # Verify if redirecting or not. Is a general assertion to verify a redirect happened,
+        # if the user perhaps does not care about further details of the redirect.
+        #
         # Set to True to make sure view redirected (accomplishes similar to above expected_redirect_url) logic.
         # Set to False to make sure view did NOT redirect.
         # Leave None to skip this assertion.
@@ -400,6 +392,17 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
                 self.fail('Expected a page redirect, but response did not redirect.')
             else:
                 self.fail('Expected no page redirects, but response processed one or more redirects.')
+
+        # Verify page redirect.
+        # This is more specific than the above "view_should_redirect" assertion, so intentionally done second.
+        if expected_redirect_url is not None:
+            self.assertRedirects(
+                response,
+                expected_redirect_url,
+                redirect_args=redirect_args,
+                redirect_kwargs=redirect_kwargs,
+                redirect_query_params=redirect_query_params,
+            )
 
         # Verify page title.
         if expected_title is not None:
@@ -819,13 +822,30 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Run assertion on provided value.
         try:
-            return super().assertRedirects(response, expected_redirect_url)
-        except AssertionError:
-            self.fail(
-                'Response didn\'t redirect as expected. Response code was {0} (expected 302).'.format(
-                    response.status_code
+            return super().assertRedirects(response, expected_redirect_url, *args, **kwargs)
+        except AssertionError as err:
+            err_str = str(err)
+
+            if (
+                # Comment to prevent "black" formatting.
+                "expected" in err_str
+                and "to equal" in err_str
+            ):
+                self.fail(
+                    (
+                        'Response expected_redirect_url didn\'t match. '
+                        'Expected url was "{0}". Actual url was "{1}".'
+                    ).format(
+                        expected_redirect_url,
+                        response.urls.computed.redirect_url,
+                    )
                 )
-            )
+            else:
+                self.fail(
+                    'Response didn\'t redirect as expected. Response code was {0} (expected 302).'.format(
+                        response.status_code
+                    )
+                )
 
     def assertStatusCode(self, response, expected_status):
         """Verifies the page status code value.
