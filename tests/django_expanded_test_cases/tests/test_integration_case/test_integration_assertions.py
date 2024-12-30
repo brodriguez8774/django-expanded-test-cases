@@ -2386,9 +2386,10 @@ class IntegrationAssertionTestCase:
             self.assertText(expected_warn_msg.format('bad_url'), warning_info[0].message.args[0])
             self.assertText(exception_msg.format(404, 200), str(err.exception))
 
-    def test__assertResponse__expected_url(self):
+    def test__assertResponse__expected_url__success(self):
         """
-        Tests "expected_url" functionality of assertResponse() function.
+        Tests `expected_url` and `expected_final_url` functionality of assertResponse() function,
+        in cases where it should succeed.
         """
 
         expected_warn_msg = (
@@ -2402,221 +2403,555 @@ class IntegrationAssertionTestCase:
         with self.subTest('With no site_root_url value defined - Via literal value'):
             # Test 404 page url.
             with warns(Warning) as warning_info:
-                response = self.assertResponse('bad_url', expected_url='/bad_url/', expected_status=404)
+                response = self.assertResponse(
+                    'bad_url',
+                    expected_url='/bad_url/',
+                    expected_final_url='/bad_url/',
+                    expected_status=404,
+                )
             self.assertText(expected_warn_msg.format('bad_url'), warning_info[0].message.args[0])
+            self.assertText('/bad_url/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/bad_url/', response.url_data.computed.full_initial_url)
             self.assertText('/bad_url/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/bad_url/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('bad_url/', expected_url='/bad_url/', expected_status=404)
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
+            response = self.assertResponse(
+                'bad_url/',
+                expected_url='/bad_url/',
+                expected_final_url='/bad_url/',
+                expected_status=404,
+            )
+            self.assertText('/bad_url/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/bad_url/', response.url_data.computed.full_initial_url)
             self.assertText('/bad_url/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/bad_url/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('127.0.0.1/bad_url/', expected_url='/bad_url/', expected_status=404)
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
+            response = self.assertResponse(
+                '127.0.0.1/bad_url/',
+                expected_url='/bad_url/',
+                expected_final_url='/bad_url/',
+                expected_status=404,
+            )
+            self.assertText('/bad_url/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/bad_url/', response.url_data.computed.full_initial_url)
             self.assertText('/bad_url/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/bad_url/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('///bad_url///', expected_url='/bad_url/', expected_status=404)
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
+            response = self.assertResponse(
+                '///bad_url///',
+                expected_url='/bad_url/',
+                expected_final_url='/bad_url/',
+                expected_status=404,
+            )
+            self.assertText('/bad_url/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/bad_url/', response.url_data.computed.full_initial_url)
             self.assertText('/bad_url/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/bad_url/', response.url_data.computed.full_final_url)
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
 
             # Test "index" page url.
-            response = self.assertResponse('', expected_url='/')
+            response = self.assertResponse(
+                '',
+                expected_url='/',
+                expected_final_url='/',
+            )
+            self.assertText('/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/', response.url_data.computed.full_initial_url)
             self.assertText('/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('/', expected_url='/')
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
+            response = self.assertResponse(
+                '/',
+                expected_url='/',
+                expected_final_url='/',
+            )
+            self.assertText('/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/', response.url_data.computed.full_initial_url)
             self.assertText('/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('127.0.0.1/', expected_url='/')
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
+            response = self.assertResponse(
+                '127.0.0.1/',
+                expected_url='/',
+                expected_final_url='/',
+            )
+            self.assertText('/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/', response.url_data.computed.full_initial_url)
             self.assertText('/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/', response.url_data.computed.full_final_url)
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
 
             # Test "home" page url.
             with warns(Warning) as warning_info:
-                response = self.assertResponse('home', expected_url='/home/')
+                response = self.assertResponse(
+                    'home',
+                    expected_url='/home/',
+                    expected_final_url='/home/',
+                )
             self.assertText(expected_warn_msg.format('home'), warning_info[0].message.args[0])
+            self.assertText('/home/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/home/', response.url_data.computed.full_initial_url)
             self.assertText('/home/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/home/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('home/', expected_url='/home/')
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
+            response = self.assertResponse(
+                'home/',
+                expected_url='/home/',
+                expected_final_url='/home/',
+            )
+            self.assertText('/home/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/home/', response.url_data.computed.full_initial_url)
             self.assertText('/home/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/home/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('/home/', expected_url='/home/')
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
+            response = self.assertResponse(
+                '/home/',
+                expected_url='/home/',
+                expected_final_url='/home/',
+            )
+            self.assertText('/home/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/home/', response.url_data.computed.full_initial_url)
             self.assertText('/home/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/home/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('127.0.0.1/home/', expected_url='/home/')
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
+            response = self.assertResponse(
+                '127.0.0.1/home/',
+                expected_url='/home/',
+                expected_final_url='/home/',
+            )
+            self.assertText('/home/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/home/', response.url_data.computed.full_initial_url)
             self.assertText('/home/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/home/', response.url_data.computed.full_final_url)
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
 
             # Test "login" page url.
             with warns(Warning) as warning_info:
-                response = self.assertResponse('login', expected_url='/login/')
+                response = self.assertResponse(
+                    'login',
+                    expected_url='/login/',
+                )
             self.assertText(expected_warn_msg.format('login'), warning_info[0].message.args[0])
+            self.assertText('/login/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/login/', response.url_data.computed.full_initial_url)
             self.assertText('/login/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/login/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('login/', expected_url='/login/')
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
+            response = self.assertResponse(
+                'login/',
+                expected_url='/login/',
+                expected_final_url='/login/',
+            )
+            self.assertText('/login/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/login/', response.url_data.computed.full_initial_url)
             self.assertText('/login/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/login/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('/login/', expected_url='/login/')
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
+            response = self.assertResponse(
+                '/login/',
+                expected_url='/login/',
+                expected_final_url='/login/',
+            )
+            self.assertText('/login/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/login/', response.url_data.computed.full_initial_url)
             self.assertText('/login/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/login/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('127.0.0.1/login/', expected_url='/login/')
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
+            response = self.assertResponse(
+                '127.0.0.1/login/',
+                expected_url='/login/',
+                expected_final_url='/login/',
+            )
+            self.assertText('/login/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/login/', response.url_data.computed.full_initial_url)
             self.assertText('/login/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/login/', response.url_data.computed.full_final_url)
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
 
             # Test "one message" page url.
-            response = self.assertResponse('views/one-message/', expected_url='/views/one-message/')
+            response = self.assertResponse(
+                'views/one-message/',
+                expected_url='/views/one-message/',
+                expected_final_url='/views/one-message/',
+            )
+            self.assertText('/views/one-message/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/views/one-message/', response.url_data.computed.full_initial_url)
             self.assertText('/views/one-message/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/views/one-message/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('/views/one-message/', expected_url='/views/one-message/')
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
+            response = self.assertResponse(
+                '/views/one-message/',
+                expected_url='/views/one-message/',
+                expected_final_url='/views/one-message/',
+            )
+            self.assertText('/views/one-message/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/views/one-message/', response.url_data.computed.full_initial_url)
             self.assertText('/views/one-message/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/views/one-message/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('127.0.0.1/views/one-message/', expected_url='/views/one-message/')
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
+            response = self.assertResponse(
+                '127.0.0.1/views/one-message/',
+                expected_url='/views/one-message/',
+                expected_final_url='/views/one-message/',
+            )
+            self.assertText('/views/one-message/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/views/one-message/', response.url_data.computed.full_initial_url)
             self.assertText('/views/one-message/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/views/one-message/', response.url_data.computed.full_final_url)
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
 
             # Test "two messages" page url.
-            response = self.assertResponse('views/two-messages/', expected_url='/views/two-messages/')
+            response = self.assertResponse(
+                'views/two-messages/',
+                expected_url='/views/two-messages/',
+                expected_final_url='/views/two-messages/',
+            )
+            self.assertText('/views/two-messages/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/views/two-messages/', response.url_data.computed.full_initial_url)
             self.assertText('/views/two-messages/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/views/two-messages/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('/views/two-messages/', expected_url='/views/two-messages/')
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
+            response = self.assertResponse(
+                '/views/two-messages/',
+                expected_url='/views/two-messages/',
+                expected_final_url='/views/two-messages/',
+            )
+            self.assertText('/views/two-messages/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/views/two-messages/', response.url_data.computed.full_initial_url)
             self.assertText('/views/two-messages/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/views/two-messages/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('127.0.0.1/views/two-messages/', expected_url='/views/two-messages/')
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
+            response = self.assertResponse(
+                '127.0.0.1/views/two-messages/',
+                expected_url='/views/two-messages/',
+                expected_final_url='/views/two-messages/',
+            )
+            self.assertText('/views/two-messages/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/views/two-messages/', response.url_data.computed.full_initial_url)
             self.assertText('/views/two-messages/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/views/two-messages/', response.url_data.computed.full_final_url)
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
 
             # Test "three messages" page url.
-            response = self.assertResponse('views/three-messages/', expected_url='/views/three-messages/')
+            response = self.assertResponse(
+                'views/three-messages/',
+                expected_url='/views/three-messages/',
+                expected_final_url='/views/three-messages/',
+            )
+            self.assertText('/views/three-messages/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/views/three-messages/', response.url_data.computed.full_initial_url)
             self.assertText('/views/three-messages/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/views/three-messages/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('/views/three-messages/', expected_url='/views/three-messages/')
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
+            response = self.assertResponse(
+                '/views/three-messages/',
+                expected_url='/views/three-messages/',
+                expected_final_url='/views/three-messages/',
+            )
+            self.assertText('/views/three-messages/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/views/three-messages/', response.url_data.computed.full_initial_url)
             self.assertText('/views/three-messages/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/views/three-messages/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('127.0.0.1/views/three-messages/', expected_url='/views/three-messages/')
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
+            response = self.assertResponse(
+                '127.0.0.1/views/three-messages/',
+                expected_url='/views/three-messages/',
+                expected_final_url='/views/three-messages/',
+            )
+            self.assertText('/views/three-messages/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/views/three-messages/', response.url_data.computed.full_initial_url)
             self.assertText('/views/three-messages/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/views/three-messages/', response.url_data.computed.full_final_url)
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
 
             # Test "user detail" page url via args.
-            response = self.assertResponse('user/detail/1/', expected_url='/user/detail/1/')
+            response = self.assertResponse(
+                'user/detail/1/',
+                expected_url='/user/detail/1/',
+                expected_final_url='/user/detail/1/',
+            )
+            self.assertText('/user/detail/1/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/user/detail/1/', response.url_data.computed.full_initial_url)
             self.assertText('/user/detail/1/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/user/detail/1/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('/user/detail/1/', expected_url='/user/detail/1/')
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
+            response = self.assertResponse(
+                '/user/detail/1/',
+                expected_url='/user/detail/1/',
+                expected_final_url='/user/detail/1/',
+            )
+            self.assertText('/user/detail/1/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/user/detail/1/', response.url_data.computed.full_initial_url)
             self.assertText('/user/detail/1/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/user/detail/1/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('127.0.0.1/user/detail/1/', expected_url='/user/detail/1/')
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
+            response = self.assertResponse(
+                '127.0.0.1/user/detail/1/',
+                expected_url='/user/detail/1/',
+                expected_final_url='/user/detail/1/',
+            )
+            self.assertText('/user/detail/1/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/user/detail/1/', response.url_data.computed.full_initial_url)
             self.assertText('/user/detail/1/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/user/detail/1/', response.url_data.computed.full_final_url)
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
 
             # Test "user detail" page url via kwargs.
-            response = self.assertResponse('user/detail/2/', expected_url='/user/detail/2/')
+            response = self.assertResponse(
+                'user/detail/2/',
+                expected_url='/user/detail/2/',
+                expected_final_url='/user/detail/2/',
+            )
+            self.assertText('/user/detail/2/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/user/detail/2/', response.url_data.computed.full_initial_url)
             self.assertText('/user/detail/2/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/user/detail/2/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('/user/detail/2/', expected_url='/user/detail/2/')
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
+            response = self.assertResponse(
+                '/user/detail/2/',
+                expected_url='/user/detail/2/',
+                expected_final_url='/user/detail/2/',
+            )
+            self.assertText('/user/detail/2/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/user/detail/2/', response.url_data.computed.full_initial_url)
             self.assertText('/user/detail/2/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/user/detail/2/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('127.0.0.1/user/detail/2/', expected_url='/user/detail/2/')
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
+            response = self.assertResponse(
+                '127.0.0.1/user/detail/2/',
+                expected_url='/user/detail/2/',
+                expected_final_url='/user/detail/2/',
+
+            )
+            self.assertText('/user/detail/2/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/user/detail/2/', response.url_data.computed.full_initial_url)
             self.assertText('/user/detail/2/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/user/detail/2/', response.url_data.computed.full_final_url)
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
 
         with self.subTest('With no site_root_url value defined - Via reverse()'):
             # Test "index" page url.
-            response = self.assertResponse('django_expanded_test_cases:index', expected_url='/')
+            response = self.assertResponse(
+                'django_expanded_test_cases:index',
+                expected_url='/',
+                expected_final_url='/',
+            )
+            self.assertText('/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/', response.url_data.computed.full_initial_url)
             self.assertText('/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/', response.url_data.computed.full_final_url)
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
 
             # Test "home" page url.
-            response = self.assertResponse('django_expanded_test_cases:home', expected_url='/home/')
+            response = self.assertResponse(
+                'django_expanded_test_cases:home',
+                final_expected_url='/home/',
+            )
+            self.assertText('/home/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/home/', response.url_data.computed.full_initial_url)
             self.assertText('/home/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/home/', response.url_data.computed.full_final_url)
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
 
             # Test "login" page url.
-            response = self.assertResponse('django_expanded_test_cases:login', expected_url='/login/')
+            response = self.assertResponse(
+                'django_expanded_test_cases:login',
+                expected_final_url='/login/',
+            )
+            self.assertText('/login/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/login/', response.url_data.computed.full_initial_url)
             self.assertText('/login/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/login/', response.url_data.computed.full_final_url)
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
 
             # Test "one message" page url.
             response = self.assertResponse(
                 'django_expanded_test_cases:response-with-one-message',
                 expected_url='/views/one-message/',
+                expected_final_url='/views/one-message/',
             )
+            self.assertText('/views/one-message/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/views/one-message/', response.url_data.computed.full_initial_url)
             self.assertText('/views/one-message/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/views/one-message/', response.url_data.computed.full_final_url)
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
 
             # Test "two messages" page url.
             response = self.assertResponse(
                 'django_expanded_test_cases:response-with-two-messages',
                 expected_url='/views/two-messages/',
+                expected_final_url='/views/two-messages/',
             )
+            self.assertText('/views/two-messages/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/views/two-messages/', response.url_data.computed.full_initial_url)
             self.assertText('/views/two-messages/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/views/two-messages/', response.url_data.computed.full_final_url)
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
 
             # Test "three messages" page url.
             response = self.assertResponse(
                 'django_expanded_test_cases:response-with-three-messages',
                 expected_url='/views/three-messages/',
+                expected_final_url='/views/three-messages/',
             )
+            self.assertText('/views/three-messages/', response.url_data.computed.initial_url)
+            self.assertText('127.0.0.1/views/three-messages/', response.url_data.computed.full_initial_url)
             self.assertText('/views/three-messages/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/views/three-messages/', response.url_data.computed.full_final_url)
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
 
         with self.subTest('With custom site_root_url value defined'):
             self.site_root_url = 'https://my_really_cool_site.com/'
 
             # Test "index" page url.
-            response = self.assertResponse('django_expanded_test_cases:index', expected_url='/')
+            response = self.assertResponse(
+                'django_expanded_test_cases:index',
+                expected_url='/',
+                expected_final_url='/',
+            )
+            self.assertText('/', response.url_data.computed.initial_url)
+            self.assertText('https://my_really_cool_site.com/', response.url_data.computed.full_initial_url)
             self.assertText('/', response.url_data.computed.final_url)
             self.assertText('https://my_really_cool_site.com/', response.url_data.computed.full_final_url)
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
 
             # Test "home" page url.
-            response = self.assertResponse('django_expanded_test_cases:home', expected_url='/home/')
+            response = self.assertResponse(
+                'django_expanded_test_cases:home',
+                expected_url='/home/',
+                expected_final_url='/home/',
+            )
+            self.assertText('/home/', response.url_data.computed.initial_url)
+            self.assertText('https://my_really_cool_site.com/home/', response.url_data.computed.full_initial_url)
             self.assertText('/home/', response.url_data.computed.final_url)
             self.assertText('https://my_really_cool_site.com/home/', response.url_data.computed.full_final_url)
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
 
             # Test "login" page url.
-            response = self.assertResponse('django_expanded_test_cases:login', expected_url='/login/')
+            response = self.assertResponse(
+                'django_expanded_test_cases:login',
+                expected_url='/login/',
+                expected_final_url='/login/',
+            )
+            self.assertText('/login/', response.url_data.computed.initial_url)
+            self.assertText('https://my_really_cool_site.com/login/', response.url_data.computed.full_initial_url)
             self.assertText('/login/', response.url_data.computed.final_url)
             self.assertText('https://my_really_cool_site.com/login/', response.url_data.computed.full_final_url)
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
 
             # Test "one message" page url.
             response = self.assertResponse(
                 'django_expanded_test_cases:response-with-one-message',
                 expected_url='/views/one-message/',
+                expected_final_url='/views/one-message/',
             )
+            self.assertText('/views/one-message/', response.url_data.computed.initial_url)
+            self.assertText('https://my_really_cool_site.com/views/one-message/', response.url_data.computed.full_initial_url, )
             self.assertText('/views/one-message/', response.url_data.computed.final_url)
-            self.assertText('https://my_really_cool_site.com/views/one-message/', response.url_data.computed.full_final_url)
+            self.assertText('https://my_really_cool_site.com/views/one-message/', response.url_data.computed.full_final_url,)
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
 
             # Test "two messages" page url.
             response = self.assertResponse(
                 'django_expanded_test_cases:response-with-two-messages',
                 expected_url='/views/two-messages/',
+                expected_final_url='/views/two-messages/',
             )
+            self.assertText('/views/two-messages/', response.url_data.computed.initial_url)
+            self.assertText('https://my_really_cool_site.com/views/two-messages/', response.url_data.computed.full_initial_url, )
             self.assertText('/views/two-messages/', response.url_data.computed.final_url)
-            self.assertText('https://my_really_cool_site.com/views/two-messages/', response.url_data.computed.full_final_url)
+            self.assertText('https://my_really_cool_site.com/views/two-messages/', response.url_data.computed.full_final_url,)
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
 
             # Test "three messages" page url.
             response = self.assertResponse(
                 'django_expanded_test_cases:response-with-three-messages',
                 expected_url='/views/three-messages/',
+                expected_final_url='/views/three-messages/',
             )
+            self.assertText('/views/three-messages/', response.url_data.computed.initial_url)
+            self.assertText('https://my_really_cool_site.com/views/three-messages/', response.url_data.computed.full_initial_url, )
             self.assertText('/views/three-messages/', response.url_data.computed.final_url)
-            self.assertText('https://my_really_cool_site.com/views/three-messages/', response.url_data.computed.full_final_url)
+            self.assertText('https://my_really_cool_site.com/views/three-messages/', response.url_data.computed.full_final_url,)
+            self.assertIsNone(response.url_data.computed.redirect_url)
+            self.assertIsNone(response.url_data.computed.full_redirect_url)
 
         with self.subTest('With view that redirects'):
             # Using direct url.
-            self.assertResponse('redirect/index/', expected_url='/redirect/index/')
-            self.assertResponse('redirect/index/', expected_url='/redirect/index/', expected_redirect_url='/')
+            self.assertResponse(
+                'redirect/index/',
+                expected_url='/redirect/index/',
+            )
+            self.assertResponse(
+                'redirect/index/',
+                expected_url='/redirect/index/',
+                expected_redirect_url='/',
+                expected_final_url='/',
+            )
             self.assertResponse(
                 'redirect/index/',
                 expected_url='/redirect/index/',
                 expected_redirect_url='django_expanded_test_cases:index',
+                expected_final_url=reverse('django_expanded_test_cases:index'),
             )
 
             # Using reverse.
-            self.assertResponse('django_expanded_test_cases:redirect-to-index', expected_url='/redirect/index/')
+            self.assertResponse(
+                'django_expanded_test_cases:redirect-to-index',
+                expected_url='/redirect/index/',
+            )
             self.assertResponse(
                 'django_expanded_test_cases:redirect-to-index',
                 expected_url='/redirect/index/',
                 expected_redirect_url='/',
+                expected_final_url='/',
             )
             self.assertResponse(
                 'django_expanded_test_cases:redirect-to-index',
                 expected_url='/redirect/index/',
                 expected_redirect_url='django_expanded_test_cases:index',
+                expected_final_url=reverse('django_expanded_test_cases:index'),
             )
 
         with self.subTest('Verify error on urls that don\'t match'):
@@ -2633,49 +2968,185 @@ class IntegrationAssertionTestCase:
             # Test 404 page url.
             with self.assertRaises(AssertionError) as err:
                 with warns(Warning) as warning_info:
-                    self.assertResponse('bad_url', expected_url=wrong_url, expected_status=404)
+                    self.assertResponse(
+                        'bad_url',
+                        expected_url=wrong_url,
+                        expected_final_url=wrong_url,
+                        expected_status=404,
+                    )
             self.assertText(expected_warn_msg.format('bad_url'), warning_info[0].message.args[0])
             self.assertEqual(expected_err_msg.format(wrong_url, '/bad_url/'), str(err.exception))
 
             # Test "index" page url.
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('', expected_url=wrong_url)
+                self.assertResponse(
+                    '',
+                    expected_url=wrong_url,
+                    expected_final_url=wrong_url,
+                )
             self.assertEqual(expected_err_msg.format(wrong_url, '/'), str(err.exception))
 
             # Test "home" page url.
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('home/', expected_url=wrong_url)
+                self.assertResponse(
+                    'home/',
+                    expected_url=wrong_url,
+                    expected_final_url=wrong_url,
+                )
             self.assertEqual(expected_err_msg.format(wrong_url, '/home/'), str(err.exception))
 
             # Test "login" page url.
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('login/', expected_url=wrong_url)
+                self.assertResponse(
+                    'login/',
+                    expected_url=wrong_url,
+                    expected_final_url=wrong_url,
+                )
             self.assertEqual(expected_err_msg.format(wrong_url, '/login/'), str(err.exception))
 
             # Test "one message" page url.
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('views/one-message/', expected_url=wrong_url)
+                self.assertResponse(
+                    'views/one-message/',
+                    expected_url=wrong_url,
+                    expected_final_url=wrong_url,
+                )
             self.assertEqual(expected_err_msg.format(wrong_url, '/views/one-message/'), str(err.exception))
 
             # Test "two messages" page url.
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('views/two-messages/', expected_url=wrong_url)
+                self.assertResponse(
+                    'views/two-messages/',
+                    expected_url=wrong_url,
+                    expected_final_url=wrong_url,
+                )
             self.assertEqual(expected_err_msg.format(wrong_url, '/views/two-messages/'), str(err.exception))
 
             # Test "three messages" page url.
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('views/three-messages/', expected_url=wrong_url)
+                self.assertResponse(
+                    'views/three-messages/',
+                    expected_url=wrong_url,
+                    expected_final_url=wrong_url,
+                )
             self.assertEqual(expected_err_msg.format(wrong_url, '/views/three-messages/'), str(err.exception))
 
             # Test "user detail" page url via args.
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('user/detail/1/', expected_url=wrong_url)
+                self.assertResponse(
+                    'user/detail/1/',
+                    expected_url=wrong_url,
+                    expected_final_url=wrong_url,
+                )
             self.assertEqual(expected_err_msg.format(wrong_url, '/user/detail/1/'), str(err.exception))
 
             # Test "user detail" page url via kwargs.
             with self.assertRaises(AssertionError) as err:
-                self.assertResponse('user/detail/2/', expected_url=wrong_url)
+                self.assertResponse(
+                    'user/detail/2/',
+                    expected_url=wrong_url,
+                    expected_final_url=wrong_url,
+                )
             self.assertEqual(expected_err_msg.format(wrong_url, '/user/detail/2/'), str(err.exception))
+
+    def test__assertResponse__expected_url__failure(self):
+        """
+        Tests `expected_url` and `expected_final_url` functionality of assertResponse() function,
+        in cases where it should fail.
+        """
+
+        expected_url_err_msg = (
+            'Expected Url and actual Url do not match. \n'
+            'Expected Url: \n'
+            '"{0}" \n'
+            'Actual Url: \n'
+            '"{1}" \n'
+        )
+        expected_final_url_err_msg = (
+            'Expected final_url and actual final_url do not match. \n'
+            'Expected final_url: \n'
+            '"{0}" \n'
+            'Actual final_url: \n'
+            '"{1}" \n'
+        )
+
+        with self.subTest('Test "index" page url'):
+
+            # Fails on expected_url test.
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse(
+                    '/',
+                    expected_url='/views/1/',
+                    expected_final_url='/',
+                )
+            self.assertEqual(
+                expected_url_err_msg.format('/views/1/', '/'),
+                str(err.exception),
+            )
+
+            # Fails on expected_final_url test.
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse(
+                    '/',
+                    expected_url='/',
+                    expected_final_url='/views/2/',
+                )
+            self.assertEqual(
+                expected_final_url_err_msg.format('/views/2/', '/'),
+                str(err.exception),
+            )
+
+        with self.subTest('Test "home" page url'):
+
+            # Fails on expected_url test.
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse(
+                    '/home/',
+                    expected_url='/views/1/',
+                    expected_final_url='/home/',
+                )
+            self.assertEqual(
+                expected_url_err_msg.format('/views/1/', '/home/'),
+                str(err.exception),
+            )
+
+            # Fails on expected_final_url test.
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse(
+                    '/home/',
+                    expected_url='/home/',
+                    expected_final_url='/views/2/',
+                )
+            self.assertEqual(
+                expected_final_url_err_msg.format('/views/2/', '/home/'),
+                str(err.exception),
+            )
+
+        with self.subTest('Test "one message" page url'):
+
+            # Fails on expected_url test.
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse(
+                    'views/one-message/',
+                    expected_url='/views/1/',
+                    expected_final_url='/views/one-message/',
+                )
+            self.assertEqual(
+                expected_url_err_msg.format('/views/1/', '/views/one-message/'),
+                str(err.exception),
+            )
+
+            # Fails on expected_final_url test.
+            with self.assertRaises(AssertionError) as err:
+                self.assertResponse(
+                    'views/one-message/',
+                    expected_url='/views/one-message/',
+                    expected_final_url='/views/2/',
+                )
+            self.assertEqual(
+                expected_final_url_err_msg.format('/views/2/', '/views/one-message/'),
+                str(err.exception),
+            )
 
     def test__assertResponse__view_should_redirect__success(self):
         """
@@ -2697,6 +3168,7 @@ class IntegrationAssertionTestCase:
                 response = self.assertResponse(
                     'bad_url',
                     expected_url='/bad_url/',
+                    expected_final_url='/bad_url/',
                     expected_status=404,
                     view_should_redirect=False,
                 )
@@ -2706,6 +3178,7 @@ class IntegrationAssertionTestCase:
             response = self.assertResponse(
                 'bad_url/',
                 expected_url='/bad_url/',
+                expected_final_url='/bad_url/',
                 expected_status=404,
                 view_should_redirect=False,
             )
@@ -2714,6 +3187,7 @@ class IntegrationAssertionTestCase:
             response = self.assertResponse(
                 '127.0.0.1/bad_url/',
                 expected_url='/bad_url/',
+                expected_final_url='/bad_url/',
                 expected_status=404,
                 view_should_redirect=False,
             )
@@ -2722,6 +3196,7 @@ class IntegrationAssertionTestCase:
             response = self.assertResponse(
                 '///bad_url///',
                 expected_url='/bad_url/',
+                expected_final_url='/bad_url/',
                 expected_status=404,
                 view_should_redirect=False,
             )
@@ -2729,35 +3204,80 @@ class IntegrationAssertionTestCase:
             self.assertText('127.0.0.1/bad_url/', response.url_data.computed.full_final_url)
 
             # Test "index" page url.
-            response = self.assertResponse('', expected_url='/', view_should_redirect=False)
+            response = self.assertResponse(
+                '',
+                expected_url='/',
+                expected_final_url='/',
+                view_should_redirect=False,
+            )
             self.assertText('/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('/', expected_url='/', view_should_redirect=False)
+            response = self.assertResponse(
+                '/',
+                expected_url='/',
+                expected_final_url='/',
+                view_should_redirect=False,
+            )
             self.assertText('/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('127.0.0.1/', expected_url='/', view_should_redirect=False)
+            response = self.assertResponse(
+                '127.0.0.1/',
+                expected_url='/',
+                expected_final_url='/',
+                view_should_redirect=False,
+            )
             self.assertText('/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/', response.url_data.computed.full_final_url)
 
             # Test "home" page url.
-            response = self.assertResponse('home/', expected_url='/home/', view_should_redirect=False)
+            response = self.assertResponse(
+                'home/',
+                expected_url='/home/',
+                expected_final_url='/home/',
+                view_should_redirect=False,
+            )
             self.assertText('/home/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/home/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('/home/', expected_url='/home/', view_should_redirect=False)
+            response = self.assertResponse(
+                '/home/',
+                expected_url='/home/',
+                expected_final_url='/home/',
+                view_should_redirect=False,
+            )
             self.assertText('/home/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/home/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('127.0.0.1/home/', expected_url='/home/', view_should_redirect=False)
+            response = self.assertResponse(
+                '127.0.0.1/home/',
+                expected_url='/home/',
+                expected_final_url='/home/',
+                view_should_redirect=False,
+            )
             self.assertText('/home/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/home/', response.url_data.computed.full_final_url)
 
             # Test "login" page url.
-            response = self.assertResponse('login/', expected_url='/login/', view_should_redirect=False)
+            response = self.assertResponse(
+                'login/',
+                expected_url='/login/',
+                expected_final_url='/login/',
+                view_should_redirect=False,
+            )
             self.assertText('/login/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/login/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('/login/', expected_url='/login/', view_should_redirect=False)
+            response = self.assertResponse(
+                '/login/',
+                expected_url='/login/',
+                expected_final_url='/login/',
+                view_should_redirect=False,
+            )
             self.assertText('/login/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/login/', response.url_data.computed.full_final_url)
-            response = self.assertResponse('127.0.0.1/login/', expected_url='/login/', view_should_redirect=False)
+            response = self.assertResponse(
+                '127.0.0.1/login/',
+                expected_url='/login/',
+                expected_final_url='/login/',
+                view_should_redirect=False,
+            )
             self.assertText('/login/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/login/', response.url_data.computed.full_final_url)
 
@@ -2765,6 +3285,7 @@ class IntegrationAssertionTestCase:
             response = self.assertResponse(
                 'views/one-message/',
                 expected_url='/views/one-message/',
+                expected_final_url='/views/one-message/',
                 view_should_redirect=False,
             )
             self.assertText('/views/one-message/', response.url_data.computed.final_url)
@@ -2772,6 +3293,7 @@ class IntegrationAssertionTestCase:
             response = self.assertResponse(
                 '/views/one-message/',
                 expected_url='/views/one-message/',
+                expected_final_url='/views/one-message/',
                 view_should_redirect=False,
             )
             self.assertText('/views/one-message/', response.url_data.computed.final_url)
@@ -2779,6 +3301,7 @@ class IntegrationAssertionTestCase:
             response = self.assertResponse(
                 '127.0.0.1/views/one-message/',
                 expected_url='/views/one-message/',
+                expected_final_url='/views/one-message/',
                 view_should_redirect=False,
             )
             self.assertText('/views/one-message/', response.url_data.computed.final_url)
@@ -2788,6 +3311,7 @@ class IntegrationAssertionTestCase:
             response = self.assertResponse(
                 'views/two-messages/',
                 expected_url='/views/two-messages/',
+                expected_final_url='/views/two-messages/',
                 view_should_redirect=False,
             )
             self.assertText('/views/two-messages/', response.url_data.computed.final_url)
@@ -2795,6 +3319,7 @@ class IntegrationAssertionTestCase:
             response = self.assertResponse(
                 '/views/two-messages/',
                 expected_url='/views/two-messages/',
+                expected_final_url='/views/two-messages/',
                 view_should_redirect=False,
             )
             self.assertText('/views/two-messages/', response.url_data.computed.final_url)
@@ -2802,6 +3327,7 @@ class IntegrationAssertionTestCase:
             response = self.assertResponse(
                 '127.0.0.1/views/two-messages/',
                 expected_url='/views/two-messages/',
+                expected_final_url='/views/two-messages/',
                 view_should_redirect=False,
             )
             self.assertText('/views/two-messages/', response.url_data.computed.final_url)
@@ -2811,6 +3337,7 @@ class IntegrationAssertionTestCase:
             response = self.assertResponse(
                 'views/three-messages/',
                 expected_url='/views/three-messages/',
+                expected_final_url='/views/three-messages/',
                 view_should_redirect=False,
             )
             self.assertText('/views/three-messages/', response.url_data.computed.final_url)
@@ -2818,6 +3345,7 @@ class IntegrationAssertionTestCase:
             response = self.assertResponse(
                 '/views/three-messages/',
                 expected_url='/views/three-messages/',
+                expected_final_url='/views/three-messages/',
                 view_should_redirect=False,
             )
             self.assertText('/views/three-messages/', response.url_data.computed.final_url)
@@ -2825,6 +3353,7 @@ class IntegrationAssertionTestCase:
             response = self.assertResponse(
                 '127.0.0.1/views/three-messages/',
                 expected_url='/views/three-messages/',
+                expected_final_url='/views/three-messages/',
                 view_should_redirect=False,
             )
             self.assertText('/views/three-messages/', response.url_data.computed.final_url)
@@ -2834,6 +3363,7 @@ class IntegrationAssertionTestCase:
             response = self.assertResponse(
                 'user/detail/1/',
                 expected_url='/user/detail/1/',
+                expected_final_url='/user/detail/1/',
                 view_should_redirect=False,
             )
             self.assertText('/user/detail/1/', response.url_data.computed.final_url)
@@ -2841,6 +3371,7 @@ class IntegrationAssertionTestCase:
             response = self.assertResponse(
                 '/user/detail/1/',
                 expected_url='/user/detail/1/',
+                expected_final_url='/user/detail/1/',
                 view_should_redirect=False,
             )
             self.assertText('/user/detail/1/', response.url_data.computed.final_url)
@@ -2848,6 +3379,7 @@ class IntegrationAssertionTestCase:
             response = self.assertResponse(
                 '127.0.0.1/user/detail/1/',
                 expected_url='/user/detail/1/',
+                expected_final_url='/user/detail/1/',
                 view_should_redirect=False,
             )
             self.assertText('/user/detail/1/', response.url_data.computed.final_url)
@@ -2857,6 +3389,7 @@ class IntegrationAssertionTestCase:
             response = self.assertResponse(
                 'user/detail/2/',
                 expected_url='/user/detail/2/',
+                expected_final_url='/user/detail/2/',
                 view_should_redirect=False,
             )
             self.assertText('/user/detail/2/', response.url_data.computed.final_url)
@@ -2864,6 +3397,7 @@ class IntegrationAssertionTestCase:
             response = self.assertResponse(
                 '/user/detail/2/',
                 expected_url='/user/detail/2/',
+                expected_final_url='/user/detail/2/',
                 view_should_redirect=False,
             )
             self.assertText('/user/detail/2/', response.url_data.computed.final_url)
@@ -2871,6 +3405,7 @@ class IntegrationAssertionTestCase:
             response = self.assertResponse(
                 '127.0.0.1/user/detail/2/',
                 expected_url='/user/detail/2/',
+                expected_final_url='/user/detail/2/',
                 view_should_redirect=False,
             )
             self.assertText('/user/detail/2/', response.url_data.computed.final_url)
@@ -2882,12 +3417,14 @@ class IntegrationAssertionTestCase:
                 'redirect/index/',
                 expected_url='/redirect/index/',
                 expected_redirect_url='/',
+                expected_final_url='/',
                 view_should_redirect=True,
             )
             self.assertResponse(
                 'redirect/index/',
                 expected_url='/redirect/index/',
                 expected_redirect_url='django_expanded_test_cases:index',
+                expected_final_url=reverse('django_expanded_test_cases:index'),
                 view_should_redirect=True,
             )
 
@@ -2896,12 +3433,14 @@ class IntegrationAssertionTestCase:
                 'django_expanded_test_cases:redirect-to-index',
                 expected_url='/redirect/index/',
                 expected_redirect_url='/',
+                expected_final_url='/',
                 view_should_redirect=True,
             )
             self.assertResponse(
                 'django_expanded_test_cases:redirect-to-index',
                 expected_url='/redirect/index/',
                 expected_redirect_url='django_expanded_test_cases:index',
+                expected_final_url=reverse('django_expanded_test_cases:index'),
                 view_should_redirect=True,
             )
 

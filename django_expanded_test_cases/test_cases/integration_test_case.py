@@ -176,6 +176,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         expected_status=200,
         expected_url=None,
         expected_redirect_url=None,
+        expected_final_url=None,
         view_should_redirect=None,
         url_args=None,
         url_kwargs=None,
@@ -395,6 +396,23 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             else:
                 self.fail('Expected no page redirects, but response processed one or more redirects.')
 
+        # Verify final url.
+        # TODO: Inconsistent expected_x_url handling.
+        #  See project issue 22 (https://github.com/brodriguez8774/django-expanded-test-cases/issues/22).
+        if expected_final_url is not None and response.url_data.computed.final_url != expected_final_url:
+            self.fail(
+                (
+                    'Expected final_url and actual final_url do not match. \n'
+                    'Expected final_url: \n'
+                    '"{0}" \n'
+                    'Actual final_url: \n'
+                    '"{1}" \n'
+                ).format(
+                    expected_final_url,
+                    response.url_data.computed.final_url,
+                )
+            )
+
         # Verify page redirect.
         # This is more specific than the above "view_should_redirect" assertion, so intentionally done second.
         # TODO: Inconsistent expected_x_url handling.
@@ -505,6 +523,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         expected_status=200,
         expected_url=None,
         expected_redirect_url=None,
+        expected_final_url=None,
         view_should_redirect=None,
         url_args=None,
         url_kwargs=None,
@@ -553,6 +572,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             expected_status=expected_status,
             expected_url=expected_url,
             expected_redirect_url=expected_redirect_url,
+            expected_final_url=expected_final_url,
             view_should_redirect=view_should_redirect,
             url_args=url_args,
             url_kwargs=url_kwargs,
@@ -589,6 +609,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         expected_status=200,
         expected_url=None,
         expected_redirect_url=None,
+        expected_final_url=None,
         view_should_redirect=None,
         url_args=None,
         url_kwargs=None,
@@ -643,6 +664,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             expected_status=expected_status,
             expected_url=expected_url,
             expected_redirect_url=expected_redirect_url,
+            expected_final_url=expected_final_url,
             view_should_redirect=view_should_redirect,
             url_args=url_args,
             url_kwargs=url_kwargs,
@@ -680,6 +702,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         expected_status=200,
         expected_url=None,
         expected_redirect_url=None,
+        expected_final_url=None,
         view_should_redirect=None,
         url_args=None,
         url_kwargs=None,
@@ -759,6 +782,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             expected_status=expected_status,
             expected_url=expected_url,
             expected_redirect_url=expected_redirect_url,
+            expected_final_url=expected_final_url,
             view_should_redirect=view_should_redirect,
             url_args=url_args,
             url_kwargs=url_kwargs,
