@@ -1,25 +1,43 @@
 Expected Roadmap
 ****************
 
-Below is the minimum viable state for each version release.
+
+Below are upcoming features for future releases, on the path to a 1.0 release.
 
 
-* v 0.8.x
+**Required Functionality**:
 
-    * Project is in a viable state to test basic responses, selenium browser
-      responses, and has form helper functions.
-    * Documentation for LiveServerTestCase is fairly thorough, if not complete.
+* [ ] Documentation for existing functionality is fairly thorough, if not
+  complete.
 
-* v 0.9.x
+  * Currently a bit behind. Only so much time in a day. Oops.
 
-    * Project is in a viable state to test basic responses, selenium browser
-      responses, CSV file downloads, and has form helper functions.
-    * **Csv/ReportTestCase** is roughly stable.
+  * Should include occasional examples when applicable.
 
-        * Further functionality may still be added at a later date. But core
-          logic is present.
+* [ X ] Package is in a viable state to test basic responses, JSON responses,
+  and selenium browser responses.
 
-    * Documentation for all prior releases is fairly thorough, if not complete.
-    * At least some documentation exists for Csv/ReportTestCase.
+* [ X ] Package has customizability (when appropriate), because testing is
+  definitely not a "one size fits all projects" deal.
 
-* Unsure of roadmap past this point. To be decided at a later date.
+* [ X ] Package has been tested and actively used in multiple real-world
+  projects of non-trivial size, made/maintained by multiple individuals.
+
+  * Is known to actively be used and tested on at least one project of
+    medium-to-large size (Greater than 1000 separate tests, most each with inner
+    subtests).
+
+  * Also known to actively be used in multiple others projects varying between
+    small-to-medium size.
+
+
+**Ideally Also Includes**:
+
+* **Csv/ReportTestCase** - Similar design philosophy, for testing responses
+  that return a csv/excel type file format.
+
+  * CSV testing is known to be do-able. Just need to put in the time to create
+    functionality.
+
+  * Unsure about excel, but logic is theoretically similar, so it makes sense
+    to make both of these at the same time.

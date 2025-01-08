@@ -32,6 +32,7 @@ definition:
         'django.contrib.sessions',
     )
 
+
 Optional Packages
 -----------------
 
@@ -71,6 +72,7 @@ packages.
 Or alternatively see the
 `official channels installation guide <https://channels.readthedocs.io/en/latest/installation.html>`_ for additional
 methods.
+
 
 Testing Environments
 ====================

@@ -9,72 +9,189 @@ All of these settings are optional, and will fall back to a default value if
 not defined.
 
 
-DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT
-=====================================
-Django ETC can optionally provide additional debug testing output, to help with
-trying to troubleshoot test errors. See
-:ref:`general_usage:Debug Output Overview` for more details.
+Configuring Client State
+========================
 
-This setting enables or disables debug output.
+RESET_CLIENT_STATE_ON_REQUEST
+-----------------------------
+
+Originally, DjangoETC would force the Django test client to "reset" at the
+start of each ``assertResponse()`` statement.
+The idea was that it would ensure no user accidentally remains logged in
+between assertions, which could unexpectedly lead to tests being incorrect.
+
+However, due to how Django logs out test users, this had the side-effect of
+also clearing session data between assertions.
+Therefore, if concurrent assertions could not share session data, and some
+test scenarios were not possible.
+
+This setting keeps the original behavior if set to True (the default).
+Set to false to skip client reset between assertions for all project tests.
+
+Alternatively, set the `self._reset_client_state_on_request` class variable
+to ``False`` on a per-test basis.
+
 
 :Type: ``bool``
 :Default: ``True``
 
-Example::
+**Example:**
 
-    DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT = False
+.. code::
+
+    DJANGO_EXPANDED_TESTCASES_RESET_CLIENT_STATE_ON_REQUEST = False
 
 
-DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS
-================================================
-When running the
-:ref:`test_cases/integration_test_case:assertContextMessages`
-assertion, this setting can optionally allow partial message matching. If
-partial is allowed, then checking for message substrings will pass. Otherwise,
-the message string must match the full provided test value, or it will fail.
+Configuring Content Areas for Assertions
+========================================
+
+SKIP_CONTENT_BEFORE
+-------------------
+
+Only applicable to ``assertResponse`` statements,
+when using ``expected_content``.
+
+Effectively an "upper" html content value to strip out of both search space
+and debug output.
+Anything above this value will be removed.
+
+In most projects, there is a set of content (such as header data) at the start
+of the page, which tests generally won't target.
+If the project has a consistent element or string value that defines where
+content starts being relevant, that value can be defined here, to then exclude
+all start-of-page content above it, for all tests within project.
+
+Defining this setting can help significantly reduce redundant/"useless" debug
+output for integration tests, as long as the content is universally exclude-able
+project-wide.
+
+See also ``content_starts_after`` parameter at LINK HERE.
+
+
+:Type: ``string`` (Either regex or literal)
+:Default: ``None``
+
+**Example:**
+
+.. code::
+
+    DJANGO_EXPANDED_TESTCASES_SKIP_CONTENT_BEFORE = '<h1>My Header</h1>'
+
+
+SKIP_CONTENT_AFTER
+------------------
+
+Only applicable to ``assertResponse`` statements,
+when using ``expected_content``.
+
+Effectively an "lower" html content value to strip out of both search space
+and debug output.
+Anything below this value will be removed.
+
+Similar to above ``SKIP_CONTENT_BEFORE`` setting.
+
+See also See also ``content_starts_before`` parameter at LINK HERE.
+
+
+:Type: ``string`` (Either regex or literal)
+:Default: ``None``
+
+**Example:**
+
+.. code::
+
+    DJANGO_EXPANDED_TESTCASES_SKIP_CONTENT_AFTER = '<footer>My Footer</footer>'
+
+
+SKIP_CONTENT_HEAD
+-----------------
+
+Similar to above ``SKIP_CONTENT_BEFORE`` setting, except in boolean form.
+Can use this if the project should simply ignore content in the
+``<head>`` tag.
+
+If set to false or if ``SKIP_CONTENT_BEFORE`` is defined, then has no effect.
+
 
 :Type: ``bool``
 :Default: ``True``
 
-Example::
+**Example:**
 
-    DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS = False
+.. code::
+
+    DJANGO_EXPANDED_TESTCASES_SKIP_CONTENT_HEAD = True
 
 
-DJANGO_EXPANDED_TESTCASES_MATCH_ALL_CONTEXT_MESSAGES
-====================================================
+Configuring Assertion Functionality
+===================================
 
-.. warning::
-    Not yet implemented.
+Some of the provided assertions can be configured to be more or less strict,
+using the following settings.
 
-    Planned for a future release.
+
+ALLOW_TITLE_PARTIALS
+--------------------
 
 When running the
-:ref:`test_cases/integration_test_case:assertContextMessages`
-assertion, this setting optionally tell tests to fail when there are messages in
-the response that were not explicitly tested for.
+:ref:`test_cases/integration_test_case/other_functionality:assertPageTitle`
+assertion, this setting can optionally allow partial title matching.
+If partial is allowed, then checks for title partials/substrings will pass.
+Otherwise, the title string must match the full provided test value,
+or it will fail.
+
 
 :Type: ``bool``
 :Default: ``False``
 
-Example::
+**Example:**
+
+.. code::
+
+    DJANGO_EXPANDED_TESTCASES_ALLOW_TITLE_PARTIALS = True
+
+
+ALLOW_MESSAGE_PARTIALS
+----------------------
+
+When running the
+:ref:`test_cases/integration_test_case/other_functionality:assertContextMessages`
+assertion, this setting can optionally allow partial message matching.
+If partial is allowed, then checks for message partials/substrings will pass.
+Otherwise, the message string must match the full provided test value,
+or it will fail.
+
+
+:Type: ``bool``
+:Default: ``False``
+
+**Example:**
+
+.. code::
+
+    DJANGO_EXPANDED_TESTCASES_ALLOW_MESSAGE_PARTIALS = True
+
+
+MATCH_ALL_CONTEXT_MESSAGES
+--------------------------
+
+When running the
+:ref:`test_cases/integration_test_case/other_functionality:assertContextMessages`
+assertion, this setting optionally tell tests to fail when there are messages in
+the response that were not explicitly tested for.
+
+Only applies in ``assertResponse`` if any ``expected_messages`` were provided
+at all.
+Otherwise, the ``assertResponse`` will still pass in the case when
+no ``expected_messages`` were provided, and context messages were returned
+with the response.
+
+
+:Type: ``bool``
+:Default: ``False``
+
+**Example:**
+
+.. code::
 
     DJANGO_EXPANDED_TESTCASES_MATCH_ALL_CONTEXT_MESSAGES = True
-
-
-SELENIUM_TEST_BROWSER
-=====================
-When using the :doc:`../test_cases/live_server_test_case` classes
-for `Selenium <https://www.selenium.dev/>`_ tests, this setting specifies which browser to use.
-
-Currently, supported test browsers are as follows:
- * chrome
- * chromium
- * firefox
-
-:Type: ``string``
-:Default: ``chrome``
-
-Example::
-
-    SELENIUM_TEST_BROWSER = 'firefox'

@@ -20,6 +20,7 @@ Different TestCase classes are provided, each providing separate sets of functio
 
 
 For full documentation, see [ReadTheDocs](https://django-expanded-test-cases.readthedocs.io/en/latest/).
+For changes in the latest version, see [ReadTheDocs - Version History](https://django-expanded-test-cases.readthedocs.io/en/latest/version_history.html).
 
 
 ## Example ETC Debug Output on UnitTest Error

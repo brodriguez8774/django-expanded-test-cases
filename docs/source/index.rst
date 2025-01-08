@@ -24,10 +24,12 @@ Within this package, are three different TestCase classes that can be used as
 a drop-in replacement for
 `Django's included TestCases <https://docs.djangoproject.com/en/4.0/topics/testing/tools/#provided-test-case-classes>`_
 They are :doc:`test_cases/base_test_case`,
-:doc:`test_cases/integration_test_case`, and
+:doc:`IntegrationTestCase<./test_cases/integration_test_case/overview>`, and
 :doc:`test_cases/live_server_test_case`.
 Each one provides separate sets of additional functionality.
 
+This package also contains additional debug output on test failure, for the
+provided assertions.
 
 Below is an example of **ETC**'s debug output when a UnitTest fails for a basic view, while checking the ``<h1>`` tag.
 
@@ -39,7 +41,6 @@ Below is an example of **ETC**'s debug output when a UnitTest fails for a basic 
    :caption: Table of Contents:
 
    quickstart
-   package_overview
    general_usage
    managing_test_users
 
@@ -50,7 +51,10 @@ Below is an example of **ETC**'s debug output when a UnitTest fails for a basic 
 
    test_cases/overview
    test_cases/base_test_case
-   test_cases/integration_test_case
+   test_cases/integration_test_case/overview
+   test_cases/integration_test_case/url_handling
+   test_cases/integration_test_case/response_assertions
+   test_cases/integration_test_case/other_functionality
    test_cases/live_server_test_case
 
 
@@ -59,8 +63,9 @@ Below is an example of **ETC**'s debug output when a UnitTest fails for a basic 
    :caption: Package Setting Configuration:
 
    configuration/general
-   configuration/users
+   configuration/auth
    configuration/debug_output
+   configuration/selenium
 
 
 .. toctree::

@@ -1,160 +1,16 @@
-IntegrationTestCase
-*******************
+IntegrationTestCase - Other Functionality
+*****************************************
 
 
-The **IntegrationTestCase** class provides additional wrapper functionality for
-checking request/response logic WITHOUT using a browser window instance.
-
-This class is able to quickly test request/response generation, as long as the
-view logic does not require interactive elements, such as JavaScript.
-
-
-.. tip::
-
-   We recommend using this class as the general default, for a majority of
-   Django site UnitTests.
-
-   This class is extremely versatile, and strikes a good balance between
-   performance and capabilities.
-
-   For the few things this class cannot test (such as JavaScript logic),
-   consider using the :doc:`live_server_test_case` class.
+This page documents the specs for remaining **IntegrationTestCase** class
+functionality.
 
 
 ----
 
 
-Custom Response Assertions
-==========================
-
-The **Response Assertions** are utility functions that can generate a page
-response according to provided URL parameters, and then check for one or more
-properties upon the generated response object.
-
-See the below :ref:`test_cases/integration_test_case:custom element assertions` section for further
-documentation of the possible individual property assertions.
-
-
-.. note::
-
-   If your project requires additional User authentication setup, in order to
-   access pages (such as requiring two-factor), then override the
-   ``_extra_user_auth_setup()`` function and add your logic there.
-
-   This ``_extra_user_auth_setup()`` function is an empty hook into
-   **Response Assertion** User login logic, that runs after the user
-   is grabbed, but before the response is rendered.
-
-
-assertResponse
---------------
-
-.. code::
-
-    assertResponse()
-
-The core **Response Assertion**.
-
-Pulls a response from the provided URL location (either a literal URL, or a
-`reverse url <https://docs.djangoproject.com/en/dev/ref/urlresolvers/#reverse>`_
-located within the project), and then checks for various attributes.
-
-At minimum, checks that the response ``status_code`` value (after any
-redirects) matches the provided ``expected_status`` param.
-
-Only "expected" params that are provided will be checked, with the exception
-of ``status_code``, which will assume a default of ``200`` if not provided.
-
-.. note::
-
-    This assertion is the base for two others assertions that are much
-    more explicit.
-    :ref:`test_cases/integration_test_case:assertGetResponse` and
-    :ref:`test_cases/integration_test_case:assertPostResponse`.
-    It is recommended that you use these more explicit versions so that your
-    test expresses clarity as to what the expected request type should be.
-
-:param url: The url to grab the response from.
-:param get: Bool indicating if the response should be created with a GET or POST
-           request. True means GET.
-:param data: Dictionary of values to pass for request generation, if method is
-            POST.
-:param expected_status: Expected status code the response should have, after all
-                       redirections have completed.
-:param expected_redirect_url: Expected url that response should end at, after
-                             any redirections have completed.
-:param url_args: Values to provide for URL population, in "arg" format.
-:param url_kwargs: Values to provide for URL population, in "kwarg" format.
-:param redirect_args: Values to provide for URL population, in "arg" format.
-:param redirect_kwargs: Values to provide for URL population, in "kwarg" format.
-:param expected_title: Expected title (``<title>`` tag) the response should
-                      include.
-:param expected_header: Expected page header (``<h1>`` tag) response should
-                       have.
-:param expected_messages: Expected messages that the response should contain.
-                         Usually these are generated with the
-                         `Django Messages Framework <https://docs.djangoproject.com/en/dev/ref/contrib/messages/>`_.
-:param expected_content: Expected page content that the response should contain.
-                         See also ``ignore_content_ordering`` param.
-:param expected_not_content: Content that should NOT show up in the page response.
-:param auto_login: Bool indicating if user should be auto-logged-in, before
-                  trying to render the response. Useful for verifying behavior
-                  of views with login/permission requirements.
-:param user: User to log in with, if ``auto_login`` is set to True. Defaults to
-            ``test_user`` if not provided.
-:param user_permissions: Optional permissions to provide to the User before
-                        attempting to render the response.
-:param user_groups: Optional groups to provide to the User, before attempting to
-                   render the response.
-:param ignore_content_ordering: Bool indicating if ordering of the
-                               ``expected_content`` is important or not.
-                               Defaults to assuming that ordering matters.
-:param content_starts_after: Optional content value to strip out of search
-                             space. This value and anything above will be
-                             removed. If multiple instances exist on page, then
-                             the first found instance (from top of HTML output)
-                             is selected.
-:param content_ends_before: Optional content value to strip out of search space.
-                            This value and anything below will be removed. If
-                            multiple instances exist on page, then the first
-                            found instance (from bottom of HTML output) is
-                            selected.
-
-:return: The generated response object, in case tests need to run additional
-        logic on it.
-
-
-assertGetResponse
------------------
-
-.. code::
-
-    assertGetResponse()
-
-A wrapper for the above ``assertResponse()``, that has minimal extra logic for
-ensuring that the response is generated from a GET request.
-
-All above params are applicable, except for ``get`` and ``data``.
-
-
-assertPostResponse
-------------------
-
-.. code::
-
-    assertPostResponse()
-
-A wrapper for the above ``assertResponse()``, that has minimal extra logic for
-ensuring that the response is generated from a POST request.
-
-All above params are applicable, except for ``get``.
-
-
-----
-
-
-Custom Element Assertions
-=========================
+Element Assertions
+==================
 
 The **Element Assertions** check for the existence and state of a specific
 element within a `Django Response Object
@@ -236,6 +92,10 @@ assertPageHeader
 
 Asserts that a response has a given page header value. Aka, the ``<h1>`` tag
 contents.
+
+Technically, each page is only meant to have a single ``<h1>`` header.
+However, not all sites follow this rule, and this assertion does not work
+reliably in cases when there are multiple ``<h1>`` header tags on a page.
 
 :param response: Response object to check against.
 :param expected_title: Expected page header text that response should have.
@@ -398,3 +258,66 @@ usually generated with the
 :param response: Response object to pull messages from.
 
 :return: Found message elements.
+
+
+Hook Functions
+==============
+
+Finally, the IntegrationTestCase provides "hook" functions to enable additional
+setup and configuration for any project, regardless of individual project needs.
+
+We acknowledge that test writing is never a "one size fits all" situation, and
+every project is different.
+Thus, hook functions provide additional points in which further logic can be
+inject.
+
+By default, these functions do nothing on their own and are fully safe to
+override.
+
+* ``_get_login_user__extra_user_auth_setup()`` - This function is called after
+  getting the corresponding User object for authentication LINK HERE, but prior to
+  attempting to process the request-response cycle.
+
+  This is critical for projects with additional authentication logic.
+  If a project has additional authentication logic to process (such as
+  authentication keys or custom Auth backend logic), then it should be done
+  here.
+
+  This hook receives only known args/kwargs that are related to user
+  authentication and request processing.
+
+* ``_assertResponse__pre_builtin_tests()`` - This function is called after getting
+  the page response, but prior to calling any assertion checks on it.
+
+  If a project requires any additional pre-check setup, or should have any
+  custom checks to run prior to those built into ETC, then it should be done
+  here.
+
+  This hook receives all known args/kwargs that the response assertion receives.
+
+* ``_assertResponse__post_builtin_tests()`` - This function is called after
+  getting the page response, and after calling all provided assertion checks
+  on it.
+
+  If a project requires any additional clean-up processing, or should have any
+  custom checks to run after those built into ETC, then it should be done here.
+
+  This hook receives all known args/kwargs that the response assertion receives.
+
+
+Implementing Hooks
+------------------
+
+These hook functions only apply when using the **Response Assertion**
+functionality.
+If not calling any **Response Assertions**, then these hooks do nothing.
+
+To use these hooks, implement a custom class that inherits from the
+**IntegrationTestCase** class.
+Then overwrite the corresponding hook and add the desired additional logic.
+
+If any additional args/kwargs are provided to a **Response Assertion**
+(above and beyond what the response assertion already expects), these
+are passed on to all hooks, so that the end-user can provide any additional
+data their project needs to function.
+

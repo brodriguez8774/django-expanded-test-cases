@@ -200,12 +200,13 @@ call the ``assertRepeatingElement()`` function. In this example, we:
 * Call the ``assertGetResponse()`` function to initially generate a response.
 
     * Within this assertion, we only check the page title and header, to verify
-    we're loading the page we expect.
+      we're loading the page we expect.
     * We save the return value (aka the page content) to a variable.
 
 * Call the ``assertRepeatingElement()`` function, to actually do the work we
-want. In this case, we check for a total of 10 <li> elements, within a specific
-subsection of page content.
+  want.
+  In this case, we check for a total of 10 <li> elements, within a specific
+  subsection of page content.
 
 
 For formatting and readability purposes, this is two separate assertions, with

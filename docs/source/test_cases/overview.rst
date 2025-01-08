@@ -9,7 +9,8 @@ From there, the following TestCase classes provide additional functionality:
 
 * :doc:`base_test_case` - Minimalistic TestCase class. All other TestCases
   inherit from this.
-* :doc:`integration_test_case` - Class for testing direct
+* :doc:`IntegrationTestCase<./integration_test_case/overview>`
+  - Class for testing direct
   `Django response objects <https://docs.djangoproject.com/en/dev/ref/request-response/#httpresponse-objects>`_.
   Aka, testing view responses outside of a live browser window instance.
 * :doc:`live_server_test_case` - Class for testing view responses inside a live

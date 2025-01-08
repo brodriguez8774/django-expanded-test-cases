@@ -17,13 +17,7 @@ manipulation, such as any logic that uses JavaScript to function.
    While testing with live browser instances can definitely be useful, it also
    tends to provide more overhead.
 
-   When possible, consider testing via :doc:`integration_test_case` class
-   instead, as it is designed to test most request/response logic in a more
-   lightweight, performance-friendly manner.
-
-
-.. attention::
-
-    This TestCase is not yet fully implemented.
-
-    See :doc:`../roadmap`.
+   When possible, consider testing via the
+   :doc:`IntegrationTestCase<./integration_test_case/overview>`
+   class instead, as it is designed to test most request/response logic in
+   a more lightweight, performance-friendly manner.

@@ -2,6 +2,90 @@ Version History
 ***************
 
 
+0.8.0 - Maintainability Update
+==============================
+
+* Fairly large update (compared to prior updates), with a general focus on
+  long-term maintainability for the package.
+
+* **Breaking Changes**:
+  The following potentially-breaking changes have been introduced.
+  If already using this package within a project, please be aware of the
+  following when upgrading.
+
+  * [assertResponse url processing]() has been modified to remove ambiguity
+    and potential confusion when providing url args and url kwargs.
+    Mostly involves renaming existing values to be more clear and explicit.
+    See documentation for details.
+
+  * [Response object urls have been reworked]()to reduce ambiguity.
+
+    * When using `assertResponse()`, `assertGetResponse()`, or
+      `assertPostResponse()` assertions, a `response` object is returned at
+      the end.
+      Previously, this returned object had `response.url` and
+      `response.full_url` values.
+
+      To increase clarity and make more information available for each test, all
+      associated urls have been combined into a `response.urls` object.
+      See [response object documentation]() for details.
+
+  * **assertResponse arg and kwarg handling** has been reworked.
+
+    * When using `assertResponse()`, `assertGetResponse()`, or
+      `assertPostResponse()` assertions, provided args and kwargs are no longer
+      somewhat ambiguously passed into url parsing logic.
+
+      The prior handling made it difficult to pass required args/kwargs into
+      inner hook functions, such as the `_assertResponse__pre_builtin_tests()`,
+      `_assertResponse__post_builtin_tests()`, or
+      `_get_login_user__extra_user_auth_setup()` functions.
+
+      As of this version, supplementary args/kwargs are no longer blindly
+      passed into url generation.
+      In fact, supplementary args/kwargs (outside of the known, pre-defined
+      ones) are no longer used in any way, except to pass data to these inner
+      hook functions.
+
+      By this point, if a test needs args/kwargs to process a url, there are
+      already explicitly defined values for that functionality (`url_args` /
+      `url_kwargs`).
+
+* Created an `assertJsonResponse()` assertion. Handles similarly to
+  `assertResponse()`, but expects a JSON object return to process.
+
+* Updated `assertResponse()` assertions to have an inverse of
+  `expected_messages`, called `expected_not_messages`.
+
+* `assertResponse()` debug output changes:
+
+  * Updated debug output handling display for context output to be alphabetical.
+    Previously was random ordering, presumably based on the order that Django
+    collected context objects.
+
+  * Corrected debug output handling display for form logic.
+
+    * This was in a broken state for newer versions of Django. It now should
+      work again.
+
+* Improved handling for "trailing slash" url handling, to more consistently
+  warn when trailing slashes are being used inconsistently according to Django.
+
+  Package should now provide warnings in all cases when this could cause issues
+  when parsing the url within an `assertResponse()` assertion.
+
+  See also
+  [Django Docs on APPEND_SLASH setting](https://docs.djangoproject.com/en/dev/ref/settings/#append-slash).
+
+* Github Actions - Project now integrates some basic CI/CD practices through
+  the form of Github Actions.
+
+  * This won't affect use of package much, but should make it much more
+    maintainable, particularly for ensuring the package is consistent across
+    multiple versions of Django and Python.
+
+* Various other minor bugfixes.
+
 
 0.7.2 - Further Debug Quality of Life
 =====================================
@@ -189,7 +273,7 @@ Version History
 * Includes customization of how test-users are handled, when running any given
   Integration/Response test.
 
-  * For more details, see :ref:`configuration/users:Configuring Test Users`.
+  * For more details, see :ref:`configuration/auth:Configuring Test Users`.
 
   * As part of this change, the default way of handling users has changed.
     Original default handling was equivalent to ``relaxed``, but now is
