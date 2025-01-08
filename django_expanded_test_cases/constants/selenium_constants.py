@@ -44,7 +44,7 @@ ETC_SELENIUM_DISABLE_CACHE = bool(
         False,
     )
 )
-# Starting debug port, to get around remote-debugging-port option using the same value for all generated drivers,
+# Starting debug port, to get around remote-debugging-port option using the same value for all generated drivers.
 # Using the same port seems to cause issues with allowing proper switching between drivers.
 # Each generated driver increments this value by one, to guarantee all tests among all files should have unique ports.
 ETC_SELENIUM_DEBUG_PORT_START_VALUE = int(

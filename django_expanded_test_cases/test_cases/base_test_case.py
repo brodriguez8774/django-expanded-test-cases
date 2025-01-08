@@ -445,7 +445,7 @@ class BaseTestCase(TestCase, CoreTestCaseMixin):
         `records` attribute will be a list of the corresponding LogRecord
         objects.
 
-        Example::
+        Example:
 
             with self.assertLogs('foo', level='INFO') as cm:
                 logging.getLogger('foo').info('first message')

@@ -695,6 +695,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         self,
         url,
         *args,
+        get=None,
         data=None,
         secure=True,
         return_format='json',
@@ -770,11 +771,24 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         if not accept_header_defined:
             headers['Accept'] = 'application/json'
 
+        # Handle if GET or POST.
+        if get is not None:
+            # `get` explicitly provided. Use that.
+            pass
+        else:
+            # `get` not explicitly provided. Determine from `data` arg.
+            if data:
+                # Has data. Assume POST response.
+                get = False
+            else:
+                # No data. Assume GET response.
+                get = True
+
         # Call base function to handle actual logic.
         return self.assertResponse(
             url,
             *args,
-            get=True,
+            get=get,
             data=data,
             secure=secure,
             headers=headers,
