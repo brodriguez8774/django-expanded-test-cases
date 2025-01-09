@@ -322,38 +322,61 @@ inject.
 By default, these functions do nothing on their own and are fully safe to
 override.
 
-* ``self._get_login_user__extra_user_auth_setup()``
-  - This function is called after getting the corresponding
-  :doc:`User object for authentication<../../managing_test_users>`, but prior
-  to attempting to process the request-response cycle.
+_get_login_user__extra_user_auth_setup()
+----------------------------------------
 
-  This is critical for projects with additional authentication logic.
-  If a project has additional authentication logic to process (such as
-  authentication keys or custom Auth backend logic), then it should be done
-  here.
+.. code::
 
-  This hook receives only known args/kwargs that are related to user
-  authentication and request processing.
+    self._get_login_user__extra_user_auth_setup(*args, **kwargs)
 
-* ``self._assertResponse__pre_builtin_tests()``
-  - This function is called after getting the page response, but prior to
-  calling any assertion checks on it.
+This function is called after getting the corresponding
+:doc:`User object for authentication<../../managing_test_users>`, but prior
+to attempting to process the
+`request-response <https://docs.djangoproject.com/en/dev/ref/request-response/>`_
+cycle.
 
-  If a project requires any additional pre-check setup, or should have any
-  custom checks to run prior to those built into ETC, then it should be done
-  here.
+This is critical for projects with additional authentication logic.
+If a project has additional authentication logic to process (such as
+authentication keys or custom Auth backend logic), then it should be done
+here to ensure test users can authenticate.
 
-  This hook receives all known args/kwargs that the response assertion receives.
+This hook receives only known args/kwargs that are related to user
+authentication and request processing.
 
-* ``self._assertResponse__post_builtin_tests()``
-  - This function is called after
-  getting the page response, and after calling all provided assertion checks
-  on it.
 
-  If a project requires any additional clean-up processing, or should have any
-  custom checks to run after those built into ETC, then it should be done here.
+_assertResponse__pre_builtin_tests()
+------------------------------------
 
-  This hook receives all known args/kwargs that the response assertion receives.
+.. code::
+
+    self._assertResponse__pre_builtin_tests(*args, **kwargs)
+
+This function is called after getting the
+`page response <https://docs.djangoproject.com/en/dev/ref/request-response/#httpresponse-objects>`_,
+but prior to calling any assertion checks on it.
+
+If a project requires any additional pre-check setup, or should have any
+custom checks to run prior to those built into ETC, then it should be done here.
+
+This hook receives all known args/kwargs that the response assertion receives.
+
+
+_assertResponse__post_builtin_tests()
+-------------------------------------
+
+.. code::
+
+    self._assertResponse__post_builtin_tests()
+
+
+This function is called after getting the
+`page response <https://docs.djangoproject.com/en/dev/ref/request-response/#httpresponse-objects>`_,
+and after calling all provided assertion checks on it.
+
+If a project requires any additional clean-up processing, or should have any
+custom checks to run after those built into ETC, then it should be done here.
+
+This hook receives all known args/kwargs that the response assertion receives.
 
 
 Implementing Hooks

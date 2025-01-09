@@ -600,7 +600,8 @@ class CoreTestCaseMixin(BaseMixin):
 
         :param user: User model, or corresponding user identifier, to use.
         :param password: Password str to assign to user.
-        :param extra_usergen_kwargs: Optional extra kwargs to pass into the get_user_model().objects.create_user()
+        :param extra_usergen_kwargs: Optional extra kwargs to pass into the
+                                     get_user_model().objects.create_user()
                                      function.
         :return: User object
         """

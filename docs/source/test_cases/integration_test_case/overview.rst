@@ -80,7 +80,8 @@ Overview - Element Assertions
 -----------------------------
 
 The above **Response Assertions** internally implement a handful of various
-**Element Assertions**, which are also exposed for use in writing tests.
+:ref:`Element Assertions<test_cases/integration_test_case/other_functionality:Element Assertions>`,
+which are also exposed for use in writing tests.
 
 These **Element Assertions** each check for a specific page content value,
 such as verifying the page title or page header.
@@ -95,7 +96,8 @@ check.
 Overview - Helper Functions
 ---------------------------
 
-To make all of above work, there are various helper functions,
+To make all of above work, there are various
+:ref:`helper functions<test_cases/integration_test_case/other_functionality:Helper Functions>`,
 which are also all exposed to the end-user to help facilitate an enhanced
 testing experience.
 
@@ -105,8 +107,10 @@ Overview - Hook Functions
 
 Finally, different projects have different needs, when it comes to testing.
 
-To try to ensure the DjangoExpandedTestCases package fits all projects, there
-are "hook" functions provided, which allow the injection of additional logic
+To try to ensure the DjangoExpandedTestCases package fits all projects, this
+package provides
+:ref:`hook functions<test_cases/integration_test_case/other_functionality:Hook Functions>`,
+which allow the injection of additional logic
 during the testing request-response cycle.
 
 
@@ -267,18 +271,19 @@ injected.
 By default, these functions do nothing on their own and are fully safe to
 override.
 
-* ``_get_login_user__extra_user_auth_setup()`` - This function is called after
-  getting the
+* :ref:`test_cases/integration_test_case/other_functionality:_get_login_user__extra_user_auth_setup()`
+  - This function is called after getting the
   :doc:`corresponding User object<../../managing_test_users>`
   for authentication, but prior to attempting to process the
   request-response cycle.
 
-* ``_assertResponse__pre_builtin_tests()`` - This function is called after getting
-  the page response, but prior to calling any assertion checks on it.
+* :ref:`test_cases/integration_test_case/other_functionality:_assertResponse__pre_builtin_tests()`
+  - This function is called after getting the page response, but prior to
+  calling any assertion checks on it.
 
-* ``_assertResponse__post_builtin_tests()`` - This function is called after
-  getting the page response, and after calling all provided assertion checks
-  on it.
+* :ref:`test_cases/integration_test_case/other_functionality:_assertResponse__post_builtin_tests()`
+  - This function is called after getting the page response, and after
+  calling all provided assertion checks on it.
 
 For further details on these hook functions, see
 :ref:`Hook Function Specs<test_cases/integration_test_case/other_functionality:Hook Functions>`.
