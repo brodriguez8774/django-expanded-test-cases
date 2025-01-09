@@ -15,7 +15,7 @@ except:
 
 """Version declaration"""
 
-__version__ = "0.7.2"
+__version__ = "0.8.0"
 
 
 def parse_version(version):
