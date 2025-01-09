@@ -169,10 +169,15 @@ request.
 * ``auto_login`` - Bool indicating if user should be auto-logged-in,
   before trying to render the response.
   Useful for verifying behavior of views with login/permission requirements.
-  For more details see LINK HERE
+
+  If set to False, then view does not try to authenticate with a new user
+  instance, and instead keeps the previously logged in user.
+  Which in most instances, will default to
+  `Django's Anonymous Django user <https://docs.djangoproject.com/en/5.1/ref/contrib/auth/#anonymoususer-object>`_.
 
 * ``user`` - User to log in with, if ``auto_login`` is set to True.
-  Defaults to ``test_user`` if not provided. Also see package user settings LINK HERE
+  Defaults to ``test_user`` if not provided. Also see
+  :doc:`package user settings<../../configuration/auth>`
   to customize test user behavior.
 
 * ``user_permissions`` - Optional permissions to provide to the User before
@@ -192,6 +197,7 @@ The **Response Assertion** have the ability to, well, assert properties upon
 the generated response, and raise errors on failure.
 
 Available assertion parameters are as follows:
+
 
 Url Assertion Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -224,6 +230,7 @@ Url Assertion Parameters
 * ``view_should_redirect`` - Bool indicating if a redirect was expected or not
   during request handling.
   Leave none if you don't care whether a redirect occurred or not.
+
 
 Response Assertion Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

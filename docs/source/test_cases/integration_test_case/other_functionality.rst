@@ -134,7 +134,8 @@ expected strings.
    is provided into the ``expected_messages`` param, and then not found in the
    page response.
 
-   It will **NOT** fail if messages exist in the response, but are not checked.
+   It will **NOT** fail if messages exist in the response, but are not checked
+   for.
 
    For example, if we have a response containing messages of
    ["Message #1", "Message #2", "Message #3"] and use the following code to
@@ -144,9 +145,35 @@ expected strings.
    ``self.assertContextMessages(response, 'Message #2')``
 
    In the future, there will likely be an option to change this behavior, so
-   that if there are messages on the page that are **NOT** checked via the
-   ``expected_messages`` param, then the ``assertContextMessages()`` assertion
-   will fail.
+   that if desired, the assertion will only pass when all present messages are
+   checked for.
+
+
+assertNotContextMessages
+------------------------
+
+.. code::
+
+    assertNotContextMessages()
+
+The negation of
+:ref:`test_cases/integration_test_case/other_functionality:assertContextMessages`
+Asserts that a response does not contain the given context message values.
+These are usually generated with the
+`Django Messages Framework <https://docs.djangoproject.com/en/dev/ref/contrib/messages/>`_.
+
+Expected messages can be provided as a single string, or a list of multiple
+expected strings.
+
+:param response: Response object to check against.
+:param expected_not_messages: Expected messages that response should NOT
+                              contain.
+:param allow_partials: Bool indicating if messages must match exactly, or
+                      are allowed partial matches. Useful for messages that
+                      are extra long, and tests only care about a specific
+                      subsection of the message.
+
+:return: None.
 
 
 assertPageContent
@@ -160,10 +187,6 @@ Asserts that a response has the given page content html.
 
 Expected content can be provided as a single string, or a list of multiple
 expected strings.
-
-Optionally can also verify ordering of expected elements, with the assertion
-failing if elements are not found in order on the page. Default is to assume
-that ordering is important.
 
 :param response: Response object to check against.
 :param expected_content: Expected content that response should contain.
@@ -179,6 +202,31 @@ that ordering is important.
                             multiple instances exist on page, then the first
                             found instance (from bottom of HTML output) is
                             selected.
+
+:return: The found response content, in case tests need to run additional
+         logic on it.
+
+
+assertNotPageContent
+--------------------
+
+.. code::
+
+    assertNotPageContent()
+
+The negation of
+:ref:`test_cases/integration_test_case/other_functionality:assertPageContent`
+Asserts that a response does not contain the given page content html.
+
+Expected content can be provided as a single string, or a list of multiple
+expected strings.
+
+Optionally can also verify ordering of expected elements, with the assertion
+failing if elements are not found in order on the page. Default is to assume
+that ordering is important.
+
+:param response: Response object to check against.
+:param expected_not_content: Expected content that response should NOT contain.
 
 :return: The found response content, in case tests need to run additional
          logic on it.
@@ -244,12 +292,12 @@ Parses out page header element (aka ``<h1>`` tag) from response object.
 :return: Found page header element.
 
 
-get_page_messages
------------------
+get_context_messages
+--------------------
 
 .. code::
 
-    get_page_messages(response)
+    get_context_messages(response)
 
 Parses out message elements from response object. These are
 usually generated with the
@@ -275,8 +323,9 @@ By default, these functions do nothing on their own and are fully safe to
 override.
 
 * ``_get_login_user__extra_user_auth_setup()`` - This function is called after
-  getting the corresponding User object for authentication LINK HERE, but prior to
-  attempting to process the request-response cycle.
+  getting the corresponding
+  :doc:`User object for authentication<../../managing_test_users>`, but prior
+  to attempting to process the request-response cycle.
 
   This is critical for projects with additional authentication logic.
   If a project has additional authentication logic to process (such as

@@ -83,7 +83,8 @@ Defining this setting can help significantly reduce redundant/"useless" debug
 output for integration tests, as long as the content is universally exclude-able
 project-wide.
 
-See also ``content_starts_after`` parameter at LINK HERE.
+For similar logic on a per-test basis, see
+:ref:`the content_starts_after parameter<test_cases/integration_test_case/response_assertions:Misc Parameters>`.
 
 
 :Type: ``string`` (Either regex or literal)
@@ -108,7 +109,8 @@ Anything below this value will be removed.
 
 Similar to above ``SKIP_CONTENT_BEFORE`` setting.
 
-See also See also ``content_starts_before`` parameter at LINK HERE.
+For similar logic on a per-test basis, see
+:ref:`the content_starts_before parameter<test_cases/integration_test_case/response_assertions:Misc Parameters>`.
 
 
 :Type: ``string`` (Either regex or literal)

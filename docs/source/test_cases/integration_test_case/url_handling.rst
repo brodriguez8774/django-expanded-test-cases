@@ -8,7 +8,8 @@ given Url, and then test these responses accordingly.
 By nature, that means the IntegrationTestCase class has to handle Urls.
 At the moment, there are four separate potential Url concepts:
 
-* **Request Url** - This is the url that is provided to a given **Response Assertion** LINK HERE
+* **Request Url** - This is the url that is provided to a given
+  :doc:`Response Assertion<./response_assertions>`
   in order to process a Django request.
 
 * **Response Urls** - To help facilitate test debugging, all responses generated
@@ -27,11 +28,13 @@ At the moment, there are four separate potential Url concepts:
 
     * ``url_data.provided.args`` - The url args provided in addition to the base
       url string.
-      Exclusively used if treating the url as a reverse (see processing LINK HERE)
+      Exclusively used if treating the url as a
+      `Django reverse url <https://docs.djangoproject.com/en/dev/ref/urlresolvers/#reverse>`_.
 
     * ``url_data.provided.kwargs`` - The url kwargs provided in addition to the
       base url string.
-      Exclusively used if treating the url as a reverse (see processing LINK HERE)
+      Exclusively used if treating the url as a
+      `Django reverse url <https://docs.djangoproject.com/en/dev/ref/urlresolvers/#reverse>`_.
 
     * ``url_data.provided.query_params`` - The url parameters to append to the
       generated url.
@@ -100,7 +103,8 @@ First, the package attempts to read it as a literal url string.
   ``/merchandise/shirts/``.
 
 If the url fails to resolve successfully as a literal url string, then
-the package attempts to resolve the url as a Django reverse url LINK HERE.
+the package attempts to resolve the url as a
+`Django reverse url <https://docs.djangoproject.com/en/dev/ref/urlresolvers/#reverse>`_.
 This includes processing of the ``url_args`` and ``url_kwargs`` values,
 if either was provided.
 These ``url_args``/``url_kwargs`` function the same as args/kwargs for a Django

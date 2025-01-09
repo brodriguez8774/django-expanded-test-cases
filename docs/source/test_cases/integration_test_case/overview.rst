@@ -47,19 +47,22 @@ This class can be imported via:
     from django_expanded_test_cases import IntegrationTestCase
 
 
-All of the default Django assertions are available while using this class. LINK HERE
+All of the default
+`Django assertions <https://docs.djangoproject.com/en/5.1/topics/testing/tools/#assertions>`_
+are available while using this class.
 When in doubt, you can always fall back to the testing assertions provided
 by the standard Django testing suite.
 
 This class also implements all the assertions and logic contained in the
-<LINK TO BASE CLASS HERE LINK HERE>.
+:doc:`../base_test_case`.
 
 
 Overview -  Response Assertions
 -------------------------------
 
 The main functionality provided by the IntegrationTestCase class are various
-**Response Assertions LINK HERE**, which do a good deal of heavy lifting in
+:doc:`Response Assertions<./response_assertions>`,
+which do a good deal of heavy lifting in
 an attempt to make testing easier, more thorough, and faster to write.
 
 These **Response Assertions** are utility functions that can generate a page
@@ -116,30 +119,32 @@ Response Assertions
 **Response Assertions** are the primary functionality provided by the
 IntegrationTestCase class.
 
-LINK HERE for all
-
 The available **Response Assertions** are as follows:
 
-* ``assertGetResponse()`` - Follows a Url, gets a GET page response, and then
+* :ref:`test_cases/integration_test_case/response_assertions:assertGetResponse`
+  - Follows a Url, gets a GET page response, and then
   optionally checks one or more values to verify expected response.
 
-* ``assertPostResponse()`` - Same as above, but for a POST response. Expects to
-  be provided a dictionary of POST data process.
+* :ref:`test_cases/integration_test_case/response_assertions:assertPostResponse`
+  - Same as above, but for a POST response.
+  Expects to be provided a dictionary of POST data process.
 
-* ``assertJsonResponse()`` - Similar to above assertions, but expects a JSON
+* :ref:`test_cases/integration_test_case/response_assertions:assertJsonResponse`
+  - Similar to above assertions, but expects a JSON
   file response, instead of an html response.
   Can optionally take in POST data, but does not need it.
 
 All of these custom response assertions:
 
-* Have **built-in Url processing LINK HERE** for determining and fetching the page
-  response.
+* Have :doc:`url handling<./url_handling>`
+  for determining and fetching the page response.
 
 * Return the acquired response object, for further testing, examination,
   debugging, if desired.
 
-* Call smaller **Element Assertions**, all of which can be invoked separately
-  if desired (see below).
+* Call smaller
+  :ref:`test_cases/integration_test_case/overview:Element Assertions`,
+  all of which can be invoked separately if desired (see below).
 
 
 .. tip::
@@ -176,42 +181,46 @@ element within a `Django Response Object
 Each assertion returns the verified element. This ensures the programmer
 can easily perform additional testing and debugging, if desired.
 
-LINK HERE for all
-
 Provided assertions are as follows:
 
-* ``assertRedirects()`` - Asserts the request is redirected to a specific URL.
+* :ref:`test_cases/integration_test_case/other_functionality:assertRedirects`
+  - Asserts the request is redirected to a specific URL.
 
-* ``assertStatusCode()`` - Asserts the response contains a given status code
-  value.
+* :ref:`test_cases/integration_test_case/other_functionality:assertStatusCode`
+  - Asserts the response contains a given status code value.
 
-* ``assertPageTitle()`` - Asserts the response contains a given title value.
+* :ref:`test_cases/integration_test_case/other_functionality:assertPageTitle`
+  - Asserts the response contains a given title value.
   (Aka, the ``<title>`` tag contents).
 
-* ``assertPageHeader()`` - Asserts the response contains a given page header value
+* :ref:`test_cases/integration_test_case/other_functionality:assertPageHeader`
+  - Asserts the response contains a given page header value
   (Aka, the ``<h1>`` tag contents).
 
-* ``assertContextMessages()`` - Asserts the response contains the given context
-  message values.
+* :ref:`test_cases/integration_test_case/other_functionality:assertContextMessages`
+  - Asserts the response contains the given context message values.
   These are usually generated with the
   `Django Messages Framework <https://docs.djangoproject.com/en/dev/ref/contrib/messages/>`_.
 
-* ``assertNotContextMessages()`` - The negation of above. Asserts the given
+* :ref:`test_cases/integration_test_case/other_functionality:assertNotContextMessages`
+  - The negation of above. Asserts the given
   message ARE NOT found in the response.
 
-* ``assertPageContent()`` - Asserts the response contains the given page content
-  html.
+* :ref:`test_cases/integration_test_case/other_functionality:assertPageContent`
+  - Asserts the response contains the given page content html.
 
   By default, provided values are ordering-sensitive.
   That is, if given values A, B, and C to detect on page, each item must be
   present on the page, AND each item must be found in that order.
 
-* ``assertNotPageContent()`` - The negation of above. Asserts the given content
-  html IS NOT found in the response.
+* :ref:`test_cases/integration_test_case/other_functionality:assertNotPageContent`
+  - The negation of above ``assertPageContent``.
+  Asserts the given content html IS NOT found in the response.
 
   However, ordering is not relevant, since items should not exist to begin with.
 
-* ``assertRepeatingElement()`` - Asserts the response contains the given HTMl
+* :ref:`test_cases/integration_test_case/other_functionality:assertRepeatingElement`
+  - Asserts the response contains the given HTMl
   element, and that it repeats a specified number of times (or more).
 
 
@@ -228,15 +237,15 @@ Helper Functions
 The IntegrationTestCase class also provides additional helper functions,
 to help further speed up the creation of tests.
 
-LINK HERE for all
-
-* ``get_page_title()`` - Parses out the page title element (aka the ``<title>``
+* :ref:`test_cases/integration_test_case/other_functionality:get_page_title`
+  - Parses out the page title element (aka the ``<title>``
   tag) from response object.
 
-* ``get_page_header()`` - Parses out page header element (aka the ``<h1>`` tag)
-  from response object.
+* :ref:`test_cases/integration_test_case/other_functionality:get_page_header`
+  - Parses out page header element (aka the ``<h1>`` tag) from response object.
 
-* ``get_context_messages()`` - Parses out message elements from response object.
+* :ref:`test_cases/integration_test_case/other_functionality:get_context_messages`
+  - Parses out message elements from response object.
   These are usually generated with the
   `Django Messages Framework <https://docs.djangoproject.com/en/dev/ref/contrib/messages/>`_.
 
@@ -259,8 +268,10 @@ By default, these functions do nothing on their own and are fully safe to
 override.
 
 * ``_get_login_user__extra_user_auth_setup()`` - This function is called after
-  getting the corresponding User object for authentication LINK HERE, but prior to
-  attempting to process the request-response cycle.
+  getting the
+  :doc:`corresponding User object<../../managing_test_users>`
+  for authentication, but prior to attempting to process the
+  request-response cycle.
 
 * ``_assertResponse__pre_builtin_tests()`` - This function is called after getting
   the page response, but prior to calling any assertion checks on it.
