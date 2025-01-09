@@ -48,7 +48,7 @@ This class can be imported via:
 
 
 All of the default
-`Django assertions <https://docs.djangoproject.com/en/5.1/topics/testing/tools/#assertions>`_
+`Django assertions <https://docs.djangoproject.com/en/dev/topics/testing/tools/#assertions>`_
 are available while using this class.
 When in doubt, you can always fall back to the testing assertions provided
 by the standard Django testing suite.

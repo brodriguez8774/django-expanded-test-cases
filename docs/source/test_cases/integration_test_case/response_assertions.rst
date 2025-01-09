@@ -174,7 +174,7 @@ request.
   If set to False, then view does not try to authenticate with a new user
   instance, and instead keeps the previously logged in user.
   Which in most instances, will default to
-  `Django's Anonymous Django user <https://docs.djangoproject.com/en/5.1/ref/contrib/auth/#anonymoususer-object>`_.
+  `Django's Anonymous Django user <https://docs.djangoproject.com/en/dev/ref/contrib/auth/#anonymoususer-object>`_.
 
 * ``user`` - User to log in with, if ``auto_login`` is set to True.
   Defaults to ``test_user`` if not provided. Also see

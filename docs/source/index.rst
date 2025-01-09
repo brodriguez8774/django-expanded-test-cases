@@ -22,7 +22,7 @@ For a large project with many thousands of tests, this can add up fast.
 
 Within this package, are three different TestCase classes that can be used as
 a drop-in replacement for
-`Django's included TestCases <https://docs.djangoproject.com/en/4.0/topics/testing/tools/#provided-test-case-classes>`_
+`Django's included TestCases <https://docs.djangoproject.com/en/dev/topics/testing/tools/#provided-test-case-classes>`_
 They are :doc:`test_cases/base_test_case`,
 :doc:`IntegrationTestCase<./test_cases/integration_test_case/overview>`, and
 :doc:`test_cases/live_server_test_case`.

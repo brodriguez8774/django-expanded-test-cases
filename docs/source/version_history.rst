@@ -219,7 +219,7 @@ Version History
 
   * All **assertResponse** type calls take args for additional parameters for
     url parsing, provided as args or kwargs (for Django
-    `reverse <https://docs.djangoproject.com/en/4.2/ref/urlresolvers/#reverse>`_
+    `reverse <https://docs.djangoproject.com/en/dev/ref/urlresolvers/#reverse>`_
     calls), or query_parameters (for GET style url calls).
 
   * These parameters can be sent for both standard url resolving, and redirect

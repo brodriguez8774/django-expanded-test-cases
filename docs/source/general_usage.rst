@@ -16,7 +16,7 @@ Functionality Example #1 - Minimal Test
 
 In any given web framework, the most common use case is to generate some page
 response from a url. So if you wanted a basic test to check that a given
-`url reverse <https://docs.djangoproject.com/en/4.0/ref/urlresolvers/#reverse>`_
+`url reverse <https://docs.djangoproject.com/en/dev/ref/urlresolvers/#reverse>`_
 renders the expected page, you might need to:
 
 * Log in with a specific testing user, if the url is behind a login wall.
