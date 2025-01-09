@@ -66,8 +66,9 @@ Configuring Content Areas for Assertions
 SKIP_CONTENT_BEFORE
 -------------------
 
-Only applicable to ``assertResponse`` statements,
-when using ``expected_content``.
+Only applicable to
+:doc:`Response Assertion<../test_cases/integration_test_case/response_assertions>`
+statements, when using ``expected_content``.
 
 Effectively an "upper" html content value to strip out of both search space
 and debug output.
@@ -100,8 +101,9 @@ For similar logic on a per-test basis, see
 SKIP_CONTENT_AFTER
 ------------------
 
-Only applicable to ``assertResponse`` statements,
-when using ``expected_content``.
+Only applicable to
+:doc:`Response Assertion<../test_cases/integration_test_case/response_assertions>`
+statements, when using ``expected_content``.
 
 Effectively an "lower" html content value to strip out of both search space
 and debug output.
@@ -126,7 +128,9 @@ For similar logic on a per-test basis, see
 SKIP_CONTENT_HEAD
 -----------------
 
-Similar to above ``SKIP_CONTENT_BEFORE`` setting, except in boolean form.
+Similar to above
+:ref:`configuration/general:SKIP_CONTENT_BEFORE`
+setting, except in boolean form.
 Can use this if the project should simply ignore content in the
 ``<head>`` tag.
 
@@ -154,7 +158,7 @@ ALLOW_TITLE_PARTIALS
 --------------------
 
 When running the
-:ref:`test_cases/integration_test_case/other_functionality:assertPageTitle`
+:ref:`test_cases/integration_test_case/other_functionality:assertPageTitle()`
 assertion, this setting can optionally allow partial title matching.
 If partial is allowed, then checks for title partials/substrings will pass.
 Otherwise, the title string must match the full provided test value,
@@ -175,7 +179,7 @@ ALLOW_MESSAGE_PARTIALS
 ----------------------
 
 When running the
-:ref:`test_cases/integration_test_case/other_functionality:assertContextMessages`
+:ref:`test_cases/integration_test_case/other_functionality:assertContextMessages()`
 assertion, this setting can optionally allow partial message matching.
 If partial is allowed, then checks for message partials/substrings will pass.
 Otherwise, the message string must match the full provided test value,
@@ -196,7 +200,7 @@ MATCH_ALL_CONTEXT_MESSAGES
 --------------------------
 
 When running the
-:ref:`test_cases/integration_test_case/other_functionality:assertContextMessages`
+:ref:`test_cases/integration_test_case/other_functionality:assertContextMessages()`
 assertion, this setting optionally tell tests to fail when there are messages in
 the response that were not explicitly tested for.
 

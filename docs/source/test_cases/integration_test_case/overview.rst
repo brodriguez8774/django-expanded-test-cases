@@ -121,15 +121,15 @@ IntegrationTestCase class.
 
 The available **Response Assertions** are as follows:
 
-* :ref:`test_cases/integration_test_case/response_assertions:assertGetResponse`
+* :ref:`test_cases/integration_test_case/response_assertions:assertGetResponse()`
   - Follows a Url, gets a GET page response, and then
   optionally checks one or more values to verify expected response.
 
-* :ref:`test_cases/integration_test_case/response_assertions:assertPostResponse`
+* :ref:`test_cases/integration_test_case/response_assertions:assertPostResponse()`
   - Same as above, but for a POST response.
   Expects to be provided a dictionary of POST data process.
 
-* :ref:`test_cases/integration_test_case/response_assertions:assertJsonResponse`
+* :ref:`test_cases/integration_test_case/response_assertions:assertJsonResponse()`
   - Similar to above assertions, but expects a JSON
   file response, instead of an html response.
   Can optionally take in POST data, but does not need it.
@@ -183,43 +183,43 @@ can easily perform additional testing and debugging, if desired.
 
 Provided assertions are as follows:
 
-* :ref:`test_cases/integration_test_case/other_functionality:assertRedirects`
+* :ref:`test_cases/integration_test_case/other_functionality:assertRedirects()`
   - Asserts the request is redirected to a specific URL.
 
-* :ref:`test_cases/integration_test_case/other_functionality:assertStatusCode`
+* :ref:`test_cases/integration_test_case/other_functionality:assertStatusCode()`
   - Asserts the response contains a given status code value.
 
-* :ref:`test_cases/integration_test_case/other_functionality:assertPageTitle`
+* :ref:`test_cases/integration_test_case/other_functionality:assertPageTitle()`
   - Asserts the response contains a given title value.
   (Aka, the ``<title>`` tag contents).
 
-* :ref:`test_cases/integration_test_case/other_functionality:assertPageHeader`
+* :ref:`test_cases/integration_test_case/other_functionality:assertPageHeader()`
   - Asserts the response contains a given page header value
   (Aka, the ``<h1>`` tag contents).
 
-* :ref:`test_cases/integration_test_case/other_functionality:assertContextMessages`
+* :ref:`test_cases/integration_test_case/other_functionality:assertContextMessages()`
   - Asserts the response contains the given context message values.
   These are usually generated with the
   `Django Messages Framework <https://docs.djangoproject.com/en/dev/ref/contrib/messages/>`_.
 
-* :ref:`test_cases/integration_test_case/other_functionality:assertNotContextMessages`
+* :ref:`test_cases/integration_test_case/other_functionality:assertNotContextMessages()`
   - The negation of above. Asserts the given
   message ARE NOT found in the response.
 
-* :ref:`test_cases/integration_test_case/other_functionality:assertPageContent`
+* :ref:`test_cases/integration_test_case/other_functionality:assertPageContent()`
   - Asserts the response contains the given page content html.
 
   By default, provided values are ordering-sensitive.
   That is, if given values A, B, and C to detect on page, each item must be
   present on the page, AND each item must be found in that order.
 
-* :ref:`test_cases/integration_test_case/other_functionality:assertNotPageContent`
+* :ref:`test_cases/integration_test_case/other_functionality:assertNotPageContent()`
   - The negation of above ``assertPageContent``.
   Asserts the given content html IS NOT found in the response.
 
   However, ordering is not relevant, since items should not exist to begin with.
 
-* :ref:`test_cases/integration_test_case/other_functionality:assertRepeatingElement`
+* :ref:`test_cases/integration_test_case/other_functionality:assertRepeatingElement()`
   - Asserts the response contains the given HTMl
   element, and that it repeats a specified number of times (or more).
 
@@ -237,14 +237,14 @@ Helper Functions
 The IntegrationTestCase class also provides additional helper functions,
 to help further speed up the creation of tests.
 
-* :ref:`test_cases/integration_test_case/other_functionality:get_page_title`
+* :ref:`test_cases/integration_test_case/other_functionality:get_page_title()`
   - Parses out the page title element (aka the ``<title>``
   tag) from response object.
 
-* :ref:`test_cases/integration_test_case/other_functionality:get_page_header`
+* :ref:`test_cases/integration_test_case/other_functionality:get_page_header()`
   - Parses out page header element (aka the ``<h1>`` tag) from response object.
 
-* :ref:`test_cases/integration_test_case/other_functionality:get_context_messages`
+* :ref:`test_cases/integration_test_case/other_functionality:get_context_messages()`
   - Parses out message elements from response object.
   These are usually generated with the
   `Django Messages Framework <https://docs.djangoproject.com/en/dev/ref/contrib/messages/>`_.

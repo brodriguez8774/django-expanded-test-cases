@@ -13,12 +13,12 @@ Specifically, the **Response Assertions**, which make up the bulk of this class.
 Available Assertions
 ====================
 
-assertResponse
---------------
+assertResponse()
+----------------
 
 .. code::
 
-    assertResponse()
+    self.assertResponse(url, *args, **kwargs)
 
 The core **Response Assertion**.
 
@@ -35,9 +35,10 @@ of ``status_code``, which will assume a default of ``200`` if not provided.
 .. note::
 
     This assertion is the base for other assertions that are more explicit.
-    :ref:`test_cases/integration_test_case/response_assertions:assertGetResponse`,
-    :ref:`test_cases/integration_test_case/response_assertions:assertPostResponse`, and
-    :ref:`test_cases/integration_test_case/response_assertions:assertJsonResponse`.
+    :ref:`test_cases/integration_test_case/response_assertions:assertGetResponse()`,
+    :ref:`test_cases/integration_test_case/response_assertions:assertPostResponse()`
+    , and
+    :ref:`test_cases/integration_test_case/response_assertions:assertJsonResponse()`.
     It is recommended that you use these more explicit versions so that your
     test expresses clarity as to what the expected request type should be.
 
@@ -46,12 +47,12 @@ in case tests need to run additional logic on it.
 Such as further assertions or additional debugging.
 
 
-assertGetResponse
------------------
+assertGetResponse()
+-------------------
 
 .. code::
 
-    assertGetResponse(*args, **kwargs)
+    self.assertGetResponse(url, *args, **kwargs)
 
 A wrapper for the above ``assertResponse()``, that has minimal extra logic for
 ensuring that the response is generated from a GET request.
@@ -59,12 +60,12 @@ ensuring that the response is generated from a GET request.
 See below for available parameters.
 
 
-assertPostResponse
-------------------
+assertPostResponse()
+--------------------
 
 .. code::
 
-    assertPostResponse(*args, **kwargs)
+    self.assertPostResponse(url, *args, **kwargs)
 
 A wrapper for the above ``assertResponse()``, that has minimal extra logic for
 ensuring that the response is generated from a POST request.
@@ -72,12 +73,12 @@ ensuring that the response is generated from a POST request.
 See below for available parameters.
 
 
-assertJsonResponse
-------------------
+assertJsonResponse()
+--------------------
 
 .. code::
 
-    assertJsonResponse(*args, **kwargs)
+    self.assertJsonResponse(url, *args, **kwargs)
 
 
 A wrapper for the above ``assertResponse()``, that has minimal extra logic for
@@ -259,7 +260,9 @@ Response Assertion Parameters
   Verifies content that should NOT show up in the page response.
 
 * ``expected_json`` - Expected JSON content that the response should contain.
-  Only applicable to `assertJsonResponse()` assertion.
+  Only applicable to the
+  ref:`test_cases/integration_test_case/response_assertions:assertJsonResponse()`
+  assertion.
 
 
 ----
@@ -273,8 +276,10 @@ Most of these parameters further customize how assertion checks function.
 * ``ignore_content_ordering`` - Bool indicating if ordering of the
   ``expected_content`` is important or not.
   Defaults to True, assuming that ordering matters.
-  That is, if all `expected_content`` is found on page, but are not in the
-  correct order, then the assertion will still fail.
+  That is, if all
+  :ref:`expected_content<test_cases/integration_test_case/response_assertions:Response Assertion Parameters>`
+  is found on page, but are not in the correct order, then the assertion
+  will still fail.
 
 * ``content_starts_after`` - Optional "upper" html content value to strip
   out of both search space and debug output.

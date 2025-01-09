@@ -21,12 +21,12 @@ required testing that the assertion didn't handle can be easily performed on
 the element.
 
 
-assertRedirects
----------------
+assertRedirects()
+-----------------
 
 .. code::
 
-    assertRedirects()
+    self.assertRedirects()
 
 Asserts that a request is redirected to a specific URL.
 
@@ -45,12 +45,12 @@ However, this adds additional wrapper logic to:
 :return: Return value of parent Django assertRedirects() function.
 
 
-assertStatusCode
-----------------
+assertStatusCode()
+------------------
 
 .. code::
 
-    assertStatusCode()
+    self.assertStatusCode()
 
 Asserts that a response has a given status code value.
 
@@ -62,12 +62,12 @@ Asserts that a response has a given status code value.
         logic on it.
 
 
-assertPageTitle
----------------
+assertPageTitle()
+-----------------
 
 .. code::
 
-    assertPageTitle()
+    self.assertPageTitle()
 
 Asserts that a response has a given title value. Aka, the ``<title>`` tag
 contents.
@@ -83,12 +83,12 @@ contents.
         on it.
 
 
-assertPageHeader
-----------------
+assertPageHeader()
+------------------
 
 .. code::
 
-    assertPageHeader()
+    self.assertPageHeader()
 
 Asserts that a response has a given page header value. Aka, the ``<h1>`` tag
 contents.
@@ -104,12 +104,12 @@ reliably in cases when there are multiple ``<h1>`` header tags on a page.
         logic on it.
 
 
-assertContextMessages
----------------------
+assertContextMessages()
+-----------------------
 
 .. code::
 
-    assertContextMessages()
+    self.assertContextMessages()
 
 Asserts that a response has the given context message values. These are
 usually generated with the
@@ -149,15 +149,15 @@ expected strings.
    checked for.
 
 
-assertNotContextMessages
-------------------------
+assertNotContextMessages()
+--------------------------
 
 .. code::
 
-    assertNotContextMessages()
+    self.assertNotContextMessages()
 
 The negation of
-:ref:`test_cases/integration_test_case/other_functionality:assertContextMessages`
+:ref:`test_cases/integration_test_case/other_functionality:assertContextMessages()`
 Asserts that a response does not contain the given context message values.
 These are usually generated with the
 `Django Messages Framework <https://docs.djangoproject.com/en/dev/ref/contrib/messages/>`_.
@@ -176,12 +176,12 @@ expected strings.
 :return: None.
 
 
-assertPageContent
------------------
+assertPageContent()
+-------------------
 
 .. code::
 
-    assertPageContent()
+    self.assertPageContent()
 
 Asserts that a response has the given page content html.
 
@@ -207,15 +207,15 @@ expected strings.
          logic on it.
 
 
-assertNotPageContent
---------------------
+assertNotPageContent()
+----------------------
 
 .. code::
 
-    assertNotPageContent()
+    self.assertNotPageContent()
 
 The negation of
-:ref:`test_cases/integration_test_case/other_functionality:assertPageContent`
+:ref:`test_cases/integration_test_case/other_functionality:assertPageContent()`
 Asserts that a response does not contain the given page content html.
 
 Expected content can be provided as a single string, or a list of multiple
@@ -232,12 +232,12 @@ that ordering is important.
          logic on it.
 
 
-assertRepeatingElement
-----------------------
+assertRepeatingElement()
+------------------------
 
 .. code::
 
-    assertRepeatingElement()
+    self.assertRepeatingElement()
 
 :param response: Response object to check against.
 :param expected_repeating_element: The expected repeating HTML element.
@@ -264,12 +264,12 @@ assertRepeatingElement
 Helper Functions
 ================
 
-get_page_title
---------------
+get_page_title()
+----------------
 
 .. code::
 
-    get_page_title(response)
+    self.get_page_title(response)
 
 Parses out title element (aka ``<title>`` tag) from response object.
 
@@ -278,12 +278,12 @@ Parses out title element (aka ``<title>`` tag) from response object.
 :return: Found title element.
 
 
-get_page_header
----------------
+get_page_header()
+-----------------
 
 .. code::
 
-    get_page_header(response)
+    self.get_page_header(response)
 
 Parses out page header element (aka ``<h1>`` tag) from response object.
 
@@ -292,12 +292,12 @@ Parses out page header element (aka ``<h1>`` tag) from response object.
 :return: Found page header element.
 
 
-get_context_messages
---------------------
+get_context_messages()
+----------------------
 
 .. code::
 
-    get_context_messages(response)
+    self.get_context_messages(response)
 
 Parses out message elements from response object. These are
 usually generated with the
@@ -322,8 +322,8 @@ inject.
 By default, these functions do nothing on their own and are fully safe to
 override.
 
-* ``_get_login_user__extra_user_auth_setup()`` - This function is called after
-  getting the corresponding
+* ``self._get_login_user__extra_user_auth_setup()``
+  - This function is called after getting the corresponding
   :doc:`User object for authentication<../../managing_test_users>`, but prior
   to attempting to process the request-response cycle.
 
@@ -335,8 +335,9 @@ override.
   This hook receives only known args/kwargs that are related to user
   authentication and request processing.
 
-* ``_assertResponse__pre_builtin_tests()`` - This function is called after getting
-  the page response, but prior to calling any assertion checks on it.
+* ``self._assertResponse__pre_builtin_tests()``
+  - This function is called after getting the page response, but prior to
+  calling any assertion checks on it.
 
   If a project requires any additional pre-check setup, or should have any
   custom checks to run prior to those built into ETC, then it should be done
@@ -344,7 +345,8 @@ override.
 
   This hook receives all known args/kwargs that the response assertion receives.
 
-* ``_assertResponse__post_builtin_tests()`` - This function is called after
+* ``self._assertResponse__post_builtin_tests()``
+  - This function is called after
   getting the page response, and after calling all provided assertion checks
   on it.
 
