@@ -267,7 +267,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         url_args = (*kwargs.pop('args', []), *(url_args or []))
         url_query_params = url_query_params or {}
         redirect_args = (*(redirect_args or []),)
-        redirect_kwargs = {**(redirect_kwargs or {}),}
+        redirect_kwargs = {
+            **(redirect_kwargs or {}),
+        }
         redirect_query_params = redirect_query_params or {}
         url_kwargs = {**kwargs.pop('kwargs', {}), **(url_kwargs or {})}
         extra_usergen_kwargs = extra_usergen_kwargs or {}
@@ -390,7 +392,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         if view_should_redirect is None:
             # No value provided for this assertion. Fall back to settings value.
             view_should_redirect = ETC_VIEWS_SHOULD_REDIRECT
-        if view_should_redirect is not None and not (bool(response.url_data.computed.redirect_url) == view_should_redirect):
+        if view_should_redirect is not None and not (
+            bool(response.url_data.computed.redirect_url) == view_should_redirect
+        ):
             if view_should_redirect:
                 self.fail('Expected a page redirect, but response did not redirect.')
             else:
@@ -875,6 +879,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             ):
                 self.fail(
                     (
+                        # Comment to prevent "black" formatting.
                         'Response expected_redirect_url didn\'t match. '
                         'Expected url was "{0}". Actual url was "{1}".'
                     ).format(
@@ -1715,7 +1720,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         url_args = (*kwargs.pop('args', []), *(url_args or []))
         url_kwargs = {**kwargs.pop('kwargs', {}), **(url_kwargs or {})}
         query_params = query_params or {}
-        extra_usergen_kwargs = {**(extra_usergen_kwargs or {}),}
+        extra_usergen_kwargs = {
+            **(extra_usergen_kwargs or {}),
+        }
 
         # Save provided values for user post-test debugging.
         response_url_data = ResponseUrlData(

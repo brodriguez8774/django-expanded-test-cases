@@ -1006,7 +1006,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                 site_root_check = site_root_check.lstrip('https:')
             site_root_check = site_root_check.lstrip('/').rstrip('/')
             if url.startswith(site_root_check):
-                url = url[len(site_root_check):]
+                url = url[len(site_root_check) :]
             # Remove standard 127 url prefix domain.
             elif url.startswith('127.0.0.1'):
                 url = url.lstrip('127.0.0.1')

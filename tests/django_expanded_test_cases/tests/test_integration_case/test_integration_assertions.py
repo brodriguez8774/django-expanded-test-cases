@@ -907,7 +907,10 @@ class IntegrationAssertionTestCase:
                 response = self.assertResponse('django_expanded_test_cases:response-with-three-messages')
 
                 # Provided values.
-                self.assertText('django_expanded_test_cases:response-with-three-messages', response.url_data.provided.url)
+                self.assertText(
+                    'django_expanded_test_cases:response-with-three-messages',
+                    response.url_data.provided.url,
+                )
                 self.assertEqual(tuple(), response.url_data.provided.args)
                 self.assertEqual({}, response.url_data.provided.kwargs)
                 self.assertEqual({}, response.url_data.provided.query_params)
@@ -985,9 +988,15 @@ class IntegrationAssertionTestCase:
 
                 # Computed values.
                 self.assertText('/views/one-message/', response.url_data.computed.initial_url)
-                self.assertText('https://my_really_cool_site.com/views/one-message/', response.url_data.computed.full_initial_url, )
+                self.assertText(
+                    'https://my_really_cool_site.com/views/one-message/',
+                    response.url_data.computed.full_initial_url,
+                )
                 self.assertText('/views/one-message/', response.url_data.computed.final_url)
-                self.assertText('https://my_really_cool_site.com/views/one-message/', response.url_data.computed.full_final_url, )
+                self.assertText(
+                    'https://my_really_cool_site.com/views/one-message/',
+                    response.url_data.computed.full_final_url,
+                )
                 self.assertIsNone(response.url_data.computed.redirect_url)
                 self.assertIsNone(response.url_data.computed.full_redirect_url)
 
@@ -1002,9 +1011,15 @@ class IntegrationAssertionTestCase:
 
                 # Computed values.
                 self.assertText('/views/two-messages/', response.url_data.computed.initial_url)
-                self.assertText('https://my_really_cool_site.com/views/two-messages/', response.url_data.computed.full_initial_url, )
+                self.assertText(
+                    'https://my_really_cool_site.com/views/two-messages/',
+                    response.url_data.computed.full_initial_url,
+                )
                 self.assertText('/views/two-messages/', response.url_data.computed.final_url)
-                self.assertText('https://my_really_cool_site.com/views/two-messages/', response.url_data.computed.full_final_url, )
+                self.assertText(
+                    'https://my_really_cool_site.com/views/two-messages/',
+                    response.url_data.computed.full_final_url,
+                )
                 self.assertIsNone(response.url_data.computed.redirect_url)
                 self.assertIsNone(response.url_data.computed.full_redirect_url)
 
@@ -1012,16 +1027,25 @@ class IntegrationAssertionTestCase:
                 response = self.assertResponse('django_expanded_test_cases:response-with-three-messages')
 
                 # Provided values.
-                self.assertText('django_expanded_test_cases:response-with-three-messages', response.url_data.provided.url)
+                self.assertText(
+                    'django_expanded_test_cases:response-with-three-messages',
+                    response.url_data.provided.url,
+                )
                 self.assertEqual(tuple(), response.url_data.provided.args)
                 self.assertEqual({}, response.url_data.provided.kwargs)
                 self.assertEqual({}, response.url_data.provided.query_params)
 
                 # Computed values.
                 self.assertText('/views/three-messages/', response.url_data.computed.initial_url)
-                self.assertText('https://my_really_cool_site.com/views/three-messages/', response.url_data.computed.full_initial_url, )
+                self.assertText(
+                    'https://my_really_cool_site.com/views/three-messages/',
+                    response.url_data.computed.full_initial_url,
+                )
                 self.assertText('/views/three-messages/', response.url_data.computed.final_url)
-                self.assertText('https://my_really_cool_site.com/views/three-messages/', response.url_data.computed.full_final_url, )
+                self.assertText(
+                    'https://my_really_cool_site.com/views/three-messages/',
+                    response.url_data.computed.full_final_url,
+                )
                 self.assertIsNone(response.url_data.computed.redirect_url)
                 self.assertIsNone(response.url_data.computed.full_redirect_url)
 
@@ -1078,14 +1102,23 @@ class IntegrationAssertionTestCase:
                 # Provided values.
                 self.assertText('django_expanded_test_cases:user-detail', response.url_data.provided.url)
                 self.assertEqual((1,), response.url_data.provided.args)
-                self.assertEqual({}, response.url_data.provided.kwargs, )
+                self.assertEqual(
+                    {},
+                    response.url_data.provided.kwargs,
+                )
                 self.assertEqual({'test_1': 'aaa', 'test_2': 'bbb'}, response.url_data.provided.query_params)
 
                 # Computed values.
                 self.assertText('/user/detail/1/?test_1=aaa&test_2=bbb', response.url_data.computed.initial_url)
-                self.assertText('127.0.0.1/user/detail/1/?test_1=aaa&test_2=bbb', response.url_data.computed.full_initial_url, )
+                self.assertText(
+                    '127.0.0.1/user/detail/1/?test_1=aaa&test_2=bbb',
+                    response.url_data.computed.full_initial_url,
+                )
                 self.assertText('/user/detail/1/?test_1=aaa&test_2=bbb', response.url_data.computed.final_url)
-                self.assertText('127.0.0.1/user/detail/1/?test_1=aaa&test_2=bbb', response.url_data.computed.full_final_url, )
+                self.assertText(
+                    '127.0.0.1/user/detail/1/?test_1=aaa&test_2=bbb',
+                    response.url_data.computed.full_final_url,
+                )
                 self.assertIsNone(response.url_data.computed.redirect_url)
                 self.assertIsNone(response.url_data.computed.full_redirect_url)
 
@@ -1107,9 +1140,15 @@ class IntegrationAssertionTestCase:
 
                 # Computed values.
                 self.assertText('/user/detail/2/?test_1=aaa&test_2=bbb', response.url_data.computed.initial_url)
-                self.assertText('127.0.0.1/user/detail/2/?test_1=aaa&test_2=bbb', response.url_data.computed.full_initial_url, )
+                self.assertText(
+                    '127.0.0.1/user/detail/2/?test_1=aaa&test_2=bbb',
+                    response.url_data.computed.full_initial_url,
+                )
                 self.assertText('/user/detail/2/?test_1=aaa&test_2=bbb', response.url_data.computed.final_url)
-                self.assertText('127.0.0.1/user/detail/2/?test_1=aaa&test_2=bbb', response.url_data.computed.full_final_url,)
+                self.assertText(
+                    '127.0.0.1/user/detail/2/?test_1=aaa&test_2=bbb',
+                    response.url_data.computed.full_final_url,
+                )
                 self.assertIsNone(response.url_data.computed.redirect_url)
                 self.assertIsNone(response.url_data.computed.full_redirect_url)
 
@@ -1167,11 +1206,15 @@ class IntegrationAssertionTestCase:
 
                 # Computed values.
                 self.assertText('/user/detail/1/?test_1=aaa&test_2=bbb', response.url_data.computed.initial_url)
-                self.assertText('127.0.0.1/user/detail/1/?test_1=aaa&test_2=bbb',
-                                response.url_data.computed.full_initial_url, )
+                self.assertText(
+                    '127.0.0.1/user/detail/1/?test_1=aaa&test_2=bbb',
+                    response.url_data.computed.full_initial_url,
+                )
                 self.assertText('/user/detail/1/?test_1=aaa&test_2=bbb', response.url_data.computed.final_url)
-                self.assertText('127.0.0.1/user/detail/1/?test_1=aaa&test_2=bbb',
-                                response.url_data.computed.full_final_url, )
+                self.assertText(
+                    '127.0.0.1/user/detail/1/?test_1=aaa&test_2=bbb',
+                    response.url_data.computed.full_final_url,
+                )
                 self.assertIsNone(response.url_data.computed.redirect_url)
                 self.assertIsNone(response.url_data.computed.full_redirect_url)
 
@@ -1193,11 +1236,15 @@ class IntegrationAssertionTestCase:
 
                 # Computed values.
                 self.assertText('/user/detail/2/?test_1=aaa&test_2=bbb', response.url_data.computed.initial_url)
-                self.assertText('127.0.0.1/user/detail/2/?test_1=aaa&test_2=bbb',
-                                response.url_data.computed.full_initial_url, )
+                self.assertText(
+                    '127.0.0.1/user/detail/2/?test_1=aaa&test_2=bbb',
+                    response.url_data.computed.full_initial_url,
+                )
                 self.assertText('/user/detail/2/?test_1=aaa&test_2=bbb', response.url_data.computed.final_url)
-                self.assertText('127.0.0.1/user/detail/2/?test_1=aaa&test_2=bbb',
-                                response.url_data.computed.full_final_url, )
+                self.assertText(
+                    '127.0.0.1/user/detail/2/?test_1=aaa&test_2=bbb',
+                    response.url_data.computed.full_final_url,
+                )
                 self.assertIsNone(response.url_data.computed.redirect_url)
                 self.assertIsNone(response.url_data.computed.full_redirect_url)
 
@@ -1221,7 +1268,12 @@ class IntegrationAssertionTestCase:
                 self.assertIsNone(response.url_data.computed.full_redirect_url)
 
             with self.subTest('Test "user detail" page via kwargs'):
-                response = self.assertResponse(reverse('django_expanded_test_cases:user-detail', kwargs={'pk': 2},),)
+                response = self.assertResponse(
+                    reverse(
+                        'django_expanded_test_cases:user-detail',
+                        kwargs={'pk': 2},
+                    ),
+                )
 
                 # Provided values.
                 self.assertText('/user/detail/2/', response.url_data.provided.url)
@@ -1240,7 +1292,10 @@ class IntegrationAssertionTestCase:
             with self.subTest('Test "user detail" page via args plus query params'):
                 response = self.assertResponse(
                     reverse('django_expanded_test_cases:user-detail', args=(1,)),
-                    url_query_params={'test_1': 'aaa', 'test_2': 'bbb',},
+                    url_query_params={
+                        'test_1': 'aaa',
+                        'test_2': 'bbb',
+                    },
                 )
 
                 # Provided values.
@@ -1251,16 +1306,25 @@ class IntegrationAssertionTestCase:
 
                 # Computed values.
                 self.assertText('/user/detail/1/?test_1=aaa&test_2=bbb', response.url_data.computed.initial_url)
-                self.assertText('127.0.0.1/user/detail/1/?test_1=aaa&test_2=bbb', response.url_data.computed.full_initial_url, )
+                self.assertText(
+                    '127.0.0.1/user/detail/1/?test_1=aaa&test_2=bbb',
+                    response.url_data.computed.full_initial_url,
+                )
                 self.assertText('/user/detail/1/?test_1=aaa&test_2=bbb', response.url_data.computed.final_url)
-                self.assertText('127.0.0.1/user/detail/1/?test_1=aaa&test_2=bbb', response.url_data.computed.full_final_url, )
+                self.assertText(
+                    '127.0.0.1/user/detail/1/?test_1=aaa&test_2=bbb',
+                    response.url_data.computed.full_final_url,
+                )
                 self.assertIsNone(response.url_data.computed.redirect_url)
                 self.assertIsNone(response.url_data.computed.full_redirect_url)
 
             with self.subTest('Test "user detail" page via kwargs plus query params'):
                 response = self.assertResponse(
                     reverse('django_expanded_test_cases:user-detail', kwargs={'pk': 2}),
-                    url_query_params={'test_1': 'aaa', 'test_2': 'bbb',},
+                    url_query_params={
+                        'test_1': 'aaa',
+                        'test_2': 'bbb',
+                    },
                 )
 
                 # Provided values.
@@ -1271,9 +1335,15 @@ class IntegrationAssertionTestCase:
 
                 # Computed values.
                 self.assertText('/user/detail/2/?test_1=aaa&test_2=bbb', response.url_data.computed.initial_url)
-                self.assertText('127.0.0.1/user/detail/2/?test_1=aaa&test_2=bbb', response.url_data.computed.full_initial_url, )
+                self.assertText(
+                    '127.0.0.1/user/detail/2/?test_1=aaa&test_2=bbb',
+                    response.url_data.computed.full_initial_url,
+                )
                 self.assertText('/user/detail/2/?test_1=aaa&test_2=bbb', response.url_data.computed.final_url)
-                self.assertText('127.0.0.1/user/detail/2/?test_1=aaa&test_2=bbb', response.url_data.computed.full_final_url, )
+                self.assertText(
+                    '127.0.0.1/user/detail/2/?test_1=aaa&test_2=bbb',
+                    response.url_data.computed.full_final_url,
+                )
                 self.assertIsNone(response.url_data.computed.redirect_url)
                 self.assertIsNone(response.url_data.computed.full_redirect_url)
 
@@ -1298,9 +1368,15 @@ class IntegrationAssertionTestCase:
 
                 # Computed values.
                 self.assertText('/user/detail/1/?test_1=aaa&test_2=bbb', response.url_data.computed.initial_url)
-                self.assertText('https://my_really_cool_site.com/user/detail/1/?test_1=aaa&test_2=bbb', response.url_data.computed.full_initial_url, )
+                self.assertText(
+                    'https://my_really_cool_site.com/user/detail/1/?test_1=aaa&test_2=bbb',
+                    response.url_data.computed.full_initial_url,
+                )
                 self.assertText('/user/detail/1/?test_1=aaa&test_2=bbb', response.url_data.computed.final_url)
-                self.assertText('https://my_really_cool_site.com/user/detail/1/?test_1=aaa&test_2=bbb', response.url_data.computed.full_final_url, )
+                self.assertText(
+                    'https://my_really_cool_site.com/user/detail/1/?test_1=aaa&test_2=bbb',
+                    response.url_data.computed.full_final_url,
+                )
                 self.assertIsNone(response.url_data.computed.redirect_url)
                 self.assertIsNone(response.url_data.computed.full_redirect_url)
 
@@ -1322,11 +1398,15 @@ class IntegrationAssertionTestCase:
 
                 # Computed values.
                 self.assertText('/user/detail/2/?test_1=aaa&test_2=bbb', response.url_data.computed.initial_url)
-                self.assertText('https://my_really_cool_site.com/user/detail/2/?test_1=aaa&test_2=bbb',
-                                response.url_data.computed.full_initial_url, )
+                self.assertText(
+                    'https://my_really_cool_site.com/user/detail/2/?test_1=aaa&test_2=bbb',
+                    response.url_data.computed.full_initial_url,
+                )
                 self.assertText('/user/detail/2/?test_1=aaa&test_2=bbb', response.url_data.computed.final_url)
-                self.assertText('https://my_really_cool_site.com/user/detail/2/?test_1=aaa&test_2=bbb',
-                                response.url_data.computed.full_final_url, )
+                self.assertText(
+                    'https://my_really_cool_site.com/user/detail/2/?test_1=aaa&test_2=bbb',
+                    response.url_data.computed.full_final_url,
+                )
                 self.assertIsNone(response.url_data.computed.redirect_url)
                 self.assertIsNone(response.url_data.computed.full_redirect_url)
 
@@ -1620,7 +1700,10 @@ class IntegrationAssertionTestCase:
                 self.assertText('/', response.url_data.computed.redirect_url)
                 self.assertText('127.0.0.1/', response.url_data.computed.full_redirect_url)
 
-                response = self.assertResponse('redirect/index/', expected_redirect_url='django_expanded_test_cases:index',)
+                response = self.assertResponse(
+                    'redirect/index/',
+                    expected_redirect_url='django_expanded_test_cases:index',
+                )
 
                 # Provided values.
                 self.assertText('redirect/index/', response.url_data.provided.url)
@@ -1654,7 +1737,10 @@ class IntegrationAssertionTestCase:
                 self.assertText('/', response.url_data.computed.redirect_url)
                 self.assertText('127.0.0.1/', response.url_data.computed.full_redirect_url)
 
-                response = self.assertResponse('django_expanded_test_cases:redirect-to-index', expected_redirect_url='/')
+                response = self.assertResponse(
+                    'django_expanded_test_cases:redirect-to-index',
+                    expected_redirect_url='/',
+                )
 
                 # Provided values.
                 self.assertText('django_expanded_test_cases:redirect-to-index', response.url_data.provided.url)
@@ -1760,18 +1846,39 @@ class IntegrationAssertionTestCase:
             )
 
             # Provided values.
-            self.assertText('/redirect/with_args/1/As%20standard%20url%20reverse()%20args/', response.url_data.provided.url)
+            self.assertText(
+                '/redirect/with_args/1/As%20standard%20url%20reverse()%20args/',
+                response.url_data.provided.url,
+            )
             self.assertEqual(tuple(), response.url_data.provided.args)
             self.assertEqual({}, response.url_data.provided.kwargs)
             self.assertEqual({}, response.url_data.provided.query_params)
 
             # Computed values.
-            self.assertText('/redirect/with_args/1/As%20standard%20url%20reverse()%20args/', response.url_data.computed.initial_url, )
-            self.assertText('127.0.0.1/redirect/with_args/1/As%20standard%20url%20reverse()%20args/', response.url_data.computed.full_initial_url, )
-            self.assertText('/template-response/1/As%20standard%20url%20reverse()%20args/', response.url_data.computed.final_url,)
-            self.assertText('127.0.0.1/template-response/1/As%20standard%20url%20reverse()%20args/', response.url_data.computed.full_final_url, )
-            self.assertText('/template-response/1/As%20standard%20url%20reverse()%20args/', response.url_data.computed.redirect_url,)
-            self.assertText('127.0.0.1/template-response/1/As%20standard%20url%20reverse()%20args/', response.url_data.computed.full_redirect_url, )
+            self.assertText(
+                '/redirect/with_args/1/As%20standard%20url%20reverse()%20args/',
+                response.url_data.computed.initial_url,
+            )
+            self.assertText(
+                '127.0.0.1/redirect/with_args/1/As%20standard%20url%20reverse()%20args/',
+                response.url_data.computed.full_initial_url,
+            )
+            self.assertText(
+                '/template-response/1/As%20standard%20url%20reverse()%20args/',
+                response.url_data.computed.final_url,
+            )
+            self.assertText(
+                '127.0.0.1/template-response/1/As%20standard%20url%20reverse()%20args/',
+                response.url_data.computed.full_final_url,
+            )
+            self.assertText(
+                '/template-response/1/As%20standard%20url%20reverse()%20args/',
+                response.url_data.computed.redirect_url,
+            )
+            self.assertText(
+                '127.0.0.1/template-response/1/As%20standard%20url%20reverse()%20args/',
+                response.url_data.computed.full_redirect_url,
+            )
 
             # Reverse, as kwargs.
             response = self.assertResponse(
@@ -1799,18 +1906,39 @@ class IntegrationAssertionTestCase:
             )
 
             # Provided values.
-            self.assertText('/redirect/with_args/2/As%20standard%20url%20reverse()%20kwargs/', response.url_data.provided.url)
+            self.assertText(
+                '/redirect/with_args/2/As%20standard%20url%20reverse()%20kwargs/',
+                response.url_data.provided.url,
+            )
             self.assertEqual(tuple(), response.url_data.provided.args)
             self.assertEqual({}, response.url_data.provided.kwargs)
             self.assertEqual({}, response.url_data.provided.query_params)
 
             # Computed values.
-            self.assertText('/redirect/with_args/2/As%20standard%20url%20reverse()%20kwargs/', response.url_data.computed.initial_url, )
-            self.assertText('127.0.0.1/redirect/with_args/2/As%20standard%20url%20reverse()%20kwargs/', response.url_data.computed.full_initial_url, )
-            self.assertText('/template-response/2/As%20standard%20url%20reverse()%20kwargs/', response.url_data.computed.final_url, )
-            self.assertText('127.0.0.1/template-response/2/As%20standard%20url%20reverse()%20kwargs/', response.url_data.computed.full_final_url, )
-            self.assertText('/template-response/2/As%20standard%20url%20reverse()%20kwargs/', response.url_data.computed.redirect_url)
-            self.assertText('127.0.0.1/template-response/2/As%20standard%20url%20reverse()%20kwargs/', response.url_data.computed.full_redirect_url)
+            self.assertText(
+                '/redirect/with_args/2/As%20standard%20url%20reverse()%20kwargs/',
+                response.url_data.computed.initial_url,
+            )
+            self.assertText(
+                '127.0.0.1/redirect/with_args/2/As%20standard%20url%20reverse()%20kwargs/',
+                response.url_data.computed.full_initial_url,
+            )
+            self.assertText(
+                '/template-response/2/As%20standard%20url%20reverse()%20kwargs/',
+                response.url_data.computed.final_url,
+            )
+            self.assertText(
+                '127.0.0.1/template-response/2/As%20standard%20url%20reverse()%20kwargs/',
+                response.url_data.computed.full_final_url,
+            )
+            self.assertText(
+                '/template-response/2/As%20standard%20url%20reverse()%20kwargs/',
+                response.url_data.computed.redirect_url,
+            )
+            self.assertText(
+                '127.0.0.1/template-response/2/As%20standard%20url%20reverse()%20kwargs/',
+                response.url_data.computed.full_redirect_url,
+            )
 
         with self.subTest('Provide via individually passed values'):
             # As of version 0.8, this should no longer be considered for args.
@@ -1841,9 +1969,15 @@ class IntegrationAssertionTestCase:
 
             # Computed values.
             self.assertText('/django_expanded_test_cases:redirect-with-args/', response.url_data.computed.initial_url)
-            self.assertText('127.0.0.1/django_expanded_test_cases:redirect-with-args/', response.url_data.computed.full_initial_url, )
+            self.assertText(
+                '127.0.0.1/django_expanded_test_cases:redirect-with-args/',
+                response.url_data.computed.full_initial_url,
+            )
             self.assertText('/django_expanded_test_cases:redirect-with-args/', response.url_data.computed.final_url)
-            self.assertText('127.0.0.1/django_expanded_test_cases:redirect-with-args/', response.url_data.computed.full_final_url, )
+            self.assertText(
+                '127.0.0.1/django_expanded_test_cases:redirect-with-args/',
+                response.url_data.computed.full_final_url,
+            )
             self.assertIsNone(response.url_data.computed.redirect_url)
             self.assertIsNone(response.url_data.computed.full_redirect_url)
 
@@ -1872,11 +2006,15 @@ class IntegrationAssertionTestCase:
 
             # Computed values.
             self.assertText('/django_expanded_test_cases:redirect-with-args/', response.url_data.computed.initial_url)
-            self.assertText('127.0.0.1/django_expanded_test_cases:redirect-with-args/',
-                            response.url_data.computed.full_initial_url, )
+            self.assertText(
+                '127.0.0.1/django_expanded_test_cases:redirect-with-args/',
+                response.url_data.computed.full_initial_url,
+            )
             self.assertText('/django_expanded_test_cases:redirect-with-args/', response.url_data.computed.final_url)
-            self.assertText('127.0.0.1/django_expanded_test_cases:redirect-with-args/',
-                            response.url_data.computed.full_final_url, )
+            self.assertText(
+                '127.0.0.1/django_expanded_test_cases:redirect-with-args/',
+                response.url_data.computed.full_final_url,
+            )
             self.assertIsNone(response.url_data.computed.redirect_url)
             self.assertIsNone(response.url_data.computed.full_redirect_url)
 
@@ -1905,11 +2043,17 @@ class IntegrationAssertionTestCase:
 
             # Computed values.
             self.assertText('/redirect/with_args/4/As%20url_args/', response.url_data.computed.initial_url)
-            self.assertText('127.0.0.1/redirect/with_args/4/As%20url_args/', response.url_data.computed.full_initial_url)
+            self.assertText(
+                '127.0.0.1/redirect/with_args/4/As%20url_args/',
+                response.url_data.computed.full_initial_url,
+            )
             self.assertText('/template-response/4/As%20url_args/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/template-response/4/As%20url_args/', response.url_data.computed.full_final_url)
             self.assertText('/template-response/4/As%20url_args/', response.url_data.computed.redirect_url)
-            self.assertText('127.0.0.1/template-response/4/As%20url_args/', response.url_data.computed.full_redirect_url)
+            self.assertText(
+                '127.0.0.1/template-response/4/As%20url_args/',
+                response.url_data.computed.full_redirect_url,
+            )
 
         with self.subTest('Provide via kwargs keyword'):
 
@@ -1936,11 +2080,17 @@ class IntegrationAssertionTestCase:
 
             # Computed values.
             self.assertText('/redirect/with_args/5/As%20url_kwargs/', response.url_data.computed.initial_url)
-            self.assertText('127.0.0.1/redirect/with_args/5/As%20url_kwargs/', response.url_data.computed.full_initial_url)
+            self.assertText(
+                '127.0.0.1/redirect/with_args/5/As%20url_kwargs/',
+                response.url_data.computed.full_initial_url,
+            )
             self.assertText('/template-response/5/As%20url_kwargs/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/template-response/5/As%20url_kwargs/', response.url_data.computed.full_final_url)
             self.assertText('/template-response/5/As%20url_kwargs/', response.url_data.computed.redirect_url)
-            self.assertText('127.0.0.1/template-response/5/As%20url_kwargs/', response.url_data.computed.full_redirect_url)
+            self.assertText(
+                '127.0.0.1/template-response/5/As%20url_kwargs/',
+                response.url_data.computed.full_redirect_url,
+            )
 
         with self.subTest('Provide via url_args keyword'):
 
@@ -1967,11 +2117,17 @@ class IntegrationAssertionTestCase:
 
             # Computed values.
             self.assertText('/redirect/with_args/6/As%20url_args/', response.url_data.computed.initial_url)
-            self.assertText('127.0.0.1/redirect/with_args/6/As%20url_args/', response.url_data.computed.full_initial_url)
+            self.assertText(
+                '127.0.0.1/redirect/with_args/6/As%20url_args/',
+                response.url_data.computed.full_initial_url,
+            )
             self.assertText('/template-response/6/As%20url_args/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/template-response/6/As%20url_args/', response.url_data.computed.full_final_url)
             self.assertText('/template-response/6/As%20url_args/', response.url_data.computed.redirect_url)
-            self.assertText('127.0.0.1/template-response/6/As%20url_args/', response.url_data.computed.full_redirect_url)
+            self.assertText(
+                '127.0.0.1/template-response/6/As%20url_args/',
+                response.url_data.computed.full_redirect_url,
+            )
 
         with self.subTest('Provide via url_kwargs keyword'):
 
@@ -1998,11 +2154,17 @@ class IntegrationAssertionTestCase:
 
             # Computed values.
             self.assertText('/redirect/with_args/7/As%20url_kwargs/', response.url_data.computed.initial_url)
-            self.assertText('127.0.0.1/redirect/with_args/7/As%20url_kwargs/', response.url_data.computed.full_initial_url)
+            self.assertText(
+                '127.0.0.1/redirect/with_args/7/As%20url_kwargs/',
+                response.url_data.computed.full_initial_url,
+            )
             self.assertText('/template-response/7/As%20url_kwargs/', response.url_data.computed.final_url)
             self.assertText('127.0.0.1/template-response/7/As%20url_kwargs/', response.url_data.computed.full_final_url)
             self.assertText('/template-response/7/As%20url_kwargs/', response.url_data.computed.redirect_url)
-            self.assertText('127.0.0.1/template-response/7/As%20url_kwargs/', response.url_data.computed.full_redirect_url)
+            self.assertText(
+                '127.0.0.1/template-response/7/As%20url_kwargs/',
+                response.url_data.computed.full_redirect_url,
+            )
 
     @override_settings(APPEND_SLASH=True)
     def test__assertResponse__url_trailing_slash__with_append_slash_true(self):
@@ -2750,7 +2912,6 @@ class IntegrationAssertionTestCase:
                 '127.0.0.1/user/detail/2/',
                 expected_url='/user/detail/2/',
                 expected_final_url='/user/detail/2/',
-
             )
             self.assertText('/user/detail/2/', response.url_data.computed.initial_url)
             self.assertText('127.0.0.1/user/detail/2/', response.url_data.computed.full_initial_url)
@@ -2885,9 +3046,15 @@ class IntegrationAssertionTestCase:
                 expected_final_url='/views/one-message/',
             )
             self.assertText('/views/one-message/', response.url_data.computed.initial_url)
-            self.assertText('https://my_really_cool_site.com/views/one-message/', response.url_data.computed.full_initial_url, )
+            self.assertText(
+                'https://my_really_cool_site.com/views/one-message/',
+                response.url_data.computed.full_initial_url,
+            )
             self.assertText('/views/one-message/', response.url_data.computed.final_url)
-            self.assertText('https://my_really_cool_site.com/views/one-message/', response.url_data.computed.full_final_url,)
+            self.assertText(
+                'https://my_really_cool_site.com/views/one-message/',
+                response.url_data.computed.full_final_url,
+            )
             self.assertIsNone(response.url_data.computed.redirect_url)
             self.assertIsNone(response.url_data.computed.full_redirect_url)
 
@@ -2898,9 +3065,15 @@ class IntegrationAssertionTestCase:
                 expected_final_url='/views/two-messages/',
             )
             self.assertText('/views/two-messages/', response.url_data.computed.initial_url)
-            self.assertText('https://my_really_cool_site.com/views/two-messages/', response.url_data.computed.full_initial_url, )
+            self.assertText(
+                'https://my_really_cool_site.com/views/two-messages/',
+                response.url_data.computed.full_initial_url,
+            )
             self.assertText('/views/two-messages/', response.url_data.computed.final_url)
-            self.assertText('https://my_really_cool_site.com/views/two-messages/', response.url_data.computed.full_final_url,)
+            self.assertText(
+                'https://my_really_cool_site.com/views/two-messages/',
+                response.url_data.computed.full_final_url,
+            )
             self.assertIsNone(response.url_data.computed.redirect_url)
             self.assertIsNone(response.url_data.computed.full_redirect_url)
 
@@ -2911,9 +3084,15 @@ class IntegrationAssertionTestCase:
                 expected_final_url='/views/three-messages/',
             )
             self.assertText('/views/three-messages/', response.url_data.computed.initial_url)
-            self.assertText('https://my_really_cool_site.com/views/three-messages/', response.url_data.computed.full_initial_url, )
+            self.assertText(
+                'https://my_really_cool_site.com/views/three-messages/',
+                response.url_data.computed.full_initial_url,
+            )
             self.assertText('/views/three-messages/', response.url_data.computed.final_url)
-            self.assertText('https://my_really_cool_site.com/views/three-messages/', response.url_data.computed.full_final_url,)
+            self.assertText(
+                'https://my_really_cool_site.com/views/three-messages/',
+                response.url_data.computed.full_final_url,
+            )
             self.assertIsNone(response.url_data.computed.redirect_url)
             self.assertIsNone(response.url_data.computed.full_redirect_url)
 
@@ -2956,7 +3135,7 @@ class IntegrationAssertionTestCase:
 
         with self.subTest('Verify error on urls that don\'t match'):
             expected_err_msg = (
-                # To prevent Black single-lining this.
+                # Comment to prevent "black" formatting.
                 'Expected Url and actual Url do not match. \n'
                 'Expected Url: \n'
                 '"{0}" \n'
@@ -3056,6 +3235,7 @@ class IntegrationAssertionTestCase:
         """
 
         expected_url_err_msg = (
+            # Comment to prevent "black" formatting.
             'Expected Url and actual Url do not match. \n'
             'Expected Url: \n'
             '"{0}" \n'
@@ -3063,6 +3243,7 @@ class IntegrationAssertionTestCase:
             '"{1}" \n'
         )
         expected_final_url_err_msg = (
+            # Comment to prevent "black" formatting.
             'Expected final_url and actual final_url do not match. \n'
             'Expected final_url: \n'
             '"{0}" \n'
@@ -3552,6 +3733,7 @@ class IntegrationAssertionTestCase:
                     )
                 self.assertEqual(
                     (
+                        # Comment to prevent "black" formatting.
                         'Response expected_redirect_url didn\'t match. '
                         'Expected url was "{0}". Actual url was "{1}".'
                     ).format(
@@ -4452,9 +4634,15 @@ class IntegrationAssertionTestCase:
         """
         Tests assertResponseRedirects() function, in cases when it should fail.
         """
-        exception_msg__incorrect_code = 'Response didn\'t redirect as expected. Response code was {0} (expected 302).'
+        exception_msg__incorrect_code = (
+            # Comment to prevent "black" formatting.
+            'Response didn\'t redirect as expected. '
+            'Response code was {0} (expected 302).'
+        )
         exception_msg__incorrect_url = (
-            'Response expected_redirect_url didn\'t match. Expected url was "{0}". Actual url was "{1}".'
+            # Comment to prevent "black" formatting.
+            'Response expected_redirect_url didn\'t match. '
+            'Expected url was "{0}". Actual url was "{1}".'
         )
 
         with self.subTest('With view that does not redirect - Invalid page'):
