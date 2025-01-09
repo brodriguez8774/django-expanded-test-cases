@@ -26,7 +26,7 @@ assertRedirects()
 
 .. code::
 
-    self.assertRedirects()
+    self.assertRedirects(response, expected_redirect_url)
 
 Asserts that a request is redirected to a specific URL.
 
@@ -50,7 +50,7 @@ assertStatusCode()
 
 .. code::
 
-    self.assertStatusCode()
+    self.assertStatusCode(response, expected_status)
 
 Asserts that a response has a given status code value.
 
@@ -67,17 +67,20 @@ assertPageTitle()
 
 .. code::
 
-    self.assertPageTitle()
+    self.assertPageTitle(response, expected_title, allow_partials=True)
 
 Asserts that a response has a given title value. Aka, the ``<title>`` tag
 contents.
 
 :param response: Response object to check against.
 :param expected_title: Expected title text that response should have.
-:param exact_match: Bool indicating if title needs to match exactly, or is
-                   allowed partial matches. Useful when site title is long,
-                   and tests only care about a specific subsection of the
-                   title.
+:param allow_partials: Bool indicating if title needs to match exactly, or is
+                   allowed partial matches.
+                   Useful when site title is long, and tests only care about
+                   a specific subsection of the title.
+                   Defaults to False, aka must be an exact match.
+                   For a site-wide version of this param, see
+                   :ref:`configuration/general:ALLOW_TITLE_PARTIALS`
 
 :return: The found title value, in case tests need to run additional logic
         on it.
@@ -88,7 +91,7 @@ assertPageHeader()
 
 .. code::
 
-    self.assertPageHeader()
+    self.assertPageHeader(response, expected_header)
 
 Asserts that a response has a given page header value. Aka, the ``<h1>`` tag
 contents.
@@ -98,7 +101,7 @@ However, not all sites follow this rule, and this assertion does not work
 reliably in cases when there are multiple ``<h1>`` header tags on a page.
 
 :param response: Response object to check against.
-:param expected_title: Expected page header text that response should have.
+:param expected_header: Expected page header text that response should have.
 
 :return: The found page header value, in case tests need to run additional
         logic on it.
@@ -109,7 +112,7 @@ assertContextMessages()
 
 .. code::
 
-    self.assertContextMessages()
+    self.assertContextMessages(response, expected_messages, allow_partials=True)
 
 Asserts that a response has the given context message values. These are
 usually generated with the
@@ -120,10 +123,13 @@ expected strings.
 
 :param response: Response object to check against.
 :param expected_messages: Expected messages that response should contain.
-:param allow_partials: Bool indicating if messages must match exactly, or
-                      are allowed partial matches. Useful for messages that
-                      are extra long, and tests only care about a specific
-                      subsection of the message.
+:param allow_partials: Bool indicating if message needs to match exactly, or is
+                   allowed partial matches.
+                   Useful when messages are long, and tests only care about
+                   a specific subsection of the messages.
+                   Defaults to False, aka must be an exact match.
+                   For a project-wide version of this param, see
+                   :ref:`configuration/general:ALLOW_MESSAGE_PARTIALS`
 
 :return: None.
 
@@ -154,7 +160,7 @@ assertNotContextMessages()
 
 .. code::
 
-    self.assertNotContextMessages()
+    self.assertNotContextMessages(response, expected_not_messages, allow_partials=True)
 
 The negation of
 :ref:`test_cases/integration_test_case/other_functionality:assertContextMessages()`
@@ -168,10 +174,13 @@ expected strings.
 :param response: Response object to check against.
 :param expected_not_messages: Expected messages that response should NOT
                               contain.
-:param allow_partials: Bool indicating if messages must match exactly, or
-                      are allowed partial matches. Useful for messages that
-                      are extra long, and tests only care about a specific
-                      subsection of the message.
+:param allow_partials: Bool indicating if message needs to match exactly, or is
+                   allowed partial matches.
+                   Useful when messages are long, and tests only care about
+                   a specific subsection of the messages.
+                   Defaults to False, aka must be an exact match.
+                   For a project-wide version of this param, see
+                   :ref:`configuration/general:ALLOW_MESSAGE_PARTIALS`
 
 :return: None.
 
@@ -181,7 +190,7 @@ assertPageContent()
 
 .. code::
 
-    self.assertPageContent()
+    self.assertPageContent(response, expected_content, ignore_ordering=True)
 
 Asserts that a response has the given page content html.
 
@@ -190,8 +199,8 @@ expected strings.
 
 :param response: Response object to check against.
 :param expected_content: Expected content that response should contain.
-:param ignore_ordering: Bool indicating if content ordering matters. Defaults
-                        to assuming ordering should be obeyed.
+:param ignore_ordering: Bool indicating if content ordering matters.
+                        Defaults to assuming ordering should be obeyed.
 :param content_starts_after: Optional content value to strip out of search
                              space. This value and anything above will be
                              removed. If multiple instances exist on page, then
@@ -212,7 +221,7 @@ assertNotPageContent()
 
 .. code::
 
-    self.assertNotPageContent()
+    self.assertNotPageContent(response, expected_not_content, ignore_ordering=True)
 
 The negation of
 :ref:`test_cases/integration_test_case/other_functionality:assertPageContent()`
@@ -237,7 +246,7 @@ assertRepeatingElement()
 
 .. code::
 
-    self.assertRepeatingElement()
+    self.assertRepeatingElement(response, expected_repeating_element, repeat_count)
 
 :param response: Response object to check against.
 :param expected_repeating_element: The expected repeating HTML element.
@@ -366,7 +375,7 @@ _assertResponse__post_builtin_tests()
 
 .. code::
 
-    self._assertResponse__post_builtin_tests()
+    self._assertResponse__post_builtin_tests(*args, **kwargs)
 
 
 This function is called after getting the
