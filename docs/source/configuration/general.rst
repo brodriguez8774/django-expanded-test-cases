@@ -12,6 +12,15 @@ not defined.
 Configuring Client State
 ========================
 
+This section documents controls for handling test client state, which
+is directly relevant to "retaining user login between client requests"
+as well as "retaining session data between client requests".
+
+Note that if you need to test for session data in your project, then the
+default settings are probably inadequate, and you will need to adjust
+the below values.
+
+
 RESET_CLIENT_STATE_ON_REQUEST
 -----------------------------
 
@@ -22,14 +31,23 @@ between assertions, which could unexpectedly lead to tests being incorrect.
 
 However, due to how Django logs out test users, this had the side-effect of
 also clearing session data between assertions.
-Therefore, if concurrent assertions could not share session data, and some
-test scenarios were not possible.
+Therefore, concurrent assertions could not share session data, and thus
+some test scenarios were not possible.
 
 This setting keeps the original behavior if set to True (the default).
 Set to false to skip client reset between assertions for all project tests.
 
-Alternatively, set the `self._reset_client_state_on_request` class variable
-to ``False`` on a per-test basis.
+
+.. note::
+
+    Alternatively, if you don't want to use a project-wide setting, then you
+    can set the ``self._reset_client_state_on_request`` class-level variable.
+
+    This will default to the value defined by ``RESET_CLIENT_STATE_ON_REQUEST``
+    for your project.
+
+    The ``self._reset_client_state_on_request`` is a class-level boolean that
+    lets you override the setting on a per-test basis.
 
 
 :Type: ``bool``

@@ -67,6 +67,12 @@ response according to provided URL parameters, and then optionally verify one
 or more properties within the generated response object.
 
 
+.. note::
+
+    If your site uses session data, then please also see the section on
+    :ref:`configuration/general:Configuring Client State`.
+
+
 Overview - Element Assertions
 -----------------------------
 
