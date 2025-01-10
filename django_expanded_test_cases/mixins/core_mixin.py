@@ -89,6 +89,9 @@ class BaseMixin:
     def setUpTestData(cls, *args, **kwargs):
         """Test logic setup run at the start of class creation, specifically for data setup.
 
+        As per https://stackoverflow.com/a/43347796, this should ONLY be used for data that is not
+        expected to be changed or modified during testing.
+
         Function is empty, but provided to prevent MethodNotFound errors
         in case super() is called from an inheriting child.
         """
@@ -160,16 +163,18 @@ class CoreTestCaseMixin(BaseMixin):
 
         cls._site_root_url = None
 
-    @classmethod
-    def setUpTestData(cls, *args, extra_usergen_kwargs=None, **kwargs):
+    def setUp(self, *args, extra_usergen_kwargs=None, **kwargs):
         """Test logic setup run at the start of class creation, specifically for data setup.
 
-        :param extra_usergen_kwargs: Optional extra kwargs to pass into the get_user_model().objects.create_user()
-                                     function.
+        As per https://stackoverflow.com/a/43347796, this should ONLY be used for data that is not
+        expected to be changed or modified during testing.
+
+        :param extra_usergen_kwargs: Optional extra kwargs to pass into the
+                                     get_user_model().objects.create_user() function.
         """
 
         # Call parent logic.
-        super().setUpTestData(*args, **kwargs)
+        super().setUp(*args, **kwargs)
 
         if ETC_AUTO_GENERATE_USERS:
             # Run logic to auto-generate test users. Setting is on by default.
@@ -181,7 +186,7 @@ class CoreTestCaseMixin(BaseMixin):
                     'get_user_model().objects.create_user() function.'
                 )
 
-            cls._auto_generate_test_users(extra_usergen_kwargs=extra_usergen_kwargs)
+            self._auto_generate_test_users(extra_usergen_kwargs=extra_usergen_kwargs)
 
     def subTest(self, *args, **kwargs):
         """Test logic setup run every time we enter a subtest."""

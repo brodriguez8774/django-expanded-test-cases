@@ -100,11 +100,10 @@ class TestBaseClassAuth_WithRealNames(BaseTestCase):
     Required as a separate class, since user generation is handled on class initialization.
     """
 
-    @classmethod
     @patch('django_expanded_test_cases.mixins.core_mixin.ETC_GENERATE_USERS_WITH_REAL_NAMES', True)
-    def setUpTestData(cls):
+    def setUp(cls):
         # Call parent logic.
-        super().setUpTestData()
+        super().setUp()
 
     def test__get_user__with_real_names(self):
         """
