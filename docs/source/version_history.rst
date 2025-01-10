@@ -2,6 +2,16 @@ Version History
 ***************
 
 
+0.8.1 - Bug Fixes
+=================
+
+* Adjust user model generation to happen on ``setUp()`` instead of
+  ``setUpTestData()``.
+
+  * Tests may take longer to initialize (particularly on single-core testing),
+    but user object instances will be more consistent between tests now.
+
+
 0.8.0 - Maintainability Update
 ==============================
 
