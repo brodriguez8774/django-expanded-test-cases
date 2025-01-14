@@ -5,6 +5,7 @@ Imports to make this folder behave like a single file.
 # Constants related to testing users and test user auth logic.
 from .auth_constants import (
     ETC_AUTO_GENERATE_USERS,
+    ETC_AUTO_GENERATE_USERS_IN_SETUPTESTDATA,
     ETC_DEFAULT_ADMIN_USER_IDENTIFIER,
     ETC_DEFAULT_INACTIVE_USER_IDENTIFIER,
     ETC_DEFAULT_STANDARD_USER_IDENTIFIER,

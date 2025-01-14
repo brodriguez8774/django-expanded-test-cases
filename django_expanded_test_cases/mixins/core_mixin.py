@@ -16,6 +16,7 @@ from django.utils.http import urlencode
 from django_expanded_test_cases.constants import (
     ETC_DEBUG_PRINT,
     ETC_AUTO_GENERATE_USERS,
+    ETC_AUTO_GENERATE_USERS_IN_SETUPTESTDATA,
     ETC_REQUEST_USER_STRICTNESS,
     ETC_USER_MODEL_IDENTIFIER,
     ETC_DEFAULT_SUPER_USER_IDENTIFIER,
@@ -163,7 +164,8 @@ class CoreTestCaseMixin(BaseMixin):
 
         cls._site_root_url = None
 
-    def setUp(self, *args, extra_usergen_kwargs=None, **kwargs):
+    @classmethod
+    def setUpTestData(cls, *args, extra_usergen_kwargs=None, **kwargs):
         """Test logic setup run at the start of class creation, specifically for data setup.
 
         As per https://stackoverflow.com/a/43347796, this should ONLY be used for data that is not
@@ -174,9 +176,31 @@ class CoreTestCaseMixin(BaseMixin):
         """
 
         # Call parent logic.
+        super().setUpTestData(*args, **kwargs)
+
+        if ETC_AUTO_GENERATE_USERS and ETC_AUTO_GENERATE_USERS_IN_SETUPTESTDATA:
+            # Run logic to auto-generate test users. Setting is on by default.
+            if extra_usergen_kwargs is None:
+                extra_usergen_kwargs = {}
+            elif not isinstance(extra_usergen_kwargs, dict):
+                raise ValueError(
+                    'The extra_usergen_kwargs value must be a dictionary of additional args used in the '
+                    'get_user_model().objects.create_user() function.'
+                )
+
+            cls._auto_generate_test_users(extra_usergen_kwargs=extra_usergen_kwargs)
+
+    def setUp(self, *args, extra_usergen_kwargs=None, **kwargs):
+        """Test logic setup run at the start of every test function.
+
+        :param extra_usergen_kwargs: Optional extra kwargs to pass into the
+                                     get_user_model().objects.create_user() function.
+        """
+
+        # Call parent logic.
         super().setUp(*args, **kwargs)
 
-        if ETC_AUTO_GENERATE_USERS:
+        if ETC_AUTO_GENERATE_USERS and not ETC_AUTO_GENERATE_USERS_IN_SETUPTESTDATA:
             # Run logic to auto-generate test users. Setting is on by default.
             if extra_usergen_kwargs is None:
                 extra_usergen_kwargs = {}

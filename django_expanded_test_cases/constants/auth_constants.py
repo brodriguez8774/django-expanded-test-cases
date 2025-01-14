@@ -25,6 +25,18 @@ ETC_AUTO_GENERATE_USERS = bool(
         True,
     )
 )
+# Controls where test-users are generated.
+# True  means they're generated in `setUpTestData()`.
+# False (default) means they're generated in `setUp()`.
+# The `setUpTestData()` location is much faster, but only safe if the users are not changed at all within tests.
+# Otherwise, `setUp()` is slower, but user data is fully isolated per test, and thus safe to modify.
+ETC_AUTO_GENERATE_USERS_IN_SETUPTESTDATA = bool(
+    getattr(
+        settings,
+        'DJANGO_EXPANDED_TESTCASES_AUTO_GENERATE_USERS_IN_SETUPTESTDATA',
+        False,
+    )
+)
 # Controls what level of strictness UnitTest requests have for users.
 ETC_REQUEST_USER_STRICTNESS = (
     str(
