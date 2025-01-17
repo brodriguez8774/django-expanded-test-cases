@@ -2,14 +2,22 @@ Version History
 ***************
 
 
-0.8.1 - Bug Fixes
-=================
+0.8.1 - Small Fixes
+===================
 
-* Adjust user model generation to happen on ``setUp()`` instead of
+* Adjusted user model generation to happen on ``setUp()`` instead of
   ``setUpTestData()``.
 
   * Tests may take longer to initialize (particularly on single-core testing),
     but user object instances will be more consistent between tests now.
+
+  * To combat this, added a
+    :ref:`new setting <configuration/auth:AUTO_GENERATE_USERS_IN_SETUPTESTDATA>`
+    to allow reverting to previous behavior.
+
+* Added
+  :ref:`another option <configuration/debug_output:DEBUG_PRINT__TEST_SEPARATOR>`
+  for adding debug output separators, for further customization of test output.
 
 
 0.8.0 - Maintainability Update
