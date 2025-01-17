@@ -101,9 +101,13 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Initialize some check values.
         # Initialize these to true. Then the default implementation of each hook function sets to False.
         # Presumably if at least one hook is implemented, then it will stay True.
-        self._implemented_auth_setup_hook = True
-        self._implemented_pre_assert_hook = True
-        self._implemented_post_assert_hook = True
+
+        class HookClass:
+            auth_setup_is_okay = True
+            pre_assert_is_okay = True
+            post_assert_is_okay = True
+
+        self.hook_checks = HookClass()
 
     @classmethod
     def setUpClass(cls, *args, debug_print=None, **kwargs):
@@ -2141,7 +2145,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Set class variable to track that hook is not implemented.
         # Still using the default implementation that does nothing.
-        self._implemented_pre_assert_hook = False
+        self.hook_checks.pre_assert_is_okay = False
 
     def _assertResponse__post_builtin_tests(
         self,
@@ -2180,7 +2184,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Set class variable to track that hook is not implemented.
         # Still using the default implementation that does nothing.
-        self._implemented_post_assert_hook = False
+        self.hook_checks.post_assert_is_okay = False
 
     def _get_login_user__extra_user_auth_setup(
         self,
@@ -2205,7 +2209,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Set class variable to track that hook is not implemented.
         # Still using the default implementation that does nothing.
-        self._implemented_auth_setup_hook = False
+        self.hook_checks.auth_setup_is_okay = False
 
         return user
 
@@ -2255,8 +2259,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             # User is anonymous. Skip auth hook.
             if (
                 # Comment to prevent "black" formatting.
-                not self._implemented_pre_assert_hook
-                and not self._implemented_post_assert_hook
+                not self.hook_checks.pre_assert_is_okay
+                and not self.hook_checks.post_assert_is_okay
             ):
                 should_raise_warning = True
 
@@ -2265,9 +2269,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
             if (
                 # Comment to prevent "black" formatting.
-                not self._implemented_pre_assert_hook
-                and not self._implemented_post_assert_hook
-                and not self._implemented_auth_setup_hook
+                not self.hook_checks.pre_assert_is_okay
+                and not self.hook_checks.post_assert_is_okay
+                and not self.hook_checks.auth_setup_is_okay
             ):
                 should_raise_warning = True
 

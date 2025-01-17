@@ -31,14 +31,14 @@ class TestIntegrationHooks__CanAccessPreBuiltinHook(IntegrationTestCase):
         """Verifies hook function is called and changes state as expected."""
 
         # Verify initial state of class variable.
-        self.assertEqual(True, self._implemented_pre_assert_hook)
+        self.assertEqual(True, self.hook_checks.pre_assert_is_okay)
 
         # Call a basic assertResponse.
         # We don't even care if it works, this is only to trigger the hook function.
         self.assertResponse('')
 
         # Verify variable changed after call. This variable is only changed in the hook function.
-        self.assertEqual(False, self._implemented_pre_assert_hook)
+        self.assertEqual(False, self.hook_checks.pre_assert_is_okay)
 
 
 class TestIntegrationHooks__CanAccessPostBuiltinHook(IntegrationTestCase):
@@ -51,14 +51,14 @@ class TestIntegrationHooks__CanAccessPostBuiltinHook(IntegrationTestCase):
         """Verifies hook function is called and changes state as expected."""
 
         # Verify initial state of class variable.
-        self.assertEqual(True, self._implemented_post_assert_hook)
+        self.assertEqual(True, self.hook_checks.post_assert_is_okay)
 
         # Call a basic assertResponse.
         # We don't even care if it works, this is only to trigger the hook function.
         self.assertResponse('')
 
         # Verify variable changed after call. This variable is only changed in the hook function.
-        self.assertEqual(False, self._implemented_post_assert_hook)
+        self.assertEqual(False, self.hook_checks.post_assert_is_okay)
 
 
 class TestIntegrationHooks__CanAccessAuthSetupHook(IntegrationTestCase):
@@ -74,7 +74,7 @@ class TestIntegrationHooks__CanAccessAuthSetupHook(IntegrationTestCase):
         """
 
         # Verify initial state of class variable.
-        self.assertEqual(True, self._implemented_auth_setup_hook)
+        self.assertEqual(True, self.hook_checks.auth_setup_is_okay)
 
         # Call a basic assertResponse.
         # We don't even care if it works, this is only to trigger the hook function.
@@ -84,7 +84,7 @@ class TestIntegrationHooks__CanAccessAuthSetupHook(IntegrationTestCase):
         )
 
         # Verify variable changed after call. This variable is only changed in the hook function.
-        self.assertEqual(False, self._implemented_auth_setup_hook)
+        self.assertEqual(False, self.hook_checks.auth_setup_is_okay)
 
 
 # endregion Verify Hook Function Access
