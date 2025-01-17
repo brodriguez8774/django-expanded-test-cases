@@ -1,5 +1,5 @@
 """
-Tests for tests/integration_test_case.py logic under different project authentication settings.
+Tests for IntegrationTestCase class logic under different project authentication settings.
 """
 
 # System Imports.

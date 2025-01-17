@@ -7,6 +7,7 @@ import json
 import logging
 import re
 import textwrap
+import warnings
 
 # Third-Party Imports.
 from django.conf import settings
@@ -36,6 +37,10 @@ from django_expanded_test_cases.constants import (
     VOID_ELEMENT_LIST,
 )
 from django_expanded_test_cases.mixins import ResponseTestCaseMixin
+
+
+# Initialize logging.
+logger = logging.getLogger(__name__)
 
 
 class ProvidedUrlData:
@@ -88,6 +93,17 @@ class ResponseUrlData:
 
 class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
     """Testing functionality for views and other multi-part components."""
+
+    def __init__(self, *args, **kwargs):
+        # Call parent logic.
+        super().__init__(*args, **kwargs)
+
+        # Initialize some check values.
+        # Initialize these to true. Then the default implementation of each hook function sets to False.
+        # Presumably if at least one hook is implemented, then it will stay True.
+        self._implemented_auth_setup_hook = True
+        self._implemented_pre_assert_hook = True
+        self._implemented_post_assert_hook = True
 
     @classmethod
     def setUpClass(cls, *args, debug_print=None, **kwargs):
@@ -513,6 +529,9 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         # Reset logging level for post-assertion, if it was set earlier.
         if orig_logging_level:
             logging.disable(getattr(logging, orig_logging_level))
+
+        # Handle potential warning if no hook functions have been implemented.
+        self._hook_function_warning_check(user, *args, **kwargs)
 
         # All assertions passed so far. Return response in case user wants to do further checks.
         return response
@@ -1810,6 +1829,7 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :param user_groups: Django Groups to give to User.
         :return: Updated User object.
         """
+
         # Django imports here to avoid situational "Apps aren't loaded yet" error.
         from django.contrib.auth.models import AnonymousUser, Group, Permission
 
@@ -2118,7 +2138,10 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         This hook does nothing by default, and is exclusively provided for custom extension logic.
         """
-        pass
+
+        # Set class variable to track that hook is not implemented.
+        # Still using the default implementation that does nothing.
+        self._implemented_pre_assert_hook = False
 
     def _assertResponse__post_builtin_tests(
         self,
@@ -2154,7 +2177,10 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         This hook does nothing by default, and is exclusively provided for custom extension logic.
         """
-        pass
+
+        # Set class variable to track that hook is not implemented.
+        # Still using the default implementation that does nothing.
+        self._implemented_post_assert_hook = False
 
     def _get_login_user__extra_user_auth_setup(
         self,
@@ -2176,7 +2202,67 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         :return: Must return a User object. Either the original one as provided, or an updated version based on
                  custom logic.
         """
+
+        # Set class variable to track that hook is not implemented.
+        # Still using the default implementation that does nothing.
+        self._implemented_auth_setup_hook = False
+
         return user
+
+    def _hook_function_warning_check(self, user, *args, **kwargs):
+        """Warning check function for built-in project hooks.
+
+        Specifically, any supplemental args/kwargs (outside of what is defined by the project)
+        are exclusively used to optionally provide data to these hook functions.
+
+        If these hook functions are not implemented, but args/kwargs are passed in an
+        assertion, then warnings will trigger.
+
+        This is defined as a separate function, so that it can be easily overridden
+        per-project, if needed.
+        """
+
+        # Django imports here to avoid situational "Apps aren't loaded yet" error.
+        from django.contrib.auth.models import AnonymousUser
+
+        should_raise_warning = False
+        if isinstance(user, AnonymousUser):
+            # User is anonymous. Skip auth hook.
+            if (
+                # Comment to prevent "black" formatting.
+                not self._implemented_pre_assert_hook
+                and not self._implemented_post_assert_hook
+            ):
+                should_raise_warning = True
+
+        else:
+            # User is not anonymous. Also consider auth hook.
+
+            if (
+                # Comment to prevent "black" formatting.
+                not self._implemented_pre_assert_hook
+                and not self._implemented_post_assert_hook
+                and not self._implemented_auth_setup_hook
+            ):
+                should_raise_warning = True
+
+        if should_raise_warning:
+            # No custom hooks have been implemented.
+            # Check if any args or kwargs have been provided.
+            if len(args) > 0 or len(kwargs) > 0:
+                # Either args or kwargs have been provided, which are exclusively meant for hook functions.
+                # But no hook functions have been implemented.
+                # Raise warning, as this is probably not an intended state.
+                warn_msg = (
+                    "Supplemental args/kwargs have been provided to an assertResponse statement. "
+                    "Any supplemental args/kwargs are exclusively used to provide custom data to "
+                    "built-in hook functions, but no hook functions seem to be implemented for your project. "
+                    "Either remove the use of args/kwargs in the assertion, or implement one of the hook functions."
+                )
+                # Create console warning message.
+                warnings.warn(warn_msg)
+                # Create logging warning message.
+                logging.warning(warn_msg)
 
     # endregion Hook Functions
 

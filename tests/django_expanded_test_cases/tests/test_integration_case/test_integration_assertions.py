@@ -1,5 +1,5 @@
 """
-Tests for tests/integration_test_case.py custom assertions and testing checks.
+Tests for IntegrationTestCase class custom assertions and testing checks.
 """
 
 # System Imports.
@@ -1941,25 +1941,34 @@ class IntegrationAssertionTestCase:
             )
 
         with self.subTest('Provide via individually passed values'):
-            # As of version 0.8, this should no longer be considered for args.
-            # Ensure redirects to 404 instead, as technically no args are provided.
+            # As of version 0.8, args/kwargs should no longer be considered for url parameters.
+            # Ensure redirects to 404 instead, as technically no args/kwawrgs are provided for url generation.
+
+            expected_warn_msg = (
+                "Supplemental args/kwargs have been provided to an assertResponse statement. "
+                "Any supplemental args/kwargs are exclusively used to provide custom data to "
+                "built-in hook functions, but no hook functions seem to be implemented for your project. "
+                "Either remove the use of args/kwargs in the assertion, or implement one of the hook functions."
+            )
 
             # As args.
-            response = self.assertResponse(
-                # Desired url, as standard reverse string.
-                'django_expanded_test_cases:redirect-with-args',
-                # Individual args to use for url.
-                3,
-                'As passed args',
-                # Expect to fail to find page.
-                expected_status=404,
-                # Expected content on final page.
-                expected_content=[
-                    '<title>Not Found</title>',
-                    '<h1>Not Found</h1>',
-                    '<p>The requested resource was not found on this server.</p>',
-                ],
-            )
+            with warns(Warning) as warning_msgs:
+                response = self.assertResponse(
+                    # Desired url, as standard reverse string.
+                    'django_expanded_test_cases:redirect-with-args',
+                    # Individual args to use for url.
+                    3,
+                    'As passed args',
+                    # Expect to fail to find page.
+                    expected_status=404,
+                    # Expected content on final page.
+                    expected_content=[
+                        '<title>Not Found</title>',
+                        '<h1>Not Found</h1>',
+                        '<p>The requested resource was not found on this server.</p>',
+                    ],
+                )
+            self.assertText(expected_warn_msg, warning_msgs[0].message.args[0])
 
             # Provided values.
             self.assertText('django_expanded_test_cases:redirect-with-args', response.url_data.provided.url)
@@ -1982,21 +1991,23 @@ class IntegrationAssertionTestCase:
             self.assertIsNone(response.url_data.computed.full_redirect_url)
 
             # As kwargs.
-            response = self.assertResponse(
-                # Desired url, as standard reverse string.
-                'django_expanded_test_cases:redirect-with-args',
-                # Individual args to use for url.
-                id=6,
-                name='As individually passed kwargs',
-                # Expect to fail to find page.
-                expected_status=404,
-                # Expected content on final page.
-                expected_content=[
-                    '<title>Not Found</title>',
-                    '<h1>Not Found</h1>',
-                    '<p>The requested resource was not found on this server.</p>',
-                ],
-            )
+            with warns(Warning) as warning_msgs:
+                response = self.assertResponse(
+                    # Desired url, as standard reverse string.
+                    'django_expanded_test_cases:redirect-with-args',
+                    # Individual args to use for url.
+                    id=6,
+                    name='As individually passed kwargs',
+                    # Expect to fail to find page.
+                    expected_status=404,
+                    # Expected content on final page.
+                    expected_content=[
+                        '<title>Not Found</title>',
+                        '<h1>Not Found</h1>',
+                        '<p>The requested resource was not found on this server.</p>',
+                    ],
+                )
+            self.assertText(expected_warn_msg, warning_msgs[0].message.args[0])
 
             # Provided values.
             self.assertText('django_expanded_test_cases:redirect-with-args', response.url_data.provided.url)
@@ -2937,7 +2948,7 @@ class IntegrationAssertionTestCase:
             # Test "home" page url.
             response = self.assertResponse(
                 'django_expanded_test_cases:home',
-                final_expected_url='/home/',
+                expected_final_url='/home/',
             )
             self.assertText('/home/', response.url_data.computed.initial_url)
             self.assertText('127.0.0.1/home/', response.url_data.computed.full_initial_url)
