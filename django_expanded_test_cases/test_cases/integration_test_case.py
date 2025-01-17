@@ -2222,6 +2222,31 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
         per-project, if needed.
         """
 
+        should_raise_warning = self._hook_function_warning_check_if_statement(user)
+        if should_raise_warning:
+            # No custom hooks have been implemented.
+            # Check if any args or kwargs have been provided.
+            if len(args) > 0 or len(kwargs) > 0:
+                # Either args or kwargs have been provided, which are exclusively meant for hook functions.
+                # But no hook functions have been implemented.
+                # Raise warning, as this is probably not an intended state.
+                warn_msg = (
+                    "Supplemental args/kwargs have been provided to an assertResponse statement. "
+                    "Any supplemental args/kwargs are exclusively used to provide custom data to "
+                    "built-in hook functions, but no hook functions seem to be implemented for your project. "
+                    "Either remove the use of args/kwargs in the assertion, or implement one of the hook functions."
+                )
+                # Create console warning message.
+                warnings.warn(warn_msg)
+                # Create logging warning message.
+                logging.warning(warn_msg)
+
+    def _hook_function_warning_check_if_statement(self, user):
+        """If statement to determine if hook functions should raise warning.
+
+        Separate function for maximum customizability per project.
+        """
+
         # Django imports here to avoid situational "Apps aren't loaded yet" error.
         from django.contrib.auth.models import AnonymousUser
 
@@ -2246,23 +2271,8 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
             ):
                 should_raise_warning = True
 
-        if should_raise_warning:
-            # No custom hooks have been implemented.
-            # Check if any args or kwargs have been provided.
-            if len(args) > 0 or len(kwargs) > 0:
-                # Either args or kwargs have been provided, which are exclusively meant for hook functions.
-                # But no hook functions have been implemented.
-                # Raise warning, as this is probably not an intended state.
-                warn_msg = (
-                    "Supplemental args/kwargs have been provided to an assertResponse statement. "
-                    "Any supplemental args/kwargs are exclusively used to provide custom data to "
-                    "built-in hook functions, but no hook functions seem to be implemented for your project. "
-                    "Either remove the use of args/kwargs in the assertion, or implement one of the hook functions."
-                )
-                # Create console warning message.
-                warnings.warn(warn_msg)
-                # Create logging warning message.
-                logging.warning(warn_msg)
+        # Return calculated value.
+        return should_raise_warning
 
     # endregion Hook Functions
 

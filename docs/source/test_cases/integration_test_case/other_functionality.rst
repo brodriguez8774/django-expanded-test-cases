@@ -404,3 +404,27 @@ If any additional args/kwargs are provided to a **Response Assertion**
 are passed on to all hooks, so that the end-user can provide any additional
 data their project needs to function.
 
+
+Hook Warnings and Warning Customization
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If any supplemental args/kwargs are passed into any of the
+:doc:`Response Assertions<./response_assertions>` (beyond those the package
+is aware of), then they are assumed to be needed for one or more of the built-in
+hook functions.
+
+However, the hook functions do nothing by default, and are meant to be
+overridden.
+Thus, if supplemental args/kwargs are provided and no hooks functions are
+overridden, the package will raise warnings indicating such, to alert the
+programmer that one or more provided values are probably not
+working as expected.
+
+To customize how these warnings behave, override either
+``_hook_function_warning_check()`` (which displays the warning messages),
+or ``_hook_function_warning_check_if_statement()`` (which controls the
+if-statement that determines if the warnings should display).
+
+See source code for these functions for more details.
+They're both towards the bottom of the file
+`django_expanded_test_cases/test_cases/integration_test_case.py <https://github.com/brodriguez8774/django-expanded-test-cases/blob/main/django_expanded_test_cases/test_cases/integration_test_case.py>`_.
