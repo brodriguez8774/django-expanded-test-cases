@@ -43,6 +43,19 @@ ETC_DEBUG_PRINT__SKIP_DISPLAY = getattr(
 )
 
 
+# Optional visual separator between unit tests.
+# Can be used to add extra newlines or other formatting between UnitTest error output.
+# Must manually insert newlines at the end of each line where desired.
+# Can optionally also insert color formatting if desired.
+ETC_DEBUG_PRINT__TEST_SEPARATOR = str(
+    getattr(
+        settings,
+        'DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT__TEST_SEPARATOR',
+        '',
+    )
+)
+
+
 # Optional visual separator between response assertions.
 # Can be used to add extra newlines or other formatting between assertResponse debugging output.
 # Must manually insert newlines at the end of each line where desired.

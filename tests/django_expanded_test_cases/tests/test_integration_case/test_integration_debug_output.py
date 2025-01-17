@@ -4,6 +4,7 @@ Tests for IntegrationTestCase class "debug console output" logic.
 
 # System Imports.
 import io
+import logging
 import unittest.mock
 from unittest.mock import patch
 
@@ -54,6 +55,8 @@ SKIP_AFTER_VALUE__MINIMAL = """
 <h1>
 """
 
+DEBUG_SEPARATOR_VALUE = "\n\n\n\n=========================**********=========================\n\n\n\n"
+
 
 class IntegrationDebugOutputTestCase:
 
@@ -88,7 +91,7 @@ class IntegrationDebugOutputTestCase:
         return text
 
 
-class TestIntegrationBaseDebugOutput(IntegrationTestCase, IntegrationDebugOutputTestCase):
+class TestIntegrationDebugOutput(IntegrationTestCase, IntegrationDebugOutputTestCase):
     """Tests for IntegrationTestCase class "debug output" logic."""
 
     # region Different Pages
@@ -9365,3 +9368,551 @@ class TestIntegrationDebugOutputWithSettings(IntegrationTestCase, IntegrationDeb
 
         # Passed. Strip user section.
         actual_text = actual_text.replace(expected_text, '')
+
+
+class TestIntegrationDebugOutput__WithReponseSeparator(IntegrationTestCase, IntegrationDebugOutputTestCase):
+    """Tests for IntegrationTestCase class "debug output" logic."""
+
+    @patch(
+        'django_expanded_test_cases.mixins.response_mixin.ETC_DEBUG_PRINT__RESPONSE_SEPARATOR',
+        DEBUG_SEPARATOR_VALUE,
+    )
+    @unittest.mock.patch('sys.stdout', new_callable=io.StringIO)
+    def test__debug_output__verify_separator_setting(self, mock_stdout):
+        """Verifying output of assertResponse, with different pages."""
+
+        # Set error output to not truncate text comparison errors for these tests.
+        self.maxDiff = None
+
+        # Force assertion error so we can check debug output.
+        with self.assertRaises(AssertionError):
+            self.assertGetResponse(
+                'django_expanded_test_cases:template-response-home',
+                expected_title='Testing',
+            )
+
+        # Stdout (aka console debug print out) is being captured by above unittest.mock.
+        # Here we also trim away any potential included text coloring, just for ease of UnitTesting.
+        # We maybe could test for text coloring here too. But that would make tests much more annoying,
+        # for something that is both optional, and should be exceedingly obvious if it stops working.
+        actual_text = self.strip_text_colors(mock_stdout.getvalue())
+
+        with self.subTest('Test url section'):
+            # Check for url section.
+            expected_text = (
+                '------------------------------------------------------------\n'
+                'Attempting to access url "127.0.0.1/template-response/home/"\n'
+                '------------------------------------------------------------\n'
+                '\n'
+            )
+            self.assertTextStartsWith(expected_text, actual_text)
+
+        # Passed. Strip url section.
+        actual_text = actual_text.replace(expected_text, '')
+
+        with self.subTest('Test content section'):
+            # Check for content section.
+            expected_text = (
+                '========== response.content ==========\n'
+                '<head>\n'
+                ' <meta charset="utf-8">\n'
+                ' <title>Home Page | Test Views</title>\n'
+                '</head>\n'
+                '<body>\n'
+                ' <h1>Home Page Header</h1>\n'
+                ' <p>Pretend this is the project landing page.</p>\n'
+                '</body>\n'
+                '\n'
+                '\n'
+            )
+            self.assertTextStartsWith(expected_text, actual_text)
+
+        # Passed. Strip content section.
+        actual_text = actual_text.replace(expected_text, '')
+
+        with self.subTest('Test header section'):
+            # Check for header section.
+            expected_text = (
+                '========== response.headers ==========\n'
+                '    * "Content-Type": "text/html; charset=utf-8"\n'
+                '    * "X-Frame-Options": "DENY"\n'
+                '    * "Content-Length": "202"\n'
+                '    * "X-Content-Type-Options": "nosniff"\n'
+                '    * "Referrer-Policy": "same-origin"\n'
+            )
+
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '\n'
+                    '\n'
+                )
+            else:
+                # Handling for all newer Django versions.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
+                    '\n'
+                    '\n'
+                )
+            self.assertTextStartsWith(expected_text, actual_text)
+
+        # Passed. Strip header section.
+        actual_text = actual_text.replace(expected_text, '')
+
+        with self.subTest('Test context section'):
+            # Check for context section.
+            # Due to the reference to several dynamic references, we need to split this into multiple checks.
+            #
+            # Django v4 or Later - Problematic lines are:
+            #   * The `csrf_token` line
+            #   * The `perms` line.
+            # Django v3 or Earlier - Problematic lines are:
+            #   * The `csrf_token` line.
+            #   * The `perms` line.
+            #   * The `messages` line.
+
+            expected_text_1 = (
+                # Comment to prevent "Black" formatting.
+                '========== response.context ==========\n'
+                '    * csrf_token: '
+            )
+
+            # Check first subsection.
+            self.assertTextStartsWith(expected_text_1, actual_text)
+
+            # Passed first check. Strip away.
+            actual_text = actual_text.replace(expected_text_1, '')
+            # Also strip out problematic dynamic characters of csrf text.
+            actual_text = actual_text[67:]
+
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
+
+                expected_text_2 = (
+                    '\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                )
+
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    # Comment to prevent "Black" formatting.
+                    '>\n'
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_4 = (
+                    '>"\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * True: True\n'
+                    '    * user: AnonymousUser\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check fourth subsection.
+                self.assertTextStartsWith(expected_text_4, actual_text)
+
+                # Passed fourth check. Strip away.
+                actual_text = actual_text.replace(expected_text_4, '')
+
+            else:
+                # Handling for all newer Django versions.
+
+                expected_text_2 = (
+                    '\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * header: Home Page\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
+                    '    * None: None\n'
+                    '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
+                )
+
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    '>>)"\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * text: Pretend this is the project landing page.\n'
+                    '    * True: True\n'
+                    '    * user: AnonymousUser\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
+
+        with self.subTest('Test session section'):
+            # Check for session section.
+            expected_text = (
+                # Comment to prevent "Black" formatting.
+                '========== client.session ==========\n'
+                '    No session data found.\n'
+                '\n'
+                '\n'
+            )
+            self.assertTextStartsWith(expected_text, actual_text)
+
+        # Passed. Strip session section.
+        actual_text = actual_text.replace(expected_text, '')
+
+        with self.subTest('Test message section'):
+            # Check for message section.
+            expected_text = (
+                # Comment to prevent "Black" formatting.
+                '========== response.context["messages"] ==========\n'
+                '    No context messages found.\n'
+                '\n'
+                '\n'
+            )
+            self.assertTextStartsWith(expected_text, actual_text)
+
+        # Passed. Strip message section.
+        actual_text = actual_text.replace(expected_text, '')
+
+        with self.subTest('Test form section'):
+            # Check for form section.
+            expected_text = (
+                # Comment to prevent "Black" formatting.
+                '========== Form Data ==========\n'
+                '    No form data found.\n'
+                '\n'
+                '\n'
+            )
+            self.assertTextStartsWith(expected_text, actual_text)
+
+        # Passed. Strip form section.
+        actual_text = actual_text.replace(expected_text, '')
+
+        with self.subTest('Test user section'):
+            # Check for user section.
+            expected_text = (
+                # Comment to prevent "Black" formatting.
+                '========== User Info ==========\n'
+                '    Anonymous user. No user is logged in.\n'
+                '\n'
+                '\n'
+            )
+            self.assertTextStartsWith(expected_text, actual_text)
+
+        # Passed. Strip user section.
+        actual_text = actual_text.replace(expected_text, '')
+
+        with self.subTest('Test separator setting'):
+            self.assertTextStartsWith(DEBUG_SEPARATOR_VALUE, actual_text)
+
+        # Passed. Strip section.
+        actual_text = actual_text.replace(DEBUG_SEPARATOR_VALUE, '')
+
+
+class TestIntegrationDebugOutput__WithStdOutSeparator(IntegrationTestCase, IntegrationDebugOutputTestCase):
+    """Tests for IntegrationTestCase class "debug output" logic."""
+
+    @patch(
+        'django_expanded_test_cases.test_cases.base_test_case.ETC_DEBUG_PRINT__STD_OUT_SEPARATOR',
+        DEBUG_SEPARATOR_VALUE,
+    )
+    @unittest.mock.patch('sys.stdout', new_callable=io.StringIO)
+    def test__debug_output__verify_test_separator(self, mock_stdout):
+        """Verifying output of assertResponse, with different pages."""
+
+        # Set error output to not truncate text comparison errors for these tests.
+        self.maxDiff = None
+
+        # Force assertion error so we can check debug output.
+        with self.assertRaises(AssertionError):
+            self.assertGetResponse(
+                'django_expanded_test_cases:template-response-home',
+                expected_title='Testing',
+            )
+
+        # Stdout (aka console debug print out) is being captured by above unittest.mock.
+        # Here we also trim away any potential included text coloring, just for ease of UnitTesting.
+        # We maybe could test for text coloring here too. But that would make tests much more annoying,
+        # for something that is both optional, and should be exceedingly obvious if it stops working.
+        actual_text = self.strip_text_colors(mock_stdout.getvalue())
+
+        with self.subTest('Test url section'):
+            # Check for url section.
+            expected_text = (
+                '------------------------------------------------------------\n'
+                'Attempting to access url "127.0.0.1/template-response/home/"\n'
+                '------------------------------------------------------------\n'
+                '\n'
+            )
+            self.assertTextStartsWith(expected_text, actual_text)
+
+        # Passed. Strip url section.
+        actual_text = actual_text.replace(expected_text, '')
+
+        with self.subTest('Test content section'):
+            # Check for content section.
+            expected_text = (
+                '========== response.content ==========\n'
+                '<head>\n'
+                ' <meta charset="utf-8">\n'
+                ' <title>Home Page | Test Views</title>\n'
+                '</head>\n'
+                '<body>\n'
+                ' <h1>Home Page Header</h1>\n'
+                ' <p>Pretend this is the project landing page.</p>\n'
+                '</body>\n'
+                '\n'
+                '\n'
+            )
+            self.assertTextStartsWith(expected_text, actual_text)
+
+        # Passed. Strip content section.
+        actual_text = actual_text.replace(expected_text, '')
+
+        with self.subTest('Test header section'):
+            # Check for header section.
+            expected_text = (
+                '========== response.headers ==========\n'
+                '    * "Content-Type": "text/html; charset=utf-8"\n'
+                '    * "X-Frame-Options": "DENY"\n'
+                '    * "Content-Length": "202"\n'
+                '    * "X-Content-Type-Options": "nosniff"\n'
+                '    * "Referrer-Policy": "same-origin"\n'
+            )
+
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '\n'
+                    '\n'
+                )
+            else:
+                # Handling for all newer Django versions.
+                expected_text += (
+                    # Comment to prevent "Black" formatting.
+                    '    * "Cross-Origin-Opener-Policy": "same-origin"\n'
+                    '\n'
+                    '\n'
+                )
+            self.assertTextStartsWith(expected_text, actual_text)
+
+        # Passed. Strip header section.
+        actual_text = actual_text.replace(expected_text, '')
+
+        with self.subTest('Test context section'):
+            # Check for context section.
+            # Due to the reference to several dynamic references, we need to split this into multiple checks.
+            #
+            # Django v4 or Later - Problematic lines are:
+            #   * The `csrf_token` line
+            #   * The `perms` line.
+            # Django v3 or Earlier - Problematic lines are:
+            #   * The `csrf_token` line.
+            #   * The `perms` line.
+            #   * The `messages` line.
+
+            expected_text_1 = (
+                # Comment to prevent "Black" formatting.
+                '========== response.context ==========\n'
+                '    * csrf_token: '
+            )
+
+            # Check first subsection.
+            self.assertTextStartsWith(expected_text_1, actual_text)
+
+            # Passed first check. Strip away.
+            actual_text = actual_text.replace(expected_text_1, '')
+            # Also strip out problematic dynamic characters of csrf text.
+            actual_text = actual_text[67:]
+
+            # Handle based on Django version.
+            if django_version[0] < 4:
+                # Handling for Django 3 or lower.
+
+                expected_text_2 = (
+                    '\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * messages: "<django.contrib.messages.storage.fallbac"..."allbackStorage object at '
+                )
+
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    # Comment to prevent "Black" formatting.
+                    '>\n'
+                    '    * None: None\n'
+                    '    * perms: <django.contrib.auth.context_processors.PermWrapper object at '
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_4 = (
+                    '>"\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * True: True\n'
+                    '    * user: AnonymousUser\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check fourth subsection.
+                self.assertTextStartsWith(expected_text_4, actual_text)
+
+                # Passed fourth check. Strip away.
+                actual_text = actual_text.replace(expected_text_4, '')
+
+            else:
+                # Handling for all newer Django versions.
+
+                expected_text_2 = (
+                    '\n'
+                    '    * DEFAULT_MESSAGE_LEVELS: {\'DEBUG\': 10, \'INFO\': 20, \'SUCCESS\': 25, \'WARNING\': 30, \'ERROR\': 40}\n'
+                    '    * False: False\n'
+                    '    * header: Home Page\n'
+                    '    * messages: <FallbackStorage: request=<WSGIRequest: GET \'/template-response/home/\'>>\n'
+                    '    * None: None\n'
+                    '    * perms: "PermWrapper(<SimpleLazyObject: <django.c"..."nonymousUser object at '
+                )
+
+                # Check second subsection.
+                self.assertTextStartsWith(expected_text_2, actual_text)
+
+                # Passed second check. Strip away.
+                actual_text = actual_text.replace(expected_text_2, '')
+                # Also strip out problematic dynamic characters of PermWrapper text.
+                actual_text = actual_text[14:]
+
+                expected_text_3 = (
+                    '>>)"\n'
+                    '    * request: <WSGIRequest: GET \'/template-response/home/\'>\n'
+                    '    * text: Pretend this is the project landing page.\n'
+                    '    * True: True\n'
+                    '    * user: AnonymousUser\n'
+                    '\n'
+                    '\n'
+                )
+
+                # Check third subsection.
+                self.assertTextStartsWith(expected_text_3, actual_text)
+
+                # Passed third check. Strip away.
+                actual_text = actual_text.replace(expected_text_3, '')
+
+        with self.subTest('Test session section'):
+            # Check for session section.
+            expected_text = (
+                # Comment to prevent "Black" formatting.
+                '========== client.session ==========\n'
+                '    No session data found.\n'
+                '\n'
+                '\n'
+            )
+            self.assertTextStartsWith(expected_text, actual_text)
+
+        # Passed. Strip session section.
+        actual_text = actual_text.replace(expected_text, '')
+
+        with self.subTest('Test message section'):
+            # Check for message section.
+            expected_text = (
+                # Comment to prevent "Black" formatting.
+                '========== response.context["messages"] ==========\n'
+                '    No context messages found.\n'
+                '\n'
+                '\n'
+            )
+            self.assertTextStartsWith(expected_text, actual_text)
+
+        # Passed. Strip message section.
+        actual_text = actual_text.replace(expected_text, '')
+
+        with self.subTest('Test form section'):
+            # Check for form section.
+            expected_text = (
+                # Comment to prevent "Black" formatting.
+                '========== Form Data ==========\n'
+                '    No form data found.\n'
+                '\n'
+                '\n'
+            )
+            self.assertTextStartsWith(expected_text, actual_text)
+
+        # Passed. Strip form section.
+        actual_text = actual_text.replace(expected_text, '')
+
+        with self.subTest('Test user section'):
+            # Check for user section.
+            expected_text = (
+                # Comment to prevent "Black" formatting.
+                '========== User Info ==========\n'
+                '    Anonymous user. No user is logged in.\n'
+                '\n'
+                '\n'
+            )
+            self.assertTextStartsWith(expected_text, actual_text)
+
+        # Passed. Strip user section.
+        actual_text = actual_text.replace(expected_text, '')
+
+        with self.subTest('Test StdOut Section'):
+            stdout_text = (
+                "========== TestIntegrationDebugOutput__WithStdOutSeparator UnitTesting AssertionError ==========\n"
+                "Expected title HTML contents of \"Testing\" (using exact matching). "
+                "Actual value was \"Home Page | Test Views\".\n"
+            )
+            self.assertTextStartsWith(stdout_text, actual_text)
+
+        # Passed. Strip section.
+        actual_text = actual_text.replace(stdout_text, '')
+
+        with self.subTest('Test separator setting'):
+            self.assertTextStartsWith(DEBUG_SEPARATOR_VALUE, actual_text)
+
+        # Passed. Strip section.
+        actual_text = actual_text.replace(DEBUG_SEPARATOR_VALUE, '')
+
+
+# TODO: Unsure how to verify ETC_DEBUG_PRINT__TEST_SEPARATOR and ETC_DEBUG_PRINT__LOGGING_SEPARATOR at this time.
