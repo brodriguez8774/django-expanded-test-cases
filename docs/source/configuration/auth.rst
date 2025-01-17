@@ -45,6 +45,39 @@ will have no effect either.
     DJANGO_EXPANDED_TESTCASES_AUTO_GENERATE_USERS = False
 
 
+AUTO_GENERATE_USERS_IN_SETUPTESTDATA
+------------------------------------
+
+If the generated ETC test users are to be included, controls where these models
+are generated at.
+
+The default (``False``) is to generate these users in ``setUp()``.
+This is inherently safer, as users are created on a per-test basis, and thus
+each test can independently manipulate/change users on the fly, without fear
+of affecting other tests.
+
+However, if the project only wants these users to exist in the background,
+to ensure there is always one of each generic user type (thus, these users will
+never be manipulated directly), then this setting can be changed to ``True``.
+
+By setting this to ``True``, generated ETC test users are instead created
+in the ``setUpTestData()`` function.
+Generating users in this location can be much faster, but then manipulation
+of these user instances may, in some cases, propagate to other tests and
+cause side effects.
+Be aware if you change this to ``True``.
+
+
+:Type: ``bool``
+:Default: ``False``
+
+**Example:**
+
+.. code::
+
+    DJANGO_EXPANDED_TESTCASES_AUTO_GENERATE_USERS_IN_SETUPTESTDATA = True
+
+
 REQUEST_USER_STRICTNESS
 -----------------------
 

@@ -83,11 +83,44 @@ Should be a list containing strings of one or more regex values to skip.
     ]
 
 
+DEBUG_PRINT__TEST_SEPARATOR
+-------------------------------
+
+Optionally customize the visual separator between UnitTest error output.
+This is displayed at the top of every failing UnitTest output, to help
+add visual distinction of where one test ends and the next begins.
+
+Can be used to add extra newlines or other formatting to debugging output.
+
+.. note::
+
+    Must manually insert newlines at the end of each line where desired.
+    Can optionally also insert color formatting if desired.
+
+
+:Type: ``str``
+:Default: ``''``
+
+**Example:**
+
+.. code::
+
+    DJANGO_EXPANDED_TESTCASES_DEBUG_PRINT__TEST_SEPARATOR = (
+        '\n'
+        '\n'
+        '=========================**********=========================\n'
+        '=========================**********=========================\n'
+        '\n'
+        '\n'
+    )
+
+
 DEBUG_PRINT__RESPONSE_SEPARATOR
 -------------------------------
 
 Optionally customize the visual separator between
 :doc:`Response Assertions<../test_cases/integration_test_case/response_assertions>`.
+This is displayed at the bottom of the assertResponse debug output.
 
 Can be used to add extra newlines or other formatting between
 ``assertResponse`` debugging output.
