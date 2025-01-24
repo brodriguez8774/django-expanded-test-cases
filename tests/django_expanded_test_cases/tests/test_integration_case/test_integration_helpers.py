@@ -4,6 +4,7 @@ Tests for IntegrationTestCase class "helper function" utilities and logic.
 
 # System Imports.
 import logging
+from unittest.mock import patch
 
 # Third-Party Imports.
 from django.contrib.auth.models import AnonymousUser, Group, Permission
@@ -20,6 +21,17 @@ class IntegrationHelperTestCase:
     This class is a parent class that should not run by itself.
     It needs to be imported into other classes to execute.
     """
+
+    @classmethod
+    @patch('django_expanded_test_cases.mixins.core_mixin.ETC_AUTO_GENERATE_USERS_IN_SETUPTESTDATA', True)
+    def setUpTestData(cls, *args, **kwargs):
+        """Override setting for faster tests."""
+        super().setUpTestData(*args, **kwargs)
+
+    @patch('django_expanded_test_cases.mixins.core_mixin.ETC_AUTO_GENERATE_USERS_IN_SETUPTESTDATA', True)
+    def setUp(self, *args, **kwargs):
+        """Override setting for faster tests."""
+        super().setUp(*args, **kwargs)
 
     def test___get_login_user__verify_login(self):
         """"""

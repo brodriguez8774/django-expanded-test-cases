@@ -30,6 +30,17 @@ from django_expanded_test_cases.constants import (
 class TestIntegrationDebugJsonOutput(IntegrationTestCase, IntegrationDebugOutputTestCase):
     """Tests for IntegrationTestCase class "debug output" logic when handling JSON."""
 
+    @classmethod
+    @patch('django_expanded_test_cases.mixins.core_mixin.ETC_AUTO_GENERATE_USERS_IN_SETUPTESTDATA', True)
+    def setUpTestData(cls, *args, **kwargs):
+        """Override setting for faster tests."""
+        super().setUpTestData(*args, **kwargs)
+
+    @patch('django_expanded_test_cases.mixins.core_mixin.ETC_AUTO_GENERATE_USERS_IN_SETUPTESTDATA', True)
+    def setUp(self, *args, **kwargs):
+        """Override setting for faster tests."""
+        super().setUp(*args, **kwargs)
+
     # region Dict as Base
 
     @unittest.mock.patch('sys.stdout', new_callable=io.StringIO)

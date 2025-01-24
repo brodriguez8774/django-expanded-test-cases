@@ -3,25 +3,34 @@ Tests for IntegrationTestCase class hook functions.
 """
 
 # System Imports.
-import logging
 from unittest.mock import patch
 
 # Third-Party Imports.
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
-from django.core.exceptions import ValidationError
 from pytest import warns
 
 # Internal Imports.
-from .test_integration_assertions import IntegrationAssertionTestCase
-from .test_integration_helpers import IntegrationHelperTestCase
 from django_expanded_test_cases import IntegrationTestCase
 
 
 # region Verify Hook Function Access
 
 
-class TestIntegrationHooks__CanAccessPreBuiltinHook(IntegrationTestCase):
+class IntegrationHookTestCase(IntegrationTestCase):
+
+    @classmethod
+    @patch('django_expanded_test_cases.mixins.core_mixin.ETC_AUTO_GENERATE_USERS_IN_SETUPTESTDATA', True)
+    def setUpTestData(cls, *args, **kwargs):
+        """Override setting for faster tests."""
+        super().setUpTestData(*args, **kwargs)
+
+    @patch('django_expanded_test_cases.mixins.core_mixin.ETC_AUTO_GENERATE_USERS_IN_SETUPTESTDATA', True)
+    def setUp(self, *args, **kwargs):
+        """Override setting for faster tests."""
+        super().setUp(*args, **kwargs)
+
+
+class TestIntegrationHooks__CanAccessPreBuiltinHook(IntegrationHookTestCase):
     """Tests to ensure _assertResponse__pre_builtin_tests() hook function can be accessed.
 
     Separate class to ensure other tests don't potentially affect state of class.
@@ -41,7 +50,7 @@ class TestIntegrationHooks__CanAccessPreBuiltinHook(IntegrationTestCase):
         self.assertEqual(False, self.hook_checks.pre_assert_is_okay)
 
 
-class TestIntegrationHooks__CanAccessPostBuiltinHook(IntegrationTestCase):
+class TestIntegrationHooks__CanAccessPostBuiltinHook(IntegrationHookTestCase):
     """Tests to ensure _assertResponse__post_builtin_tests() hook function can be accessed.
 
     Separate class to ensure other tests don't potentially affect state of class.
@@ -61,7 +70,7 @@ class TestIntegrationHooks__CanAccessPostBuiltinHook(IntegrationTestCase):
         self.assertEqual(False, self.hook_checks.post_assert_is_okay)
 
 
-class TestIntegrationHooks__CanAccessAuthSetupHook(IntegrationTestCase):
+class TestIntegrationHooks__CanAccessAuthSetupHook(IntegrationHookTestCase):
     """Tests to ensure _get_login_user__extra_user_auth_setup() hook function can be accessed.
 
     Separate class to ensure other tests don't potentially affect state of class.
@@ -93,7 +102,7 @@ class TestIntegrationHooks__CanAccessAuthSetupHook(IntegrationTestCase):
 # region Hook Warning Functionality
 
 
-class TestIntegrationHooks__HookRaisesWarning(IntegrationTestCase):
+class TestIntegrationHooks__HookRaisesWarning(IntegrationHookTestCase):
     """Tests to ensure appropriate warnings raise with hook logic.
 
     Separate class to ensure other tests don't potentially affect state of class.
@@ -151,7 +160,7 @@ class TestIntegrationHooks__HookRaisesWarning(IntegrationTestCase):
         self.assertText(self.expected_warn_msg, warning_msgs[0].message.args[0])
 
 
-class TestIntegrationHooks__PreBuiltinHookAffectsWarning(IntegrationTestCase):
+class TestIntegrationHooks__PreBuiltinHookAffectsWarning(IntegrationHookTestCase):
     """Tests to ensure appropriate warnings are affected by implementation of
     _assertResponse__pre_builtin_tests() hook.
 
@@ -205,7 +214,7 @@ class TestIntegrationHooks__PreBuiltinHookAffectsWarning(IntegrationTestCase):
         )
 
 
-class TestIntegrationHooks__PostBuiltinHookAffectsWarning(IntegrationTestCase):
+class TestIntegrationHooks__PostBuiltinHookAffectsWarning(IntegrationHookTestCase):
     """Tests to ensure appropriate warnings are affected by implementation of
     _assertResponse__post_builtin_tests() hook.
 
@@ -259,7 +268,7 @@ class TestIntegrationHooks__PostBuiltinHookAffectsWarning(IntegrationTestCase):
         )
 
 
-class TestIntegrationHooks__CanAccessAuthSetupHookAffectsWarning(IntegrationTestCase):
+class TestIntegrationHooks__CanAccessAuthSetupHookAffectsWarning(IntegrationHookTestCase):
     """Tests to ensure appropriate warnings are affected by implementation of
     _get_login_user__extra_user_auth_setup() hook.
 

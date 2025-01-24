@@ -4,7 +4,6 @@ Tests for IntegrationTestCase class "debug console output" logic.
 
 # System Imports.
 import io
-import logging
 import unittest.mock
 from unittest.mock import patch
 
@@ -59,6 +58,17 @@ DEBUG_SEPARATOR_VALUE = "\n\n\n\n=========================**********============
 
 
 class IntegrationDebugOutputTestCase:
+
+    @classmethod
+    @patch('django_expanded_test_cases.mixins.core_mixin.ETC_AUTO_GENERATE_USERS_IN_SETUPTESTDATA', True)
+    def setUpTestData(cls, *args, **kwargs):
+        """Override setting for faster tests."""
+        super().setUpTestData(*args, **kwargs)
+
+    @patch('django_expanded_test_cases.mixins.core_mixin.ETC_AUTO_GENERATE_USERS_IN_SETUPTESTDATA', True)
+    def setUp(self, *args, **kwargs):
+        """Override setting for faster tests."""
+        super().setUp(*args, **kwargs)
 
     def strip_text_colors(self, text):
         """Strip out all potential color values, for easier testing."""

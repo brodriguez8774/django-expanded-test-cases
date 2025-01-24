@@ -31,6 +31,17 @@ class IntegrationAssertionTestCase:
     It needs to be imported into other classes to execute.
     """
 
+    @classmethod
+    @patch('django_expanded_test_cases.mixins.core_mixin.ETC_AUTO_GENERATE_USERS_IN_SETUPTESTDATA', True)
+    def setUpTestData(cls, *args, **kwargs):
+        """Override setting for faster tests."""
+        super().setUpTestData(*args, **kwargs)
+
+    @patch('django_expanded_test_cases.mixins.core_mixin.ETC_AUTO_GENERATE_USERS_IN_SETUPTESTDATA', True)
+    def setUp(self, *args, **kwargs):
+        """Override setting for faster tests."""
+        super().setUp(*args, **kwargs)
+
     # region Response Assertion Tests
 
     def test__assertResponse__url(self):
