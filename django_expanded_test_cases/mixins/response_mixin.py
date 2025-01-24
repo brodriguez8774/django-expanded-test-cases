@@ -31,8 +31,13 @@ from django_expanded_test_cases.constants import (
     ETC_INCLUDE_RESPONSE_DEBUG_MESSAGES,
     ETC_INCLUDE_RESPONSE_DEBUG_SESSION,
     ETC_INCLUDE_RESPONSE_DEBUG_USER_INFO,
+    ETC_RESPONSE_DEBUG_JSON_MATCH_COLOR,
+    ETC_RESPONSE_DEBUG_JSON_TYPE_MISMATCH_COLOR,
+    ETC_RESPONSE_DEBUG_JSON_LENGTH_MISMATCH_COLOR,
+    ETC_RESPONSE_DEBUG_JSON_CONTENT_MISMATCH_COLOR,
     ETC_OUTPUT_EMPHASIS_COLOR,
     ETC_OUTPUT_ERROR_COLOR,
+    ETC_OUTPUT_RESET_COLOR,
     ETC_RESPONSE_DEBUG_CONTENT_COLOR,
     ETC_RESPONSE_DEBUG_CONTEXT_COLOR,
     ETC_RESPONSE_DEBUG_FORM_COLOR,
@@ -66,7 +71,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
 
     # region Debug Output Functions
 
-    def full_debug_print(self, response, return_format='html', post_data=None):
+    def full_debug_print(self, response, return_format='html', post_data=None, expected_json=None):
         """Attempts to display debug output for all of response data."""
 
         # Handle mutable data defaults.
@@ -77,7 +82,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             if return_format == 'html':
                 self.show_debug_content(response)
             elif return_format == 'json':
-                self.show_debug_json_content(response)
+                self.show_debug_json_content(response, expected_json)
             else:
                 raise ValueError('Currently supported return_format values are `html` or `json`.')
         if ETC_INCLUDE_RESPONSE_DEBUG_HEADER:
@@ -211,7 +216,7 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             self._debug_print(response_content)
             self._debug_print()
 
-    def show_debug_json_content(self, response_content):
+    def show_debug_json_content(self, response_content, expected_json):
         """Prints debug json response page output."""
 
         # Handle for potential param types.
@@ -243,7 +248,13 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             fore=ETC_RESPONSE_DEBUG_CONTENT_COLOR,
             style=ETC_OUTPUT_EMPHASIS_COLOR,
         )
-        self._recurse_show_debug_json_content(response_content)
+
+        # Debug output based on if expected is provided or not.
+        # Easier to just do the if statement once, depending on mode.
+        if expected_json is not None:
+            self._recurse_show_debug_json_content_with_coloring(response_content, expected_json)
+        else:
+            self._recurse_show_debug_json_content(response_content)
         self._debug_print()
 
     def _recurse_show_debug_json_content(self, data, indentation_level=1):
@@ -265,12 +276,16 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             )
 
             for key, value in data.items():
+
                 if isinstance(value, dict) or isinstance(value, list) or isinstance(value, tuple):
                     # Recursively call function to handle more complicated types.
                     self._debug_print(
                         '{0}"{1}":'.format(indentation, key),
                     )
-                    self._recurse_show_debug_json_content(value, indentation_level=(indentation_level + 1))
+                    self._recurse_show_debug_json_content(
+                        value,
+                        indentation_level=(indentation_level + 1),
+                    )
                 else:
                     # Simple types.
                     if isinstance(value, str):
@@ -283,9 +298,14 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                             '{0}"{1}": {2},'.format(indentation, key, value),
                         )
 
-            self._debug_print(
-                '{0}{1}'.format(prior_indentation, '}'),
-            )
+            if indentation_level > 1:
+                self._debug_print(
+                    '{0}{1}'.format(prior_indentation, '},'),
+                )
+            else:
+                self._debug_print(
+                    '{0}{1}'.format(prior_indentation, '}'),
+                )
 
         elif isinstance(data, list) or isinstance(data, tuple):
             # Array type handling.
@@ -296,7 +316,10 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             for value in data:
                 if isinstance(value, dict) or isinstance(value, list) or isinstance(value, tuple):
                     # Recursively call function to handle more complicated types.
-                    return self._recurse_show_debug_json_content(value, indentation_level=(indentation_level + 1))
+                    self._recurse_show_debug_json_content(
+                        value,
+                        indentation_level=(indentation_level + 1),
+                    )
                 else:
                     # Simple types.
                     if isinstance(value, str):
@@ -309,9 +332,14 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
                             '{0}{1},'.format(indentation, value),
                         )
 
-            self._debug_print(
-                '{0}{1}'.format(prior_indentation, ']'),
-            )
+            if indentation_level > 1:
+                self._debug_print(
+                    '{0}{1}'.format(prior_indentation, '],'),
+                )
+            else:
+                self._debug_print(
+                    '{0}{1}'.format(prior_indentation, ']'),
+                )
 
         else:
             # All others.
@@ -323,6 +351,304 @@ class ResponseTestCaseMixin(CoreTestCaseMixin):
             else:
                 self._debug_print(
                     '{0}{1}'.format(indentation, data),
+                )
+
+    def _recurse_show_debug_json_content_with_coloring(
+        self,
+        actual_data,
+        expected_data,
+        indentation_level=1,
+        level_exists=True,
+    ):
+        """Recursive function to display full json data."""
+
+        next_level_exists = level_exists
+
+        # Determine indentation formatting.
+        if indentation_level == 1:
+            prior_indentation = ''
+        else:
+            prior_indentation = '  ' * (indentation_level - 1)
+        indentation = '  ' * indentation_level
+
+        # Output values based on variable type.
+        if isinstance(actual_data, dict):
+            # Dictionary type handling.
+
+            # Handle for container checks.
+            # TODO: This maybe could be more efficiently organized.
+            #   But at this point I just want it to work for now.
+            container_text_color = ''
+            if not level_exists:
+                container_text_color = ETC_RESPONSE_DEBUG_JSON_CONTENT_MISMATCH_COLOR
+            elif type(actual_data) != type(expected_data):
+                container_text_color = ETC_RESPONSE_DEBUG_JSON_TYPE_MISMATCH_COLOR
+            elif len(actual_data) != len(expected_data):
+                container_text_color = ETC_RESPONSE_DEBUG_JSON_LENGTH_MISMATCH_COLOR
+
+            self._debug_print(
+                '{0}{1}{2}'.format(
+                    prior_indentation,
+                    container_text_color,
+                    '{',
+                ),
+            )
+
+            for key, value in actual_data.items():
+
+                # Handle format of dict key.
+                key_display = None
+                next_expected = None
+                next_level_exists = level_exists
+
+                # Handle if prior recurse parent indicates this section doesn't exist in expected.
+                if not level_exists:
+                    key_display = '{0}{1}{2}'.format(
+                        ETC_RESPONSE_DEBUG_JSON_CONTENT_MISMATCH_COLOR,
+                        key,
+                        ETC_OUTPUT_RESET_COLOR,
+                    )
+
+                # Determine if key is present.
+                elif isinstance(expected_data, dict):
+                    # Expected and actual are both dictionaries. Compare keys.
+                    if key in expected_data.keys():
+                        # Key is found in actual and expected.
+                        next_expected = expected_data[key]
+                        key_display = '{0}{1}{2}'.format(
+                            ETC_RESPONSE_DEBUG_JSON_MATCH_COLOR,
+                            key,
+                            ETC_OUTPUT_RESET_COLOR,
+                        )
+
+                if key_display is None:
+                    # Key present in actual but missing in expected.
+                    key_display = '{0}{1}{2}'.format(
+                        ETC_RESPONSE_DEBUG_JSON_CONTENT_MISMATCH_COLOR,
+                        key,
+                        ETC_OUTPUT_RESET_COLOR,
+                    )
+                    next_level_exists = False
+
+                if isinstance(value, dict) or isinstance(value, list) or isinstance(value, tuple):
+                    # Recursively call function to handle more complicated types.
+                    self._debug_print(
+                        '{0}"{1}":'.format(indentation, key_display),
+                    )
+                    self._recurse_show_debug_json_content_with_coloring(
+                        value,
+                        next_expected,
+                        indentation_level=(indentation_level + 1),
+                        level_exists=next_level_exists,
+                    )
+
+                else:
+                    # Simple types.
+
+                    # Handle if prior recurse parent indicates this section doesn't exist in expected.
+                    if not next_level_exists:
+                        value_display = '{0}{1}{2}'.format(
+                            ETC_RESPONSE_DEBUG_JSON_CONTENT_MISMATCH_COLOR,
+                            value,
+                            ETC_OUTPUT_RESET_COLOR,
+                        )
+
+                    # Determine if values match.
+                    elif type(value) != type(next_expected):
+                        # Types don't match.
+                        value_display = '{0}{1}{2}'.format(
+                            ETC_RESPONSE_DEBUG_JSON_TYPE_MISMATCH_COLOR,
+                            value,
+                            ETC_OUTPUT_RESET_COLOR,
+                        )
+
+                    elif value != next_expected:
+                        # Values do not match.
+                        value_display = '{0}{1}{2}'.format(
+                            ETC_RESPONSE_DEBUG_JSON_CONTENT_MISMATCH_COLOR,
+                            value,
+                            ETC_OUTPUT_RESET_COLOR,
+                        )
+                    else:
+                        # Everything matches up. All green.
+                        value_display = '{0}{1}{2}'.format(
+                            ETC_RESPONSE_DEBUG_JSON_MATCH_COLOR,
+                            value,
+                            ETC_OUTPUT_RESET_COLOR,
+                        )
+
+                    if isinstance(value, str):
+                        # Add quotes for strings.
+                        self._debug_print(
+                            '{0}"{1}": "{2}",'.format(indentation, key_display, value_display),
+                        )
+                    else:
+                        self._debug_print(
+                            '{0}"{1}": {2},'.format(indentation, key_display, value_display),
+                        )
+
+            if indentation_level > 1:
+                self._debug_print(
+                    '{0}{1}{2}'.format(
+                        prior_indentation,
+                        container_text_color,
+                        '},',
+                    ),
+                )
+            else:
+                self._debug_print(
+                    '{0}{1}{2}'.format(
+                        prior_indentation,
+                        container_text_color,
+                        '}',
+                    ),
+                )
+
+        elif isinstance(actual_data, list) or isinstance(actual_data, tuple):
+            # Array type handling.
+
+            # Handle for container checks.
+            # TODO: This maybe could be more efficiently organized.
+            #   But at this point I just want it to work for now.
+            container_text_color = ''
+            if not level_exists:
+                container_text_color = ETC_RESPONSE_DEBUG_JSON_CONTENT_MISMATCH_COLOR
+            elif type(actual_data) != type(expected_data):
+                container_text_color = ETC_RESPONSE_DEBUG_JSON_TYPE_MISMATCH_COLOR
+            elif len(actual_data) != len(expected_data):
+                container_text_color = ETC_RESPONSE_DEBUG_JSON_LENGTH_MISMATCH_COLOR
+
+            self._debug_print(
+                '{0}{1}{2}'.format(
+                    prior_indentation,
+                    container_text_color,
+                    '[',
+                ),
+            )
+
+            for index in range(len(actual_data)):
+                value = actual_data[index]
+                value_display = None
+                next_expected = None
+                next_level_exists = level_exists
+
+                # Handle if prior recurse parent indicates this section doesn't exist in expected.
+                if not level_exists:
+                    value_display = '{0}{1}{2}'.format(
+                        ETC_RESPONSE_DEBUG_JSON_CONTENT_MISMATCH_COLOR,
+                        value,
+                        ETC_OUTPUT_RESET_COLOR,
+                    )
+
+                # Determine if index is present.
+                elif isinstance(expected_data, list) or isinstance(expected_data, tuple):
+                    # Check if index also exists in expected.
+                    if len(expected_data) > index:
+                        # Index exists in actual and expected.
+                        # Verify types match.
+
+                        next_expected = expected_data[index]
+                        if type(value) != type(next_expected):
+                            # Types don't match.
+                            value_display = '{0}{1}{2}'.format(
+                                ETC_RESPONSE_DEBUG_JSON_TYPE_MISMATCH_COLOR,
+                                value,
+                                ETC_OUTPUT_RESET_COLOR,
+                            )
+
+                        else:
+                            # Types do match.
+                            # Check if equal number of items, if type dict or array.
+                            if (
+                                # Verify is equivalent to dict or array types.
+                                isinstance(value, dict)
+                                or isinstance(value, list)
+                                or isinstance(value, tuple)
+                            ) and (
+                                # Verify lengths of objects match.
+                                len(value)
+                                != len(next_expected)
+                            ):
+                                # Is dict or array type and lengths do not match.
+                                value_display = '{0}{1}{2}'.format(
+                                    ETC_RESPONSE_DEBUG_JSON_LENGTH_MISMATCH_COLOR,
+                                    value,
+                                    ETC_OUTPUT_RESET_COLOR,
+                                )
+                            else:
+                                # Verify values match.
+                                if value != next_expected:
+                                    # Expected and actual do not match.
+                                    value_display = '{0}{1}{2}'.format(
+                                        ETC_RESPONSE_DEBUG_JSON_CONTENT_MISMATCH_COLOR,
+                                        value,
+                                        ETC_OUTPUT_RESET_COLOR,
+                                    )
+
+                                else:
+                                    # Everything matches up. All green.
+                                    value_display = '{0}{1}{2}'.format(
+                                        ETC_RESPONSE_DEBUG_JSON_MATCH_COLOR,
+                                        value,
+                                        ETC_OUTPUT_RESET_COLOR,
+                                    )
+
+                if value_display is None:
+                    # Index present in actual but missing in expected.
+                    value_display = '{0}{1}{2}'.format(
+                        ETC_RESPONSE_DEBUG_JSON_CONTENT_MISMATCH_COLOR,
+                        value,
+                        ETC_OUTPUT_RESET_COLOR,
+                    )
+                    next_level_exists = False
+
+                if isinstance(value, dict) or isinstance(value, list) or isinstance(value, tuple):
+                    # Recursively call function to handle more complicated types.
+                    self._recurse_show_debug_json_content_with_coloring(
+                        value,
+                        next_expected,
+                        indentation_level=(indentation_level + 1),
+                        level_exists=next_level_exists,
+                    )
+                else:
+                    # Simple types.
+                    if isinstance(value, str):
+                        # Add quotes for strings.
+                        self._debug_print(
+                            '{0}"{1}",'.format(indentation, value_display),
+                        )
+                    else:
+                        self._debug_print(
+                            '{0}{1},'.format(indentation, value_display),
+                        )
+
+            if indentation_level > 1:
+                self._debug_print(
+                    '{0}{1}{2}'.format(
+                        prior_indentation,
+                        container_text_color,
+                        '],',
+                    ),
+                )
+            else:
+                self._debug_print(
+                    '{0}{1}{2}'.format(
+                        prior_indentation,
+                        container_text_color,
+                        ']',
+                    ),
+                )
+
+        else:
+            # All others.
+            if isinstance(actual_data, str):
+                # Add quotes for strings.
+                self._debug_print(
+                    '{0}"{1}"'.format(indentation, actual_data),
+                )
+            else:
+                self._debug_print(
+                    '{0}{1}'.format(indentation, actual_data),
                 )
 
     def show_debug_headers(self, response_headers):

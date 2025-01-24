@@ -281,5 +281,34 @@ ETC_RESPONSE_DEBUG_USER_INFO_COLOR = str(
         Fore.MAGENTA if COLORAMA_PRESENT else '',
     )
 )
+# JSON response debug colors.
+ETC_RESPONSE_DEBUG_JSON_MATCH_COLOR = str(
+    getattr(
+        settings,
+        'DJANGO_EXPANDED_TESTCASES_RESPONSE_OUTPUT_JSON_MATCH_COLOR',
+        Back.GREEN if COLORAMA_PRESENT else '',
+    )
+)
+ETC_RESPONSE_DEBUG_JSON_TYPE_MISMATCH_COLOR = str(
+    getattr(
+        settings,
+        'DJANGO_EXPANDED_TESTCASES_RESPONSE_OUTPUT_JSON_TYPE_MISMATCH_COLOR',
+        Back.MAGENTA if COLORAMA_PRESENT else '',
+    )
+)
+ETC_RESPONSE_DEBUG_JSON_LENGTH_MISMATCH_COLOR = str(
+    getattr(
+        settings,
+        'DJANGO_EXPANDED_TESTCASES_RESPONSE_OUTPUT_JSON_LENGTH_MISMATCH_COLOR',
+        Back.YELLOW if COLORAMA_PRESENT else '',
+    )
+)
+ETC_RESPONSE_DEBUG_JSON_CONTENT_MISMATCH_COLOR = str(
+    getattr(
+        settings,
+        'DJANGO_EXPANDED_TESTCASES_RESPONSE_OUTPUT_JSON_CONTENT_MISMATCH_COLOR',
+        Back.RED if COLORAMA_PRESENT else '',
+    )
+)
 
 # endregion Console Color Options

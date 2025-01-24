@@ -343,7 +343,17 @@ class IntegrationTestCase(BaseTestCase, ResponseTestCaseMixin):
 
         # Optionally output all debug info for found response.
         if self._debug_print_bool:
-            self.full_debug_print(response, return_format=return_format, post_data=data)
+            if return_format == 'json':
+                # Extra args for json debug output handling.
+                self.full_debug_print(
+                    response,
+                    return_format=return_format,
+                    post_data=data,
+                    expected_json=expected_json,
+                )
+            else:
+                # Standard debug output handling.
+                self.full_debug_print(response, return_format=return_format, post_data=data)
 
         # Optional hook for running custom pre-builtin-test logic.
         self._assertResponse__pre_builtin_tests(

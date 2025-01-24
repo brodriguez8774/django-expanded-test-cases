@@ -46,7 +46,7 @@ def index(request):
                 + '">Response with Args</a></li>'
                 '<br>'
                 '  <li><a href="'
-                + reverse('django_expanded_test_cases:json-response-index')
+                + reverse('django_expanded_test_cases:json-response-basic-dict')
                 + '">Json Response</a></li>'
                 '<br>'
                 '  <li><a href="'
@@ -252,13 +252,40 @@ def template_response_with_args(request, id, name):
     )
 
 
-def json_response_index(request):
+def json_response_basic_dict(request):
     request_headers = dict(request.headers)
     return JsonResponse(
         {
             'success': 'This is a test Json response.',
+            "test_list": [
+                "Sublist Item 1",
+                "Sublist Item 2",
+                "Sublist Item 3",
+            ],
             'request_headers': request_headers,
+            'none_type': None,
+            'int_type': 5,
         }
+    )
+
+
+def json_response_basic_list(request):
+    request_headers = dict(request.headers)
+    return JsonResponse(
+        [
+            "List Item 1",
+            "List Item 2",
+            "List Item 3",
+            [
+                "Sublist Item 1",
+                "Sublist Item 2",
+                "Sublist Item 3",
+            ],
+            request_headers,
+            None,
+            5,
+        ],
+        safe=False,
     )
 
 

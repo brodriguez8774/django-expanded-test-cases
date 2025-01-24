@@ -4317,21 +4317,30 @@ class IntegrationAssertionTestCase:
             Thus we just do basic checks here and do most of the heavy-testing in assertResponse().
         """
 
-        with self.subTest('Basic response test'):
-            response = self.assertJsonResponse('django_expanded_test_cases:json-response-index')
+        self.maxDiff = None
 
-            self.assertText('/json/index/', response.url_data.computed.final_url)
-            self.assertText('127.0.0.1/json/index/', response.url_data.computed.full_final_url)
+        with self.subTest('Basic response test'):
+            response = self.assertJsonResponse('django_expanded_test_cases:json-response-basic-dict')
+
+            self.assertText('/json/basic-dict/', response.url_data.computed.final_url)
+            self.assertText('127.0.0.1/json/basic-dict/', response.url_data.computed.full_final_url)
             self.assertEqual(response.status_code, 200)
             self.assertText(
                 (
                     '{'
                     '"success": "This is a test Json response.", '
+                    '"test_list": ['
+                    '"Sublist Item 1", '
+                    '"Sublist Item 2", '
+                    '"Sublist Item 3"'
+                    '], '
                     '"request_headers": {'
                     '"Cookie": "", '
                     '"Content-Type": "application/json", '
                     '"Accept": "application/json"'
-                    '}'
+                    '}, '
+                    '"none_type": null, '
+                    '"int_type": 5'
                     '}'
                 ),
                 response.content.decode('utf-8'),
@@ -4339,33 +4348,47 @@ class IntegrationAssertionTestCase:
             self.assertEqual(
                 {
                     "success": "This is a test Json response.",
+                    "test_list": [
+                        "Sublist Item 1",
+                        "Sublist Item 2",
+                        "Sublist Item 3",
+                    ],
                     "request_headers": {
                         "Cookie": "",
                         "Content-Type": "application/json",
                         "Accept": "application/json",
                     },
+                    'none_type': None,
+                    'int_type': 5,
                 },
                 response.json_content,
             )
 
         with self.subTest('Verify Content-Type header can override.'):
             response = self.assertJsonResponse(
-                'django_expanded_test_cases:json-response-index',
+                'django_expanded_test_cases:json-response-basic-dict',
                 headers={'Content-Type': "text/testing"},
             )
 
-            self.assertText('/json/index/', response.url_data.computed.final_url)
-            self.assertText('127.0.0.1/json/index/', response.url_data.computed.full_final_url)
+            self.assertText('/json/basic-dict/', response.url_data.computed.final_url)
+            self.assertText('127.0.0.1/json/basic-dict/', response.url_data.computed.full_final_url)
             self.assertEqual(response.status_code, 200)
             self.assertText(
                 (
                     '{'
                     '"success": "This is a test Json response.", '
+                    '"test_list": ['
+                    '"Sublist Item 1", '
+                    '"Sublist Item 2", '
+                    '"Sublist Item 3"'
+                    '], '
                     '"request_headers": {'
                     '"Cookie": "", '
                     '"Content-Type": "text/testing", '
                     '"Accept": "application/json"'
-                    '}'
+                    '}, '
+                    '"none_type": null, '
+                    '"int_type": 5'
                     '}'
                 ),
                 response.content.decode('utf-8'),
@@ -4373,33 +4396,47 @@ class IntegrationAssertionTestCase:
             self.assertEqual(
                 {
                     "success": "This is a test Json response.",
+                    "test_list": [
+                        "Sublist Item 1",
+                        "Sublist Item 2",
+                        "Sublist Item 3",
+                    ],
                     "request_headers": {
                         "Cookie": "",
                         "Content-Type": "text/testing",
                         "Accept": "application/json",
                     },
+                    'none_type': None,
+                    'int_type': 5,
                 },
                 response.json_content,
             )
 
         with self.subTest('Verify Accept header can override'):
             response = self.assertJsonResponse(
-                'django_expanded_test_cases:json-response-index',
+                'django_expanded_test_cases:json-response-basic-dict',
                 headers={'Accept': 'text/testing'},
             )
 
-            self.assertText('/json/index/', response.url_data.computed.final_url)
-            self.assertText('127.0.0.1/json/index/', response.url_data.computed.full_final_url)
+            self.assertText('/json/basic-dict/', response.url_data.computed.final_url)
+            self.assertText('127.0.0.1/json/basic-dict/', response.url_data.computed.full_final_url)
             self.assertEqual(response.status_code, 200)
             self.assertText(
                 (
                     '{'
                     '"success": "This is a test Json response.", '
+                    '"test_list": ['
+                    '"Sublist Item 1", '
+                    '"Sublist Item 2", '
+                    '"Sublist Item 3"'
+                    '], '
                     '"request_headers": {'
                     '"Cookie": "", '
                     '"Accept": "text/testing", '
                     '"Content-Type": "application/json"'
-                    '}'
+                    '}, '
+                    '"none_type": null, '
+                    '"int_type": 5'
                     '}'
                 ),
                 response.content.decode('utf-8'),
@@ -4407,34 +4444,48 @@ class IntegrationAssertionTestCase:
             self.assertEqual(
                 {
                     "success": "This is a test Json response.",
+                    "test_list": [
+                        "Sublist Item 1",
+                        "Sublist Item 2",
+                        "Sublist Item 3",
+                    ],
                     "request_headers": {
                         "Cookie": "",
                         "Accept": "text/testing",
                         "Content-Type": "application/json",
                     },
+                    'none_type': None,
+                    'int_type': 5,
                 },
                 response.json_content,
             )
 
         with self.subTest('Verify can add additional headers'):
             response = self.assertJsonResponse(
-                'django_expanded_test_cases:json-response-index',
+                'django_expanded_test_cases:json-response-basic-dict',
                 headers={"Test Header": "Testing!"},
             )
 
-            self.assertText('/json/index/', response.url_data.computed.final_url)
-            self.assertText('127.0.0.1/json/index/', response.url_data.computed.full_final_url)
+            self.assertText('/json/basic-dict/', response.url_data.computed.final_url)
+            self.assertText('127.0.0.1/json/basic-dict/', response.url_data.computed.full_final_url)
             self.assertEqual(response.status_code, 200)
             self.assertText(
                 (
                     '{'
                     '"success": "This is a test Json response.", '
+                    '"test_list": ['
+                    '"Sublist Item 1", '
+                    '"Sublist Item 2", '
+                    '"Sublist Item 3"'
+                    '], '
                     '"request_headers": {'
                     '"Cookie": "", '
                     '"Test Header": "Testing!", '
                     '"Content-Type": "application/json", '
                     '"Accept": "application/json"'
-                    '}'
+                    '}, '
+                    '"none_type": null, '
+                    '"int_type": 5'
                     '}'
                 ),
                 response.content.decode('utf-8'),
@@ -4442,34 +4493,48 @@ class IntegrationAssertionTestCase:
             self.assertEqual(
                 {
                     "success": "This is a test Json response.",
+                    "test_list": [
+                        "Sublist Item 1",
+                        "Sublist Item 2",
+                        "Sublist Item 3",
+                    ],
                     "request_headers": {
                         "Cookie": "",
                         "Test Header": "Testing!",
                         "Content-Type": "application/json",
                         "Accept": "application/json",
                     },
+                    'none_type': None,
+                    'int_type': 5,
                 },
                 response.json_content,
             )
 
         with self.subTest('Verify changing return_format does not error and removes json_content variable'):
             response = self.assertJsonResponse(
-                'django_expanded_test_cases:json-response-index',
+                'django_expanded_test_cases:json-response-basic-dict',
                 return_format='html',
             )
 
-            self.assertText('/json/index/', response.url_data.computed.final_url)
-            self.assertText('127.0.0.1/json/index/', response.url_data.computed.full_final_url)
+            self.assertText('/json/basic-dict/', response.url_data.computed.final_url)
+            self.assertText('127.0.0.1/json/basic-dict/', response.url_data.computed.full_final_url)
             self.assertEqual(response.status_code, 200)
             self.assertText(
                 (
                     '{'
                     '"success": "This is a test Json response.", '
+                    '"test_list": ['
+                    '"Sublist Item 1", '
+                    '"Sublist Item 2", '
+                    '"Sublist Item 3"'
+                    '], '
                     '"request_headers": {'
                     '"Cookie": "", '
                     '"Content-Type": "application/json", '
                     '"Accept": "application/json"'
-                    '}'
+                    '}, '
+                    '"none_type": null, '
+                    '"int_type": 5'
                     '}'
                 ),
                 response.content.decode('utf-8'),
@@ -4480,7 +4545,7 @@ class IntegrationAssertionTestCase:
 
             with self.assertRaises(ValueError) as err:
                 response = self.assertJsonResponse(
-                    'django_expanded_test_cases:json-response-index',
+                    'django_expanded_test_cases:json-response-basic-dict',
                     return_format='unsupported',
                 )
             self.assertText(
@@ -4489,58 +4554,90 @@ class IntegrationAssertionTestCase:
             )
 
         with self.subTest('Basic response test, merged into one assertion'):
-            response = self.assertJsonResponse(
-                'django_expanded_test_cases:json-response-index',
-                expected_url='/json/index/',
+            self.assertJsonResponse(
+                'django_expanded_test_cases:json-response-basic-dict',
+                expected_url='/json/basic-dict/',
                 expected_content=(
                     '{'
                     '"success": "This is a test Json response.", '
+                    '"test_list": ['
+                    '"Sublist Item 1", '
+                    '"Sublist Item 2", '
+                    '"Sublist Item 3"'
+                    '], '
                     '"request_headers": {'
                     '"Cookie": "", '
                     '"Content-Type": "application/json", '
                     '"Accept": "application/json"'
-                    '}'
+                    '}, '
+                    '"none_type": null, '
+                    '"int_type": 5'
                     '}'
                 ),
                 expected_json={
                     "success": "This is a test Json response.",
+                    "test_list": [
+                        "Sublist Item 1",
+                        "Sublist Item 2",
+                        "Sublist Item 3",
+                    ],
                     "request_headers": {
                         "Cookie": "",
                         "Content-Type": "application/json",
                         "Accept": "application/json",
                     },
+                    'none_type': None,
+                    'int_type': 5,
                 },
             )
 
         with self.subTest('Basic response test, merged into one assertion - Content fails when wrong'):
             with self.assertRaises(AssertionError) as err:
                 response = self.assertJsonResponse(
-                    'django_expanded_test_cases:json-response-index',
-                    expected_url='/json/index/',
+                    'django_expanded_test_cases:json-response-basic-dict',
+                    expected_url='/json/basic-dict/',
                     expected_content=(
                         '{'
                         '"success": "This is a test Json response.", '
+                        '"test_list": ['
+                        '"Sublist Item 1", '
+                        '"Sublist Item 2", '
+                        '"Sublist Item 3"'
+                        '], '
                         '"request_headers": {'
                         '"Cookie": "", '
                         '"Content-Type": "text/html", '
                         '"Accept": "text/html"'
-                        '}'
+                        '}, '
+                        '"none_type": null, '
+                        '"int_type": 5'
                         '}'
                     ),
                     expected_json={
                         "success": "This is a test Json response.",
+                        "test_list": [
+                            "Sublist Item 1",
+                            "Sublist Item 2",
+                            "Sublist Item 3",
+                        ],
                         "request_headers": {
                             "Cookie": "",
                             "Content-Type": "application/json",
                             "Accept": "application/json",
                         },
+                        'none_type': None,
+                        'int_type': 5,
                     },
                 )
             self.assertText(
                 (
                     'Could not find expected content value in response. Provided value was:\n'
-                    '{"success": "This is a test Json response.", '
-                    '"request_headers":{"Cookie": "", "Content-Type": "text/html", "Accept": "text/html"}'
+                    '{'
+                    '"success": "This is a test Json response.", '
+                    '"test_list":["Sublist Item 1", "Sublist Item 2", "Sublist Item 3"], '
+                    '"request_headers":{"Cookie": "", "Content-Type": "text/html", "Accept": "text/html"}, '
+                    '"none_type": null, '
+                    '"int_type": 5'
                     '}'
                 ),
                 str(err.exception),
@@ -4548,60 +4645,92 @@ class IntegrationAssertionTestCase:
 
         with self.subTest('Basic response test, merged into one assertion - Json fails when wrong'):
             with self.assertRaises(AssertionError) as err:
-                response = self.assertJsonResponse(
-                    'django_expanded_test_cases:json-response-index',
-                    expected_url='/json/index/',
+                self.assertJsonResponse(
+                    'django_expanded_test_cases:json-response-basic-dict',
+                    expected_url='/json/basic-dict/',
                     expected_content=(
                         '{'
                         '"success": "This is a test Json response.", '
+                        '"test_list": ['
+                        '"Sublist Item 1", '
+                        '"Sublist Item 2", '
+                        '"Sublist Item 3"'
+                        '], '
                         '"request_headers": {'
                         '"Cookie": "", '
                         '"Content-Type": "application/json", '
                         '"Accept": "application/json"'
-                        '}'
+                        '}, '
+                        '"none_type": null, '
+                        '"int_type": 5'
                         '}'
                     ),
                     expected_json={
                         "success": "This is a test Json response.",
+                        "test_list": [
+                            "Sublist Item 1",
+                            "Sublist Item 2",
+                            "Sublist Item 3",
+                        ],
                         "request_headers": {
                             "Cookie": "",
                             "Content-Type": "text/html",
                             "Accept": "text/html",
                         },
+                        'none_type': None,
+                        'int_type': 5,
                     },
                 )
             self.assertText(
                 (
                     'Could not find expected json value in response. Provided value was:\n'
-                    "{'success': 'This is a test Json response.', "
-                    "'request_headers': {'Cookie': '', 'Content-Type': 'text/html', 'Accept': 'text/html'}"
-                    '}'
+                    "{"
+                    "'success': 'This is a test Json response.', "
+                    "'test_list': ['Sublist Item 1', 'Sublist Item 2', 'Sublist Item 3'], "
+                    "'request_headers': {'Cookie': '', 'Content-Type': 'text/html', 'Accept': 'text/html'}, "
+                    "'none_type': None, "
+                    "'int_type': 5"
+                    "}"
                 ),
                 str(err.exception),
             )
 
         with self.subTest('Basic response test, raises error if expected_json is provided but return_type is not json'):
             with self.assertRaises(ValueError) as err:
-                response = self.assertResponse(
-                    'django_expanded_test_cases:json-response-index',
-                    expected_url='/json/index/',
+                self.assertResponse(
+                    'django_expanded_test_cases:json-response-basic-dict',
+                    expected_url='/json/basic-dict/',
                     expected_content=(
                         '{'
                         '"success": "This is a test Json response.", '
+                        '"test_list": ['
+                        '"Sublist Item 1", '
+                        '"Sublist Item 2", '
+                        '"Sublist Item 3"'
+                        '], '
                         '"request_headers": {'
                         '"Cookie": "", '
                         '"Content-Type": "application/json", '
                         '"Accept": "application/json"'
-                        '}'
+                        '}, '
+                        '"none_type": null, '
+                        '"int_type": 5'
                         '}'
                     ),
                     expected_json={
                         "success": "This is a test Json response.",
+                        "test_list": [
+                            "Sublist Item 1",
+                            "Sublist Item 2",
+                            "Sublist Item 3",
+                        ],
                         "request_headers": {
                             "Cookie": "",
                             "Content-Type": "application/json",
                             "Accept": "application/json",
                         },
+                        'none_type': None,
+                        'int_type': 5,
                     },
                 )
             self.assertText(
